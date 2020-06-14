@@ -1,0 +1,3 @@
+1. master双1，使用GTID
+2. slave上 relay_log_info_repository = "TABLE"; master_info_repository = "TABLE" 
+3. slave采用半（强）同步复制

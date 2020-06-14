@@ -1,0 +1,45 @@
+
+Nov  5 06:26:04 kp04 systemd: Starting LVS and VRRP High Availability Monitor...
+Nov  5 06:26:04 kp04 Keepalived[18233]: Starting Keepalived v2.0.19 (10/19,2019)
+Nov  5 06:26:04 kp04 Keepalived[18233]: Running on Linux 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 (built for Linux 3.10.0)
+Nov  5 06:26:04 kp04 Keepalived[18233]: Command line: '/usr/local/sbin/keepalived' '-D'
+Nov  5 06:26:04 kp04 Keepalived[18233]: Opening file '/etc/keepalived/keepalived.conf'.
+Nov  5 06:26:04 kp04 systemd: PID file /run/keepalived.pid not readable (yet?) after start.
+
+启动 VRRP子进程
+Nov  5 06:26:04 kp04 Keepalived[18234]: Starting VRRP child process, pid=18235
+启动 LVS和VRRP高可用监视器
+Nov  5 06:26:04 kp04 systemd: Started LVS and VRRP High Availability Monitor.
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: Registering Kernel netlink reflector
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: Registering Kernel netlink command channel
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: Opening file '/etc/keepalived/keepalived.conf'.
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: Sync group VG1 has only 1 virtual router(s) - this probably isn't what you want
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: Assigned address 192.168.0.91 for interface enp0s3
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: Assigned address fe80::cb5b:b7fc:94c0:6a41 for interface enp0s3
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: Registering gratuitous ARP shared channel
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: (VI_1) removing VIPs.
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: VRRP sockpool: [ifindex(2), family(IPv4), proto(112), unicast(0), fd(11,12)]
+
+成功检测周期性执行的脚本
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: VRRP_Script(check_run) succeeded
+进入 backup状态
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: (VI_1) Entering BACKUP STATE
+同步实例到backup状态
+Nov  5 06:26:04 kp04 Keepalived_vrrp[18235]: VRRP_Group(VG1) Syncing instances to BACKUP state
+
+接收VRRP包超时
+Nov  5 06:26:20 kp04 Keepalived_vrrp[18235]: (VI_1) Receive advertisement timeout
+进入 master状态
+Nov  5 06:26:20 kp04 Keepalived_vrrp[18235]: (VI_1) Entering MASTER STATE
+Nov  5 06:26:20 kp04 Keepalived_vrrp[18235]: (VI_1) setting VIPs.
+Nov  5 06:26:20 kp04 Keepalived_vrrp[18235]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  5 06:26:20 kp04 Keepalived_vrrp[18235]: (VI_1) Sending/queueing gratuitous ARPs on enp0s3 for 192.168.0.93
+Nov  5 06:26:20 kp04 Keepalived_vrrp[18235]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  5 06:26:20 kp04 Keepalived_vrrp[18235]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  5 06:26:20 kp04 Keepalived_vrrp[18235]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  5 06:26:20 kp04 Keepalived_vrrp[18235]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+同步实例到master状态
+Nov  5 06:26:20 kp04 Keepalived_vrrp[18235]: VRRP_Group(VG1) Syncing instances to MASTER state
+
+
+

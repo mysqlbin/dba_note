@@ -1,0 +1,16 @@
+
+https://www.cnblogs.com/gomysql/p/3662264.html 
+
+grant all privileges on *.* to 'pt_tool'@'192.168.1.%' identified by '123456abc';
+GRANT SELECT, PROCESS, SUPER, REPLICATION SLAVE ON *.* TO 'pt_tool'@'192.168.1.%' IDENTIFIED BY '123456abc';
+
+在从库执行, 参数 h 要写主库的IP
+pt-table-checksum --nocheck-binlog-format --recursion-method=processlist -h 192.168.1.26 -P 3306 -u pt_tool -p 123456abc --replicate=db1.checksums --replicate-check-only 
+
+在主库执行， 参数 h 要写从库的IP:												
+pt-table-sync --print --execute --sync-to-master h='192.168.1.63',u='pt_tool',p='123456abc' --databases=zst --tables=reply_test20171018 
+
+
+Can't determine master of h=192.168.1.26,p=...,u=pt_tool at /usr/bin/pt-table-sync line 9870.
+
+

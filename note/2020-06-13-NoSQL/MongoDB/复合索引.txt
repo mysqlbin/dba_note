@@ -1,0 +1,562 @@
+
+大纲
+	制造数据 
+	复合索引
+	降序索引
+	覆盖索引
+	隐式索引
+
+
+制造数据
+	for (i=0; i<1000000; i++) {db.table_index.insert({"i" : i, "username" : "user"+i, "age" : Math.floor(Math.random()*120), "created" : new Date()})}
+	
+	repl_set:PRIMARY> db.table_index.count()
+	1000000
+	
+	
+	db.table_index.getIndexes()
+	
+
+复合索引
+	repl_set:PRIMARY> db.table_index.ensureIndex({"age" : 1, "username" : 1})
+	{
+		"createdCollectionAutomatically" : false,
+		"numIndexesBefore" : 1,
+		"numIndexesAfter" : 2,
+		"ok" : 1,
+		"operationTime" : Timestamp(1574959146, 1),
+		"$clusterTime" : {
+			"clusterTime" : Timestamp(1574959146, 1),
+			"signature" : {
+				"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+				"keyId" : NumberLong(0)
+			}
+		}
+	}
+	
+	repl_set:PRIMARY> db.table_index.getIndexes()
+	[
+		{
+			"v" : 2,
+			"key" : {
+				"_id" : 1
+			},
+			"name" : "_id_",
+			"ns" : "test_db.table_index"
+		},
+		{
+			"v" : 2,
+			"key" : {
+				"age" : 1,
+				"username" : 1
+			},
+			"name" : "age_1_username_1",
+			"ns" : "test_db.table_index"
+		}
+	]
+	
+	查看执行计划
+		repl_set:PRIMARY> db.table_index.explain("executionStats").find({"age" : 102, "username":"user101"})
+		{
+			"queryPlanner" : {
+				"plannerVersion" : 1,
+				"namespace" : "test_db.table_index",
+				"indexFilterSet" : false,
+				"parsedQuery" : {
+					"$and" : [
+						{
+							"age" : {
+								"$eq" : 102
+							}
+						},
+						{
+							"username" : {
+								"$eq" : "user101"
+							}
+						}
+					]
+				},
+				"winningPlan" : {
+					"stage" : "FETCH",
+					"inputStage" : {
+						"stage" : "IXSCAN",
+						"keyPattern" : {
+							"age" : 1,
+							"username" : 1
+						},
+						"indexName" : "age_1_username_1",
+						"isMultiKey" : false,
+						"multiKeyPaths" : {
+							"age" : [ ],
+							"username" : [ ]
+						},
+						"isUnique" : false,
+						"isSparse" : false,
+						"isPartial" : false,
+						"indexVersion" : 2,
+						"direction" : "forward",
+						"indexBounds" : {
+							"age" : [
+								"[102.0, 102.0]"
+							],
+							"username" : [
+								"[\"user101\", \"user101\"]"
+							]
+						}
+					}
+				},
+				"rejectedPlans" : [ ]
+			},
+			"executionStats" : {
+				"executionSuccess" : true,
+				"nReturned" : 1,
+				"executionTimeMillis" : 0,
+				"totalKeysExamined" : 1,
+				"totalDocsExamined" : 1,
+				"executionStages" : {
+					"stage" : "FETCH",
+					"nReturned" : 1,
+					"executionTimeMillisEstimate" : 0,
+					"works" : 2,
+					"advanced" : 1,
+					"needTime" : 0,
+					"needYield" : 0,
+					"saveState" : 0,
+					"restoreState" : 0,
+					"isEOF" : 1,
+					"invalidates" : 0,
+					"docsExamined" : 1,
+					"alreadyHasObj" : 0,
+					"inputStage" : {
+						"stage" : "IXSCAN",
+						"nReturned" : 1,
+						"executionTimeMillisEstimate" : 0,
+						"works" : 2,
+						"advanced" : 1,
+						"needTime" : 0,
+						"needYield" : 0,
+						"saveState" : 0,
+						"restoreState" : 0,
+						"isEOF" : 1,
+						"invalidates" : 0,
+						"keyPattern" : {
+							"age" : 1,
+							"username" : 1
+						},
+						"indexName" : "age_1_username_1",
+						"isMultiKey" : false,
+						"multiKeyPaths" : {
+							"age" : [ ],
+							"username" : [ ]
+						},
+						"isUnique" : false,
+						"isSparse" : false,
+						"isPartial" : false,
+						"indexVersion" : 2,
+						"direction" : "forward",
+						"indexBounds" : {
+							"age" : [
+								"[102.0, 102.0]"
+							],
+							"username" : [
+								"[\"user101\", \"user101\"]"
+							]
+						},
+						"keysExamined" : 1,
+						"seeks" : 1,
+						"dupsTested" : 0,
+						"dupsDropped" : 0,
+						"seenInvalidated" : 0
+					}
+				}
+			},
+			"serverInfo" : {
+				"host" : "mongodb03",
+				"port" : 27017,
+				"version" : "4.0.13",
+				"gitVersion" : "bda366f0b0e432ca143bc41da54d8732bd8d03c0"
+			},
+			"ok" : 1,
+			"operationTime" : Timestamp(1574959751, 1),
+			"$clusterTime" : {
+				"clusterTime" : Timestamp(1574959751, 1),
+				"signature" : {
+					"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+					"keyId" : NumberLong(0)
+				}
+			}
+		}
+
+		executionStats.executionSuccess   # 是否执行成功
+		executionStats.nReturned          # 查询的返回条数
+			"nReturned" : 1
+		executionStats.executionTimeMillis  # 整体执行时间
+			"executionTimeMillis" : 0
+		executionStats.totalKeysExamined   # 索引扫描次数
+			"totalKeysExamined" : 1,
+		executionStats.totalDocsExamined   # document扫描次数
+			"totalDocsExamined" : 1,
+		
+		"indexName" : "age_1_username_1",  # 使用到的索引
+		
+		
+		
+		
+降序索引
+
+	db.table_index.dropIndex("age_1_username_1")
+
+	repl_set:PRIMARY> db.table_index.ensureIndex({"age" : 1, "username" : -1})
+	{
+		"createdCollectionAutomatically" : false,
+		"numIndexesBefore" : 1,
+		"numIndexesAfter" : 2,
+		"ok" : 1,
+		"operationTime" : Timestamp(1574960194, 1),
+		"$clusterTime" : {
+			"clusterTime" : Timestamp(1574960194, 1),
+			"signature" : {
+				"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+				"keyId" : NumberLong(0)
+			}
+		}
+	}
+	
+	repl_set:PRIMARY> db.table_index.getIndexes()
+	[
+		{
+			"v" : 2,
+			"key" : {
+				"_id" : 1
+			},
+			"name" : "_id_",
+			"ns" : "test_db.table_index"
+		},
+		{
+			"v" : 2,
+			"key" : {
+				"age" : 1,
+				"username" : -1
+			},
+			"name" : "age_1_username_-1",
+			"ns" : "test_db.table_index"
+		}
+	]
+	
+	
+	repl_set:PRIMARY> db.table_index.find().sort( { age: 1, username: -1 } )
+
+	{ "_id" : ObjectId("5ddf2574d514eb777215668e"), "i" : 999970, "username" : "user999970", "age" : 0, "created" : ISODate("2019-11-28T01:40:04.591Z") }
+	{ "_id" : ObjectId("5ddf2574d514eb777215667a"), "i" : 999950, "username" : "user999950", "age" : 0, "created" : ISODate("2019-11-28T01:40:04.582Z") }
+	{ "_id" : ObjectId("5ddf228ed514eb777207ab01"), "i" : 99989, "username" : "user99989", "age" : 0, "created" : ISODate("2019-11-28T01:27:42.584Z") }
+	{ "_id" : ObjectId("5ddf228ed514eb777207aae9"), "i" : 99965, "username" : "user99965", "age" : 0, "created" : ISODate("2019-11-28T01:27:42.571Z") }
+	{ "_id" : ObjectId("5ddf2574d514eb77721564dc"), "i" : 999536, "username" : "user999536", "age" : 0, "created" : ISODate("2019-11-28T01:40:04.296Z") }
+	{ "_id" : ObjectId("5ddf2574d514eb77721564ad"), "i" : 999489, "username" : "user999489", "age" : 0, "created" : ISODate("2019-11-28T01:40:04.262Z") }
+	{ "_id" : ObjectId("5ddf2574d514eb777215649c"), "i" : 999472, "username" : "user999472", "age" : 0, "created" : ISODate("2019-11-28T01:40:04.248Z") }
+	{ "_id" : ObjectId("5ddf2574d514eb7772156498"), "i" : 999468, "username" : "user999468", "age" : 0, "created" : ISODate("2019-11-28T01:40:04.244Z") }
+	{ "_id" : ObjectId("5ddf2574d514eb7772156405"), "i" : 999321, "username" : "user999321", "age" : 0, "created" : ISODate("2019-11-28T01:40:04.130Z") }
+	{ "_id" : ObjectId("5ddf2574d514eb77721563d3"), "i" : 999271, "username" : "user999271", "age" : 0, "created" : ISODate("2019-11-28T01:40:04.092Z") }
+	{ "_id" : ObjectId("5ddf2573d514eb7772156224"), "i" : 998840, "username" : "user998840", "age" : 0, "created" : ISODate("2019-11-28T01:40:03.710Z") }
+	{ "_id" : ObjectId("5ddf2573d514eb77721561cb"), "i" : 998751, "username" : "user998751", "age" : 0, "created" : ISODate("2019-11-28T01:40:03.603Z") }
+	{ "_id" : ObjectId("5ddf2573d514eb7772156197"), "i" : 998699, "username" : "user998699", "age" : 0, "created" : ISODate("2019-11-28T01:40:03.559Z") }
+	{ "_id" : ObjectId("5ddf2573d514eb777215609a"), "i" : 998446, "username" : "user998446", "age" : 0, "created" : ISODate("2019-11-28T01:40:03.357Z") }
+	{ "_id" : ObjectId("5ddf2573d514eb7772156001"), "i" : 998293, "username" : "user998293", "age" : 0, "created" : ISODate("2019-11-28T01:40:03.216Z") }
+	{ "_id" : ObjectId("5ddf2573d514eb7772155f8f"), "i" : 998179, "username" : "user998179", "age" : 0, "created" : ISODate("2019-11-28T01:40:03.125Z") }
+	{ "_id" : ObjectId("5ddf2573d514eb7772155f63"), "i" : 998135, "username" : "user998135", "age" : 0, "created" : ISODate("2019-11-28T01:40:03.093Z") }
+	{ "_id" : ObjectId("5ddf2573d514eb7772155f03"), "i" : 998039, "username" : "user998039", "age" : 0, "created" : ISODate("2019-11-28T01:40:03.007Z") }
+	{ "_id" : ObjectId("5ddf2572d514eb7772155ea1"), "i" : 997941, "username" : "user997941", "age" : 0, "created" : ISODate("2019-11-28T01:40:02.929Z") }
+	{ "_id" : ObjectId("5ddf228ed514eb777207aa37"), "i" : 99787, "username" : "user99787", "age" : 0, "created" : ISODate("2019-11-28T01:27:42.416Z") }
+
+	
+	repl_set:PRIMARY> db.table_index.explain("executionStats").find().sort( { age: 1, username: -1 } )
+	{
+		"queryPlanner" : {
+			"plannerVersion" : 1,
+			"namespace" : "test_db.table_index",
+			"indexFilterSet" : false,
+			"parsedQuery" : {
+				
+			},
+			"winningPlan" : {
+				"stage" : "FETCH",
+				"inputStage" : {
+					"stage" : "IXSCAN",
+					"keyPattern" : {
+						"age" : 1,
+						"username" : -1
+					},
+					"indexName" : "age_1_username_-1",
+					"isMultiKey" : false,
+					"multiKeyPaths" : {
+						"age" : [ ],
+						"username" : [ ]
+					},
+					"isUnique" : false,
+					"isSparse" : false,
+					"isPartial" : false,
+					"indexVersion" : 2,
+					"direction" : "forward",
+					"indexBounds" : {
+						"age" : [
+							"[MinKey, MaxKey]"
+						],
+						"username" : [
+							"[MaxKey, MinKey]"
+						]
+					}
+				}
+			},
+			"rejectedPlans" : [ ]
+		},
+		"executionStats" : {
+			"executionSuccess" : true,
+			"nReturned" : 1000000,
+			"executionTimeMillis" : 1566,
+			"totalKeysExamined" : 1000000,
+			"totalDocsExamined" : 1000000,
+			"executionStages" : {
+				"stage" : "FETCH",
+				"nReturned" : 1000000,
+				"executionTimeMillisEstimate" : 31,
+				"works" : 1000001,
+				"advanced" : 1000000,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 7812,
+				"restoreState" : 7812,
+				"isEOF" : 1,
+				"invalidates" : 0,
+				"docsExamined" : 1000000,
+				"alreadyHasObj" : 0,
+				"inputStage" : {
+					"stage" : "IXSCAN",
+					"nReturned" : 1000000,
+					"executionTimeMillisEstimate" : 8,
+					"works" : 1000001,
+					"advanced" : 1000000,
+					"needTime" : 0,
+					"needYield" : 0,
+					"saveState" : 7812,
+					"restoreState" : 7812,
+					"isEOF" : 1,
+					"invalidates" : 0,
+					"keyPattern" : {
+						"age" : 1,
+						"username" : -1
+					},
+					"indexName" : "age_1_username_-1",
+					"isMultiKey" : false,
+					"multiKeyPaths" : {
+						"age" : [ ],
+						"username" : [ ]
+					},
+					"isUnique" : false,
+					"isSparse" : false,
+					"isPartial" : false,
+					"indexVersion" : 2,
+					"direction" : "forward",
+					"indexBounds" : {
+						"age" : [
+							"[MinKey, MaxKey]"
+						],
+						"username" : [
+							"[MaxKey, MinKey]"
+						]
+					},
+					"keysExamined" : 1000000,
+					"seeks" : 1,
+					"dupsTested" : 0,
+					"dupsDropped" : 0,
+					"seenInvalidated" : 0
+				}
+			}
+		},
+		"serverInfo" : {
+			"host" : "mongodb03",
+			"port" : 27017,
+			"version" : "4.0.13",
+			"gitVersion" : "bda366f0b0e432ca143bc41da54d8732bd8d03c0"
+		},
+		"ok" : 1,
+		"operationTime" : Timestamp(1574960901, 1),
+		"$clusterTime" : {
+			"clusterTime" : Timestamp(1574960901, 1),
+			"signature" : {
+				"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+				"keyId" : NumberLong(0)
+			}
+		}
+	}
+		
+	
+	executionStats.executionSuccess   # 是否执行成功
+	executionStats.nReturned          # 查询的返回条数
+		"nReturned" : 1000000
+	executionStats.executionTimeMillis  # 整体执行时间
+		"executionTimeMillis" : 1566
+	executionStats.totalKeysExamined   # 索引扫描次数
+		"totalKeysExamined" : 1000000,
+	executionStats.totalDocsExamined   # document扫描次数
+		"totalDocsExamined" : 1000000,
+	
+	"indexName" : "age_1_username_-1",  # 使用到的索引
+	
+	
+	
+覆盖索引
+	含义: 一个索引包含用户请求的所有字段
+	
+	
+	db.table_covered_index.insert({"username" : 'bin'})
+	
+	db.table_covered_index.ensureIndex({"username" : 1})
+	
+	db.table_covered_index.getIndexes()
+	
+	
+	repl_set:PRIMARY> db.table_covered_index.find({"username": "bin"}, {"_id" : 0})
+	{ "username" : "bin" }
+		
+	
+	db.table_covered_index.find({"username": "bin"}, {"_id" : 0}).explain("executionStats")
+	
+	repl_set:PRIMARY> db.table_covered_index.find({"username": "bin"}, {"_id" : 0}).explain("executionStats")
+	{
+		"queryPlanner" : {
+			"plannerVersion" : 1,
+			"namespace" : "test_db.table_covered_index",
+			"indexFilterSet" : false,
+			"parsedQuery" : {
+				"username" : {
+					"$eq" : "bin"
+				}
+			},
+			"winningPlan" : {
+				"stage" : "PROJECTION",
+				"transformBy" : {
+					"_id" : 0
+				},
+				"inputStage" : {
+					"stage" : "FETCH",
+					"inputStage" : {
+						"stage" : "IXSCAN",
+						"keyPattern" : {
+							"username" : 1
+						},
+						"indexName" : "username_1",
+						"isMultiKey" : false,
+						"multiKeyPaths" : {
+							"username" : [ ]
+						},
+						"isUnique" : false,
+						"isSparse" : false,
+						"isPartial" : false,
+						"indexVersion" : 2,
+						"direction" : "forward",
+						"indexBounds" : {
+							"username" : [
+								"[\"bin\", \"bin\"]"
+							]
+						}
+					}
+				}
+			},
+			"rejectedPlans" : [ ]
+		},
+		"executionStats" : {
+			"executionSuccess" : true,
+			"nReturned" : 1,
+			"executionTimeMillis" : 0,
+			"totalKeysExamined" : 1,
+			"totalDocsExamined" : 1,
+			"executionStages" : {
+				"stage" : "PROJECTION",
+				"nReturned" : 1,
+				"executionTimeMillisEstimate" : 0,
+				"works" : 2,
+				"advanced" : 1,
+				"needTime" : 0,
+				"needYield" : 0,
+				"saveState" : 0,
+				"restoreState" : 0,
+				"isEOF" : 1,
+				"invalidates" : 0,
+				"transformBy" : {
+					"_id" : 0
+				},
+				"inputStage" : {
+					"stage" : "FETCH",
+					"nReturned" : 1,
+					"executionTimeMillisEstimate" : 0,
+					"works" : 2,
+					"advanced" : 1,
+					"needTime" : 0,
+					"needYield" : 0,
+					"saveState" : 0,
+					"restoreState" : 0,
+					"isEOF" : 1,
+					"invalidates" : 0,
+					"docsExamined" : 1,
+					"alreadyHasObj" : 0,
+					"inputStage" : {
+						"stage" : "IXSCAN",
+						"nReturned" : 1,
+						"executionTimeMillisEstimate" : 0,
+						"works" : 2,
+						"advanced" : 1,
+						"needTime" : 0,
+						"needYield" : 0,
+						"saveState" : 0,
+						"restoreState" : 0,
+						"isEOF" : 1,
+						"invalidates" : 0,
+						"keyPattern" : {
+							"username" : 1
+						},
+						"indexName" : "username_1",
+						"isMultiKey" : false,
+						"multiKeyPaths" : {
+							"username" : [ ]
+						},
+						"isUnique" : false,
+						"isSparse" : false,
+						"isPartial" : false,
+						"indexVersion" : 2,
+						"direction" : "forward",
+						"indexBounds" : {
+							"username" : [
+								"[\"bin\", \"bin\"]"
+							]
+						},
+						"keysExamined" : 1,
+						"seeks" : 1,
+						"dupsTested" : 0,
+						"dupsDropped" : 0,
+						"seenInvalidated" : 0
+					}
+				}
+			}
+		},
+		"serverInfo" : {
+			"host" : "mongodb03",
+			"port" : 27017,
+			"version" : "4.0.13",
+			"gitVersion" : "bda366f0b0e432ca143bc41da54d8732bd8d03c0"
+		},
+		"ok" : 1,
+		"operationTime" : Timestamp(1574965321, 1),
+		"$clusterTime" : {
+			"clusterTime" : Timestamp(1574965321, 1),
+			"signature" : {
+				"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+				"keyId" : NumberLong(0)
+			}
+		}
+	}
+
+
+
+
+隐式索引
+
+	

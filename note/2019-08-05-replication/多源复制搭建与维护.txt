@@ -1,0 +1,236 @@
+https://www.oschina.net/translate/mysql-5-7-multi-source-replication
+http://www.unixfbi.com/155.html#title-1
+
+IO_Thread :
+Master_Log_File
+Read_Master_Log_Pos
+
+SQL_Thread:
+Relay_Master_Log_File
+Exec_Master_Log_Pos
+
+
+192.168.0.12       node12(master1)
+192.168.0.13       node13(master2)
+192.168.0.14	   slave
+
+
+获取 master1 的 Binlog + Position：
+"root@localhost:mysql.sock  [(none)]>show master status\G;
+*************************** 1. row ***************************
+             File: mysql-bin.000008
+         Position: 154
+     Binlog_Do_DB: 
+ Binlog_Ignore_DB: 
+Executed_Gtid_Set: 
+1 row in set (0.00 sec)
+
+ERROR: 
+No query specified
+
+
+获取 master2 的 Binlog + Position：
+"root@localhost:mysql.sock  [(none)]>show master status\G;
+*************************** 1. row ***************************
+             File: mysql-bin.000008
+         Position: 154
+     Binlog_Do_DB: 
+ Binlog_Ignore_DB: 
+Executed_Gtid_Set: 
+1 row in set (0.00 sec)
+
+ERROR: 
+No query specified
+
+
+创建复制账号:
+master1:
+mysql> grant replication slave,replication client on *.* to 'repl_channel'@'192.168.0.%'  identified  by  '123456abc';
+
+
+master2:
+mysql> grant replication slave,replication client on *.* to 'repl_channel'@'192.168.0.%'  identified  by  '123456abc';
+
+
+从服务器上实现事故安全功能。
+master_info_repository=TABLE;
+
+relay_log_info_repository=TABLE;
+
+从服务器指向 master 进行复制：
+slave> change master  to master_host='192.168.0.12',master_port=3306,master_user='repl_channel',master_password='123456abc',master_log_file='mysql-bin.000008' ,master_log_pos=154  for channel 'node12';
+
+slave> change master  to master_host='192.168.0.13',master_port=3306,master_user='repl_channel',master_password='123456abc',master_log_file='mysql-bin.000008' ,master_log_pos=154  for channel 'node13';
+
+
+按照所设定的通信名字启动从服务器：
+slave > start slave for channel 'node12';
+slave > start slave for channel 'node13';
+
+现在我们检查一下从服务器状态：
+SHOW SLAVE STATUS FOR CHANNEL 'node12'\G;
+SHOW SLAVE STATUS FOR CHANNEL 'node13'\G;
+
+
+
+data test:
+node12:
+drop database if exists `channels_a`;
+create  database channels_a;
+use channels_a;
+create table tb1(id int);
+insert into tb1(id) values(1),(2);
+
+
+node13:
+drop database if exists `channels_b`;
+create  database channels_b;
+use channels_b;
+create table tb1(id int);
+insert into tb1(id) values(1),(2);
+
+
+1032 测试： 
+在node13删除一条从库不存在的记录：
+Last_SQL_Errno: 1032
+Last_SQL_Error: Could not execute Delete_rows event on table procedure.table_user_msg; Can't find record in 'table_user_msg', Error_code: 1032; handler error HA_ERR_KEY_NOT_FOUND; the event's master log mysql-bin.000008, end_log_pos 798
+ Replicate_Ignore_Server_Ids: 
+             Master_Server_Id: 133306
+                  Master_UUID: 6d9f971d-3d67-13e8-8f32-130027fb13f7
+             Master_Info_File: mysql.slave_master_info
+
+解决办法：
+1. 跳过错误
+stop  slave sql_thread for channel 'node13';
+set global sql_slave_skip_counter=1;
+start slave sql_thread for channel 'node13';
+
+2. 插入一条记录
+node13上解析binlog
+mysqlbinlog -v --base64-output=decode-rows mysql-bin.000008 > 1032.sql;
+
+找到 end_log_pos = 798 对应的SQL语句：
+# at 691
+#180412 22:37:10 server id 133306  end_log_pos 798 CRC32 0x888c8623 	Delete_rows: table id 121 flags: STMT_END_F
+### DELETE FROM `procedure`.`table_user_msg`
+### WHERE
+###   @1=71144
+###   @2=354
+###   @3=502
+###   @4=1
+###   @5=1517688946
+###   @6=''
+###   @7='房主同意你389348的200带入申请'
+###   @8=0
+# at 798
+
+把 时间戳转为日期： select FROM_UNIXTIME(1517688946);  =》 2018-02-03 15:15:46
+
+stop  slave sql_thread for channel 'node13';
+set sql_log_bin = 0;
+INSERT INTO
+FROM
+	`procedure`.`table_user_msg` (
+		`nMsgId`,
+		`nPlayerId`,
+		`nMsgType`,
+		`nIsRead`,
+		`CreateTime`,
+		`sMsgTitle`,
+		`sMsgBody`,
+		`nIsReward`
+	)
+VALUES
+	(
+		71144,
+		354,
+		502,
+		1,
+		'2018-02-03 15:15:46',
+		'',
+		'房主同意你389348的200带入申请',
+		0
+	);
+set sql_log_bin = 1;
+start slave sql_thread for channel 'node13';
+
+
+
+Last_SQL_Errno: 1032
+Last_SQL_Error: Could not execute Delete_rows event on table channels_a.tb1; Can't find record in 'tb1', Error_code: 1032; handler error HA_ERR_END_OF_FILE; the event's master log mysql-bin.000008, end_log_pos 2659
+Replicate_Ignore_Server_Ids: 
+             Master_Server_Id: 123306
+                  Master_UUID: 6d9f971d-3d67-11e8-8f32-080027fb13f7
+             Master_Info_File: mysql.slave_master_info
+跳过错误
+stop  slave sql_thread for channel 'node12';
+set global sql_slave_skip_counter=1;
+start slave sql_thread for channel 'node12';
+show slave status\G;
+
+
+
+
+
+传统复制跳过一个错误：
+stop  slave sql_thread for channel 'node12';
+stop  slave sql_thread for channel 'node13';
+set sql_log_bin = 0;
+	补数据操作
+set sql_log_bin = 1;
+start slave;
+
+
+
+
+
+思考：
+1. 多源复制可以做 pt-tabl-checksum 吗? 必须可以。
+
+2. 传统复制模式下，可以在线建从库吗？
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

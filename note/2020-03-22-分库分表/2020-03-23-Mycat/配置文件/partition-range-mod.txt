@@ -1,0 +1,4 @@
+# range start-end ,data node group size
+0-1M=1
+1M1-2M=2
+

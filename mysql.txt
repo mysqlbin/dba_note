@@ -1,0 +1,203 @@
+创建数据库：
+
+create  database sbtest DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
+
+
+create  database test_db DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
+create  database consistency_db DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
+create  database salt DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
+字符集： utf8mb4 -- UTF-8 Unicode
+排序规则： utf8mb4_general_ci
+
+统计：
+select round(sum(data_length + index_length) / 1024 / 1024) as total_mb,-> round(sum(data_length) / 1024 / 1024) as data_mb,-> round(sum(index_length) / 1024 / 1024) as index_mb-> from information_schema.tables; 
+
+select (data_length+index_length)/1024/1024 from information_schema.tables where TABLE_SCHEMA='minning_db' and table_name='market_words_bigrams_us';
+
+数据库导入：
+mysql -u root -p yldb_test < yldb_test.sql
+
+MySQL 手动清除binlog:
+PURGE MASTER LOGS BEFORE DATE_SUB(CURRENT_DATE, INTERVAL 1 DAY); 
+ 
+PURGE MASTER LOGS TO 'mysql-bin.000014';
+ 
+pt-query-digest 的使用：
+pt-query-digest slow.log --since '2018-04-01 09:30:00' --until '2018-14-19 10:00:00' > slow_report3.log
+pt-query-digest database-01-slow.log > slow_report.log
+pt-query-digest --user=slow_log --password=123456abc \
+--review h=192.168.0.13,D=slow_query_log,t=global_query_review \
+--history h=192.168.0.13,D=slow_query_log,t=global_query_review_history \
+--no-report --limit=0% --filter=" \$event->{Bytes} = length(\$event->{arg}) and \$event->{hostname}=\"$HOSTNAME\"" \
+database-01-slow.log
+
+/usr/local/mysql/bin/mysqldumpslow -s c t -t 20 database-01-slow.log
+
+
+alter 命令：
+1：操作表结构
+2：字段的增、删、改。
+	用于修改表名（rename to）、修改表的字段类型、修改表的数据类型（engine）
+	删除(drop、drop column)，添加(add)或修改( modify 、change )表字段名称（同时设置字段类型、默认值、注释）
+3：增加和删除索引 
+
+修改字段类型：
+alter table prepare modify column price float(8)
+alter table `prepare` modify column image text(0)
+alter table `store` change password password varchar(50) default '' comment '密码'
+
+
+修改数据表注释：
+alter table tablename comment '注释名称';
+
+修改字段的默认值(不要先删除字段再添加字段同时设置默认值, 避免已有数据丢失)：******** 
+alter table `user` alter column r_uid set default 0; 
+
+
+修改存储引擎: 
+alter table `order_refund` engine = InnoDB 
+
+//添加字段
+alter table `setup` add page_title varchar(50) not null default '0' comment '网站浏览器头部的标题' after title
+
+
+
+操作：索引的类型->using btree;
+show index from tablename\G
+删除索引：
+alter table tablename drop index indexname
+添加索引：
+alter table tablename add index index(asin) using btree;
+
+
+mysql 把一个数据库中的数据复制到另一个数据库中的表
+a：先查询A表在B表没有的记录
+b：然后用 group by 把A表的记录去重复---》group by 和 distinct 效率的比较。
+c：最后把记录插入到B表中。
+insert into chrome_extension_online.ce_amazon_order(`order_id`, `order_date`) (select `amazon-order-id1`, `purchase-date` from  yibua.capa where `amazon-order-id1` not in (select order_id from chrome_extension_online.ce_amazon_order) group by `amazon-order-id1`)
+
+
+
+
+
+
+
+
+
+同一个表，id字段的值更新到b字段
+update sbtest1 set b=concat(id, '') where id=concat(id, '');
+或者写一个存储过程
+
+alter table `sbtest1` add b int(11) unsigned not null comment '唯一索引值' after `id`;
+
+alter table `sbtest1` add unique(`b`) using btree;
+
+
+查看字段
+SHOW COLUMNS FROM `salt`.`salt_returns`
+
+
+alter table accountinfo add index(AccountName) using btree;
+
+SHOW MASTER LOGS;
+
+
+
+SELECT
+	table_name,
+	(data_length / 1024 / 1024) AS data_mb,
+	(index_length / 1024 / 1024)  AS index_mb,
+	(
+		(data_length + index_length) / 1024 / 1024
+	) AS all_mb,
+	table_rows 
+FROM
+	information_schema.TABLES
+WHERE
+	table_schema = ''
+order by all_mb desc 
+limit 10
+	
+	
+SELECT
+	(data_length + index_length) / 1024 / 1024
+FROM
+	information_schema. TABLES
+WHERE
+	TABLE_SCHEMA = ''
+AND table_name = 'market_words_bigrams_us';
+
+
+	
+https://www.cnblogs.com/18JG23/p/6296679.html
+ALTER EVENT ClearOldData ENABLE;
+ALTER EVENT ClearOldData DISABLE;	
+	
+DROP EVENT IF EXISTS ClearOldData;
+DROP EVENT IF EXISTS ReturnServerFee;
+DROP EVENT IF EXISTS StatisticsEarnings;
+DROP EVENT IF EXISTS StatisticsRedemption;
+DROP EVENT IF EXISTS WaitReturnServerFee;
+DROP EVENT IF EXISTS Web_ClubMemExtenDescStat;
+DROP EVENT IF EXISTS Web_Statistics_ClubService;
+	
+数据库时区问题 **************
+
+	
+	
+mysql 添加 自增主键ID并且放在 首列	
+ALTER TABLE table_name ADD COLUMN ID int(10) NOT NULL AUTO_INCREMENT PRIMARY KEY FIRST;
+	
+	
+	
+	
+修改字段默认值：	
+alter table `table_club_game_cfg_bak` alter column nDuDiamondMode set default '2';
+alter table table_club_game_cfg_bak comment '扣钻模式(0-代入扣钻，1-每局扣, 2-每局固定扣钻)';
+		
+	
+	
+	
+	
+
+http://www.runoob.com/mysql/mysql-join.html
+inner join 等值连接
+left join  左连接
+right join  右连接
+
+
+UNION: 用于两个表的结果集汇总， 结果集去重
+SELECT EnterPriceId FROM enterpricemanage_a
+UNION
+SELECT EnterPriceId FROM enterpricemanage_b
+
+
+UNION ALL: 用于两个表的结果集汇总,结果集不去重
+SELECT EnterPriceId FROM enterpricemanage_a
+UNION ALL
+SELECT EnterPriceId FROM enterpricemanage_b
+
+
+COUNT(*):
+统计记录数
+
+sum(*): 求和
+
+IFNULL: 三目运算符
+
+
+
+select round(sum(data_length + index_length) / 1024 / 1024) as total_mb,-> round(sum(data_length) / 1024 / 1024) as data_mb,-> round(sum(index_length) / 1024 / 1024) as index_mb-> from information_schema.tables; 
+
+select (data_length+index_length)/1024/1024 from information_schema.tables where TABLE_SCHEMA='minning_db' and table_name='market_words_bigrams_us';
+select (data_length+index_length)/1024/1024 from information_schema.tables where TABLE_SCHEMA='minning_db';
+
+	
+	  
+	  
+	  
+	  
+常用命令:
+
+
+

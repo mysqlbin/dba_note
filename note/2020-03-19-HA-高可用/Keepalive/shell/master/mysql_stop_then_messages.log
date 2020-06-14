@@ -1,0 +1,27 @@
+Nov  4 08:42:45 kp04 Keepalived[28897]: Stopping
+Nov  4 08:42:45 kp04 systemd: Stopping LVS and VRRP High Availability Monitor...
+Nov  4 08:42:45 kp04 Keepalived_vrrp[28898]: (VI_1) sent 0 priority
+Nov  4 08:42:45 kp04 Keepalived_vrrp[28898]: (VI_1) removing VIPs.
+Nov  4 08:42:45 kp04 Keepalived_vrrp[30627]: Error exec-ing command '/data/scripts/stop.sh', error 2: No such file or directory
+Nov  4 08:42:46 kp04 Keepalived_vrrp[28898]: Stopped - used 0.001157 user time, 0.017364 system time
+Nov  4 08:42:46 kp04 systemd: Starting LVS and VRRP High Availability Monitor...
+Nov  4 08:42:46 kp04 Keepalived[28897]: Stopped Keepalived v2.0.19 (10/19,2019)
+Nov  4 08:42:46 kp04 Keepalived[30628]: Starting Keepalived v2.0.19 (10/19,2019)
+Nov  4 08:42:46 kp04 Keepalived[30628]: Running on Linux 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 (built for Linux 3.10.0)
+Nov  4 08:42:46 kp04 Keepalived[30628]: Command line: '/usr/local/sbin/keepalived' '-D'
+Nov  4 08:42:46 kp04 Keepalived[30628]: Opening file '/etc/keepalived/keepalived.conf'.
+Nov  4 08:42:46 kp04 systemd: PID file /run/keepalived.pid not readable (yet?) after start.
+Nov  4 08:42:46 kp04 Keepalived[30629]: Starting VRRP child process, pid=30630
+Nov  4 08:42:46 kp04 systemd: Started LVS and VRRP High Availability Monitor.
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: Registering Kernel netlink reflector
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: Registering Kernel netlink command channel
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: Opening file '/etc/keepalived/keepalived.conf'.
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: WARNING - default user 'keepalived_script' for script execution does not exist - please create.
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: SECURITY VIOLATION - scripts are being executed but script_security not enabled.
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: Assigned address 192.168.0.91 for interface enp0s3
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: Assigned address fe80::cb5b:b7fc:94c0:6a41 for interface enp0s3
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: Registering gratuitous ARP shared channel
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: (VI_1) removing VIPs.
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: VRRP sockpool: [ifindex(2), family(IPv4), proto(112), unicast(0), fd(11,12)]
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: VRRP_Script(check_run) succeeded
+Nov  4 08:42:46 kp04 Keepalived_vrrp[30630]: (VI_1) Entering BACKUP STATE

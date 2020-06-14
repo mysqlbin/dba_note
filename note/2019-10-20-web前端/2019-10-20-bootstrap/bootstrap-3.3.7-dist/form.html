@@ -1,0 +1,72 @@
+
+<head>
+	<link href="./css/bootstrap.css" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+
+</head>
+<body>
+	<div class="container">
+		<form class="form-horizontal">
+
+		  <div class="form-group">
+			<label for="table_size" class="col-sm-4 control-label">超过多少G的大表：</label>
+			<div class="col-sm-8">
+			  <input type="number" class="form-control" id="table_size" placeholder="超过多少G的大表" step="0.5" min="0.5" value="0.5">
+			</div>
+		  </div>
+
+		  <div class="form-group">
+			<label for="top_big_tables" class="col-sm-4 control-label">数据量排名前多少的表：</label>
+			<div class="col-sm-8">
+			  <input type="number" class="form-control" id="top_big_tables" placeholder="数据量排名前多少的表" step="1" min="3" value="3">
+			</div>
+		  </div>
+			
+		  <div class="form-group">
+			<label for="table_row_custom" class="col-sm-4 control-label">单表超过行数多少万的表：</label>
+			<div class="col-sm-8">
+			  <input type="number" class="form-control" id="table_row_custom" placeholder="单表超过行数多少万的表" step="100000" min="100000" value="100000">
+			</div>
+		  </div>
+		  
+		  <div class="form-group">
+			<label for="auto_increment_ratio_custom" class="col-sm-4 control-label">自增ID占比大于多少的表：</label>
+			<div class="col-sm-8">
+			  <input type="number" class="form-control" id="auto_increment_ratio_custom" placeholder="自增ID占比大于多少的表" step="5" min="5" value="5">
+			</div>
+		  </div>
+		  
+		  <div class="form-group">
+			<label for="fragment_size_custom" class="col-sm-4 control-label">碎片大于多少 G 的表：</label>
+			<div class="col-sm-8">
+			  <input type="number" class="form-control" id="fragment_size_custom" placeholder="碎片大于多少 G 的表" step="1" min="0.5" value="0.5">
+			</div>
+		  </div>
+		  
+		  <div class="form-group">
+			<label for="character_maximum_length_custom" class="col-sm-4 control-label">统计字段类型varchar长度大于多少的表：</label>
+			<div class="col-sm-8">
+			  <input type="number" class="form-control" id="character_maximum_length_custom" placeholder="统计字段类型varchar长度大于多少的表" step="50" min="50" value="50">
+			</div>
+		  </div>
+		  
+		  <div class="form-group">
+			<label for="index_counts_custom" class="col-sm-4 control-label">获取表索引个数大于多少个：</label>
+			<div class="col-sm-8">
+			  <input type="number" class="form-control" id="index_counts_custom" placeholder="获取表索引个数大于多少个" step="1" min="3" value="3">
+			</div>
+		  </div>
+
+	  </form>
+	</div>
+
+	<script src="./js/jquery.min.js"></script>
+	<script src="./js/bootstrap.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
+
+</body>
+<script>
+	$(document).ready(function(){
+		
+	});
+</script>

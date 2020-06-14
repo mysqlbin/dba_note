@@ -1,0 +1,10 @@
+
+
+innodb_lock_wait_timeout: 
+等待行锁的最大时间，如果超时，则会滚当前语句或者整个事务;
+发生回滚后返回类似错误：Lock wait timeout exceeded; try restarting transaction。
+
+
+innodb_rollback_on_timeout:
+ 如果这个参数为true，则当发生因为等待行锁而产生的超时时，
+ 回滚掉整个事务，否则只回滚当前的语句。这个就是隐式回滚机制。

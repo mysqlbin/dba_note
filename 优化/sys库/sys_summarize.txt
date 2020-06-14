@@ -1,0 +1,39 @@
+
+
+
+1. 大部分连接来自哪里及发送的SQL情况:
+select host,current_connections,statements from sys.host_summary;
+
+2. 统计各个用户线程的连接数:
+select user, count(*) from sys.`session` group by user;
+
+
+3. 哪张表的IO最多？哪张表访问次数最多
+
+select * from sys.io_global_by_file_by_bytes limit 10;
+
+4. 机器执行最多的SQL语句是什么样?
+select * from sys.statement_analysis order by exec_count desc limit 10\G;
+
+5. 哪些语句延迟比较严重?
+
+statement_analysis中avg_latency的最高的。(参考上面写法)
+SQL语句：
+select * from sys.statement_analysis order by avg_latency desc limit 10;
+
+6. 哪些SQL语句使用了磁盘临时表?
+select db, query, tmp_tables, tmp_disk_tables, tmp_tables+tmp_disk_tables as tmp_all  from sys.statement_analysis where tmp_tables>0 or tmp_disk_tables >0 order by tmp_all desc limit 20;
+
+7. 哪张表占用了最多的buffer pool?
+select * from sys.innodb_buffer_stats_by_table order by pages desc limit 10;
+
+8. 每个库占用多少buffer pool
+select * from sys.innodb_buffer_stats_by_schema;
+
+9. 每个连接分配多少内存?
+select b.user, current_count_used, current_allocated, current_avg_alloc, current_max_alloc, total_allocated,current_statement from sys.memory_by_thread_by_current_bytes a, sys.session b where a.thread_id = b.thd_id;
+
+10. MySQL内部现在有多个线程在运行?
+select `user`, count(*) from `sys`.`processlist` group by `user`;
+
+

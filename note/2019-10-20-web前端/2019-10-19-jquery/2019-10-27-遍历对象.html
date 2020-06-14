@@ -1,0 +1,34 @@
+
+
+
+<head>
+	<link href="./css/bootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+	<ul>
+		<li>a</li>
+		<li>b</li>
+		<li>c</li>
+		<li>d</li>
+		<li>e</li>
+	</ul>
+	<script src="./js/jquery.min.js"></script>
+	<script src="./js/bootstrap.js"></script>
+	
+</body>
+
+<script type="text/javascript">
+	$(function(){
+		var a = [
+			{width: 90},
+			{width: 30},
+		];
+		$.each(a, function(k, obj){
+			console.log(k);
+			console.log(obj.width);
+		})
+	})
+</script>
+	
+

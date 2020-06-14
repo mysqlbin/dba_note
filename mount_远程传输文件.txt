@@ -1,0 +1,49 @@
+
+https://blog.csdn.net/bestcxx/article/details/53493763
+https://www.cnblogs.com/freeweb/p/6593861.html
+
+
+S1: 192.168.0.54  /nfs_test  服务端：接收挂载的地址 
+S2: 192.168.0.55  /mnt/test1 客户端：生产挂载的地址，即生产文件的地址	
+
+服务端配置：
+
+1. 首先检查是否缺少基础环境：
+
+rpm -qa | grep nfs-utils
+rpm -qa | grep rpcbind
+
+2. 如果这两个包存在那么可以直接使用，一般服务器安装的时候都会存在，如果没有的话执行下面命令安装：
+yum -y install nfs-utils
+yum -y install rpcbind
+
+3. 安装完成之后配置nfs访问目录，配置文件位置/etc/exports，默认是空的这里添加一行：
+
+/nfs_test 192.168.0.55(rw,no_root_squash,no_all_squash,async)
+
+4. 重启NFS服务
+service nfs restart
+
+
+客户端配置：
+1. 
+mkdir /mnt/test1
+
+2. 
+mount -t nfs 192.168.0.54:/nfs_test /mnt/test1
+
+3. 查看挂载情况
+[root@localhost test1]# df -h
+192.168.0.54:/nfs_test    50G  6.7G   44G  14% /mnt/test1
+
+
+
+
+
+
+
+
+
+
+
+

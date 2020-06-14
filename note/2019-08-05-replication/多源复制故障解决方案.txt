@@ -1,0 +1,127 @@
+当前触发器在主库上是 disable 状态, 放在从库 才是 ENABLE
+
+IO_Thread :
+Master_Log_File
+Read_Master_Log_Pos
+
+SQL_Thread:
+Relay_Master_Log_File
+Exec_Master_Log_Pos
+
+
+多源的传统复制, 每天早上6点有全备, 然后把备份放在独立的备份机器(没有使用 GTID):
+master1      master2
+	  
+		slave
+		
+一. master1 宕机后的处理:
+	
+1. 先让 slave 提供对外服务    ******
+
+以下步骤在 当前slave 可以对外停止服务的情况下搭建:
+2. 从 当前 slave 备份数据 
+3. 创建一个新 master1 实例 并且恢复 步骤备份的数据
+4. master1 创建新的复制账号 
+	GRANT replication slave on *.* TO 'repl'@'master1_ip' IDENTIFIED BY 'repl_password';
+5. 在 slave 上 指向 master1 服务器进行复制:
+   master1 先 show master status\G; 获取 二进制文件的名称 和 position
+   CHANGE MASTER TO 
+	MASTER_HOST='master1_ip', 
+	MASTER_PORT=3306, 
+	MASTER_LOG_FILE='', 
+	MASTER_LOG_POS=, 
+	MASTER_USER='repl', 
+	MASTER_PASSWORD='repl_password'
+	FOR CHANNEL 'master1';
+6.  启动
+	start slave for CHANNEL  'master1';  
+7. 查看复制状态
+   SHOW SLAVE STATUS FOR CHANNEL 'master1'\G
+
+二. slave 宕机后的处理:
+
+1. 在 master1 备份数据, 然后传输 实例2(新建实例)
+2. 在 实例2上 恢复 master1 备份的数据
+3. 把 slave 的 备份拿到 实例1(新建实例) 上恢复
+4. master1 新创建复制账号 
+	GRANT replication slave ON *.* TO 'repl'@'master1_ip' IDENTIFIED BY 'repl_password';
+5. 在 实例2 上 指向 master1 服务器进行复制:
+   master1 先 show master status\G; 获取 二进制文件的名称 和 position
+   CHANGE MASTER TO 
+	MASTER_HOST='master1_IP', 
+	MASTER_PORT=3306, 
+	MASTER_LOG_FILE='', 
+	MASTER_LOG_POS=, 
+	MASTER_USER='repl', 
+	MASTER_PASSWORD='repl_password'
+	FOR CHANNEL 'master1';
+	
+6. 把 实例1 上 通过 计算生成的数据(存储过程) 导入 到 实例2 上
+	
+7. 启动
+	start slave for CHANNEL  'master1'; 
+	
+8. 查看复制状态
+	SHOW SLAVE STATUS FOR CHANNEL 'master1'\G;
+	
+9. master2 跟 master1 的逻辑一样.
+以上步骤的前提是 master1 和 master2 的 mysqld 能快速完成备份 并能可以停止服务.
+
+
+三. master1，master2 和 slave 都 宕机后的处理:
+
+1. 先尽快让DB服务器提供对应服务, 先把 master1 , master2 对应的 备份 拿到 新的  master1 , master2 上恢复,
+然后再做主从.
+
+2. 在 新的master1 和 master2 上 分别创建新的复制账号
+	GRANT replication slave ON *.* TO 'repl'@'master1_ip' IDENTIFIED BY 'repl_password';
+	GRANT replication slave ON *.* TO 'repl'@'master2_ip' IDENTIFIED BY 'repl_password';
+	
+3. 在 新的 slave 分别 指向 新的master1 和 master2 服务器进行复制:
+	新的 master1 和 master2 先 show master status\G; 获取 二进制文件的名称 和 position
+	
+	CHANGE MASTER TO 
+	MASTER_HOST='master1_ip', 
+	MASTER_PORT=3306,  
+	MASTER_LOG_FILE='',    # 二进制文件的名称
+	MASTER_LOG_POS=,       # position
+	MASTER_USER='repl', 
+	MASTER_PASSWORD='repl_password'
+	FOR CHANNEL 'master1';
+
+	CHANGE MASTER TO 
+	MASTER_HOST='master2_ip', 
+	MASTER_PORT=, 
+	MASTER_LOG_FILE='', 
+	MASTER_LOG_POS=, 
+	MASTER_USER='repl', 
+	MASTER_PASSWORD='repl_password'
+	FOR CHANNEL 'master2';
+	
+5. 启动:
+start slave for CHANNEL  'master1';  
+start slave for CHANNEL  'master2';  
+6. 查看复制状态
+SHOW SLAVE STATUS FOR CHANNEL 'master1'\G;
+SHOW SLAVE STATUS FOR CHANNEL 'master2'\G;
+
+
+多源复制跳过错误:
+stop  slave sql_thread for channel 'master-1';
+set global sql_slave_skip_counter=1;
+start slave sql_thread for channlel 'master-1';
+
+多源复制下的删除表和删除存储过程方法, 避免在在删除操作 对应的表和存储过程在从库不存在复制报错 :
+DROP TABLE IF EXISTS `enterpriseauth`;
+DROP PROCEDURE IF EXISTS `Pr_Is_Same_Master`;
+
+
+
+2018-05-26：
+
+Last_SQL_Errno: 1032
+Last_SQL_Error: Could not execute Update_rows event on table niuniu_db.table_user_msg; Can't find record in 'table_user_msg', Error_code: 1032; handler error HA_ERR_KEY_NOT_FOUND; the event's master log mysql-bin.000003, end_log_pos 778557315
+
+stop  slave sql_thread for channel 'game_nn';
+set global sql_slave_skip_counter=1;
+start slave sql_thread for channlel 'game_nn';

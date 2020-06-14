@@ -1,0 +1,472 @@
+
+1. 环境 
+1. 先升级为GTID复制
+
+
+
+1. 环境 
+
+hostname    主机          端口号  通信端口号(server-id)    server_uuid                              MySQL版本      role      mha-node
+mha01		192.168.0.101  3306   3306101				   1b9bc372-0042-11ea-b8fa-0800274617cc     MySQL 8.0.18   Slave  
+mha02       192.168.0.102  3306   3306102                  e588e3eb-0042-11ea-a95b-0800275dde84     MySQL 8.0.18   Slave     Mha manager & slave 
+mha03       192.168.0.103  3306   3306103                  cbe6921b-0043-11ea-b484-0800270d5e94     MySQL 8.0.18   Master     
+VIP         192.168.0.104
+
+
+
+1. 先升级为GTID复制
+	实现步骤：
+
+	1. 所有的Server执行
+	set @@global.enforce_gtid_consistency = warn;
+
+
+	特别注意： 这一步是关建的一步使用不能出现警告。
+
+	2. 所有的server上执行：
+	set @@global.enforce_gtid_consistency = on;
+
+
+	3.所有的Server上执行（不关心最先最后，但要执行完）：
+
+	set @@global.gtid_mode = off_permissive;
+
+	 
+	4. 执行：
+	set @@global.gtid_mode=on_permissive;
+
+
+
+	5. 确认传统的binlog复制完毕,该值为0
+	show status like 'ongoing_anonymous_transaction_count';
+	 所有的节点也可以执行一下: flush logs; 用于切换一下日志。
+
+	6. 所有的节点启用gtid_mode
+	set @@global.gtid_mode=on;
+
+
+	执行
+	mysql> set @@global.gtid_mode=on;
+	报错:
+	ERROR 1788 (HY000): The value of @@GLOBAL.GTID_MODE can only be changed one step at a time: OFF <-> OFF_PERMISSIVE <-> ON_PERMISSIVE <-> ON. Also note that this value must be stepped up or down simultaneously on all servers. See the Manual for instructions.
+
+	解决办法:
+		在这个步骤之前先执行: set @@global.gtid_mode=on_permissive;
+
+
+	7. 把 gtid_mode = on 相关配置写入主从的配置文件
+
+	gtid_mode=on
+	enforce_gtid_consistency=on
+
+	show global variables  like '%gtid_mode%';
+	show global variables like '%enforce_gtid_consistency%';
+
+	8. 启用Gtid的自动查找位点复制, 两个从库都要做：
+	stop slave;
+	change master to master_host='192.168.0.103',master_port=3306,master_user='mharpl',master_password='123456abc',master_auto_position=1;
+	start slave;
+	show slave status\G;
+
+	
+	9. 验证GTID复制:
+	mha03:
+		root@mysqldb 05:53:  [(none)]> select * from test.t1;
+		+------+
+		| a    |
+		+------+
+		|    1 |
+		|    2 |
+		|    3 |
+		+------+
+		3 rows in set (0.00 sec)
+		root@mysqldb 05:58:  [(none)]> insert into test.t1 values (4);
+		Query OK, 1 row affected (0.01 sec)
+
+		root@mysqldb 05:58:  [(none)]> select * from test.t1;
+		+------+
+		| a    |
+		+------+
+		|    1 |
+		|    2 |
+		|    3 |
+		|    4 |
+		+------+
+		4 rows in set (0.00 sec)
+
+	mha02:
+		root@mysqldb 05:55:  [(none)]> select * from test.t1;
+		+------+
+		| a    |
+		+------+
+		|    1 |
+		|    2 |
+		|    3 |
+		|    4 |
+		+------+
+		4 rows in set (0.00 sec)
+
+	mha01:
+		root@mysqldb 05:55:  [(none)]> select * from test.t1;
+		+------+
+		| a    |
+		+------+
+		|    1 |
+		|    2 |
+		|    3 |
+		|    4 |
+		+------+
+		4 rows in set (0.00 sec)
+
+
+		
+1. 先不配置 [binlog*], 看看 是否会应用主库 binlog
+
+
+2. 检查整个复制环境状况,  在 mha02 上用root用户操作。
+
+	
+	masterha_check_repl --global_conf=/etc/masterha/masterha_default.conf --conf=/etc/masterha/app1.conf
+	
+	
+3. 数据准备: 
+	mha03: 写入第1条记录
+		use test;
+		truncate table t1;
+		insert into t1 values (1);
+		
+	mha02: 停止io_thread 模拟主从延时：
+		stop slave io_thread;
+		
+	mha03: 写入第2条记录
+		insert into test.t1 values (2);
+
+	mha01: 停止io_thread 模拟主从延时：
+		stop slave io_thread;
+		
+	mha03: 写入第3条记录
+		insert into test.t1 values (3);
+		
+	很明显从节点mha02落后于从节点mha01、从节点mha01落后于主节点mha03
+
+
+4. 关闭mha03节点数据库服务
+	shell> /etc/init.d/mysql stop
+		
+5. mha03节点手动故障切换, 在 mha02上执行:
+	 
+	shell> masterha_master_switch --global_conf=/etc/masterha/masterha_default.conf --conf=/etc/masterha/app1.conf --dead_master_host=192.168.0.103 --master_state=dead --new_master_host=192.168.0.101 --ignore_last_failover
+	--dead_master_ip=<dead_master_ip> is not set. Using 192.168.0.103.
+	--dead_master_port=<dead_master_port> is not set. Using 3306.
+	Fri Nov  8 06:14:37 2019 - [info] Reading default configuration from /etc/masterha/masterha_default.conf..
+	Fri Nov  8 06:14:37 2019 - [info] Reading application default configuration from /etc/masterha/app1.conf..
+	Fri Nov  8 06:14:37 2019 - [info] Reading server configuration from /etc/masterha/app1.conf..
+	Fri Nov  8 06:14:37 2019 - [info] MHA::MasterFailover version 0.58.
+	Fri Nov  8 06:14:37 2019 - [info] Starting master failover.
+	Fri Nov  8 06:14:37 2019 - [info] 
+	Fri Nov  8 06:14:37 2019 - [info] * Phase 1: Configuration Check Phase..
+	Fri Nov  8 06:14:37 2019 - [info] 
+	Fri Nov  8 06:14:37 2019 - [debug] Connecting to servers..
+	Fri Nov  8 06:14:37 2019 - [debug] Got MySQL error when connecting 192.168.0.103(192.168.0.103:3306) :2003:Can't connect to MySQL server on '192.168.0.103' (111)
+	Fri Nov  8 06:14:38 2019 - [debug]  Connected to: 192.168.0.101(192.168.0.101:3306), user=root
+	Fri Nov  8 06:14:38 2019 - [debug]  Number of slave worker threads on host 192.168.0.101(192.168.0.101:3306): 0
+	Fri Nov  8 06:14:38 2019 - [debug]  Connected to: 192.168.0.102(192.168.0.102:3306), user=root
+	Fri Nov  8 06:14:38 2019 - [debug]  Number of slave worker threads on host 192.168.0.102(192.168.0.102:3306): 0
+	Fri Nov  8 06:14:38 2019 - [debug]  Comparing MySQL versions..
+	Fri Nov  8 06:14:38 2019 - [debug]   Comparing MySQL versions done.
+	Fri Nov  8 06:14:38 2019 - [debug] Connecting to servers done.
+	Fri Nov  8 06:14:38 2019 - [info] GTID failover mode = 1
+	Fri Nov  8 06:14:38 2019 - [info] Dead Servers:
+	Fri Nov  8 06:14:38 2019 - [info]   192.168.0.103(192.168.0.103:3306)
+	Fri Nov  8 06:14:38 2019 - [info] Checking master reachability via MySQL(double check)...
+	Fri Nov  8 06:14:38 2019 - [info]  ok.
+	Fri Nov  8 06:14:38 2019 - [info] Alive Servers:
+	Fri Nov  8 06:14:38 2019 - [info]   192.168.0.101(192.168.0.101:3306)
+	Fri Nov  8 06:14:38 2019 - [info]   192.168.0.102(192.168.0.102:3306)
+	Fri Nov  8 06:14:38 2019 - [info] Alive Slaves:
+	Fri Nov  8 06:14:38 2019 - [info]   192.168.0.101(192.168.0.101:3306)  Version=8.0.18 (oldest major version between slaves) log-bin:enabled
+	Fri Nov  8 06:14:38 2019 - [info]     GTID ON
+	Fri Nov  8 06:14:38 2019 - [debug]    Relay log info repository: TABLE
+	Fri Nov  8 06:14:38 2019 - [info]     Replicating from 192.168.0.103(192.168.0.103:3306)
+	Fri Nov  8 06:14:38 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
+	Fri Nov  8 06:14:38 2019 - [info]   192.168.0.102(192.168.0.102:3306)  Version=8.0.18 (oldest major version between slaves) log-bin:enabled
+	Fri Nov  8 06:14:38 2019 - [info]     GTID ON
+	Fri Nov  8 06:14:38 2019 - [debug]    Relay log info repository: TABLE
+	Fri Nov  8 06:14:38 2019 - [info]     Replicating from 192.168.0.103(192.168.0.103:3306)
+	Fri Nov  8 06:14:38 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
+	Master 192.168.0.103(192.168.0.103:3306) is dead. Proceed? (yes/NO): yes
+	Fri Nov  8 06:14:41 2019 - [info] Starting GTID based failover.
+	Fri Nov  8 06:14:41 2019 - [info] 
+	Fri Nov  8 06:14:41 2019 - [info] ** Phase 1: Configuration Check Phase completed.
+	Fri Nov  8 06:14:41 2019 - [info] 
+	Fri Nov  8 06:14:41 2019 - [info] * Phase 2: Dead Master Shutdown Phase..
+	Fri Nov  8 06:14:41 2019 - [info] 
+	Fri Nov  8 06:14:41 2019 - [debug] SSH connection test to 192.168.0.103, option -o StrictHostKeyChecking=no -o PasswordAuthentication=no -o BatchMode=yes -o ConnectTimeout=5, timeout 5
+	Fri Nov  8 06:14:41 2019 - [debug]  Stopping IO thread on 192.168.0.102(192.168.0.102:3306)..
+	Fri Nov  8 06:14:41 2019 - [debug]  Stopping IO thread on 192.168.0.101(192.168.0.101:3306)..
+	Fri Nov  8 06:14:41 2019 - [debug]  Stop IO thread on 192.168.0.102(192.168.0.102:3306) done.
+	Fri Nov  8 06:14:41 2019 - [debug]  Stop IO thread on 192.168.0.101(192.168.0.101:3306) done.
+	Fri Nov  8 06:14:41 2019 - [info] HealthCheck: SSH to 192.168.0.103 is reachable.
+	Fri Nov  8 06:14:42 2019 - [info] Forcing shutdown so that applications never connect to the current master..
+	Fri Nov  8 06:14:42 2019 - [info] Executing master IP deactivation script:
+	Fri Nov  8 06:14:42 2019 - [info]   /etc/masterha/master_ip_failover --orig_master_host=192.168.0.103 --orig_master_ip=192.168.0.103 --orig_master_port=3306 --command=stopssh --ssh_user=root  
+	Fri Nov  8 06:14:42 2019 - [info]  done.
+	Fri Nov  8 06:14:42 2019 - [warning] shutdown_script is not set. Skipping explicit shutting down of the dead master.
+	Fri Nov  8 06:14:42 2019 - [info] * Phase 2: Dead Master Shutdown Phase completed.
+	Fri Nov  8 06:14:42 2019 - [info] 
+	Fri Nov  8 06:14:42 2019 - [info] * Phase 3: Master Recovery Phase..
+	Fri Nov  8 06:14:42 2019 - [info] 
+	Fri Nov  8 06:14:42 2019 - [info] * Phase 3.1: Getting Latest Slaves Phase..
+	Fri Nov  8 06:14:42 2019 - [info] 
+	Fri Nov  8 06:14:42 2019 - [debug] Fetching current slave status..
+	Fri Nov  8 06:14:42 2019 - [debug]  Fetching current slave status done.
+	Fri Nov  8 06:14:42 2019 - [info] The latest binary log file/position on all slaves is mysql-bin.000009:1109
+	Fri Nov  8 06:14:42 2019 - [info] Retrieved Gtid Set: cbe6921b-0043-11ea-b484-0800270d5e94:1-4
+	Fri Nov  8 06:14:42 2019 - [info] Latest slaves (Slaves that received relay log files to the latest):
+	Fri Nov  8 06:14:42 2019 - [info]   192.168.0.101(192.168.0.101:3306)  Version=8.0.18 (oldest major version between slaves) log-bin:enabled
+	Fri Nov  8 06:14:42 2019 - [info]     GTID ON
+	Fri Nov  8 06:14:42 2019 - [debug]    Relay log info repository: TABLE
+	Fri Nov  8 06:14:42 2019 - [info]     Replicating from 192.168.0.103(192.168.0.103:3306)
+	Fri Nov  8 06:14:42 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
+	Fri Nov  8 06:14:42 2019 - [info] The oldest binary log file/position on all slaves is mysql-bin.000009:856
+	Fri Nov  8 06:14:42 2019 - [info] Retrieved Gtid Set: cbe6921b-0043-11ea-b484-0800270d5e94:1-3
+	Fri Nov  8 06:14:42 2019 - [info] Oldest slaves:
+	Fri Nov  8 06:14:42 2019 - [info]   192.168.0.102(192.168.0.102:3306)  Version=8.0.18 (oldest major version between slaves) log-bin:enabled
+	Fri Nov  8 06:14:42 2019 - [info]     GTID ON
+	Fri Nov  8 06:14:42 2019 - [debug]    Relay log info repository: TABLE
+	Fri Nov  8 06:14:42 2019 - [info]     Replicating from 192.168.0.103(192.168.0.103:3306)
+	Fri Nov  8 06:14:42 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
+	Fri Nov  8 06:14:42 2019 - [info] 
+	Fri Nov  8 06:14:42 2019 - [info] * Phase 3.3: Determining New Master Phase..
+	Fri Nov  8 06:14:42 2019 - [info] 
+	Fri Nov  8 06:14:42 2019 - [info] 192.168.0.101 can be new master.
+	Fri Nov  8 06:14:42 2019 - [info] New master is 192.168.0.101(192.168.0.101:3306)
+	Fri Nov  8 06:14:42 2019 - [info] Starting master failover..
+	Fri Nov  8 06:14:42 2019 - [info] 
+	From:
+	192.168.0.103(192.168.0.103:3306) (current master)
+	 +--192.168.0.101(192.168.0.101:3306)
+	 +--192.168.0.102(192.168.0.102:3306)
+
+	To:
+	192.168.0.101(192.168.0.101:3306) (new master)
+	 +--192.168.0.102(192.168.0.102:3306)
+
+	Starting master switch from 192.168.0.103(192.168.0.103:3306) to 192.168.0.101(192.168.0.101:3306)? (yes/NO): yes
+	Fri Nov  8 06:14:45 2019 - [info] New master decided manually is 192.168.0.101(192.168.0.101:3306)
+	Fri Nov  8 06:14:45 2019 - [info] 
+	Fri Nov  8 06:14:45 2019 - [info] * Phase 3.3: New Master Recovery Phase..
+	Fri Nov  8 06:14:45 2019 - [info] 
+	Fri Nov  8 06:14:45 2019 - [info]  Waiting all logs to be applied.. 
+	Fri Nov  8 06:14:45 2019 - [info]   done.
+	Fri Nov  8 06:14:45 2019 - [debug]  Stopping slave IO/SQL thread on 192.168.0.101(192.168.0.101:3306)..
+	Fri Nov  8 06:14:45 2019 - [debug]   done.
+	Fri Nov  8 06:14:45 2019 - [info] Getting new master's binlog name and position..
+	Fri Nov  8 06:14:45 2019 - [info]  mysql-bin.000014:1128
+	Fri Nov  8 06:14:45 2019 - [info]  All other slaves should start replication from here. Statement should be: CHANGE MASTER TO MASTER_HOST='192.168.0.101', MASTER_PORT=3306, MASTER_AUTO_POSITION=1, MASTER_USER='mha', MASTER_PASSWORD='xxx';
+	Fri Nov  8 06:14:45 2019 - [info] Master Recovery succeeded. File:Pos:Exec_Gtid_Set: mysql-bin.000014, 1128, 1b9bc372-0042-11ea-b8fa-0800274617cc:1-14,
+	cbe6921b-0043-11ea-b484-0800270d5e94:1-4
+	Fri Nov  8 06:14:45 2019 - [info] Executing master IP activate script:
+	Fri Nov  8 06:14:45 2019 - [info]   /etc/masterha/master_ip_failover --command=start --ssh_user=root --orig_master_host=192.168.0.103 --orig_master_ip=192.168.0.103 --orig_master_port=3306 --new_master_host=192.168.0.101 --new_master_ip=192.168.0.101 --new_master_port=3306 --new_master_user='root'   --new_master_password=xxx
+	Set read_only=0 on the new master.
+	Fri Nov  8 06:14:45 2019 - [info]  OK.
+	Fri Nov  8 06:14:45 2019 - [info] ** Finished master recovery successfully.
+	Fri Nov  8 06:14:45 2019 - [info] * Phase 3: Master Recovery Phase completed.
+	Fri Nov  8 06:14:45 2019 - [info] 
+	Fri Nov  8 06:14:45 2019 - [info] * Phase 4: Slaves Recovery Phase..
+	Fri Nov  8 06:14:45 2019 - [info] 
+	Fri Nov  8 06:14:45 2019 - [info] 
+	Fri Nov  8 06:14:45 2019 - [info] * Phase 4.1: Starting Slaves in parallel..
+	Fri Nov  8 06:14:45 2019 - [info] 
+	Fri Nov  8 06:14:45 2019 - [info] -- Slave recovery on host 192.168.0.102(192.168.0.102:3306) started, pid: 11718. Check tmp log /var/log/masterha/app1/192.168.0.102_3306_20191108061437.log if it takes time..
+
+	### 卡在这里不动
+	查看常规日志 general_log:
+		2019-11-07T22:24:25.637022Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:26.638163Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:27.639837Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:28.640735Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:29.642013Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:30.643053Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:31.644573Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:32.645512Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:33.646444Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:34.647513Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:35.648936Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:36.650882Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:37.652489Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:38.653496Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:39.655260Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:40.656150Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:41.657149Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:42.657746Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:43.659058Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:44.660161Z	   62 Query	SHOW SLAVE STATUS
+		2019-11-07T22:24:45.661710Z	   62 Query	SHOW SLAVE STATUS
+
+	root@mysqldb 06:22:  [(none)]> SHOW SLAVE STATUS\G;
+	*************************** 1. row ***************************
+				   Slave_IO_State: Connecting to master
+					  Master_Host: 192.168.0.101
+					  Master_User: mha
+					  Master_Port: 3306
+					Connect_Retry: 60
+				  Master_Log_File: 
+			  Read_Master_Log_Pos: 4
+				   Relay_Log_File: mha02-relay-bin.000001
+					Relay_Log_Pos: 4
+			Relay_Master_Log_File: 
+				 Slave_IO_Running: Connecting
+				Slave_SQL_Running: Yes
+				  Replicate_Do_DB: 
+			  Replicate_Ignore_DB: 
+			   Replicate_Do_Table: 
+		   Replicate_Ignore_Table: 
+		  Replicate_Wild_Do_Table: 
+	  Replicate_Wild_Ignore_Table: 
+					   Last_Errno: 0
+					   Last_Error: 
+					 Skip_Counter: 0
+			  Exec_Master_Log_Pos: 0
+				  Relay_Log_Space: 151
+				  Until_Condition: None
+				   Until_Log_File: 
+					Until_Log_Pos: 0
+			   Master_SSL_Allowed: No
+			   Master_SSL_CA_File: 
+			   Master_SSL_CA_Path: 
+				  Master_SSL_Cert: 
+				Master_SSL_Cipher: 
+				   Master_SSL_Key: 
+			Seconds_Behind_Master: 0
+	Master_SSL_Verify_Server_Cert: No
+					Last_IO_Errno: 1045
+					Last_IO_Error: error connecting to master 'mha@192.168.0.101:3306' - retry-time: 60 retries: 9 message: Access denied for user 'mha'@'192.168.0.102' (using password: YES)
+				   Last_SQL_Errno: 0
+				   Last_SQL_Error: 
+	  Replicate_Ignore_Server_Ids: 
+				 Master_Server_Id: 0
+					  Master_UUID: 
+				 Master_Info_File: mysql.slave_master_info
+						SQL_Delay: 0
+			  SQL_Remaining_Delay: NULL
+		  Slave_SQL_Running_State: Slave has read all relay log; waiting for more updates
+			   Master_Retry_Count: 86400
+					  Master_Bind: 
+		  Last_IO_Error_Timestamp: 191108 06:22:46
+		 Last_SQL_Error_Timestamp: 
+				   Master_SSL_Crl: 
+			   Master_SSL_Crlpath: 
+			   Retrieved_Gtid_Set: 
+				Executed_Gtid_Set: 1b9bc372-0042-11ea-b8fa-0800274617cc:1-14,
+	cbe6921b-0043-11ea-b484-0800270d5e94:1-3
+					Auto_Position: 1
+			 Replicate_Rewrite_DB: 
+					 Channel_Name: 
+			   Master_TLS_Version: 
+		   Master_public_key_path: 
+			Get_master_public_key: 0
+				Network_Namespace: 
+	1 row in set (0.00 sec)
+
+	ERROR: 
+	No query specified
+	
+	
+	
+	
+	Fri Nov  8 06:14:45 2019 - [info] * Phase 4.1: Starting Slaves in parallel..
+	Fri Nov  8 06:14:45 2019 - [info] 
+	Fri Nov  8 06:14:45 2019 - [info] -- Slave recovery on host 192.168.0.102(192.168.0.102:3306) started, pid: 11718. Check tmp log /var/log/masterha/app1/192.168.0.102_3306_20191108061437.log if it takes time..
+	
+	--------------------------------------- 这里卡了 10分钟,原因: 
+		mha02节点配置复制用户写错了:
+		#复制用户
+		repl_user=mha
+		repl_password=123456abc
+		
+		改为 
+		#复制用户
+		repl_user=mharpl
+		repl_password=123456abc
+		
+	Fri Nov  8 06:24:46 2019 - [error][/usr/share/perl5/vendor_perl/MHA/Server.pm, ln789] Slave could not be started on 192.168.0.102(192.168.0.102:3306)! Check slave status.
+	Fri Nov  8 06:24:47 2019 - [info] 
+	Fri Nov  8 06:24:47 2019 - [info] Log messages from 192.168.0.102 ...
+	Fri Nov  8 06:24:47 2019 - [info] 
+	Fri Nov  8 06:14:45 2019 - [info]  Resetting slave 192.168.0.102(192.168.0.102:3306) and starting replication from the new master 192.168.0.101(192.168.0.101:3306)..
+	Fri Nov  8 06:14:45 2019 - [debug]  Stopping slave IO/SQL thread on 192.168.0.102(192.168.0.102:3306)..
+	Fri Nov  8 06:14:45 2019 - [debug]   done.
+	Fri Nov  8 06:14:46 2019 - [info]  Executed CHANGE MASTER.
+	Fri Nov  8 06:14:46 2019 - [debug]  Starting slave IO/SQL thread on 192.168.0.102(192.168.0.102:3306)..
+	Fri Nov  8 06:24:46 2019 - [error][/usr/share/perl5/vendor_perl/MHA/Server.pm, ln867] Starting slave IO/SQL thread on 192.168.0.102(192.168.0.102:3306) failed!
+	Fri Nov  8 06:24:47 2019 - [info] End of log messages from 192.168.0.102.
+	Fri Nov  8 06:24:47 2019 - [error][/usr/share/perl5/vendor_perl/MHA/MasterFailover.pm, ln2045] Master failover to 192.168.0.101(192.168.0.101:3306) done, but recovery on slave partially failed.
+	Fri Nov  8 06:24:47 2019 - [debug]  Disconnected from 192.168.0.101(192.168.0.101:3306)
+	Fri Nov  8 06:24:47 2019 - [debug]  Disconnected from 192.168.0.102(192.168.0.102:3306)
+	Fri Nov  8 06:24:47 2019 - [info] 
+
+	----- Failover Report -----
+
+	app1: MySQL Master failover 192.168.0.103(192.168.0.103:3306) to 192.168.0.101(192.168.0.101:3306)
+
+	Master 192.168.0.103(192.168.0.103:3306) is down!
+
+	Check MHA Manager logs at mha02 for details.
+
+	Started manual(interactive) failover.
+	Invalidated master IP address on 192.168.0.103(192.168.0.103:3306)
+	Selected 192.168.0.101(192.168.0.101:3306) as a new master.
+	192.168.0.101(192.168.0.101:3306): OK: Applying all logs succeeded.
+	192.168.0.101(192.168.0.101:3306): OK: Activated master IP address.
+	192.168.0.102(192.168.0.102:3306): ERROR: Starting slave failed.
+	Master failover to 192.168.0.101(192.168.0.101:3306) done, but recovery on slave partially failed.
+
+	解决办法:
+		stop slave;
+		change master to master_host='192.168.0.101',master_port=3306,master_user='mharpl',master_password='123456abc',master_auto_position=1;
+		start slave;
+		show slave status\G;
+	
+	
+查看数据:
+	mha01: 
+		root@mysqldb 06:30:  [(none)]> select * from test.t1;
+		+------+
+		| a    |
+		+------+
+		|    1 |
+		|    2 |
+		+------+
+		2 rows in set (0.00 sec)
+
+	mha02:
+		root@mysqldb 06:39:  [(none)]> select * from test.t1;
+		+------+
+		| a    |
+		+------+
+		|    1 |
+		|    2 |
+		+------+
+		2 rows in set (0.01 sec)
+
+	可以看到, 数据没有补全完成.	
+	
+	
+宕机的 mha03恢复:
+	stop slave;
+	CHANGE MASTER TO MASTER_HOST='192.168.0.101', MASTER_PORT=3306, MASTER_AUTO_POSITION=1, MASTER_USER='mharpl', MASTER_PASSWORD='123456abc';
+	start slave;
+	show slave status\G;
+	
+	查看数据:
+		root@mysqldb 06:42:  [(none)]> select * from test.t1;
+		+------+
+		| a    |
+		+------+
+		|    1 |
+		|    2 |
+		|    3 |
+		+------+
+		3 rows in set (0.00 sec)
+	

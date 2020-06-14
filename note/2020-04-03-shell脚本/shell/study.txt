@@ -1,0 +1,40 @@
+'\r': command not found 解决办法：
+sed -i 's/\r$//' <filename>
+sed -i 's/\r$//' backup_binlog.sh
+
+
+
+
+
+
+
+
+ps aux|grep backup_binlog.sh
+
+[root@node13 ~]# ps aux|grep backup_binlog.sh
+root      3489  0.0  0.1 113132  1480 pts/6    S    11:01   0:00 /bin/sh /data/shell/backup_binlog.sh 192.168.0.12 3306 mysql-bin.000036 123306 10 1921680123306
+root      3651  0.0  0.1 113132  1480 pts/6    S    11:02   0:00 /bin/sh /data/shell/backup_binlog.sh 192.168.0.12 3306 mysql-bin.000036 123306 10 1921680123306
+root      3902  0.0  0.1 113132  1484 pts/6    S    11:03   0:00 bash -x /data/shell/backup_binlog.sh 192.168.0.12 3306 mysql-bin.000036 123306 10 1921680123306
+root      4158  0.0  0.1 113132  1484 pts/4    S    11:04   0:00 bash -x /data/shell/backup_binlog.sh 192.168.0.12 3306 mysql-bin.000038 123306 10 1921680123306
+
+[root@node13 ~]# kill 3489
+[root@node13 ~]# kill 3651
+
+
+nohup /data/shell/backup_binlog.sh 192.168.0.12 3306 mysql-bin.000038 123306 10 1921680123306 &
+
+
+
+[root@node13 binlog]# ERROR: Got error reading packet from server: A slave with the same server_uuid/server_id as this slave has connected to the master; the first event 'mysql-bin.000038' at 4, the last event read from '/data/mysql/mysql3306/logs/mysql-bin.000040' at 194, the last byte read from '/data/mysql/mysql3306/logs/mysql-bin.000040' at 194.
+
+
+
+mysqlbinlog --start-position=259 --stop-position=536   mysql-bin.000040|mysql -S /tmp/mysql.sock -p
+
+
+
+
+
+
+
+nohup /data/shell/backup_binlog.sh 192.168.0.12 3306 mysql-bin.000001 123306 10 1921680123306 &

@@ -1,0 +1,119 @@
+
+工作原理:
+	Redis中的一个命令执行过程期间, 所有服务器接收到的其它命令都必须等待被处理
+	因此, 对于生产环境的性能来说, 调用 keys 命令是一个危险的操作
+	解决办法:	
+		对于这个问题, 可以用 scan 或者 sscan 命令, 以不阻塞服务器的情况下在Redis上遍历键
+		
+	
+	直接删除大Key的风险:
+		Redis是单线程处理。(MyS QL 单进程多线程)
+		单个耗时过大命令，导致阻塞其他命令，容易引起应用程序雪崩或Redis集群发生故障切换。
+		所以避免在生产环境中使用耗时过大命令。
+	
+
+redis-cli -h 192.168.0.113 -a 123456
+
+设置键的过期时间:
+	192.168.0.113:6379> lpush "closest_restaurant_ids" 109 200 233 543 222
+	(integer) 5
+
+	192.168.0.113:6379> expire  "closest_restaurant_ids"  300
+	(integer) 1
+
+
+	192.168.0.113:6379> ttl "closest_restaurant_ids"
+	(integer) 282
+	192.168.0.113:6379> 
+	192.168.0.113:6379> ttl "closest_restaurant_ids"
+	(integer) 281
+	192.168.0.113:6379> ttl "closest_restaurant_ids"
+	(integer) 280
+	192.168.0.113:6379> ttl "closest_restaurant_ids"
+	(integer) 255
+
+	
+	192.168.0.113:6379> exists "closest_restaurant_ids"
+	(integer) 1
+
+	192.168.0.113:6379> exists "closest_restaurant_ids"
+	(integer) 0
+
+	
+	192.168.0.113:6379> ttl "closest_restaurant_ids"
+	(integer) -2
+
+
+
+生成测试数据
+	pip install redis fake2db
+
+	
+	[root@redis01 ~]# redis-cli -h 192.168.0.111 -a 123456 flushall
+	OK
+
+	192.168.0.112:6379> debug populate 1000000     # 生成的数据不会同步到Slave是属于正常现象.
+	OK
+	(0.65s)
+
+获取Redis中键的个数
+	192.168.0.112:6379> dbsize
+	(integer) 1000000
+
+获取Redis中所有键的两种方式
+	1. keys * 
+	2. scan
+
+	1. keys * 
+		192.168.0.112:6379> keys * 
+		(11.50s)
+	2. scan
+		192.168.0.112:6379> scan 0
+		1) "589824"
+		2)  1) "key:402905"
+			2) "key:959088"
+			3) "key:626193"
+			4) "key:619866"
+			5) "key:864958"
+			6) "key:722574"
+			7) "key:892930"
+			8) "key:103539"
+			9) "key:924306"
+		   10) "key:643428"
+		   11) "key:128117"
+
+		192.168.0.112:6379> scan 589824
+		1) "557056"
+		2)  1) "key:997100"
+			2) "key:305595"
+			3) "key:941208"
+			4) "key:676804"
+			5) "key:240632"
+			6) "key:553207"
+			7) "key:451838"
+			8) "key:333963"
+			9) "key:831348"
+		   10) "key:50254"
+
+	 
+判断一个键是否存在:
+	192.168.0.112:6379> exists "key:997100"
+	(integer) 1
+	192.168.0.112:6379> exists "key:8888889999999999999999999999999999999999999999999"
+	(integer) 0
+
+删除一个键:
+	192.168.0.112:6379> unlink "key:997100"
+	(integer) 1
+	192.168.0.112:6379> exists "key:997100"
+	(integer) 0
+
+
+   
+   
+相关参考:
+	https://www.cnblogs.com/huanxiyun/articles/5969836.html   如何优雅地删除Redis大键
+	https://www.cnblogs.com/akaneblog/p/6706717.html          redis过期键删除策略以及大key删除方法
+
+	
+	

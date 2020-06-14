@@ -1,0 +1,33 @@
+
+http://www.runoob.com/mysql/mysql-join.html
+inner join 等值连接
+left join  左连接
+right join  右连接
+
+
+UNION: 用于两个表的结果集汇总， 结果集去重
+SELECT EnterPriceId FROM enterpricemanage_a
+UNION
+SELECT EnterPriceId FROM enterpricemanage_b
+
+
+UNION ALL: 用于两个表的结果集汇总,结果集不去重
+SELECT EnterPriceId FROM enterpricemanage_a
+UNION ALL
+SELECT EnterPriceId FROM enterpricemanage_b
+
+
+COUNT(*):
+统计记录数
+
+sum(*): 求和
+
+IFNULL: 三目运算符
+
+
+
+select round(sum(data_length + index_length) / 1024 / 1024) as total_mb,-> round(sum(data_length) / 1024 / 1024) as data_mb,-> round(sum(index_length) / 1024 / 1024) as index_mb-> from information_schema.tables; 
+
+select (data_length+index_length)/1024/1024 from information_schema.tables where TABLE_SCHEMA='minning_db' and table_name='market_words_bigrams_us';
+select (data_length+index_length)/1024/1024 from information_schema.tables where TABLE_SCHEMA='minning_db';
+

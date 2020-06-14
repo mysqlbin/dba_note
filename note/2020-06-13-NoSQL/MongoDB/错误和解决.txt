@@ -1,0 +1,18 @@
+
+
+主库写入数据:
+		repl_set:PRIMARY> use test
+
+		switched to db test
+
+			db.persons.insertMany([{"name":"tom", "age": 20}, {"name":"jack", "age":21}, {"name":"luna", "age":18}])
+			db.tests.insert({"name":"菜鸟教程"})
+
+			configsvr = true :
+
+				"errmsg" : "can't create user databases on a --configsvr instance"
+
+		repl_set:PRIMARY> use admin
+		switched to db admin
+		repl_set:PRIMARY> db.tests.insert({"name":"菜鸟教程"})
+		WriteResult({ "nInserted" : 1 })

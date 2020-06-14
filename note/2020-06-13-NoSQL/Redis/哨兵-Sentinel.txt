@@ -1,0 +1,687 @@
+
+1. 哨兵是什么
+2. 哨兵的作用
+3. 配置哨兵
+	3.1 Redis主从环境
+	3.2 配置sentinel.conf文件
+	3.3 3台主机上启动 sentinel进程
+	3.4 使用 redis-cli 连接到 sentinel-01 并执行 info sentinel 命令
+	3.5 查看 sentinel.conf 尾部的内容
+	3.6 测试 Sentinel
+		3.6.1 手动触发主实例故障迁移
+		3.6.2 模拟主实例下线
+		3.6.3 模拟两个从实例下线
+		3.6.4 模拟一个哨兵下线
+		3.6.5 模拟两个哨兵下线
+				
+4. 自动故障转换机制
+5. redis哨兵主备切换的数据丢失问题
+6. 解决异步复制和脑裂导致的数据丢失
+7. 相关参考
+8. 监控	
+9. 管理哨兵
+10. 客户端程序
+	
+	
+1. 哨兵是什么
+	哨兵是Redis 2.8版本发布的一个功能, 使用Sentinel可以实现高可用的Redis集群服务
+	
+2. 哨兵的作用
+	实时监控Redis集群(主从架构)中的所有服务器, 当Redis主服务器宕机后, 会自动把从服务器切换到主服务器, 从而实现自动容灾的效果
+	当客户端试图连接失效的主服务器时，集群也会向客户端返回新主服务器的地址，使得集群可以使用新主 服务器代替失效服务器。
+	
+3. 配置哨兵
+
+	3.1 Redis主从环境
+		hostname    主机IP         Role        Version  端口号
+		redis01     192.168.0.111  Master       4.0.9    6379
+		redis02     192.168.0.112  Slave        4.0.9    6379
+		redis03     192.168.0.113  Slave        4.0.9    6379
+		redis01     192.168.0.111  sentinel-01  4.0.9    26379
+		redis02     192.168.0.112  sentinel-02  4.0.9    26379
+		redis03     192.168.0.113  sentinel-03  4.0.9    26379
+		
+	3.2 配置sentinel.conf文件
+		参考 sentinel.conf 文件
+		
+		重点参数: 
+			如果将一个新的主实例添加到 sentinel 进行监控, 可以按照如下格式在配置文件中增加一行:
+				# sentinel monitor <master-name> <ip> <redis-port> <quorum>
+				sentinel monitor mymaster 192.168.0.111 6379 2
+				表示sentinel将监控 192.168.0.111:6379的主实例, 该主实例名为  mymaster
+				<quorum> 表示 采取故障迁移操作前, 发现同意主实例不可达的最少哨兵数
+				
+				
+			# sentinel down-after-milliseconds <master-name> <milliseconds>
+			sentinel down-after-milliseconds mymaster 30000
+				down-after-milliseconds 选项指在标记实例下线前不可达的最长毫秒数, 默认是 30秒;
+										sentinel 每秒钟都向实例发送ping命令来检查其是否可达
+										如果某个实例超过30秒仍未响应 ping命令, 那么它将被视做下线.
+	3.3 3台主机上启动 sentinel进程
+		[root@redis01 conf]# redis-server /data/redis/6379/conf/sentinel.conf --sentinel &
+		[1] 6246
+		[root@redis01 conf]# 6246:X 14 Nov 07:12:16.931 # oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+		6246:X 14 Nov 07:12:16.931 # Redis version=4.0.9, bits=64, commit=00000000, modified=0, pid=6246, just started
+		6246:X 14 Nov 07:12:16.931 # Configuration loaded
+		6246:X 14 Nov 07:12:16.932 * Increased maximum number of open files to 10032 (it was originally set to 1024).
+						_._                                                  
+				   _.-``__ ''-._                                             
+			  _.-``    `.  `_.  ''-._           Redis 4.0.9 (00000000/0) 64 bit
+		  .-`` .-```.  ```\/    _.,_ ''-._                                   
+		 (    '      ,       .-`  | `,    )     Running in sentinel mode
+		 |`-._`-...-` __...-.``-._|'` _.-'|     Port: 26379
+		 |    `-._   `._    /     _.-'    |     PID: 6246
+		  `-._    `-._  `-./  _.-'    _.-'                                   
+		 |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+		 |    `-._`-._        _.-'_.-'    |           http://redis.io        
+		  `-._    `-._`-.__.-'_.-'    _.-'                                   
+		 |`-._`-._    `-.__.-'    _.-'_.-'|                                  
+		 |    `-._`-._        _.-'_.-'    |                                  
+		  `-._    `-._`-.__.-'_.-'    _.-'                                   
+			  `-._    `-.__.-'    _.-'                                       
+				  `-._        _.-'                                           
+					  `-.__.-'                                               
+
+		6246:X 14 Nov 07:12:16.934 # WARNING: The TCP backlog setting of 511 cannot be enforced because /proc/sys/net/core/somaxconn is set to the lower value of 128.
+		6246:X 14 Nov 07:12:16.939 # Sentinel ID is 039c774465d5d73533ea1241a96f42e31d8676be
+		6246:X 14 Nov 07:12:16.939 # +monitor master mymaster 192.168.0.111 6379 quorum 2
+		6246:X 14 Nov 07:12:16.941 * +slave slave 192.168.0.113:6379 192.168.0.113 6379 @ mymaster 192.168.0.111 6379
+		6246:X 14 Nov 07:12:16.946 * +slave slave 192.168.0.112:6379 192.168.0.112 6379 @ mymaster 192.168.0.111 6379
+		6246:X 14 Nov 07:13:51.955 * +sentinel sentinel 2c36cf434b434bf14a7527d5b05783497f01f0e5 192.168.0.112 26379 @ mymaster 192.168.0.111 6379
+		6246:X 14 Nov 07:14:22.017 # +sdown sentinel 2c36cf434b434bf14a7527d5b05783497f01f0e5 192.168.0.112 26379 @ mymaster 192.168.0.111 6379
+		6246:X 14 Nov 07:14:30.171 * +sentinel sentinel 8511a881ffa4110acbbd53b0a087d5634aca5c0c 192.168.0.113 26379 @ mymaster 192.168.0.111 6379
+		6246:X 14 Nov 07:15:00.182 # +sdown sentinel 8511a881ffa4110acbbd53b0a087d5634aca5c0c 192.168.0.113 26379 @ mymaster 192.168.0.111 6379
+
+	3.4 使用 redis-cli 连接到 sentinel-01 并执行 info sentinel 命令
+		[root@redis01 conf]# redis-cli -p 26379
+		[root@redis01 conf]# redis-cli -h 192.168.0.111 -p 26379 -a 123456 
+		127.0.0.1:26379> 
+		127.0.0.1:26379> 
+		127.0.0.1:26379> 
+		127.0.0.1:26379> info sentinel
+		# Sentinel
+		sentinel_masters:1
+		sentinel_tilt:0
+		sentinel_running_scripts:0
+		sentinel_scripts_queue_length:0
+		sentinel_simulate_failure_flags:0
+		master0:name=mymaster,status=ok,address=192.168.0.111:6379,slaves=2,sentinels=3
+
+	3.5 查看 sentinel.conf 尾部的内容
+		sentinel-01:
+			# Generated by CONFIG REWRITE
+			sentinel known-slave mymaster 192.168.0.112 6379
+			sentinel known-slave mymaster 192.168.0.113 6379
+			sentinel known-sentinel mymaster 192.168.0.112 26379 2c36cf434b434bf14a7527d5b05783497f01f0e5
+			sentinel known-sentinel mymaster 192.168.0.113 26379 8511a881ffa4110acbbd53b0a087d5634aca5c0c
+			sentinel current-epoch 0
+
+		sentinel-02： 
+			# Generated by CONFIG REWRITE
+			sentinel known-slave mymaster 192.168.0.113 6379
+			sentinel known-slave mymaster 192.168.0.112 6379
+			sentinel known-sentinel mymaster 192.168.0.113 26379 8511a881ffa4110acbbd53b0a087d5634aca5c0c
+			sentinel known-sentinel mymaster 192.168.0.111 26379 039c774465d5d73533ea1241a96f42e31d8676be
+			sentinel current-epoch 0
+		
+		sentinel-03:
+			# Generated by CONFIG REWRITE
+			sentinel known-slave mymaster 192.168.0.113 6379
+			sentinel known-slave mymaster 192.168.0.112 6379
+			sentinel known-sentinel mymaster 192.168.0.112 26379 2c36cf434b434bf14a7527d5b05783497f01f0e5
+			sentinel known-sentinel mymaster 192.168.0.111 26379 039c774465d5d73533ea1241a96f42e31d8676be
+			sentinel current-epoch 0
+					
+
+
+	3.6. 测试 Sentinel
+
+		3.6.1 手动触发主实例故障迁移
+			使用 redis-cli 连接到 sentinel-02 这个哨兵
+				[root@redis02 ~]# redis-cli -p 26379
+				127.0.0.1:26379> sentinel failover mymaster
+				OK
+			
+			验证原来的主实例 已经进行了 故障转移， 现在变成了从实例：
+				192.168.0.111:6379> info replication
+				# Replication
+				role:slave
+				master_host:192.168.0.113
+				master_port:6379
+				master_link_status:up
+				master_last_io_seconds_ago:0
+				master_sync_in_progress:0
+				slave_repl_offset:9303046
+				slave_priority:100
+				slave_read_only:1
+				connected_slaves:0
+				master_replid:b3dcddc54833035fd22fe190c9ba2526ff4419ae
+				master_replid2:0000000000000000000000000000000000000000
+				master_repl_offset:9303046
+				second_repl_offset:-1
+				repl_backlog_active:1
+				repl_backlog_size:1048576
+				repl_backlog_first_byte_offset:9300754
+				repl_backlog_histlen:2293
+			
+				
+			检查 sentinel-02 的日志：
+				[root@redis02 conf]# 32543:X 14 Nov 18:43:53.069 # Executing user requested FAILOVER of 'mymaster'
+				32543:X 14 Nov 18:43:53.069 # +new-epoch 1
+				32543:X 14 Nov 18:43:53.069 # +try-failover master mymaster 192.168.0.111 6379
+				投一票给 2c36cf434b434bf14a7527d5b05783497f01f0e5
+				32543:X 14 Nov 18:43:53.095 # +vote-for-leader 2c36cf434b434bf14a7527d5b05783497f01f0e5 1
+				32543:X 14 Nov 18:43:53.095 # +elected-leader master mymaster 192.168.0.111 6379
+				32543:X 14 Nov 18:43:53.095 # +failover-state-select-slave master mymaster 192.168.0.111 6379
+				32543:X 14 Nov 18:43:53.161 # +selected-slave slave 192.168.0.113:6379 192.168.0.113 6379 @ mymaster 192.168.0.111 6379
+				32543:X 14 Nov 18:43:53.161 * +failover-state-send-slaveof-noone slave 192.168.0.113:6379 192.168.0.113 6379 @ mymaster 192.168.0.111 6379
+				32543:X 14 Nov 18:43:53.252 * +failover-state-wait-promotion slave 192.168.0.113:6379 192.168.0.113 6379 @ mymaster 192.168.0.111 6379
+				32543:X 14 Nov 18:43:54.144 # +promoted-slave slave 192.168.0.113:6379 192.168.0.113 6379 @ mymaster 192.168.0.111 6379
+				32543:X 14 Nov 18:43:54.144 # +failover-state-reconf-slaves master mymaster 192.168.0.111 6379
+				32543:X 14 Nov 18:43:54.191 * +slave-reconf-sent slave 192.168.0.112:6379 192.168.0.112 6379 @ mymaster 192.168.0.111 6379
+				32543:X 14 Nov 18:43:55.150 * +slave-reconf-inprog slave 192.168.0.112:6379 192.168.0.112 6379 @ mymaster 192.168.0.111 6379
+						
+			在新主实例上检查 redis-server 的日志：	
+				
+				192.168.0.113:6379> info replication
+				# Replication
+				role:master
+				connected_slaves:1
+				slave0:ip=192.168.0.111,port=6379,state=online,offset=9344498,lag=0
+				master_replid:b3dcddc54833035fd22fe190c9ba2526ff4419ae
+				master_replid2:7f53e96e4f2076c05c7727f3442461da9f4289ee
+				master_repl_offset:9344639
+				second_repl_offset:9298475
+				repl_backlog_active:1
+				repl_backlog_size:1048576
+				repl_backlog_first_byte_offset:8296064
+				repl_backlog_histlen:1048576
+
+				tail -100 /data/redis/6379/data/redis_6379.log
+
+					1176:M 20 Nov 07:56:02.409 # Setting secondary replication ID to 7f53e96e4f2076c05c7727f3442461da9f4289ee, valid up to offset: 9298475. New replication ID is b3dcddc54833035fd22fe190c9ba2526ff4419ae
+					1176:M 20 Nov 07:56:02.409 # Connection with master lost.
+					1176:M 20 Nov 07:56:02.409 * Caching the disconnected master state.
+					1176:M 20 Nov 07:56:02.409 * Discarding previously cached master state.
+					1176:M 20 Nov 07:56:02.409 * MASTER MODE enabled (user request from 'id=7 addr=192.168.0.112:43812 fd=12 name=sentinel-2c36cf43-cmd age=43485 idle=0 flags=x db=0 sub=0 psub=0 multi=3 qbuf=14 qbuf-free=32754 obl=36 oll=0 omem=0 events=r cmd=exec')
+					1176:M 20 Nov 07:56:02.412 # CONFIG REWRITE executed with success.
+					1176:M 20 Nov 07:56:13.488 * Slave 192.168.0.111:6379 asks for synchronization
+					1176:M 20 Nov 07:56:13.489 * Partial resynchronization not accepted: Requested offset for second ID was 9300308, but I can reply up to 9298475
+					1176:M 20 Nov 07:56:13.489 * Starting BGSAVE for SYNC with target: disk
+					1176:M 20 Nov 07:56:13.491 * Background saving started by pid 1605
+					1605:C 20 Nov 07:56:13.524 * DB saved on disk
+					1605:C 20 Nov 07:56:13.525 * RDB: 6 MB of memory used by copy-on-write
+					1176:M 20 Nov 07:56:13.550 * Background saving terminated with success
+					1176:M 20 Nov 07:56:13.550 * Synchronization with slave 192.168.0.111:6379 succeeded
+						
+			
+			检查 sentinel-01 sentinel.conf 的内容：
+			
+				sentinel monitor mymaster 192.168.0.113 6379 2
+			
+
+			# 手动触发主实例故障迁移是没有问题的.
+			
+		
+		3.6.2  模拟主实例下线
+			现在的主实例是 192.168.0.111
+			现在关闭这台机器上的redis, 看看哨兵会做什么运作：
+			
+			通过 redis-cli 连接到 192.168.0.111 并将其关闭：
+				192.168.0.111:6379> shutdown
+				not connected> 
+			
+			检查 192.168.0.112 和 192.168.0.113 的状态：
+				
+				192.168.0.112:6379> info replication
+				# Replication
+				role:slave
+				master_host:192.168.0.113
+				master_port:6379
+				master_link_status:up
+				master_last_io_seconds_ago:1
+				master_sync_in_progress:0
+				slave_repl_offset:2574875
+				slave_priority:100
+				slave_read_only:1
+				connected_slaves:0
+				master_replid:2596b45b6054638e667d3e869e87f8541ce95d17
+				master_replid2:f13d60655721d160d6307ce17d548637d50b9648
+				master_repl_offset:2574875
+				second_repl_offset:37387
+				repl_backlog_active:1
+				repl_backlog_size:1048576
+				repl_backlog_first_byte_offset:1526300
+				repl_backlog_histlen:1048576
+
+			
+				192.168.0.113:6379> info replication
+				# Replication
+				role:slave
+				master_host:192.168.0.113
+				master_port:6379
+				master_link_status:down
+				master_last_io_seconds_ago:-1
+				master_sync_in_progress:0
+				slave_repl_offset:9298474
+				master_link_down_since_seconds:1573729992
+				slave_priority:100
+				slave_read_only:1
+				connected_slaves:0
+				master_replid:7f53e96e4f2076c05c7727f3442461da9f4289ee
+				master_replid2:0000000000000000000000000000000000000000
+				master_repl_offset:9298474
+				second_repl_offset:-1
+				repl_backlog_active:1
+				repl_backlog_size:1048576
+				repl_backlog_first_byte_offset:8249899
+				repl_backlog_histlen:1048576
+			
+				
+				出问题啦，主实例shutdown， 2台从实例没有选主
+				
+				原因:
+					sentinel.conf 的配置文件没有配置 bind 192.168.0.111
+					sentinel.conf 的配置文件没有配置 bind 192.168.0.112
+					sentinel.conf 的配置文件没有配置 bind 192.168.0.113
+			
+			主从切换成功查看 sentinel 的 日志:
+			
+				sentinel-01
+					6770:X 14 Nov 21:29:01.563 # +sdown master mymaster 192.168.0.111 6379
+					6770:X 14 Nov 21:29:01.638 # +new-epoch 3
+					6770:X 14 Nov 21:29:01.642 # +vote-for-leader 2c36cf434b434bf14a7527d5b05783497f01f0e5 3
+					6770:X 14 Nov 21:29:02.656 # +odown master mymaster 192.168.0.111 6379 #quorum 3/2
+					6770:X 14 Nov 21:29:02.656 # Next failover delay: I will not start a failover before Thu Nov 14 21:35:01 2019
+					6770:X 14 Nov 21:29:02.735 # +config-update-from sentinel 2c36cf434b434bf14a7527d5b05783497f01f0e5 192.168.0.112 26379 @ mymaster 192.168.0.111 6379
+					6770:X 14 Nov 21:29:02.735 # +switch-master mymaster 192.168.0.111 6379 192.168.0.113 6379
+					6770:X 14 Nov 21:29:02.736 * +slave slave 192.168.0.112:6379 192.168.0.112 6379 @ mymaster 192.168.0.113 6379
+					6770:X 14 Nov 21:29:02.736 * +slave slave 192.168.0.111:6379 192.168.0.111 6379 @ mymaster 192.168.0.113 6379
+			
+				sentinel-02
+					708:X 14 Nov 20:54:19.539 # +sdown master mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:19.601 # +odown master mymaster 192.168.0.111 6379 #quorum 2/2
+					708:X 14 Nov 20:54:19.601 # +new-epoch 3
+					708:X 14 Nov 20:54:19.601 # +try-failover master mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:19.607 # +vote-for-leader 2c36cf434b434bf14a7527d5b05783497f01f0e5 3
+					708:X 14 Nov 20:54:19.618 # 039c774465d5d73533ea1241a96f42e31d8676be voted for 2c36cf434b434bf14a7527d5b05783497f01f0e5 3
+					708:X 14 Nov 20:54:19.618 # 8511a881ffa4110acbbd53b0a087d5634aca5c0c voted for 2c36cf434b434bf14a7527d5b05783497f01f0e5 3
+					708:X 14 Nov 20:54:19.707 # +elected-leader master mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:19.707 # +failover-state-select-slave master mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:19.808 # +selected-slave slave 192.168.0.113:6379 192.168.0.113 6379 @ mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:19.808 * +failover-state-send-slaveof-noone slave 192.168.0.113:6379 192.168.0.113 6379 @ mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:19.884 * +failover-state-wait-promotion slave 192.168.0.113:6379 192.168.0.113 6379 @ mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:20.662 # +promoted-slave slave 192.168.0.113:6379 192.168.0.113 6379 @ mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:20.663 # +failover-state-reconf-slaves master mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:20.709 * +slave-reconf-sent slave 192.168.0.112:6379 192.168.0.112 6379 @ mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:21.689 * +slave-reconf-inprog slave 192.168.0.112:6379 192.168.0.112 6379 @ mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:21.689 * +slave-reconf-done slave 192.168.0.112:6379 192.168.0.112 6379 @ mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:21.754 # -odown master mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:21.754 # +failover-end master mymaster 192.168.0.111 6379
+					708:X 14 Nov 20:54:21.754 # +switch-master mymaster 192.168.0.111 6379 192.168.0.113 6379
+					708:X 14 Nov 20:54:21.754 * +slave slave 192.168.0.112:6379 192.168.0.112 6379 @ mymaster 192.168.0.113 6379
+					708:X 14 Nov 20:54:21.754 * +slave slave 192.168.0.111:6379 192.168.0.111 6379 @ mymaster 192.168.0.113 6379
+					
+				sentinel-03
+					1851:X 20 Nov 10:06:28.766 # +sdown master mymaster 192.168.0.111 6379
+					1851:X 20 Nov 10:06:28.770 # +new-epoch 3
+					1851:X 20 Nov 10:06:28.773 # +vote-for-leader 2c36cf434b434bf14a7527d5b05783497f01f0e5 3
+					1851:X 20 Nov 10:06:28.843 # +odown master mymaster 192.168.0.111 6379 #quorum 3/2
+					1851:X 20 Nov 10:06:28.843 # Next failover delay: I will not start a failover before Wed Nov 20 10:12:29 2019
+					1851:X 20 Nov 10:06:29.867 # +config-update-from sentinel 2c36cf434b434bf14a7527d5b05783497f01f0e5 192.168.0.112 26379 @ mymaster 192.168.0.111 6379
+					1851:X 20 Nov 10:06:29.867 # +switch-master mymaster 192.168.0.111 6379 192.168.0.113 6379
+					1851:X 20 Nov 10:06:29.868 * +slave slave 192.168.0.112:6379 192.168.0.112 6379 @ mymaster 192.168.0.113 6379
+					1851:X 20 Nov 10:06:29.868 * +slave slave 192.168.0.111:6379 192.168.0.111 6379 @ mymaster 192.168.0.113 6379
+					
+				# 可以发现 192.168.0.113 已经提升为 master
+
+			note: 当宕机的主实例恢复成功之后, 会自动加入主从复制中成为从实例.
+
+	3.6.3 模拟两个从实例下线
+		min-slaves-to-write 设置为1
+		192.168.0.111:6379> shutdown 
+		192.168.0.112:6379> shutdown
+		192.168.0.113:6379> info replication
+		# Replication
+		role:master
+		connected_slaves:2
+		slave0:ip=192.168.0.112,port=6379,state=online,offset=21022991,lag=0
+		slave1:ip=192.168.0.111,port=6379,state=online,offset=21022848,lag=0
+		master_replid:af2ef9cf4bbd74d29eb09a946a7f3ac7492c8380
+		master_replid2:82032f5067e77129d65a4973aff52231acd7627c
+		master_repl_offset:21022991
+		second_repl_offset:19385535
+		repl_backlog_active:1
+		repl_backlog_size:1048576
+		repl_backlog_first_byte_offset:19974416
+		repl_backlog_histlen:1048576
+	
+		192.168.0.113:6379> config set min-slaves-to-write 1
+		OK
+		
+		192.168.0.113:6379> set "new_key1121" "value1121"
+		(error) NOREPLICAS Not enough good slaves to write.
+		
+	3.6.4 模拟一个哨兵下线
+	
+		Redis主从环境
+			hostname    主机IP         Role        Version  端口号      
+			redis01     192.168.0.111  Slave        4.0.9    6379       Slave   
+			redis02     192.168.0.112  Slave        4.0.9    6379       Master
+			redis03     192.168.0.113  Master       4.0.9    6379       slave  
+			redis01     192.168.0.111  sentinel-01  4.0.9    26379      sentinel failover mymaster   
+			redis02     192.168.0.112  sentinel-02  4.0.9    26379      哨兵下线
+			redis03     192.168.0.113  sentinel-03  4.0.9    26379
+		[root@redis02 ~]# ps aux|grep redis
+		root       708  0.4  0.4 145304  8144 ?        Sl   Nov14   6:47 redis-server 192.168.0.112:26379 [sentinel]
+		root      1297  0.0  0.2  16184  5284 pts/2    S+   Nov15   0:00 redis-cli -h 192.168.0.112 -p 26379
+		root      1561  0.0  0.0 107988   608 pts/4    S+   01:05   0:00 tail -f /data/redis/6379/data/redis_6379.log
+		root      1563  0.3  0.5 147352  9780 ?        Ssl  01:07   0:00 redis-server 192.168.0.112:6379
+		root      1570  0.0  0.0 112704   976 pts/3    S+   01:09   0:00 grep --color=auto redis
+				
+		[root@redis02 ~]# kill 708
+		
+		[root@redis02 ~]# ps aux|grep redis
+		root      1297  0.0  0.2  16184  5284 pts/2    S+   Nov15   0:00 redis-cli -h 192.168.0.112 -p 26379
+		root      1561  0.0  0.0 107988   608 pts/4    S+   01:05   0:00 tail -f /data/redis/6379/data/redis_6379.log
+		root      1563  0.3  0.5 147352  9780 ?        Ssl  01:07   0:00 redis-server 192.168.0.112:6379
+		root      1572  0.0  0.0 112704   976 pts/3    S+   01:09   0:00 grep --color=auto redis
+		
+		192.168.0.111:26379>  sentinel failover mymaster
+		OK
+			
+		192.168.0.113:6379> info replication
+		# Replication
+		role:slave
+		master_host:192.168.0.112
+		master_port:6379
+		master_link_status:up
+		master_last_io_seconds_ago:2
+		master_sync_in_progress:0
+		slave_repl_offset:21129274
+		slave_priority:100
+		slave_read_only:1
+		connected_slaves:0
+		min_slaves_good_slaves:0
+		master_replid:dfdc66583255b4f4d75f208bf13562b37d0f9b09
+		master_replid2:0000000000000000000000000000000000000000
+		master_repl_offset:21129274
+		second_repl_offset:-1
+		repl_backlog_active:1
+		repl_backlog_size:1048576
+		repl_backlog_first_byte_offset:21127508
+		repl_backlog_histlen:1767
+	
+	
+		192.168.0.112:6379> info replication
+		# Replication
+		role:master
+		connected_slaves:2
+		slave0:ip=192.168.0.111,port=6379,state=online,offset=21136494,lag=0
+		slave1:ip=192.168.0.113,port=6379,state=online,offset=21136494,lag=1
+		master_replid:dfdc66583255b4f4d75f208bf13562b37d0f9b09
+		master_replid2:af2ef9cf4bbd74d29eb09a946a7f3ac7492c8380
+		master_repl_offset:21136494
+		second_repl_offset:21125589
+		repl_backlog_active:1
+		repl_backlog_size:1048576
+		repl_backlog_first_byte_offset:21085601
+		repl_backlog_histlen:50894
+	
+	3.6.5 模拟两个哨兵下线
+	
+	
+4. 自动故障转换机制
+	sentinel状态数据结构中保存了主服务的所有从服务信息，领头sentinel按照如下的规则从从服务列表中挑选出新的主服务
+	
+		
+	1. 过滤掉主观下线的节点
+	2. 从从节点列表中 选择 slave-priority(权重)最高的节点, 如果有则返回没有就继续选举
+	3. 选择出复制偏移量最大的从节点, 因为复制偏移量越大则数据复制的一致性越高, 如果有就返回, 没有就继续选举
+	4. 选择 run_id 最小的节点成为主节点 
+	5. 当选择主节点后, 其它从节点会成为新主的从节点
+	
+	sentinel状态数据结构中保存了主服务的所有从服务信息:
+		cat sentinel.conf    # 主节点 192.168.0.111
+			# Generated by CONFIG REWRITE
+			sentinel known-slave mymaster 192.168.0.113 6379
+			sentinel known-  mymaster 192.168.0.112 6379
+			sentinel known-sentinel mymaster 192.168.0.112 26379 2c36cf434b434bf14a7527d5b05783497f01f0e5
+			sentinel known-sentinel mymaster 192.168.0.113 26379 8511a881ffa4110acbbd53b0a087d5634aca5c0c
+			sentinel current-epoch 4
+			
+		cat sentinel.conf   # 从节点 192.168.0.112
+			# Generated by CONFIG REWRITE
+			sentinel known-slave mymaster 192.168.0.113 6379
+			sentinel known-slave mymaster 192.168.0.112 6379
+			sentinel known-sentinel mymaster 192.168.0.111 26379 039c774465d5d73533ea1241a96f42e31d8676be
+			sentinel known-sentinel mymaster 192.168.0.113 26379 8511a881ffa4110acbbd53b0a087d5634aca5c0c
+			sentinel current-epoch 4
+
+		cat sentinel.conf   # 从节点 192.168.0.113
+			# Generated by CONFIG REWRITE
+			sentinel known-slave mymaster 192.168.0.113 6379
+			sentinel known-slave mymaster 192.168.0.112 6379
+			sentinel known-sentinel mymaster 192.168.0.112 26379 2c36cf434b434bf14a7527d5b05783497f01f0e5
+			sentinel known-sentinel mymaster 192.168.0.111 26379 039c774465d5d73533ea1241a96f42e31d8676be
+			sentinel current-epoch 4
+
+5. redis哨兵主备切换的数据丢失问题	
+	两种丢失情况：
+
+		5.1 异步复制
+			因为master->slave的复制是异步的，所以可能有部分数据还没复制到slave，master就宕机了，这些数据就丢失了。
+		5.2 脑裂
+			脑裂，也就是说，某个master所在机器突然脱离了正常的网络，跟其他slave机器不能连接，但是实际上master还运行着, 这个时候，集群中就会出现两个master。
+
+			此时虽然某个slave被切换成了master，但是可能client还没来得及切换到新的master，还继续写向旧master数据可能就会丢失。
+			因此master在恢复的时候，会被作为一个slave挂到新的master上，自己的数据会被清空，从新的master复制数据.
+		
+6. 解决异步复制和脑裂导致的数据丢失
+
+	设置数据复制和同步的延迟时间:
+		min-slaves-to-write 1
+		min-slaves-max-lag 10	
+				
+	要求至少有1个slave，数据复制和同步的延迟不能超过10秒
+	如果说一旦所有slave，数据复制和同步的延迟都超过了10秒钟，那么这个时候，master就不会再接收任何请求了。	
+	
+	(1) 减少异步复制的数据丢失
+		有了min-slaves-max-lag这个配置，就可以确保说，一旦slave复制数据和ack延时太长，就认为可能master宕机后损失的数据太多了，
+		那么就拒绝写请求，这样可以把master宕机时由于部分数据未同步到slave导致的数据丢失降低的可控范围内
+	(2) 减少脑裂的数据丢失
+		如果一个master出现了脑裂，跟其他slave丢了连接，那么上面两个配置可以确保说，如果不能继续给指定数量的slave发送数据，
+		而且slave超过10秒没有给自己ack消息，那么就直接拒绝客户端的写请求.
+
+		这样脑裂后的旧master就不会接受client的新数据，也就避免了数据丢失.
+		上面的配置就确保了，如果跟任何一个slave丢了连接，在10秒后发现没有slave给自己ack，那么就拒绝新的写请求.
+		因此在脑裂场景下，最多就丢失10秒的数据
+		
+	
+7. 相关参考
+	https://cloud.tencent.com/developer/article/1537625 【架构师修炼之路】Redis 哨兵机制 ( Sentinel )
+	https://mp.weixin.qq.com/s/r9BGrm9IqA6T0FDe1j7D2A   Redis Sentinel原理与实现 (上)
+	https://www.php.cn/php-weizijiaocheng-415595.html   Redis哨兵机制的原理介绍（图文）
+	https://cloud.tencent.com/developer/article/1401199 Redis Sentinel 架构搭建、日志分析以及运维注意事项
+	
+	
+8. 监控
+
+	8.1 在 sentinel 事件发生时执行脚本:
+		
+		192.168.0.111:26379> sentinel set mymaster notification-script  mymaster /data/scripts/redis_sentinel_monitor.py
+		(error) ERR Wrong number of arguments for 'sentinel set'
+		
+		192.168.0.111:26379> sentinel set mymaster notification-script /data/scripts/redis_sentinel_monitor.py
+		OK
+		
+		sentinel 日志:
+			10124:X 15 Nov 18:58:18.326 # +set master mymaster 192.168.0.113 6379 notification-script /data/scripts/redis_sentinel_monitor.py
+			10124:X 15 Nov 18:58:18.385 # -script-error /data/scripts/redis_sentinel_monitor.py 0 2
+			
+		192.168.0.111:26379> sentinel set mymaster notification-script ""
+		
+		改为用 shell 脚本实现:
+			sentinel set mymaster notification-script /data/scripts/notify_sentinel.sh
+			
+			sentinel 日志:
+				10124:X 15 Nov 23:23:56.001 # +set master mymaster 192.168.0.113 6379 notification-script /data/scripts/notify_sentinel.sh
+
+			
+	8.2 在故障迁移发生时执行脚本 
+		
+		sentinel set mymaster client-reconfig-script /data/scripts/redis_sentinel_monitor.py
+		192.168.0.111:26379> sentinel set mymaster client-reconfig-script /data/scripts/redis_sentinel_monitor.py
+		OK
+		
+		sentinel set mymaster client-reconfig-script ""
+		
+		192.168.0.111:26379> sentinel set mymaster client-reconfig-script /data/scripts/notify_redis.sh
+		OK
+		sentinel 日志:
+			10124:X 15 Nov 21:22:07.095 # +set master mymaster 192.168.0.113 6379 client-reconfig-script /data/scripts/notify_redis.sh
+
+		
+9. 管理哨兵
+	1. 连接到其中一个哨兵
+	2. 通过 sentinel get-master-addr-by-name mymaster 命令获取当前主实例的信息
+		192.168.0.112:26379> sentinel get-master-addr-by-name mymaster
+		1) "192.168.0.111"
+		2) "6379"
+	3. 通过 sentinel masters 命令获取所有被监控主实例的状态 
+		192.168.0.112:26379> sentinel masters
+		1)  1) "name"
+			2) "mymaster"
+			3) "ip"
+			4) "192.168.0.111"
+			5) "port"
+			6) "6379"
+			7) "runid"
+			8) "92cc552e358c1497223b562f643e7afe8c9031aa"
+			9) "flags"
+		   10) "master"
+		   11) "link-pending-commands"
+		   12) "0"
+		   13) "link-refcount"
+		   14) "1"
+		   15) "last-ping-sent"
+		   16) "0"
+		   17) "last-ok-ping-reply"
+		   18) "1015"
+		   19) "last-ping-reply"
+		   20) "1015"
+		   21) "down-after-milliseconds"
+		   22) "30000"
+		   23) "info-refresh"
+		   24) "9672"
+		   25) "role-reported"
+		   26) "master"
+		   27) "role-reported-time"
+		   28) "54614631"
+		   29) "config-epoch"
+		   30) "4"
+		   31) "num-slaves"
+		   32) "2"
+		   33) "num-other-sentinels"
+		   34) "2"
+		   35) "quorum"
+		   36) "2"
+		   37) "failover-timeout"
+		   38) "180000"
+		   39) "parallel-syncs"
+		   40) "1"
+	
+	4. 通过 sentinel slaves mymaster 命令获取一个被监控主实例的所有从实例信息：
+		192.168.0.112:26379> sentinel slaves mymaster
+		1)  1) "name"
+			2) "192.168.0.113:6379"
+			3) "ip"
+			4) "192.168.0.113"
+			5) "port"
+			6) "6379"
+			7) "runid"
+			8) "88c9f00c3ebf972846089e98f0706abb11f85192"
+			9) "flags"
+		   10) "slave"
+		   11) "link-pending-commands"
+		   12) "-2"
+		   13) "link-refcount"
+		   14) "1"
+		   15) "last-ping-sent"
+		   16) "0"
+		   17) "last-ok-ping-reply"
+		   18) "676"
+		   19) "last-ping-reply"
+		   20) "676"
+		   21) "down-after-milliseconds"
+		   22) "30000"
+		   23) "info-refresh"
+		   24) "4453"
+		   25) "role-reported"
+		   26) "slave"
+		   27) "role-reported-time"
+		   28) "55240236"
+		   29) "master-link-down-time"
+		   30) "0"
+		   31) "master-link-status"
+		   32) "ok"
+		   33) "master-host"
+		   34) "192.168.0.111"
+		   35) "master-port"
+		   36) "6379"
+		   37) "slave-priority"
+		   38) "100"
+		   39) "slave-repl-offset"
+		   40) "14369411"
+		2)  1) "name"
+			2) "192.168.0.112:6379"
+			3) "ip"
+			4) "192.168.0.112"
+			5) "port"
+			6) "6379"
+			7) "runid"
+			8) "ba78dde24b56e0d61aaf6355283c062a071865ba"
+			9) "flags"
+		   10) "slave"
+		   11) "link-pending-commands"
+		   12) "0"
+		   13) "link-refcount"
+		   14) "1"
+		   15) "last-ping-sent"
+		   16) "0"
+		   17) "last-ok-ping-reply"
+		   18) "828"
+		   19) "last-ping-reply"
+		   20) "828"
+		   21) "down-after-milliseconds"
+		   22) "30000"
+		   23) "info-refresh"
+		   24) "4846"
+		   25) "role-reported"
+		   26) "slave"
+		   27) "role-reported-time"
+		   28) "55282230"
+		   29) "master-link-down-time"
+		   30) "0"
+		   31) "master-link-status"
+		   32) "ok"
+		   33) "master-host"
+		   34) "192.168.0.111"
+		   35) "master-port"
+		   36) "6379"
+		   37) "slave-priority"
+		   38) "100"
+		   39) "slave-repl-offset"
+		   40) "14369115"
+			
+10. 客户端程序
+	客户端程序如何感知当前主redis的ip地址和端口呢？
+		redis-sentinel提供了接口，请求任何一个sentinel，发送SENTINEL get-master-addr-by-name <master name>就能得到当前主redis的ip和port。
+		也可以参考 redis_sentinel_connect.py 脚本实现
+	客户端每次连接redis前，先向sentinel发送请求，获得主redis的ip和port，然后用返回的ip和port连接redis。
+
+	这种方法的缺点是显而易见的，每次操作redis至少需要发送两次连接请求，第一次请求sentinel，第二次请求redis。
+	(类似ProxySQL中间件)
+	
+	
+	

@@ -1,0 +1,45 @@
+
+
+REATE TABLE `test_lock` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `a` int(11) DEFAULT NULL,
+  `b` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_a` (`a`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+锁的相关知识点：
+	幻读： 读取到了别人未提交的要插入的数据， 体现在读取结果的行数变化上。
+	幻读出现的条件：
+		1. 在可重复读隔离级别下
+		2. 在当前读的场景下
+		3. 仅针对新插入的行
+
+
+加锁规则:
+	主键索引加行锁
+	唯一索引加行锁,并且对应的主键索引也是加行锁
+	普通索引并且不是唯一索引加行锁+间隙锁,对应的主键索引上的记录也是加行锁+间隙锁?
+	
+	
+加锁规则
+加锁流程
+
+锁住主键, 主键对应的记录也要加锁吧?
+是的, 主键索引是记录锁(record lock),对整条记录加锁.
+
+	
+
+root@mysqldb 19:32:  [test_Db]> show global variables like 'tx_isolation';
++---------------+-----------------+
+| Variable_name | Value           |
++---------------+-----------------+
+| tx_isolation  | REPEATABLE-READ |
++---------------+-----------------+
+1 row in set (0.00 sec)
+
+begin;
+select * from test_lock where a=3 for update;
+												begin;
+												select * from test_lock where id=4 for update;

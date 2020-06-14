@@ -1,0 +1,49 @@
+
+
+
+MySQL是单进程，多线程的软件；多实例，就是跑N个单进程。
+
+
+当前在/data/mysql/mysql3306下操作
+
+cp /etc/my.cnf my3306.cnf 
+
+cd ..
+mkdir mysql3321/{data,logs,tmp} -p
+cp /etc/my.cnf mysql3307/my3307.cnf
+
+
+cd mysql3307/my3307
+vi my3307.cnf
+//把3306替换为3307
+:%s/3307/3309/g
+
+cd ..
+
+chown -R mysql:mysql mysql3307
+
+cd /usr/local/mysql
+/usr/local/mysql/bin/mysqld --defaults-file=/data/mysql/mysql3307/my3307.cnf --initialize
+/usr/local/mysql/bin/mysqld --defaults-file=/data/mysql/mysql3307/my3307.cnf --initialize-insecure
+/usr/local/mysql/bin/mysqld --defaults-file=/data/mysql/mysql3308/my3308.cnf --initialize-insecure
+
+
+/usr/local/mysql/bin/mysqld --defaults-file=/data/mysql/mysql3307/my3307.cnf &
+/usr/local/mysql/bin/mysqld --defaults-file=/data/mysql/mysql3308/my3308.cnf &
+/usr/local/mysql/bin/mysqld --defaults-file=/data/mysql/mysql3321/my.cnf &
+/usr/local/mysql/bin/mysqld --defaults-file=/data/mysql/mysql3311/my.cnf &
+mysqld --defaults-file=/data/mysql/mysq3307/my3307.cnf
+ps axu |grep mysqld
+
+
+查看监控的端口号
+netstat -nalp |grep mysqld
+
+/usr/local/mysql/bin/mysqld --defaults-file=/data/mysql/mysql3307/my3307.cnf & (生成.sock文件)
+
+
+
+
+
+
+

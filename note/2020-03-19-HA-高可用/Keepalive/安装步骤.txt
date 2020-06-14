@@ -1,0 +1,170 @@
+
+参考这篇写自己的文档： https://github.com/zhishutech/mysqlha-keepalived-3node
+
+搭建双主模式
+1：mysqldump -uroot -p --single-transaction --master-data=2 -A > kevin-20180309_gtid.sql;
+--master-data=2代表备份时刻记录master的Binlog位置和Position，--single-transaction意思是获取一致性快照
+-A代表备份所有的库
+LOCK TABLES `cron_origin` WRITE;
+Warning: A partial dump from a server that has GTIDs will by default include the GTIDs of all transactions, even those that changed suppressed parts of the database. If you don't want to restore GTIDs, pass --set-gtid-purged=OFF. To make a complete dump, pass --all-databases --triggers --routines --events.
+解决办法：
+2：More kevin-20170917_gtid.sql;
+
+3：scp kevin-20180309_gtid.sql 192.168.1.42:/data/
+大文件用 rsync
+
+4：slave 需要清除 binlog ，执行 reset master;
+
+5： 新建一个节点，导入数据：mysql < kevin-20170917_gtid.sql; 不需要关闭Mysql 进程
+Xtrbackup 恢复需要关闭MySQL进程
+Please use --connect-expired-password option or invoke mysql in interactive mode.
+提示错误：
+ERROR 1840 (HY000) at line 24: @@GLOBAL.GTID_PURGED can only be set when @@GLOBAL.GTID_EXECUTED is empty.  
+解决办法： 需要清除 binlog ，执行 reset master; 
+6、创建账号并且授权
+Grant all privileges on *.* to ‘keepalived@’192.168.1.%’ identified by ‘password’;
+
+7、两个节点互为主从：
+change master to master_host='192.168.1.41', master_port=3306, master_user='keepalived', master_password='123456abc', master_auto_position=1;
+Start slave;
+change master to master_host='192.168.1.42', master_port=3306, master_user='keepalived', master_password='123456abc', master_auto_position=1;
+Start slave;
+6.
+
+二、安装 keepalived
+
+yum install epel-release -y
+Yum search epel
+yum install -y MySQL-python
+yum install -y keepalived
+
+Keepalived for Linux - Version 1.4.2 - February 25, 2018
+
+keepalived 升级版本??
+
+grant replication client on *.* to 'monitor'@'localhost' identified by 'monitor';
+
+Tail -f /var/log/messages
+
+checkMySQL.py 这个脚本是用来确认本地的 MySQL 是否可以连接上去，相当于做了一个 Connect ping .
+
+
+总结：
+
+
+1、
+/etc/keepalived/checkMySQL.py -h 127.0.0.1 -P 3306
+echo $? 返回0， 说明正常， 因为keepalived的脚本检测，成功检测的返回值状态是0
+
+/etc/keepalived/checkMySQL.py -h 127.0.0.1 -P 3307
+返回 error, 说明是有问题。
+
+
+/etc/keepalived/checkMySQL.py -h 127.0.0.1 -P 3306
+-bash: /etc/keepalived/checkMySQL.py: Permission denied
+解决办法：chmod +x checkMySQL.py 
+ 
+ 
+2、通过 ip addr show 查看 vip 在哪个节点
+
+3、keepalived debug 
+keepalived --help
+keepalived -l -D -n -f /etc/keepalived/keepalived.conf 
+
+
+4、
+测试1、
+vip节点上手动停止keepalived: systemctl stop keepalived, 即发生了故障切换，然后到日志终端去观察：
+
+Mar 11 10:56:00 master_42 Keepalived_vrrp[12961]: VRRP_Instance(VI_82) Transition to MASTER STATE
+Mar 11 10:56:05 master_42 Keepalived_vrrp[12961]: VRRP_Instance(VI_82) Entering MASTER STATE
+Mar 11 10:56:05 master_42 Keepalived_vrrp[12961]: VRRP_Instance(VI_82) setting protocol VIPs.
+
+测试2、
+把VIP节点上的MySQL shutdown;即发生了故障切换，然后到日志终端去观察：（这个测试不成功）
+原因：vrrp_script vs_mysql_43 两个节点定义的脚本名要一致
+
+
+5、如何判断VIP在哪个节点上：
+mysql> select @@hostname;
+
+
+6、
+mysql不正常时，本机的keepalived需不需要自杀：
+	不需要，可以手工停止keepalived, 然后再启动MySQL，待复制完成(主从数据一致)后再开启 keepalived;
+
+思考： 这种情况下什么时候可以开启 keepalived？
+答：待复制完成(主从数据一致)后再开启 keepalived。
+
+前提是主从没有延迟，主从数据一致的情况下， 避免来回切换导致数据不一致。
+因为如果：新主的数据比新从的数据多，然后又切回新从，这种情况很恐怖：处理办法如下、
+
+添加一个脚本，验证主从的数据是否正常，如果不正常，就什么都不要干。
+
+master: 主节点
+backup: 选举节点
+Backup接管的前提： 主从没有延迟，两台机器的数据必须要一致
+
+7、修复故障的master
+先启动MySQL，待复制完成(主从数据一致)后再开启 keepalived;
+
+
+7、Keepalived的启动流程：
+一：Keepalived 运行的三个process进程：
+1：Starting Keepalived 版本 主进程
+2：Healthcheck process 进程
+3：VRRP child process 进程
+二：Vrrp
+先进入Backup State状态，运行一次Vrrp_script 成功后，发现没有主->Master
+->拉起Vip完成启动
+
+Three：：:切换的流程
+原Keepalived Master节点，进行脚本异常检查，则Keepalived进入Fault状态，
+释放Vip，原Backup的Keepalived会接管Vip。
+
+
+
+9：查看多长时间可以恢复切换：
+for i in `seq 1 100`; do sleep 1;mysql -h 192.168.1.43 -ukeepalived -p123456abc -e "select @@hostname"; done 
+mysql: [Warning] Using a password on the command line interface can be insecure.
++------------+
+| @@hostname |
++------------+
+| master_41  |
++------------+
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (111)
+mysql: [Warning] Using a password on the command line interface can be insecure.
+ERROR 2003 (HY000): Can't connect to MySQL server on '192.168.1.43' (113)
+mysql: [Warning] Using a password on the command line interface can be insecure.
++------------+
+| @@hostname |
++------------+
+| master_42  |
++------------+

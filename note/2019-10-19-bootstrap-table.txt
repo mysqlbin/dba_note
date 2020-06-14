@@ -1,0 +1,30 @@
+
+
+https://blog.csdn.net/yapengliu/article/details/80191699
+
+https://blog.csdn.net/pengjunlee/article/details/80658596
+
+https://www.cnblogs.com/wuhuacong/p/7284420.html
+https://blog.csdn.net/zh123456zh789/article/details/80995145   Bootstrap table两种分页示例——客户端分页和服务端分页的区别
+
+
+data: [{
+	"id": 89757,
+	"name": "姬如雪",
+	},
+	{
+	"id": 89756,
+	"name": "叶星云",
+   }],
+
+columns: [{
+	field: 'id',
+	title: 'id',
+
+},
+{
+	 title: 'name',
+	 field: 'name'
+}]
+				
+				

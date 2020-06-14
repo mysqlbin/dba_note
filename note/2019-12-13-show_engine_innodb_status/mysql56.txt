@@ -1,0 +1,628 @@
+mysql> show engine innodb status\G;
+*************************** 1. row ***************************
+  Type: InnoDB
+  Name: 
+Status: 
+=====================================
+2018-07-03 09:49:16 7fb925d34700 INNODB MONITOR OUTPUT
+=====================================
+Per second averages calculated from the last 32 seconds
+-----------------
+BACKGROUND THREAD
+-----------------
+srv_master_thread loops: 9068939 srv_active, 0 srv_shutdown, 5544632 srv_idle
+srv_master_thread log flush and writes: 14613570
+----------
+SEMAPHORES
+----------
+OS WAIT ARRAY INFO: reservation count 11356041
+OS WAIT ARRAY INFO: signal count 13828684
+Mutex spin waits 18315261088, rounds 26715162274, OS waits 5794644
+RW-shared spins 4257924, rounds 109520931, OS waits 3613037
+RW-excl spins 2079191, rounds 41690492, OS waits 857612
+Spin rounds per wait: 23.53 mutex, 25.72 RW-shared, 20.05 RW-excl
+------------------------
+LATEST DETECTED DEADLOCK
+------------------------
+2018-04-23 11:51:07 7fb9257a7700
+*** (1) TRANSACTION:
+TRANSACTION 443392335, ACTIVE 91 sec updating or deleting
+mysql tables in use 1, locked 1
+LOCK WAIT 10 lock struct(s), heap size 1184, 193 row lock(s), undo log entries 5
+MySQL thread id 675089, OS thread handle 0x7fb9255bd700, query id 702783685 10.29.64.153 web_user updating
+update table_club_info  set nClubID=@NewClubId where Id=@NewId
+*** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 68848 page no 4 n bits 96 index `idx_nClubID` of table `yldb`.`table_club_info` trx id 443392335 lock_mode X locks gap before rec insert intention waiting
+Record lock, heap no 29 PHYSICAL RECORD: n_fields 3; compact format; info bits 0
+ 0: len 4; hex 83f926aa; asc   & ;;
+ 1: len 1; hex 81; asc  ;;
+ 2: len 4; hex 83f926aa; asc   & ;;
+
+*** (2) TRANSACTION:
+TRANSACTION 443390477, ACTIVE 164 sec updating or deleting, thread declared inside InnoDB 4999
+mysql tables in use 1, locked 1
+11 lock struct(s), heap size 1184, 194 row lock(s), undo log entries 5
+MySQL thread id 675081, OS thread handle 0x7fb9257a7700, query id 702783687 10.29.64.153 web_user updating
+update table_club_info  set nClubID=@NewClubId where Id=@NewId
+*** (2) HOLDS THE LOCK(S):
+RECORD LOCKS space id 68848 page no 4 n bits 96 index `idx_nClubID` of table `yldb`.`table_club_info` trx id 443390477 lock mode S locks gap before rec
+Record lock, heap no 29 PHYSICAL RECORD: n_fields 3; compact format; info bits 0
+ 0: len 4; hex 83f926aa; asc   & ;;
+ 1: len 1; hex 81; asc  ;;
+ 2: len 4; hex 83f926aa; asc   & ;;
+
+*** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+RECORD LOCKS space id 68848 page no 4 n bits 96 index `idx_nClubID` of table `yldb`.`table_club_info` trx id 443390477 lock_mode X locks gap before rec insert intention waiting
+Record lock, heap no 29 PHYSICAL RECORD: n_fields 3; compact format; info bits 0
+ 0: len 4; hex 83f926aa; asc   & ;;
+ 1: len 1; hex 81; asc  ;;
+ 2: len 4; hex 83f926aa; asc   & ;;
+
+*** WE ROLL BACK TRANSACTION (1)
+------------
+TRANSACTIONS
+------------
+Trx id counter 578439146 （5多亿的事务ID 这个trx_id是累积值？是的。）
+Purge done for trx's n:o < 578439139 undo n:o < 0 state: running but idle
+History list length 3184 
+(尚未被清理update undo的事务数即代表了有多少 undo日志 还没有被清理掉，如果没有超过2000，那么不用关注)
+
+LIST OF TRANSACTIONS FOR EACH SESSION:
+---TRANSACTION 0, not started
+MySQL thread id 957397, OS thread handle 0x7fb925d34700, query id 1118313525 iZwz9c4vask3fxii3kmagvZ 10.24.249.178 root init
+show engine innodb status
+---TRANSACTION 578439142, not started
+MySQL thread id 937588, OS thread handle 0x7fb91efb8700, query id 1118313516 10.169.231.171 app_user
+---TRANSACTION 578439139, not started
+MySQL thread id 917611, OS thread handle 0x7fb925ae8700, query id 1118313510 10.169.231.171 app_user
+---TRANSACTION 578438951, not started
+MySQL thread id 913059, OS thread handle 0x7fb9254c8700, query id 1118312971 10.27.190.70 hs_app
+---TRANSACTION 578438936, not started
+MySQL thread id 913056, OS thread handle 0x7fb9259c2700, query id 1118312936 10.27.190.70 hs_app
+---TRANSACTION 535900397, not started
+MySQL thread id 870313, OS thread handle 0x7fb92647a700, query id 987999718 10.29.64.46 app_user
+---TRANSACTION 574597702, not started
+MySQL thread id 876607, OS thread handle 0x7fb927a1b700, query id 1106570000 10.25.103.170 app_user
+---TRANSACTION 574597204, not started
+MySQL thread id 876606, OS thread handle 0x7fb92773c700, query id 1106568353 10.25.103.170 app_user
+---TRANSACTION 568972444, not started
+MySQL thread id 876612, OS thread handle 0x7fb926d17700, query id 1089390608 10.25.103.170 app_user
+---TRANSACTION 568973001, not started
+MySQL thread id 876611, OS thread handle 0x7fb927306700, query id 1089392332 10.25.103.170 app_user
+---TRANSACTION 574597070, not started
+MySQL thread id 876610, OS thread handle 0x7fb91ed9d700, query id 1106567950 10.25.103.170 app_user
+---TRANSACTION 574598047, not started
+MySQL thread id 876609, OS thread handle 0x7fb925650700, query id 1106571110 10.25.103.170 app_user
+---TRANSACTION 574597707, not started
+MySQL thread id 876608, OS thread handle 0x7fb926f63700, query id 1106570012 10.25.103.170 app_user
+---TRANSACTION 568972796, not started
+MySQL thread id 876615, OS thread handle 0x7fb91ee30700, query id 1089391641 10.25.103.170 app_user
+---TRANSACTION 568972791, not started
+MySQL thread id 876614, OS thread handle 0x7fb9258cd700, query id 1089391629 10.25.103.170 app_user
+---TRANSACTION 568972656, not started
+MySQL thread id 876613, OS thread handle 0x7fb927b72700, query id 1089391212 10.25.103.170 app_user
+---TRANSACTION 576405208, not started
+MySQL thread id 876602, OS thread handle 0x7fb91eaef700, query id 1112115679 10.25.103.170 app_user
+---TRANSACTION 576405203, not started
+MySQL thread id 876601, OS thread handle 0x7fb925b4a700, query id 1112115667 10.25.103.170 app_user
+---TRANSACTION 575963463, not started
+MySQL thread id 876605, OS thread handle 0x7fb927adf700, query id 1110714346 10.25.103.170 app_user
+---TRANSACTION 575963286, not started
+MySQL thread id 876604, OS thread handle 0x7fb926013700, query id 1110713751 10.25.103.170 app_user
+---TRANSACTION 576406227, not started
+MySQL thread id 876603, OS thread handle 0x7fb92681d700, query id 1112118552 10.25.103.170 app_user
+---TRANSACTION 577874686, not started
+MySQL thread id 876627, OS thread handle 0x7fb925a86700, query id 1116600158 10.25.103.170 app_user
+---TRANSACTION 577887568, not started
+MySQL thread id 876626, OS thread handle 0x7fb9256e3700, query id 1116641238 10.25.103.170 app_user
+---TRANSACTION 577877907, not started
+MySQL thread id 876630, OS thread handle 0x7fb92711c700, query id 1116610025 10.25.103.170 app_user
+---TRANSACTION 577877883, not started
+MySQL thread id 876629, OS thread handle 0x7fb91f0de700, query id 1116609963 10.25.103.170 app_user
+---TRANSACTION 577874687, not started
+MySQL thread id 876628, OS thread handle 0x7fb91ec15700, query id 1116600161 10.25.103.170 app_user
+---TRANSACTION 577274088, not started
+MySQL thread id 876632, OS thread handle 0x7fb926cb5700, query id 1114733478 10.25.103.170 app_user
+---TRANSACTION 571227239, not started
+MySQL thread id 876631, OS thread handle 0x7fb925714700, query id 1096296105 10.25.103.170 app_user
+---TRANSACTION 571225625, not started
+MySQL thread id 876635, OS thread handle 0x7fb925466700, query id 1096291340 10.25.103.170 app_user
+---TRANSACTION 577274410, not started
+MySQL thread id 876634, OS thread handle 0x7fb9265a0700, query id 1114734437 10.25.103.170 app_user
+---TRANSACTION 577274093, not started
+MySQL thread id 876633, OS thread handle 0x7fb926b2d700, query id 1114733490 10.25.103.170 app_user
+---TRANSACTION 548563238, not started
+MySQL thread id 876622, OS thread handle 0x7fb91ea8d700, query id 1026771614 10.25.103.170 app_user
+---TRANSACTION 578438896, not started
+MySQL thread id 876637, OS thread handle 0x7fb925a24700, query id 1118312816 10.25.103.170 app_user
+---TRANSACTION 578438891, not started
+MySQL thread id 876636, OS thread handle 0x7fb926d48700, query id 1118312804 10.25.103.170 app_user
+---TRANSACTION 578438831, not started
+MySQL thread id 876640, OS thread handle 0x7fb926695700, query id 1118312624 10.25.103.170 app_user
+---TRANSACTION 578438826, not started
+MySQL thread id 876639, OS thread handle 0x7fb925ebc700, query id 1118312612 10.25.103.170 app_user
+---TRANSACTION 578438745, not started
+MySQL thread id 876638, OS thread handle 0x7fb927c05700, query id 1118312402 10.25.103.170 app_user
+---TRANSACTION 548562640, not started
+MySQL thread id 876621, OS thread handle 0x7fb926c84700, query id 1026769817 10.25.103.170 app_user
+---TRANSACTION 548562006, not started
+MySQL thread id 876625, OS thread handle 0x7fb92717e700, query id 1026767808 10.25.103.170 app_user
+---TRANSACTION 548562001, not started
+MySQL thread id 876624, OS thread handle 0x7fb91edce700, query id 1026767796 10.25.103.170 app_user
+---TRANSACTION 532158726, not started
+MySQL thread id 876623, OS thread handle 0x7fb91ed3b700, query id 976548581 10.25.103.170 app_user
+---TRANSACTION 578433201, not started
+MySQL thread id 876597, OS thread handle 0x7fb927b41700, query id 1118296828 10.25.103.170 app_user
+---TRANSACTION 578433196, not started
+MySQL thread id 876596, OS thread handle 0x7fb927678700, query id 1118296816 10.25.103.170 app_user
+---TRANSACTION 578433245, not started
+MySQL thread id 876600, OS thread handle 0x7fb92586b700, query id 1118296959 10.25.103.170 app_user
+---TRANSACTION 578433208, not started
+MySQL thread id 876599, OS thread handle 0x7fb92558c700, query id 1118296846 10.25.103.170 app_user
+---TRANSACTION 578433206, not started
+MySQL thread id 876598, OS thread handle 0x7fb926c53700, query id 1118296843 10.25.103.170 app_user
+---TRANSACTION 578437812, not started
+MySQL thread id 876579, OS thread handle 0x7fb927211700, query id 1118309867 10.29.64.46 app_user
+---TRANSACTION 578437681, not started
+MySQL thread id 876588, OS thread handle 0x7fb9264dc700, query id 1118309397 10.29.64.46 app_user
+---TRANSACTION 578437680, not started
+MySQL thread id 876587, OS thread handle 0x7fb926974700, query id 1118309396 10.29.64.46 app_user
+---TRANSACTION 578439000, not started
+MySQL thread id 876586, OS thread handle 0x7fb92561f700, query id 1118313091 10.29.64.46 app_user
+---TRANSACTION 578438897, not started
+MySQL thread id 876585, OS thread handle 0x7fb934108700, query id 1118312820 10.29.64.46 app_user
+---TRANSACTION 578438835, not started
+MySQL thread id 876584, OS thread handle 0x7fb925c3f700, query id 1118312635 10.29.64.46 app_user
+---TRANSACTION 578438812, not started
+MySQL thread id 876583, OS thread handle 0x7fb91ef25700, query id 1118312576 10.29.64.46 app_user
+---TRANSACTION 578438813, not started
+MySQL thread id 876591, OS thread handle 0x7fb925b7b700, query id 1118312574 10.25.103.170 app_user
+---TRANSACTION 578438811, not started
+MySQL thread id 876595, OS thread handle 0x7fb926daa700, query id 1118312571 10.25.103.170 app_user
+---TRANSACTION 578438810, not started
+MySQL thread id 876582, OS thread handle 0x7fb926ed0700, query id 1118312564 10.29.64.46 app_user
+---TRANSACTION 578438803, not started
+MySQL thread id 876594, OS thread handle 0x7fb9270ba700, query id 1118312549 10.25.103.170 app_user
+---TRANSACTION 578438751, not started
+MySQL thread id 876581, OS thread handle 0x7fb91edff700, query id 1118312418 10.29.64.46 app_user
+---TRANSACTION 578438798, not started
+MySQL thread id 876593, OS thread handle 0x7fb926ce6700, query id 1118312537 10.25.103.170 app_user
+---TRANSACTION 578438884, not started
+MySQL thread id 876592, OS thread handle 0x7fb927cc9700, query id 1118312782 10.25.103.170 app_user
+---TRANSACTION 578438179, not started
+MySQL thread id 876580, OS thread handle 0x7fb9257d8700, query id 1118310878 10.29.64.46 app_user
+---TRANSACTION 578212911, not started
+MySQL thread id 872919, OS thread handle 0x7fb927dbe700, query id 1117659578 10.30.210.129 app_user
+---TRANSACTION 578212567, not started
+MySQL thread id 872917, OS thread handle 0x7fb9272d5700, query id 1117658487 10.30.210.129 app_user
+---TRANSACTION 578205608, not started
+MySQL thread id 872921, OS thread handle 0x7fb9269a5700, query id 1117636273 10.30.210.129 app_user
+---TRANSACTION 578205619, not started
+MySQL thread id 872920, OS thread handle 0x7fb925d96700, query id 1117636239 10.30.210.129 app_user
+---TRANSACTION 578167808, not started
+MySQL thread id 872924, OS thread handle 0x7fb9265d1700, query id 1117517667 10.30.210.129 app_user
+---TRANSACTION 578162494, not started
+MySQL thread id 872926, OS thread handle 0x7fb926bc0700, query id 1117500651 10.30.210.129 app_user
+---TRANSACTION 578167789, not started
+MySQL thread id 872922, OS thread handle 0x7fb9272a4700, query id 1117517614 10.30.210.129 app_user
+---TRANSACTION 578168172, not started
+MySQL thread id 872925, OS thread handle 0x7fb925497700, query id 1117518791 10.30.210.129 app_user
+---TRANSACTION 578421298, not started
+MySQL thread id 872913, OS thread handle 0x7fb92625f700, query id 1118264574 10.30.210.123 app_user
+---TRANSACTION 578422433, not started
+MySQL thread id 872914, OS thread handle 0x7fb91ed6c700, query id 1118267597 10.30.210.123 app_user
+---TRANSACTION 578424779, not started
+MySQL thread id 872929, OS thread handle 0x7fb927a7d700, query id 1118273828 10.30.210.129 app_user
+---TRANSACTION 578425753, not started
+MySQL thread id 872927, OS thread handle 0x7fb927c36700, query id 1118276590 10.30.210.129 app_user
+---TRANSACTION 578424783, not started
+MySQL thread id 872931, OS thread handle 0x7fb927c67700, query id 1118273893 10.30.210.129 app_user
+---TRANSACTION 578424767, not started
+MySQL thread id 872930, OS thread handle 0x7fb92776d700, query id 1118273860 10.30.210.129 app_user
+---TRANSACTION 578438788, not started
+MySQL thread id 872979, OS thread handle 0x7fb9275b4700, query id 1118312507 10.169.231.171 app_user
+---TRANSACTION 578438757, not started
+MySQL thread id 872977, OS thread handle 0x7fb91eb20700, query id 1118312432 10.169.231.171 app_user
+---TRANSACTION 578438706, not started
+MySQL thread id 872976, OS thread handle 0x7fb91eb82700, query id 1118312301 10.169.231.171 app_user
+---TRANSACTION 578438652, not started
+MySQL thread id 872975, OS thread handle 0x7fb926728700, query id 1118312126 10.169.231.171 app_user
+---TRANSACTION 578439116, not started
+MySQL thread id 872974, OS thread handle 0x7fb927988700, query id 1118313418 10.169.231.171 app_user
+---TRANSACTION 578439119, not started
+MySQL thread id 872973, OS thread handle 0x7fb927d2b700, query id 1118313425 10.169.231.171 app_user
+---TRANSACTION 578439009, not started
+MySQL thread id 872969, OS thread handle 0x7fb927368700, query id 1118313111 10.169.231.171 app_user
+---TRANSACTION 578439035, not started
+MySQL thread id 872968, OS thread handle 0x7fb927d8d700, query id 1118313209 10.169.231.171 app_user
+---TRANSACTION 578439050, not started
+MySQL thread id 872967, OS thread handle 0x7fb925681700, query id 1118313244 10.169.231.171 app_user
+---TRANSACTION 578438948, not started
+MySQL thread id 872966, OS thread handle 0x7fb927aae700, query id 1118312964 10.169.231.171 app_user
+---TRANSACTION 578438983, not started
+MySQL thread id 872965, OS thread handle 0x7fb92678a700, query id 1118313045 10.169.231.171 app_user
+---TRANSACTION 578439003, not started
+MySQL thread id 872964, OS thread handle 0x7fb926afc700, query id 1118313097 10.169.231.171 app_user
+---TRANSACTION 578438976, not started
+MySQL thread id 872963, OS thread handle 0x7fb9267ec700, query id 1118313029 10.169.231.171 app_user
+---TRANSACTION 578438942, not started
+MySQL thread id 872962, OS thread handle 0x7fb925e5a700, query id 1118312950 10.169.231.171 app_user
+---TRANSACTION 578438747, not started
+MySQL thread id 872902, OS thread handle 0x7fb934139700, query id 1118312409 10.29.64.46 app_user
+---TRANSACTION 578438746, not started
+MySQL thread id 872911, OS thread handle 0x7fb92748e700, query id 1118312403 10.29.64.46 app_user
+---TRANSACTION 578438834, not started
+MySQL thread id 872960, OS thread handle 0x7fb927862700, query id 1118312630 10.169.200.130 app_user
+---TRANSACTION 578438816, not started
+MySQL thread id 872959, OS thread handle 0x7fb91ecd9700, query id 1118312582 10.169.200.130 app_user
+---TRANSACTION 578438809, not started
+MySQL thread id 872958, OS thread handle 0x7fb91f07c700, query id 1118312562 10.169.200.130 app_user
+---TRANSACTION 578438806, not started
+MySQL thread id 872957, OS thread handle 0x7fb925d65700, query id 1118312555 10.169.200.130 app_user
+---TRANSACTION 578438763, not started
+MySQL thread id 872956, OS thread handle 0x7fb9269d6700, query id 1118312446 10.169.200.130 app_user
+---TRANSACTION 578438679, not started
+MySQL thread id 872955, OS thread handle 0x7fb925f4f700, query id 1118312188 10.169.200.130 app_user
+---TRANSACTION 578438760, not started
+MySQL thread id 872954, OS thread handle 0x7fb91eca8700, query id 1118312439 10.169.200.130 app_user
+---TRANSACTION 578438676, not started
+MySQL thread id 872953, OS thread handle 0x7fb927926700, query id 1118312181 10.169.200.130 app_user
+---TRANSACTION 578439145, not started
+MySQL thread id 872952, OS thread handle 0x7fb927ba3700, query id 1118313523 10.169.200.130 app_user
+---TRANSACTION 578438661, not started
+MySQL thread id 872951, OS thread handle 0x7fb927d5c700, query id 1118312145 10.169.200.130 app_user
+---TRANSACTION 578438649, not started
+MySQL thread id 872950, OS thread handle 0x7fb926d79700, query id 1118312119 10.169.200.130 app_user
+---TRANSACTION 578439065, not started
+MySQL thread id 872949, OS thread handle 0x7fb926e9f700, query id 1118313279 10.169.200.130 app_user
+---TRANSACTION 578439053, not started
+MySQL thread id 872948, OS thread handle 0x7fb9273fb700, query id 1118313251 10.169.200.130 app_user
+---TRANSACTION 578439047, not started
+MySQL thread id 872947, OS thread handle 0x7fb926e6e700, query id 1118313237 10.169.200.130 app_user
+---TRANSACTION 578439056, not started
+MySQL thread id 872946, OS thread handle 0x7fb925809700, query id 1118313258 10.169.200.130 app_user
+---TRANSACTION 578439107, not started
+MySQL thread id 872945, OS thread handle 0x7fb9262c1700, query id 1118313351 10.169.200.130 app_user
+---TRANSACTION 578439077, not started
+MySQL thread id 872944, OS thread handle 0x7fb91f04b700, query id 1118313307 10.29.250.218 app_user
+---TRANSACTION 578438785, not started
+MySQL thread id 872943, OS thread handle 0x7fb926e0c700, query id 1118312500 10.29.250.218 app_user
+---TRANSACTION 578438766, not started
+MySQL thread id 872942, OS thread handle 0x7fb92592f700, query id 1118312453 10.29.250.218 app_user
+---TRANSACTION 578438754, not started
+MySQL thread id 872941, OS thread handle 0x7fb9277cf700, query id 1118312425 10.29.250.218 app_user
+---TRANSACTION 578438353, not started
+MySQL thread id 872910, OS thread handle 0x7fb9278f5700, query id 1118312408 10.29.64.46 app_user
+---TRANSACTION 578438631, not started
+MySQL thread id 872909, OS thread handle 0x7fb927cfa700, query id 1118312077 10.29.64.46 app_user
+---TRANSACTION 578438629, not started
+MySQL thread id 872908, OS thread handle 0x7fb9279b9700, query id 1118312068 10.29.64.46 app_user
+---TRANSACTION 578439110, not started
+MySQL thread id 872907, OS thread handle 0x7fb927957700, query id 1118313404 10.29.64.46 app_user
+---TRANSACTION 578439109, not started
+MySQL thread id 872906, OS thread handle 0x7fb9340d7700, query id 1118313398 10.29.64.46 app_user
+---TRANSACTION 578438467, not started
+MySQL thread id 872905, OS thread handle 0x7fb927a4c700, query id 1118313403 10.29.64.46 app_user
+---TRANSACTION 578424759, not started
+MySQL thread id 872928, OS thread handle 0x7fb91eabe700, query id 1118273826 10.30.210.129 app_user
+---TRANSACTION 578167809, not started
+MySQL thread id 872923, OS thread handle 0x7fb9261cc700, query id 1117517615 10.30.210.129 app_user
+---TRANSACTION 578212779, not started
+MySQL thread id 872918, OS thread handle 0x7fb9255ee700, query id 1117659170 10.30.210.129 app_user
+---TRANSACTION 578439108, not started
+MySQL thread id 872904, OS thread handle 0x7fb926b8f700, query id 1118313397 10.29.64.46 app_user
+---TRANSACTION 578438977, not started
+MySQL thread id 872903, OS thread handle 0x7fb93c060700, query id 1118313031 10.29.64.46 app_user
+---TRANSACTION 578438970, not started
+MySQL thread id 871345, OS thread handle 0x7fb925bdd700, query id 1118313015 10.30.2.226 app_user
+---TRANSACTION 535836118, not started
+MySQL thread id 870326, OS thread handle 0x7fb926912700, query id 987800826 10.30.210.161 app_user
+---TRANSACTION 535835364, not started
+MySQL thread id 870324, OS thread handle 0x7fb927bd4700, query id 987798492 10.30.210.161 app_user
+---TRANSACTION 535835276, not started
+MySQL thread id 870328, OS thread handle 0x7fb925c70700, query id 987798228 10.30.210.161 app_user
+---TRANSACTION 535834330, not started
+MySQL thread id 870327, OS thread handle 0x7fb927273700, query id 987795260 10.30.210.161 app_user
+---TRANSACTION 578438703, not started
+MySQL thread id 870302, OS thread handle 0x7fb925b19700, query id 1118312294 10.29.64.46 app_user
+---TRANSACTION 578438175, not started
+MySQL thread id 870311, OS thread handle 0x7fb926a9a700, query id 1118310869 10.29.64.46 app_user
+---TRANSACTION 578437585, not started
+MySQL thread id 870310, OS thread handle 0x7fb91ebb3700, query id 1118309120 10.29.64.46 app_user
+---TRANSACTION 578437064, not started
+MySQL thread id 870309, OS thread handle 0x7fb927def700, query id 1118307563 10.29.64.46 app_user
+---TRANSACTION 578436243, not started
+MySQL thread id 870308, OS thread handle 0x7fb91ef56700, query id 1118305481 10.29.64.46 app_user
+---TRANSACTION 578435723, not started
+MySQL thread id 870307, OS thread handle 0x7fb934075700, query id 1118304022 10.29.64.46 app_user
+---TRANSACTION 578435166, not started
+MySQL thread id 870306, OS thread handle 0x7fb927893700, query id 1118302472 10.29.64.46 app_user
+---TRANSACTION 578434565, not started
+MySQL thread id 870305, OS thread handle 0x7fb925cd2700, query id 1118300810 10.29.64.46 app_user
+---TRANSACTION 578434176, not started
+MySQL thread id 870304, OS thread handle 0x7fb927831700, query id 1118299662 10.29.64.46 app_user
+---TRANSACTION 535835710, not started
+MySQL thread id 870325, OS thread handle 0x7fb9259f3700, query id 987799626 10.30.210.161 app_user
+---TRANSACTION 528359420, not started
+MySQL thread id 870320, OS thread handle 0x7fb927b10700, query id 964907724 10.30.210.161 app_user
+---TRANSACTION 528359413, not started
+MySQL thread id 870315, OS thread handle 0x7fb9274bf700, query id 964907686 10.30.210.161 app_user
+---TRANSACTION 578433768, not started
+MySQL thread id 870303, OS thread handle 0x7fb9260a6700, query id 1118298499 10.29.64.46 app_user
+---TRANSACTION 578439062, not started
+MySQL thread id 824325, OS thread handle 0x7fb91ef87700, query id 1118313272 10.30.2.226 app_user
+---TRANSACTION 578438924, not started
+MySQL thread id 824324, OS thread handle 0x7fb925df8700, query id 1118312910 10.30.2.226 app_user
+---TRANSACTION 578439041, not started
+MySQL thread id 824323, OS thread handle 0x7fb925745700, query id 1118313223 10.30.2.226 app_user
+---TRANSACTION 578439080, not started
+MySQL thread id 824322, OS thread handle 0x7fb925eed700, query id 1118313314 10.30.2.226 app_user
+---TRANSACTION 578438750, not started
+MySQL thread id 824321, OS thread handle 0x7fb91ebe4700, query id 1118312416 10.30.2.226 app_user
+---TRANSACTION 578439038, not started
+MySQL thread id 824320, OS thread handle 0x7fb925776700, query id 1118313216 10.30.2.226 app_user
+---TRANSACTION 578439012, not started
+MySQL thread id 824319, OS thread handle 0x7fb9254f9700, query id 1118313118 10.30.2.226 app_user
+---TRANSACTION 578439006, not started
+MySQL thread id 824318, OS thread handle 0x7fb93c45, not started
+MySQL thread id 824310, OS thread handle 0x7fb9271af700, query id 1118312957 10.30.2.226 app_user
+---TRANSACTION 578438939, not started
+MySQL thread id 824306, OS thread handle 0x7fb91ec77700, query id 1118312943 10.30.2.226 app_user
+---TRANSACTION 578438838, not started
+MySQL thread id 824305, OS thread handle 0x7fb926075700, query id 1118312641 10.30.2.226 app_user
+---TRANSACTION 578438927, not started
+MySQL thread id 824304, OS thread handle 0x7fb91eec3700, query id 1118312917 10.30.2.226 app_user
+---TRANSACTION 578438918, not started
+MySQL thread id 824303, OS thread handle 0x7fb926fc5700, query id 1118312896 10.30.2.226 app_user
+---TRANSACTION 578438921, not started
+MySQL thread id 824302, OS thread handle 0x7fb9340a6700, query id 1118312903 10.30.2.226 app_user
+--------
+FILE I/O (I/O 线程: insert buffer, log, read, write)
+--------
+I/O thread 0 state: waiting for completed aio requests (insert buffer thread)
+I/O thread 1 state: waiting for completed aio requests (log thread)
+I/O thread 2 state: waiting for completed aio requests (read thread)
+I/O thread 3 state: waiting for completed aio requests (read thread)
+I/O thread 4 state: waiting for completed aio requests (read thread)
+I/O thread 5 state: waiting for completed aio requests (read thread)
+I/O thread 6 state: waiting for completed aio requests (read thread)
+I/O thread 7 state: waiting for completed aio requests (read thread)
+I/O thread 8 state: waiting for completed aio requests (read thread)
+I/O thread 9 state: waiting for completed aio requests (read thread)
+I/O thread 10 state: waiting for completed aio requests (read thread)
+I/O thread 11 state: waiting for completed aio requests (read thread)
+I/O thread 12 state: waiting for completed aio requests (read thread)
+I/O thread 13 state: waiting for completed aio requests (read thread)
+I/O thread 14 state: waiting for completed aio requests (read thread)
+I/O thread 15 state: waiting for completed aio requests (read thread)
+I/O thread 16 state: waiting for completed aio requests (read thread)
+I/O thread 17 state: waiting for completed aio requests (read thread)
+I/O thread 18 state: waiting for completed aio requests (write thread)
+I/O thread 19 state: waiting for completed aio requests (write thread)
+I/O thread 20 state: waiting for completed aio requests (write thread)
+I/O thread 21 state: waiting for completed aio requests (write thread)
+I/O thread 22 state: waiting for completed aio requests (write thread)
+I/O thread 23 state: waiting for completed aio requests (write thread)
+I/O thread 24 state: waiting for completed aio requests (write thread)
+I/O thread 25 state: waiting for completed aio requests (write thread)
+I/O thread 26 state: waiting for completed aio requests (write thread)
+I/O thread 27 state: waiting for completed aio requests (write thread)
+I/O thread 28 state: waiting for completed aio requests (write thread)
+I/O thread 29 state: waiting for completed aio requests (write thread)
+I/O thread 30 state: waiting for completed aio requests (write thread)
+I/O thread 31 state: waiting for completed aio requests (write thread)
+I/O thread 32 state: waiting for completed aio requests (write thread)
+I/O thread 33 state: waiting for completed aio requests (write thread)
+I/O thread 34 state: waiting for completed aio requests (write thread)
+I/O thread 35 state: waiting for completed aio requests (write thread)
+I/O thread 36 state: waiting for completed aio requests (write thread)
+I/O thread 37 state: waiting for completed aio requests (write thread)
+I/O thread 38 state: waiting for completed aio requests (write thread)
+I/O thread 39 state: waiting for completed aio requests (write thread)
+I/O thread 40 state: waiting for completed aio requests (write thread)
+I/O thread 41 state: waiting for completed aio requests (write thread)
+I/O thread 42 state: waiting for completed aio requests (write thread)
+I/O thread 43 state: waiting for completed aio requests (write thread)
+I/O thread 44 state: waiting for completed aio requests (write thread)
+I/O thread 45 state: waiting for completed aio requests (write thread)
+I/O thread 46 state: waiting for completed aio requests (write thread)
+I/O thread 47 state: waiting for completed aio requests (write thread)
+I/O thread 48 state: waiting for completed aio requests (write thread)
+I/O thread 49 state: waiting for completed aio requests (write thread)
+Pending normal aio reads: 0 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] , aio writes: 0 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] ,
+ ibuf aio reads: 0, log i/o's: 0, sync i/o's: 0
+Pending flushes (fsync) log: 0; buffer pool: 0
+184058 OS file reads, 367774316 OS file writes, 238821999 OS fsyncs
+0.00 reads/s, 0 avg bytes/read, 7.56 writes/s, 4.87 fsyncs/s
+-------------------------------------
+INSERT BUFFER AND ADAPTIVE HASH INDEX
+-------------------------------------
+Ibuf: size 1, free list len 458, seg size 460, 2749 merges
+merged operations:
+ insert 28004, delete mark 1800, delete 195
+discarded operations:
+ insert 0, delete mark 0, delete 0
+Hash table size 50999279, node heap has 2835 buffer(s)
+3.03 hash searches/s, 4.53 non-hash searches/s
+---
+LOG
+---
+Log sequence number 213881284753
+Log flushed up to   213881284753
+Pages flushed up to 213881284753
+Last checkpoint at  213881278203
+0 pending log writes, 0 pending chkp writes
+24778381 log i/o's done, 1.97 log i/o's/second
+----------------------
+BUFFER POOL AND MEMORY
+----------------------
+Total memory allocated 26373783552; in additional pool allocated 0
+Dictionary memory allocated 2203637
+Buffer pool size   1572856
+（select 1572856*16/1024/1024=24G, 表示总共24GB的缓存池）
+Free buffers       815756 
+(当前 free列表 中页的数量)
+Database pages     754265
+(当前 LRU列表 中页的数量)
+Old database pages 278264
+Modified db pages  0
+Pending reads 0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 468626, not young 56
+(当页从LRU列表的 old部分 加入到 new 部分时，称此时发生的操作为 page made young)
+(而因为 innodb_old_blocks_time 的设置而导致页没有从 old部分 移动到 new部分的操作称为 page not made young)
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 166718, created 587614, written 250323100
+0.00 reads/s, 0.00 creates/s, 3.59 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 754265, unzip_LRU len: 0
+I/O sum[1784]:cur[64], unzip sum[0]:cur[0]
+----------------------
+INDIVIDUAL BUFFER POOL INFO
+----------------------
+---BUFFER POOL 0
+Buffer pool size   196607
+Free buffers       102136
+Database pages     94113
+Old database pages 34720
+Modified db pages  0
+Pending reads 0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 78606, not young 6
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 21277, created 72846, written 42213491
+0.00 reads/s, 0.00 creates/s, 1.03 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 94113, unzip_LRU len: 0
+I/O sum[223]:cur[8], unzip sum[0]:cur[0]
+---BUFFER POOL 1
+Buffer pool size   196607
+Free buffers       102251
+Database pages     93999
+Old database pages 34678
+Modified db pages  0
+Pending reads 0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 73681, not young 4
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 21439, created 72580, written 12466774
+0.00 reads/s, 0.00 creates/s, 0.22 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 93999, unzip_LRU len: 0
+I/O sum[223]:cur[8], unzip sum[0]:cur[0]
+---BUFFER POOL 2
+Buffer pool size   196607
+Free buffers       101952
+Database pages     94305
+Old database pages 34791
+Modified db pages  0
+Pending reads 0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 79925, not young 7
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 20844, created 73468, written 17656044
+0.00 reads/s, 0.00 creates/s, 0.12 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 94305, unzip_LRU len: 0
+I/O sum[223]:cur[8], unzip sum[0]:cur[0]
+---BUFFER POOL 3
+Buffer pool size   196607
+Free buffers       101693
+Database pages     94571
+Old database pages 34889
+Modified db pages  0
+Pending reads 0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 78247, not young 9
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 20800, created 73780, written 26710650
+0.00 reads/s, 0.00 creates/s, 0.16 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 94571, unzip_LRU len: 0
+I/O sum[223]:cur[8], unzip sum[0]:cur[0]
+---BUFFER POOL 4
+Buffer pool size   196607
+Free buffers       101603
+Database pages     94635
+Old database pages 34913
+Modified db pages  0
+Pending reads 0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 78777, not young 10
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 20254, created 74388, written 29371892
+0.00 reads/s, 0.00 creates/s, 0.59 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 94635, unzip_LRU len: 0
+I/O sum[223]:cur[8], unzip sum[0]:cur[0]
+---BUFFER POOL 5
+Buffer pool size   196607
+Free buffers       102455
+Database pages     93810
+Old database pages 34609
+Modified db pages  0
+Pending reads 0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 656, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 20533, created 73277, written 33112160
+0.00 reads/s, 0.00 creates/s, 0.44 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 93810, unzip_LRU len: 0
+I/O sum[223]:cur[8], unzip sum[0]:cur[0]
+---BUFFER POOL 6
+Buffer pool size   196607
+Free buffers       101619
+Database pages     94652
+Old database pages 34919
+Modified db pages  0
+Pending reads 0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 641, not young 0
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 20618, created 74034, written 26556891
+0.00 reads/s, 0.00 creates/s, 0.28 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 94652, unzip_LRU len: 0
+I/O sum[223]:cur[8], unzip sum[0]:cur[0]
+---BUFFER POOL 7
+Buffer pool size   196607
+Free buffers       102047
+Database pages     94180
+Old database pages 34745
+Modified db pages  0
+Pending reads 0
+Pending writes: LRU 0, flush list 0, single page 0
+Pages made young 78093, not young 20
+0.00 youngs/s, 0.00 non-youngs/s
+Pages read 20953, created 73241, written 62235198
+0.00 reads/s, 0.00 creates/s, 0.75 writes/s
+Buffer pool hit rate 1000 / 1000, young-making rate 0 / 1000 not 0 / 1000
+Pages read ahead 0.00/s, evicted without access 0.00/s, Random read ahead 0.00/s
+LRU len: 94180, unzip_LRU len: 0
+I/O sum[223]:cur[8], unzip sum[0]:cur[0]
+--------------
+ROW OPERATIONS
+--------------
+0 queries inside InnoDB, 0 queries in queue
+0 read views open inside InnoDB
+InnoDB内部开启的数据快照
+Main thread process no. 3912, id 140433580902144, state: sleeping
+Number of rows inserted 100239806, updated 40075722, deleted 94539167, read 2076698708855
+0.94 inserts/s, 0.66 updates/s, 0.00 deletes/s, 5510.42 reads/s
+----------------------------
+END OF INNODB MONITOR OUTPUT
+============================
+
+1 row in set (0.01 sec)
+
+ERROR: 
+No query specified

@@ -1,0 +1,10 @@
+
+
+系统给 binlog cache 分配了一片内存，每个线程一个，参数 binlog_cache_size 用于控制单个线程内 binlog cache 所占内存的大小。如果超过了这个参数规定的大小，就要暂存到磁盘。
+事务提交的时候，执行器把 binlog cache 里的完整事务写入到 binlog 中，并清空 binlog cache。
+
+binlog_cache_size = 4M
+max_binlog_cache_size = 2G
+
+
+

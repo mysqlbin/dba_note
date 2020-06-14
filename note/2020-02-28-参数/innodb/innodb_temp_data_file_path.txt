@@ -1,0 +1,39 @@
+
+
+
+ibtmp1 临时表空间
+
+
+MySQL 5.7起，开始采用独立的临时表空间（和独立的undo表空间不是一回事哟），命名 ibtmp1 文件，初始化12M，且默认无上限。
+	为所有非压缩的 innodb 临时表提供一个独立的表空间， 默认的临时表空间文件为 ibtmp1, 位置数据目录 。
+		   
+	选项 innodb_temp_data_file_path 可配置临时表空间相关参数, 默认是存储在数据目录下。
+
+	innodb_temp_data_file_path = ibtmp1:12M:autoextend 表示 
+		指定innodb临时表空间文件的路径、文件名和大小，存放临时表和undo日志的表空间; 
+		在支持大文件的系统这个文件大小是可以无限增长的
+	
+使用建议:
+
+	1. 设置 innodb_temp_data_file_path 选项，设定文件最大上限，超过上限时，需要生成临时表的SQL无法被执行（一般这种SQL效率也比较低，可借此机会进行优化）。
+	
+		如 innodb_temp_data_file_path = ibtmp1:64M:autoextend:max:5G
+	
+    2. 检查 INFORMATION_SCHEMA.INNODB_TEMP_TABLE_INFO，找到最大的临时表对应的线程，kill之即可释放，但 ibtmp1 文件则不能释放（除非重启）。
+
+    3. 择机重启实例，释放 ibtmp1 文件，和 ibdata1 不同，ibtmp1 重启时会被重新初始化而 ibdata1 则不可以。
+
+    4. 定期检查运行时长超过N秒（比如N=300）的SQL，考虑干掉，避免垃圾SQL长时间运行影响业务。
+
+
+相关参考:
+	https://mp.weixin.qq.com/s/AVNWOBZiwc46FE6clCLzxQ  MySQL 5.7临时表空间怎么玩才能不掉坑里
+	https://mp.weixin.qq.com/s/r1-PuEGDdlLA6zE5pzjb2w  [MySQL FAQ]系列 — 什么情况下会用到临时表
+	
+	
+案例：
+	https://blog.51cto.com/chenql/1946992               mysql5.7 ibtmp1文件过大
+	https://blog.51cto.com/11784929/2165352?source=dra  ibtmp1文件过大
+	http://www.bubuko.com/infodetail-1893042.html       5.7 ibtmp1问题诊断
+	注意：为了避免以后再出现类似的情况，一定要在限制临时表空间的最大值，如innodb_temp_data_file_path = ibtmp1:64M:autoextend:max:5G
+	

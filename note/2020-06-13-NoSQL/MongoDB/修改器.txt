@@ -1,0 +1,245 @@
+
+	
+3.3.2 使用修改器
+
+	1. $set 修改器
+		$set 修改器 用来指定一个键的值，如果这个字段不存在，则创建它。
+		
+	2. $inc 修改器 
+		增加和减少
+		用来增加已有键的值， 或者该键不存在那就创建一个。
+		
+	3. 数组修改器--$ne/$addToSet
+		
+	4. 数组修改器--$push
+		如果数组已经存在， $push 会向已有的数组末尾加入一个元素，要是没有就创建一个新的数组。
+		
+		
+
+1. $set 修改器
+	
+	键存在就做update操作，不存在就做insert操作
+	
+	repl_set:PRIMARY> db.sets.insert({"uid" : "201912","type" : "3"})
+	WriteResult({ "nInserted" : 1 })
+	repl_set:PRIMARY> 
+	repl_set:PRIMARY> db.sets.findOne({"uid" : "201912","type" : "3"})
+	{
+		"_id" : ObjectId("5de96d24ad3b111d6be8d7de"),
+		"uid" : "201912",
+		"type" : "3"
+	}
+
+
+	--size键不存在的场合
+		repl_set:PRIMARY> db.sets.update({"uid" : "201912","type" : "3"},{"$set":{"size":10}})
+		WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+		repl_set:PRIMARY> db.sets.findOne({"uid" : "201912","type" : "3"})
+		{
+			"_id" : ObjectId("5de96d24ad3b111d6be8d7de"),
+			"uid" : "201912",
+			"type" : "3",
+			"size" : 10
+		}
+		
+	--sname键不存在的场合
+		repl_set:PRIMARY> db.sets.update({"uid" : "201912","type" : "3"},{"$set":{"sname":"ssk"}})
+		WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+		repl_set:PRIMARY> 
+		repl_set:PRIMARY> 
+		repl_set:PRIMARY> 
+		repl_set:PRIMARY> db.sets.findOne({"uid" : "201912","type" : "3"})
+		{
+			"_id" : ObjectId("5de96d24ad3b111d6be8d7de"),
+			"uid" : "201912",
+			"type" : "3",
+			"size" : 10,
+			"sname" : "ssk"
+		}
+		
+		
+	--sname键存在的场合
+		repl_set:PRIMARY> db.sets.update({"uid" : "201912","type" : "3"},{"$set":{"sname":"abc"}})
+		WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+		repl_set:PRIMARY> db.sets.findOne({"uid" : "201912","type" : "3"})
+		{
+			"_id" : ObjectId("5de96d24ad3b111d6be8d7de"),
+			"uid" : "201912",
+			"type" : "3",
+			"size" : 10,
+			"sname" : "abc"
+		}
+	
+	--可改变键的值类型
+		repl_set:PRIMARY> db.sets.update({"uid" : "201912","type" : "3"},{"$set":{"sname":["qaz","wsx","edc"]}})
+		WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+		repl_set:PRIMARY> 
+		repl_set:PRIMARY> db.sets.findOne({"uid" : "201912","type" : "3"})
+		{
+			"_id" : ObjectId("5de96d24ad3b111d6be8d7de"),
+			"uid" : "201912",
+			"type" : "3",
+			"size" : 10,
+			"sname" : [
+				"qaz",
+				"wsx",
+				"edc"
+			]
+		}
+		
+	
+	对内嵌文档的修改：
+		repl_set:PRIMARY> db.sets.insert({"uid" : "201912", "type" : "4", "size":{"height":10,"width":5,"length":15}})
+		WriteResult({ "nInserted" : 1 })
+		repl_set:PRIMARY> db.sets.findOne({"uid" : "201912","type" : "4"})
+		{
+			"_id" : ObjectId("5de97f3aad3b111d6be8d7df"),
+			"uid" : "201912",
+			"type" : "4",
+			"size" : {
+				"height" : 10,
+				"width" : 5,
+				"length" : 15
+			}
+		}
+
+		repl_set:PRIMARY> db.sets.update({"uid" : "201912","type" : "4"},{"$set":{"size.height":8}})
+		WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+		repl_set:PRIMARY> 
+		repl_set:PRIMARY> db.sets.findOne({"uid" : "201912","type" : "4"})
+		{
+			"_id" : ObjectId("5de97f3aad3b111d6be8d7df"),
+			"uid" : "201912",
+			"type" : "4",
+			"size" : {
+				"height" : 8,
+				"width" : 5,
+				"length" : 15
+			}
+		}
+
+		 
+		repl_set:PRIMARY> db.sets.update({"uid" : "201912","type" : "4"},{"$set":{"size.width":12}})
+		WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+		repl_set:PRIMARY> db.sets.findOne({"uid" : "201912","type" : "4"})
+		{
+			"_id" : ObjectId("5de97f3aad3b111d6be8d7df"),
+			"uid" : "201912",
+			"type" : "4",
+			"size" : {
+				"height" : 8,
+				"width" : 12,
+				"length" : 15
+			}
+		}
+ 
+		可见：对于内嵌文档在使用 $set 更新时，使用"."连接的方式。
+				
+				
+2. $inc 修改器
+
+	repl_set:PRIMARY> db.inc.insert({"uid":"201203","type":"1",size:10})
+	WriteResult({ "nInserted" : 1 })
+	repl_set:PRIMARY> db.inc.find()
+	{ "_id" : ObjectId("5de96bf7ad3b111d6be8d7dc"), "uid" : "201203", "type" : "1", "size" : 10 }
+
+
+	repl_set:PRIMARY> db.inc.update({"uid" : "201203"},{"$inc":{"size" : 1}})
+	WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+	repl_set:PRIMARY> db.inc.find()
+	{ "_id" : ObjectId("5de96bf7ad3b111d6be8d7dc"), "uid" : "201203", "type" : "1", "size" : 11 }
+
+
+	repl_set:PRIMARY> db.inc.update({"uid" : "201203"},{"$inc":{"size" : 2}})
+	WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+	repl_set:PRIMARY> db.inc.find()
+	{ "_id" : ObjectId("5de96bf7ad3b111d6be8d7dc"), "uid" : "201203", "type" : "1", "size" : 13 }
+
+
+	repl_set:PRIMARY> db.inc.update({"uid" : "201203"},{"$inc":{"size" : -1}})
+	WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+	repl_set:PRIMARY> db.inc.find()
+	{ "_id" : ObjectId("5de96bf7ad3b111d6be8d7dc"), "uid" : "201203", "type" : "1", "size" : 12 }
+
+
+3. 数组修改器--$ne/$addToSet
+	主要给数组类型键值添加一个元素时，避免在数组中产生重复数据，$ne在有些情况是不通行的。
+
+	
+	repl_set:PRIMARY> db.e.insert({"uid" : "201912", "type" : "3", "title" : ['aa', 'bb', 'cc']})
+	WriteResult({ "nInserted" : 1 })
+
+	repl_set:PRIMARY> db.e.update({"uid" : "201912", "type" : "3"},{$addToSet:{"title":"cc"}})
+	WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 0 })
+
+	repl_set:PRIMARY> db.e.find()
+	{ "_id" : ObjectId("5de9a224ad3b111d6be8d7e2"), "uid" : "201912", "type" : "3", "title" : [ "aa", "bb", "cc" ] }
+
+	repl_set:PRIMARY> db.e.update({"uid" : "201912", "type" : "3"},{$addToSet:{"title":"dd"}})
+	WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+	repl_set:PRIMARY> db.e.find()
+	{ "_id" : ObjectId("5de9a224ad3b111d6be8d7e2"), "uid" : "201912", "type" : "3", "title" : [ "aa", "bb", "cc", "dd" ] }
+
+		
+4. 数组修改器--$push
+		
+	repl_set:PRIMARY> db.c.insert({"name" : "toyota", "type" : "suv","size" : { "height" : 8, "width" : 7, "length" : 15 } })
+	WriteResult({ "nInserted" : 1 })
+
+
+	repl_set:PRIMARY> db.c.find()
+	{ "_id" : ObjectId("5de983a8ad3b111d6be8d7e0"), "name" : "toyota", "type" : "suv", "size" : { "height" : 8, "width" : 7, "length" : 15 } }
+
+	--先push一个当前文档中不存在的键title
+		repl_set:PRIMARY> db.c.update({"name" : "toyota"},{$push:{"title":"t1"}})
+		WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+		repl_set:PRIMARY> db.c.find()
+		{ "_id" : ObjectId("5de983a8ad3b111d6be8d7e0"), "name" : "toyota", "type" : "suv", "size" : { "height" : 8, "width" : 7, "length" : 15 }, "title" : [ "t1" ] }
+
+	--再向title中push一个值
+		repl_set:PRIMARY> db.c.update({"name" : "toyota"},{$push:{"title":"t2"}})
+		WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+
+		repl_set:PRIMARY> db.c.find()
+		{ "_id" : ObjectId("5de983a8ad3b111d6be8d7e0"), "name" : "toyota", "type" : "suv", "size" : { "height" : 8, "width" : 7, "length" : 15 }, "title" : [ "t1", "t2" ] }
+
+
+	--再向title中push一个值
+		repl_set:PRIMARY> db.c.update({"name" : "toyota"},{$push:{"title":"t2"}})
+		WriteResult({ "nMatched" : 1, "nUpserted" : 0, "nModified" : 1 })
+		repl_set:PRIMARY> db.c.find()
+		{ "_id" : ObjectId("5de983a8ad3b111d6be8d7e0"), "name" : "toyota", "type" : "suv", "size" : { "height" : 8, "width" : 7, "length" : 15 }, "title" : [ "t1", "t2", "t2" ] }
+
+	--再向一个已经存在的键值非数组类型的键push一个值
+		repl_set:PRIMARY> db.c.update({"name" : "toyota"},{$push:{"size.height":10}})
+		WriteResult({
+			"nMatched" : 0,
+			"nUpserted" : 0,
+			"nModified" : 0,
+			"writeError" : {
+				"code" : 2,
+				"errmsg" : "The field 'size.height' must be an array but is of type double in document {_id: ObjectId('5de983a8ad3b111d6be8d7e0')}"
+			}
+		})
+		
+		
+		repl_set:PRIMARY> db.c.update({"name" : "toyota"},{$push:{"name":"ddddddd"}})
+		WriteResult({
+			"nMatched" : 0,
+			"nUpserted" : 0,
+			"nModified" : 0,
+			"writeError" : {
+				"code" : 2,
+				"errmsg" : "The field 'name' must be an array but is of type string in document {_id: ObjectId('5de983a8ad3b111d6be8d7e0')}"
+			}
+		})
+	
+	得出结论：
+		$push--向文档的某个数组类型的键添加一个数组元素，不过滤重复的数据。
+		添加时键存在，要求键值类型必须是数组；键不存在，则创建数组类型的键。
+		
+		如果数组已经存在，$push 会向已有的数组末尾加入一个元素，要是没有就创建一个新的数组。
+
+
+	

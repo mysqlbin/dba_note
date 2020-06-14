@@ -1,0 +1,19 @@
+
+http://www.unixfbi.com/465.html                   redis主从原理介绍与搭建
+https://www.cnblogs.com/zhoujinyi/p/5570024.html  Redis 复制、Sentinel的搭建和原理说明
+https://mp.weixin.qq.com/s/Qw2dopoZdjwmnbIMqtkhBg 深入 Redis 主从复制的原理详解 
+
+http://www.sohu.com/a/282320434_100212268         详解：Redis的主从复制原理 
+
+https://www.jianshu.com/p/68485d5c7fb9            redis监控指标
+
+https://blog.csdn.net/zx711166/article/details/82986186  企业级Redis开发运维从入门到实践 （20）— runid和偏移量
+https://github.com/PacktPublishing/Redis-4.x-Cookbook 示例代码包
+
+https://mp.weixin.qq.com/s?__biz=MzA3ODIxNjYxNQ==&mid=2247487742&amp;idx=1&amp;sn=72e1b0852b2705b72d2a8364586046d5&source=41#wechat_redirect  搭建一个redis高可用系统 
+
+
+https://blog.csdn.net/r939126607/article/details/90204048  redis通过Pipeline（管道）批量添加测试数据
+
+
+https://mp.weixin.qq.com/s/mO-NTdRkawxAPXggXXqclw    深入学习Redis高可用的基石：主从复制

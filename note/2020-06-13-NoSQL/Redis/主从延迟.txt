@@ -1,0 +1,60 @@
+
+
+
+https://blog.csdn.net/r939126607/article/details/90204048  redis通过Pipeline（管道）批量添加测试数据
+
+cat data.txt | redis-cli --pipe -h 192.168.0.113 -a 123456
+
+
+
+--latency         持续采样服务器延迟时间
+--latency-history 则是持续采集并每隔一段时间（15秒）输出一个记录
+
+latency 监控器Redis服务器的延迟
+	基本的延迟检查工具是 --latency 选项。 
+	可检测网络延迟，使用此选项，CLI运行一个循环，将PING命令发送到Redis实例，并测量获得答复的时间。
+	这种情况每秒发生100次，统计信息在控制台中实时更新：
+		–latency 持续采样服务器延迟时间，–latency-history则是持续采集并每隔一段时间（15秒）输出一个记录。
+		-i 使用时，设置命令执行间隔时间（单位秒，可以使用小数）
+
+[root@redis03 ~]# redis-cli -h 192.168.0.113 -a 123456 --latency
+min: 0, max: 3, avg: 0.10 (14323 samples)^C
+
+		
+[root@redis03 ~]# redis-cli -h 192.168.0.113 -a 123456 --latency-history -i 10
+min: 0, max: 1, avg: 0.12 (965 samples) -- 10.00 seconds range
+min: 0, max: 1, avg: 0.10 (963 samples) -- 10.01 seconds range
+min: 0, max: 1, avg: 0.10 (965 samples) -- 10.01 seconds range
+min: 0, max: 1, avg: 0.11 (964 samples) -- 10.01 seconds range
+min: 0, max: 2, avg: 0.11 (962 samples) -- 10.01 seconds range
+min: 0, max: 1, avg: 0.10 (963 samples) -- 10.01 seconds range
+min: 0, max: 1, avg: 0.10 (964 samples) -- 10.01 seconds range
+min: 0, max: 1, avg: 0.11 (964 samples) -- 10.01 seconds range
+min: 0, max: 1, avg: 0.10 (965 samples) -- 10.01 seconds range
+min: 0, max: 1, avg: 0.10 (965 samples) -- 10.01 seconds range
+min: 0, max: 1, avg: 0.07 (704 samples)^C
+
+
+min：     采样最小值，milliseconds
+max：     最大值
+avg：     平均值
+samples： 非零采样数
+period  采样时间，secondes
+
+
+1. 如何判断主从延迟
+
+redis-cli -h 192.168.0.113 -a 123456 --latency-history -i 10
+
+
+
+造成慢查询的因素:
+	慢查询
+	CPU使用率高
+	
+	
+
+相关参考:
+	https://www.cnblogs.com/zhuyeshen/p/10950156.html  redis延时监控
+	
+	

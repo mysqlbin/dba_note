@@ -1,0 +1,119 @@
+https://dev.mysql.com//Downloads/MySQL-5.7/mysql-5.7.20-linux-glibc2.12-x86_64.tar.gz
+https://dev.mysql.com//Downloads/MySQL-5.7/mysql-5.7.21-linux-glibc2.12-x86_64.tar.gz
+https://dev.mysql.com//Downloads/MySQL-5.7/mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz
+https://dev.mysql.com//Downloads/MySQL-5.7/mysql-5.7.23-linux-glibc2.12-x86_64.tar.gz
+https://dev.mysql.com//Downloads/MySQL-5.7/mysql-5.7.24-linux-glibc2.12-x86_64.tar.gz
+
+
+http://blog.csdn.net/nengyu/article/details/51615836
+下载mysql:
+官方网站上下载
+
+1. 创建一个帐号
+groupadd mysql
+useradd -g mysql -d /usr/local/mysql -s /sbin/nologin -M mysql
+id mysql
+
+2. 基本软件安装
+解压目录
+mkdir /opt/mysql
+cd /opt/mysql
+tar zxvf /vagrant/MySQL/mysql-5.7.19-linux-glibc2.12-x86_64.tar.gz
+安装目录
+cd /usr/local/
+ln -s /opt/mysql/mysql-5.7.22-linux-glibc2.12-x86_64 mysql
+ln -s /opt/mysql/mysql-5.7.19-linux-glibc2.12-x86_64 mysql
+
+
+ln -s /opt/mysql/xenon-tokudb-mysql-5.7.19 mysql
+
+
+chown -R mysql:mysql mysql/
+
+chown mysql:mysql /data/mysql/3306/
+
+
+3. 数据库相关的目录创建出来
+配置文件：/etc/my.cnf
+/data  是一个单独挂载的一个分区
+datadir /data/mysql/mysql3306/data
+binlog  /data/mysql/mysql3306/logs
+        /data/mysql/mysql3306/tmp
+mkdir /mydata/mysql/3306/{data,logs,tmp} -p
+
+
+chown -R mysql:mysql mysql3306/
+
+
+4. 初始化
+cd /usr/local/mysql
+/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --initialize      //生成data目录下的文件 ，如果没有生成数据库文件 ，会报“pid”错误
+/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --initialize-insecure //生成data目录下的文件 ，如果没有生成数据库文件 ，会报“pid”错误
+(mysql -h 192.168.23.3 -uroot -P3308 OR mysql)
+
+
+报错：
+./bin/mysqld: error while loading shared libraries: libaio.so.1: cannot open shared object file: No such file or directory
+yum install -y libaio  //安装后在初始化就OK了
+
+
+5.6,5.5,5.1
+./script/mysql_db_install
+
+./bin/mysql_db_install
+
+
+
+5. 启动
+cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql
+/etc/init.d/mysql start
+
+OR 
+
+/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf & (生成.sock文件)
+
+/usr/local/mysql/bin/mysqld --defaults-file=/mydata/mysql/mysql3306/my.cnf &
+
+6：
+添加环境变量：
+echo $PATH
+echo "export PATH=$PATH:/usr/local/mysql-5.6.36/bin">>/etc/profile
+source /etc/profile  //让配置生效
+
+7：
+设置权限
+chown -R mysql:mysql *
+
+查看密码：：   51ad19k)ZN_0
+cat error.log |grep password
+
+6.连接
+mysql -S /tmp/mysql3306.sock -p
+>alter user user() identified by '123456abc';
+
+7. 关闭mysql
+/etc/init.d/mysql stop
+
+
+判断MYSQL服务器是否安装成功：：
+进程在不在
+启动日志 error.log
+看看能不能连接
+
+查看所有的日志
+show global variables like '%log%'
+
+show binary logs;
+
+help show
+
+
+
+
+
+/etc/init.d/mysql start
+mysql -S /tmp/mysql3306.sock -p
+
+
+
+sudo scripts/anemometer_collect.sh --socket /tmp/mysql3306.sock  --interval 30 --history-db-host 192.168.1.23 --defaults-file scripts/anemometer.server.cnf --history-defaults-file scripts/anemometer.localhost.cnf

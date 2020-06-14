@@ -1,0 +1,2658 @@
+/usr/local/mysql/bin/mysqld, Version: 8.0.18 (MySQL Community Server - GPL). started with:
+Tcp port: 3306  Unix socket: /tmp/mysql.sock
+Time                 Id Command    Argument
+2020-05-07T08:46:16.781064Z	   42 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:16.781554Z	   42 Query	SET autocommit=true
+2020-05-07T08:46:16.781885Z	   42 Query	SET NAMES utf8mb4
+2020-05-07T08:46:16.782126Z	   42 Query	select @@global.version
+2020-05-07T08:46:16.782950Z	   42 Query	select @@global.port
+2020-05-07T08:46:16.783488Z	   42 Query	select @@global.hostname, @@global.port
+2020-05-07T08:46:16.783844Z	   42 Query	show /* gh-ost */ grants for current_user()
+2020-05-07T08:46:16.784419Z	   42 Query	select @@global.log_bin, @@global.binlog_format
+2020-05-07T08:46:16.784686Z	   42 Query	select @@global.binlog_row_image
+2020-05-07T08:46:16.786268Z	   43 Connect	app_user@192.168.0.91 on information_schema using TCP/IP
+2020-05-07T08:46:16.786577Z	   43 Query	SET autocommit=true
+2020-05-07T08:46:16.786879Z	   43 Query	SET NAMES utf8mb4
+2020-05-07T08:46:16.787054Z	   43 Query	show slave status
+2020-05-07T08:46:16.787751Z	   42 Query	show /* gh-ost */ table status from `sbtest` like 't1_10w'
+2020-05-07T08:46:16.791543Z	   43 Quit	
+2020-05-07T08:46:16.792076Z	   42 Query	SELECT
+			SUM(REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_SCHEMA='sbtest' AND TABLE_NAME='t1_10w') as num_child_side_fk,
+			SUM(REFERENCED_TABLE_NAME IS NOT NULL AND REFERENCED_TABLE_SCHEMA='sbtest' AND REFERENCED_TABLE_NAME='t1_10w') as num_parent_side_fk
+		FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+		WHERE
+				REFERENCED_TABLE_NAME IS NOT NULL
+				AND ((TABLE_SCHEMA='sbtest' AND TABLE_NAME='t1_10w')
+					OR (REFERENCED_TABLE_SCHEMA='sbtest' AND REFERENCED_TABLE_NAME='t1_10w')
+				)
+2020-05-07T08:46:16.806734Z	   42 Query	SELECT COUNT(*) AS num_triggers
+			FROM INFORMATION_SCHEMA.TRIGGERS
+			WHERE
+				TRIGGER_SCHEMA='sbtest'
+				AND EVENT_OBJECT_TABLE='t1_10w'
+2020-05-07T08:46:16.808229Z	   42 Query	explain select /* gh-ost */ * from `sbtest`.`t1_10w` where 1=1
+2020-05-07T08:46:16.810245Z	   42 Query	SELECT
+      COLUMNS.TABLE_SCHEMA,
+      COLUMNS.TABLE_NAME,
+      COLUMNS.COLUMN_NAME,
+      UNIQUES.INDEX_NAME,
+      UNIQUES.COLUMN_NAMES,
+      UNIQUES.COUNT_COLUMN_IN_INDEX,
+      COLUMNS.DATA_TYPE,
+      COLUMNS.CHARACTER_SET_NAME,
+			LOCATE('auto_increment', EXTRA) > 0 as is_auto_increment,
+      has_nullable
+    FROM INFORMATION_SCHEMA.COLUMNS INNER JOIN (
+      SELECT
+        TABLE_SCHEMA,
+        TABLE_NAME,
+        INDEX_NAME,
+        COUNT(*) AS COUNT_COLUMN_IN_INDEX,
+        GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX ASC) AS COLUMN_NAMES,
+        SUBSTRING_INDEX(GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX ASC), ',', 1) AS FIRST_COLUMN_NAME,
+        SUM(NULLABLE='YES') > 0 AS has_nullable
+      FROM INFORMATION_SCHEMA.STATISTICS
+      WHERE
+				NON_UNIQUE=0
+				AND TABLE_SCHEMA = 'sbtest'
+      	AND TABLE_NAME = 't1_10w'
+      GROUP BY TABLE_SCHEMA, TABLE_NAME, INDEX_NAME
+    ) AS UNIQUES
+    ON (
+      COLUMNS.COLUMN_NAME = UNIQUES.FIRST_COLUMN_NAME
+    )
+    WHERE
+      COLUMNS.TABLE_SCHEMA = 'sbtest'
+      AND COLUMNS.TABLE_NAME = 't1_10w'
+    ORDER BY
+      COLUMNS.TABLE_SCHEMA, COLUMNS.TABLE_NAME,
+      CASE UNIQUES.INDEX_NAME
+        WHEN 'PRIMARY' THEN 0
+        ELSE 1
+      END,
+      CASE has_nullable
+        WHEN 0 THEN 0
+        ELSE 1
+      END,
+      CASE IFNULL(CHARACTER_SET_NAME, '')
+          WHEN '' THEN 0
+          ELSE 1
+      END,
+      CASE DATA_TYPE
+        WHEN 'tinyint' THEN 0
+        WHEN 'smallint' THEN 1
+        WHEN 'int' THEN 2
+        WHEN 'bigint' THEN 3
+        ELSE 100
+      END,
+      COUNT_COLUMN_IN_INDEX
+2020-05-07T08:46:16.814263Z	   42 Query	show columns from `sbtest`.`t1_10w`
+2020-05-07T08:46:16.816481Z	   44 Connect	app_user@192.168.0.91 on information_schema using TCP/IP
+2020-05-07T08:46:16.816642Z	   44 Query	SET autocommit=true
+2020-05-07T08:46:16.816829Z	   44 Query	SET NAMES utf8mb4
+2020-05-07T08:46:16.816928Z	   44 Query	show slave status
+2020-05-07T08:46:16.817144Z	   44 Quit	
+2020-05-07T08:46:16.817372Z	   42 Query	select @@global.log_slave_updates
+2020-05-07T08:46:16.817586Z	   42 Query	select @@global.version
+2020-05-07T08:46:16.817967Z	   42 Query	select @@global.port
+2020-05-07T08:46:16.818116Z	   42 Query	show /* gh-ost readCurrentBinlogCoordinates */ master status
+2020-05-07T08:46:16.819401Z	   45 Connect	app_user@192.168.0.91 on  using TCP/IP
+2020-05-07T08:46:16.819555Z	   45 Query	SHOW GLOBAL VARIABLES LIKE 'BINLOG_CHECKSUM'
+2020-05-07T08:46:16.822260Z	   45 Query	SET @master_binlog_checksum='NONE'
+2020-05-07T08:46:16.822477Z	   42 Query	select @@global.version
+2020-05-07T08:46:16.822586Z	   45 Binlog Dump	Log: 'mysql-bin.000006'  Pos: 625655
+2020-05-07T08:46:16.823089Z	   42 Query	select @@global.port
+2020-05-07T08:46:16.823562Z	   46 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:16.823775Z	   46 Query	SET autocommit=true
+2020-05-07T08:46:16.823900Z	   46 Query	SET NAMES utf8mb4
+2020-05-07T08:46:16.824074Z	   46 Query	select @@global.version
+2020-05-07T08:46:16.824409Z	   46 Query	select @@global.port
+2020-05-07T08:46:16.824549Z	   42 Query	select @@global.time_zone
+2020-05-07T08:46:16.824694Z	   42 Query	select @@global.hostname, @@global.port
+2020-05-07T08:46:16.824870Z	   42 Query	show columns from `sbtest`.`t1_10w`
+2020-05-07T08:46:16.826140Z	   42 Query	show /* gh-ost */ table status from `sbtest` like '_t1_10w_gho'
+2020-05-07T08:46:16.827251Z	   42 Query	show /* gh-ost */ table status from `sbtest` like '_t1_10w_del'
+2020-05-07T08:46:16.829407Z	   46 Quit	
+2020-05-07T08:46:16.829758Z	   42 Quit	
+2020-05-07T08:46:21.761913Z	   47 Connect	app_user@192.168.0.71 on  using TCP/IP
+2020-05-07T08:46:21.762653Z	   47 Query	SET NAMES utf8
+2020-05-07T08:46:21.763290Z	   47 Init DB	sbtest
+2020-05-07T08:46:21.763941Z	   47 Query	SHOW FULL TABLES WHERE Table_type != 'VIEW'
+2020-05-07T08:46:21.770225Z	   47 Query	SHOW TABLE STATUS
+2020-05-07T08:46:24.566536Z	   47 Query	DROP TABLE `_t1_10w_del`
+2020-05-07T08:46:25.762191Z	   47 Query	SHOW FULL TABLES WHERE Table_type != 'VIEW'
+2020-05-07T08:46:25.767350Z	   47 Query	SHOW TABLE STATUS
+2020-05-07T08:46:29.124615Z	   48 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:29.124984Z	   48 Query	SET autocommit=true
+2020-05-07T08:46:29.125203Z	   48 Query	SET NAMES utf8mb4
+2020-05-07T08:46:29.125517Z	   48 Query	select @@global.version
+2020-05-07T08:46:29.126187Z	   48 Query	select @@global.port
+2020-05-07T08:46:29.126543Z	   48 Query	select @@global.hostname, @@global.port
+2020-05-07T08:46:29.126790Z	   48 Query	show /* gh-ost */ grants for current_user()
+2020-05-07T08:46:29.127305Z	   48 Query	select @@global.log_bin, @@global.binlog_format
+2020-05-07T08:46:29.127637Z	   48 Query	select @@global.binlog_row_image
+2020-05-07T08:46:29.128804Z	   49 Connect	app_user@192.168.0.91 on information_schema using TCP/IP
+2020-05-07T08:46:29.129265Z	   49 Query	SET autocommit=true
+2020-05-07T08:46:29.129666Z	   49 Query	SET NAMES utf8mb4
+2020-05-07T08:46:29.129972Z	   49 Query	show slave status
+2020-05-07T08:46:29.130560Z	   48 Query	show /* gh-ost */ table status from `sbtest` like 't1_10w'
+2020-05-07T08:46:29.134561Z	   49 Quit	
+2020-05-07T08:46:29.135481Z	   48 Query	SELECT
+			SUM(REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_SCHEMA='sbtest' AND TABLE_NAME='t1_10w') as num_child_side_fk,
+			SUM(REFERENCED_TABLE_NAME IS NOT NULL AND REFERENCED_TABLE_SCHEMA='sbtest' AND REFERENCED_TABLE_NAME='t1_10w') as num_parent_side_fk
+		FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
+		WHERE
+				REFERENCED_TABLE_NAME IS NOT NULL
+				AND ((TABLE_SCHEMA='sbtest' AND TABLE_NAME='t1_10w')
+					OR (REFERENCED_TABLE_SCHEMA='sbtest' AND REFERENCED_TABLE_NAME='t1_10w')
+				)
+2020-05-07T08:46:29.158218Z	   48 Query	SELECT COUNT(*) AS num_triggers
+			FROM INFORMATION_SCHEMA.TRIGGERS
+			WHERE
+				TRIGGER_SCHEMA='sbtest'
+				AND EVENT_OBJECT_TABLE='t1_10w'
+2020-05-07T08:46:29.160594Z	   48 Query	explain select /* gh-ost */ * from `sbtest`.`t1_10w` where 1=1
+2020-05-07T08:46:29.161752Z	   48 Query	SELECT
+      COLUMNS.TABLE_SCHEMA,
+      COLUMNS.TABLE_NAME,
+      COLUMNS.COLUMN_NAME,
+      UNIQUES.INDEX_NAME,
+      UNIQUES.COLUMN_NAMES,
+      UNIQUES.COUNT_COLUMN_IN_INDEX,
+      COLUMNS.DATA_TYPE,
+      COLUMNS.CHARACTER_SET_NAME,
+			LOCATE('auto_increment', EXTRA) > 0 as is_auto_increment,
+      has_nullable
+    FROM INFORMATION_SCHEMA.COLUMNS INNER JOIN (
+      SELECT
+        TABLE_SCHEMA,
+        TABLE_NAME,
+        INDEX_NAME,
+        COUNT(*) AS COUNT_COLUMN_IN_INDEX,
+        GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX ASC) AS COLUMN_NAMES,
+        SUBSTRING_INDEX(GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX ASC), ',', 1) AS FIRST_COLUMN_NAME,
+        SUM(NULLABLE='YES') > 0 AS has_nullable
+      FROM INFORMATION_SCHEMA.STATISTICS
+      WHERE
+				NON_UNIQUE=0
+				AND TABLE_SCHEMA = 'sbtest'
+      	AND TABLE_NAME = 't1_10w'
+      GROUP BY TABLE_SCHEMA, TABLE_NAME, INDEX_NAME
+    ) AS UNIQUES
+    ON (
+      COLUMNS.COLUMN_NAME = UNIQUES.FIRST_COLUMN_NAME
+    )
+    WHERE
+      COLUMNS.TABLE_SCHEMA = 'sbtest'
+      AND COLUMNS.TABLE_NAME = 't1_10w'
+    ORDER BY
+      COLUMNS.TABLE_SCHEMA, COLUMNS.TABLE_NAME,
+      CASE UNIQUES.INDEX_NAME
+        WHEN 'PRIMARY' THEN 0
+        ELSE 1
+      END,
+      CASE has_nullable
+        WHEN 0 THEN 0
+        ELSE 1
+      END,
+      CASE IFNULL(CHARACTER_SET_NAME, '')
+          WHEN '' THEN 0
+          ELSE 1
+      END,
+      CASE DATA_TYPE
+        WHEN 'tinyint' THEN 0
+        WHEN 'smallint' THEN 1
+        WHEN 'int' THEN 2
+        WHEN 'bigint' THEN 3
+        ELSE 100
+      END,
+      COUNT_COLUMN_IN_INDEX
+2020-05-07T08:46:29.167353Z	   48 Query	show columns from `sbtest`.`t1_10w`
+2020-05-07T08:46:29.170384Z	   50 Connect	app_user@192.168.0.91 on information_schema using TCP/IP
+2020-05-07T08:46:29.170709Z	   50 Query	SET NAMES utf8mb4
+2020-05-07T08:46:29.170878Z	   50 Query	SET autocommit=true
+2020-05-07T08:46:29.171103Z	   50 Query	show slave status
+2020-05-07T08:46:29.171545Z	   50 Quit	
+2020-05-07T08:46:29.171787Z	   48 Query	select @@global.log_slave_updates
+2020-05-07T08:46:29.172126Z	   48 Query	select @@global.version
+2020-05-07T08:46:29.172496Z	   48 Query	select @@global.port
+2020-05-07T08:46:29.172744Z	   48 Query	show /* gh-ost readCurrentBinlogCoordinates */ master status
+2020-05-07T08:46:29.174810Z	   51 Connect	app_user@192.168.0.91 on  using TCP/IP
+2020-05-07T08:46:29.175219Z	   51 Query	SHOW GLOBAL VARIABLES LIKE 'BINLOG_CHECKSUM'
+2020-05-07T08:46:29.179126Z	   51 Query	SET @master_binlog_checksum='NONE'
+2020-05-07T08:46:29.179839Z	   48 Query	select @@global.version
+2020-05-07T08:46:29.180265Z	   51 Binlog Dump	Log: 'mysql-bin.000006'  Pos: 625864
+2020-05-07T08:46:29.181214Z	   48 Query	select @@global.port
+2020-05-07T08:46:29.181706Z	   52 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:29.181836Z	   52 Query	SET autocommit=true
+2020-05-07T08:46:29.181957Z	   52 Query	SET NAMES utf8mb4
+2020-05-07T08:46:29.182033Z	   52 Query	select @@global.version
+2020-05-07T08:46:29.182204Z	   52 Query	select @@global.port
+2020-05-07T08:46:29.182295Z	   48 Query	select @@global.time_zone
+2020-05-07T08:46:29.182422Z	   48 Query	select @@global.hostname, @@global.port
+2020-05-07T08:46:29.182584Z	   48 Query	show columns from `sbtest`.`t1_10w`
+2020-05-07T08:46:29.183900Z	   48 Query	show /* gh-ost */ table status from `sbtest` like '_t1_10w_gho'
+2020-05-07T08:46:29.185525Z	   48 Query	show /* gh-ost */ table status from `sbtest` like '_t1_10w_del'
+2020-05-07T08:46:29.187081Z	   48 Query	drop /* gh-ost */ table if exists `sbtest`.`_t1_10w_ghc`
+2020-05-07T08:46:29.194220Z	   48 Query	create /* gh-ost */ table `sbtest`.`_t1_10w_ghc` (
+			id bigint auto_increment,
+			last_update timestamp not null DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			hint varchar(64) charset ascii not null,
+			value varchar(4096) charset ascii not null,
+			primary key(id),
+			unique key hint_uidx(hint)
+		) auto_increment=256
+2020-05-07T08:46:29.246895Z	   48 Query	create /* gh-ost */ table `sbtest`.`_t1_10w_gho` like `sbtest`.`t1_10w`
+2020-05-07T08:46:29.293285Z	   48 Query	alter /* gh-ost */ table `sbtest`.`_t1_10w_gho` engine=innodb
+2020-05-07T08:46:29.371243Z	   48 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(2, 0), 'state', 'GhostTableMigrated')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:29.383303Z	   48 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'state at 1588841189380272646', 'GhostTableMigrated')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:29.395286Z	   53 Connect	app_user@192.168.0.91 on information_schema using TCP/IP
+2020-05-07T08:46:29.395468Z	   53 Query	SET autocommit=true
+2020-05-07T08:46:29.395567Z	   53 Query	SET NAMES utf8mb4
+2020-05-07T08:46:29.395637Z	   53 Query	show slave status
+2020-05-07T08:46:29.396109Z	   54 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:29.396219Z	   54 Query	SET NAMES utf8mb4
+2020-05-07T08:46:29.396290Z	   54 Query	SET autocommit=true
+2020-05-07T08:46:29.396550Z	   54 Query	SELECT
+      COLUMNS.TABLE_SCHEMA,
+      COLUMNS.TABLE_NAME,
+      COLUMNS.COLUMN_NAME,
+      UNIQUES.INDEX_NAME,
+      UNIQUES.COLUMN_NAMES,
+      UNIQUES.COUNT_COLUMN_IN_INDEX,
+      COLUMNS.DATA_TYPE,
+      COLUMNS.CHARACTER_SET_NAME,
+			LOCATE('auto_increment', EXTRA) > 0 as is_auto_increment,
+      has_nullable
+    FROM INFORMATION_SCHEMA.COLUMNS INNER JOIN (
+      SELECT
+        TABLE_SCHEMA,
+        TABLE_NAME,
+        INDEX_NAME,
+        COUNT(*) AS COUNT_COLUMN_IN_INDEX,
+        GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX ASC) AS COLUMN_NAMES,
+        SUBSTRING_INDEX(GROUP_CONCAT(COLUMN_NAME ORDER BY SEQ_IN_INDEX ASC), ',', 1) AS FIRST_COLUMN_NAME,
+        SUM(NULLABLE='YES') > 0 AS has_nullable
+      FROM INFORMATION_SCHEMA.STATISTICS
+      WHERE
+				NON_UNIQUE=0
+				AND TABLE_SCHEMA = 'sbtest'
+      	AND TABLE_NAME = '_t1_10w_gho'
+      GROUP BY TABLE_SCHEMA, TABLE_NAME, INDEX_NAME
+    ) AS UNIQUES
+    ON (
+      COLUMNS.COLUMN_NAME = UNIQUES.FIRST_COLUMN_NAME
+    )
+    WHERE
+      COLUMNS.TABLE_SCHEMA = 'sbtest'
+      AND COLUMNS.TABLE_NAME = '_t1_10w_gho'
+    ORDER BY
+      COLUMNS.TABLE_SCHEMA, COLUMNS.TABLE_NAME,
+      CASE UNIQUES.INDEX_NAME
+        WHEN 'PRIMARY' THEN 0
+        ELSE 1
+      END,
+      CASE has_nullable
+        WHEN 0 THEN 0
+        ELSE 1
+      END,
+      CASE IFNULL(CHARACTER_SET_NAME, '')
+          WHEN '' THEN 0
+          ELSE 1
+      END,
+      CASE DATA_TYPE
+        WHEN 'tinyint' THEN 0
+        WHEN 'smallint' THEN 1
+        WHEN 'int' THEN 2
+        WHEN 'bigint' THEN 3
+        ELSE 100
+      END,
+      COUNT_COLUMN_IN_INDEX
+2020-05-07T08:46:29.399916Z	   48 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:29.394843239+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:29.400268Z	   54 Query	show columns from `sbtest`.`_t1_10w_gho`
+2020-05-07T08:46:29.401509Z	   54 Query	select
+				*
+			from
+				information_schema.columns
+			where
+				table_schema='sbtest'
+				and table_name='t1_10w'
+2020-05-07T08:46:29.402721Z	   54 Query	select
+				*
+			from
+				information_schema.columns
+			where
+				table_schema='sbtest'
+				and table_name='t1_10w'
+2020-05-07T08:46:29.404014Z	   54 Query	select
+				*
+			from
+				information_schema.columns
+			where
+				table_schema='sbtest'
+				and table_name='_t1_10w_gho'
+2020-05-07T08:46:29.405281Z	   54 Query	select /* gh-ost `sbtest`.`t1_10w` */ `id`
+				from
+					`sbtest`.`t1_10w`
+				order by
+					`id` asc
+				limit 1
+2020-05-07T08:46:29.405681Z	   54 Query	select /* gh-ost `sbtest`.`t1_10w` */ `id`
+				from
+					`sbtest`.`t1_10w`
+				order by
+					`id` desc
+				limit 1
+2020-05-07T08:46:29.405954Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:29.406862Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'copy iteration 0 at 1588841189', 'Copy: 0/100470 0.0%; Applied: 0; Backlog: 0/1000; Time: 0s(total), 0s(copy); streamer: mysql-bin.000006:627677; Lag: 0.00s, State: migrating; ETA: N/A')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:29.506714Z	   48 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:29.511110Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:29.510949318+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:29.607185Z	   48 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:29.611082Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:29.610920106+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:29.707322Z	   48 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:29.711261Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:29.711054207+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:29.807226Z	   48 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:29.811118Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:29.810954491+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:29.907424Z	   48 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:29.911024Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:29.910737911+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.006763Z	   48 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:30.011350Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:30.011126404+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.107304Z	   48 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:30.111041Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:30.110922393+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.207290Z	   48 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:30.210990Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:30.21073146+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.307459Z	   48 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:30.311318Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:30.311101788+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.406749Z	   48 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:30.407714Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:0 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'1') or ((`id` = _binary'1'))) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.409200Z	   48 Query	START TRANSACTION
+2020-05-07T08:46:30.409501Z	   48 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.409823Z	   48 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'1') or ((`id` = _binary'1'))) and ((`id` < _binary'1000') or ((`id` = _binary'1000')))) lock in share mode
+      )
+2020-05-07T08:46:30.422826Z	   55 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:30.423208Z	   55 Query	SET autocommit=true
+2020-05-07T08:46:30.423459Z	   55 Query	SET NAMES utf8mb4
+2020-05-07T08:46:30.423837Z	   55 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:30.421560888+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.424652Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'copy iteration 0 at 1588841190', 'Copy: 0/100470 0.0%; Applied: 0; Backlog: 0/1000; Time: 1s(total), 1s(copy); streamer: mysql-bin.000006:632100; Lag: 0.10s, State: migrating; ETA: N/A')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.440570Z	   48 Query	COMMIT
+2020-05-07T08:46:30.473640Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:1 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'1000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.474893Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.475053Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.475399Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'1000')) and ((`id` < _binary'2000') or ((`id` = _binary'2000')))) lock in share mode
+      )
+2020-05-07T08:46:30.476205Z	   48 Quit	
+2020-05-07T08:46:30.500678Z	   54 Query	COMMIT
+2020-05-07T08:46:30.506663Z	   55 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:30.509715Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:2 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'2000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.510271Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.510348Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.510513Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'2000')) and ((`id` < _binary'3000') or ((`id` = _binary'3000')))) lock in share mode
+      )
+2020-05-07T08:46:30.513498Z	   55 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:30.513281935+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.521548Z	   54 Query	COMMIT
+2020-05-07T08:46:30.533245Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:3 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'3000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.533778Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.533888Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.534024Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'3000')) and ((`id` < _binary'4000') or ((`id` = _binary'4000')))) lock in share mode
+      )
+2020-05-07T08:46:30.553210Z	   54 Query	COMMIT
+2020-05-07T08:46:30.567142Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:4 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'4000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.567669Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.567744Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.567931Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'4000')) and ((`id` < _binary'5000') or ((`id` = _binary'5000')))) lock in share mode
+      )
+2020-05-07T08:46:30.580170Z	   54 Query	COMMIT
+2020-05-07T08:46:30.593007Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:5 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'5000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.593731Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.593817Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.593976Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'5000')) and ((`id` < _binary'6000') or ((`id` = _binary'6000')))) lock in share mode
+      )
+2020-05-07T08:46:30.607818Z	   55 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:30.610901Z	   55 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:30.610749516+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.613678Z	   54 Query	COMMIT
+2020-05-07T08:46:30.623291Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:6 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'6000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.624042Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.624152Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.624255Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'6000')) and ((`id` < _binary'7000') or ((`id` = _binary'7000')))) lock in share mode
+      )
+2020-05-07T08:46:30.633756Z	   54 Query	COMMIT
+2020-05-07T08:46:30.642874Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:7 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'7000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.643630Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.643720Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.643819Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'7000')) and ((`id` < _binary'8000') or ((`id` = _binary'8000')))) lock in share mode
+      )
+2020-05-07T08:46:30.662929Z	   54 Query	COMMIT
+2020-05-07T08:46:30.671700Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:8 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'8000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.672245Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.672323Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.672709Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'8000')) and ((`id` < _binary'9000') or ((`id` = _binary'9000')))) lock in share mode
+      )
+2020-05-07T08:46:30.684729Z	   54 Query	COMMIT
+2020-05-07T08:46:30.695447Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:9 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'9000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.697595Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.697756Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.697916Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'9000')) and ((`id` < _binary'10000') or ((`id` = _binary'10000')))) lock in share mode
+      )
+2020-05-07T08:46:30.707612Z	   55 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:30.711088Z	   55 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:30.71099916+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.717542Z	   54 Query	COMMIT
+2020-05-07T08:46:30.725739Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:10 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'10000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.726246Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.726322Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.726505Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'10000')) and ((`id` < _binary'11000') or ((`id` = _binary'11000')))) lock in share mode
+      )
+2020-05-07T08:46:30.737997Z	   54 Query	COMMIT
+2020-05-07T08:46:30.744760Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:11 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'11000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.745252Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:30.745328Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.745703Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'11000')) and ((`id` < _binary'12000') or ((`id` = _binary'12000')))) lock in share mode
+      )
+2020-05-07T08:46:30.797305Z	   54 Query	COMMIT
+2020-05-07T08:46:30.806803Z	   55 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:30.811676Z	   55 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:12 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'12000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.812172Z	   55 Query	START TRANSACTION
+2020-05-07T08:46:30.812246Z	   55 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.812367Z	   55 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'12000')) and ((`id` < _binary'13000') or ((`id` = _binary'13000')))) lock in share mode
+      )
+2020-05-07T08:46:30.816009Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:30.811588252+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.828460Z	   55 Query	COMMIT
+2020-05-07T08:46:30.895164Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:13 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'13000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.896672Z	   55 Query	START TRANSACTION
+2020-05-07T08:46:30.896903Z	   55 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.897150Z	   55 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'13000')) and ((`id` < _binary'14000') or ((`id` = _binary'14000')))) lock in share mode
+      )
+2020-05-07T08:46:30.906742Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:30.916913Z	   56 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:30.917156Z	   56 Query	SET autocommit=true
+2020-05-07T08:46:30.917288Z	   56 Query	SET NAMES utf8mb4
+2020-05-07T08:46:30.917544Z	   56 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:30.915666206+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:30.956521Z	   55 Query	COMMIT
+2020-05-07T08:46:30.974381Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:14 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'14000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:30.975377Z	   56 Query	START TRANSACTION
+2020-05-07T08:46:30.975530Z	   56 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:30.975676Z	   56 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'14000')) and ((`id` < _binary'15000') or ((`id` = _binary'15000')))) lock in share mode
+      )
+2020-05-07T08:46:30.985689Z	   55 Quit	
+2020-05-07T08:46:31.001571Z	   56 Query	COMMIT
+2020-05-07T08:46:31.006604Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:31.010412Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:15 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'15000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.011328Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.011477Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.011661Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'15000')) and ((`id` < _binary'16000') or ((`id` = _binary'16000')))) lock in share mode
+      )
+2020-05-07T08:46:31.014257Z	   56 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:31.01107471+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.037172Z	   54 Query	COMMIT
+2020-05-07T08:46:31.046245Z	   56 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:16 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'16000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.047205Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.047322Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.047523Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'16000')) and ((`id` < _binary'17000') or ((`id` = _binary'17000')))) lock in share mode
+      )
+2020-05-07T08:46:31.063237Z	   54 Query	COMMIT
+2020-05-07T08:46:31.074795Z	   56 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:17 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'17000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.075973Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.076101Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.076248Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'17000')) and ((`id` < _binary'18000') or ((`id` = _binary'18000')))) lock in share mode
+      )
+2020-05-07T08:46:31.105950Z	   54 Query	COMMIT
+2020-05-07T08:46:31.106814Z	   56 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:31.111013Z	   56 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:31.110901191+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.113721Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:18 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'18000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.114511Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.114629Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.114767Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'18000')) and ((`id` < _binary'19000') or ((`id` = _binary'19000')))) lock in share mode
+      )
+2020-05-07T08:46:31.130041Z	   54 Query	COMMIT
+2020-05-07T08:46:31.148595Z	   56 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:19 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'19000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.149420Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.149531Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.149679Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'19000')) and ((`id` < _binary'20000') or ((`id` = _binary'20000')))) lock in share mode
+      )
+2020-05-07T08:46:31.171425Z	   54 Query	COMMIT
+2020-05-07T08:46:31.181572Z	   56 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:20 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'20000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.182213Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.182315Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.182746Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'20000')) and ((`id` < _binary'21000') or ((`id` = _binary'21000')))) lock in share mode
+      )
+2020-05-07T08:46:31.201661Z	   54 Query	COMMIT
+2020-05-07T08:46:31.207099Z	   56 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:31.212741Z	   56 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:21 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'21000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.213471Z	   56 Query	START TRANSACTION
+2020-05-07T08:46:31.213576Z	   56 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.213707Z	   56 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'21000')) and ((`id` < _binary'22000') or ((`id` = _binary'22000')))) lock in share mode
+      )
+2020-05-07T08:46:31.216479Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:31.21250087+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.306660Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:31.311053Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:31.310942086+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.328590Z	   56 Query	COMMIT
+2020-05-07T08:46:31.342447Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:22 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'22000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.343475Z	   56 Query	START TRANSACTION
+2020-05-07T08:46:31.343599Z	   56 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.343740Z	   56 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'22000')) and ((`id` < _binary'23000') or ((`id` = _binary'23000')))) lock in share mode
+      )
+2020-05-07T08:46:31.352497Z	   56 Query	COMMIT
+2020-05-07T08:46:31.361754Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:23 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'23000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.363423Z	   56 Query	START TRANSACTION
+2020-05-07T08:46:31.363552Z	   56 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.363693Z	   56 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'23000')) and ((`id` < _binary'24000') or ((`id` = _binary'24000')))) lock in share mode
+      )
+2020-05-07T08:46:31.372027Z	   56 Query	COMMIT
+2020-05-07T08:46:31.392254Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:24 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'24000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.393023Z	   56 Query	START TRANSACTION
+2020-05-07T08:46:31.393102Z	   56 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.393197Z	   56 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'24000')) and ((`id` < _binary'25000') or ((`id` = _binary'25000')))) lock in share mode
+      )
+2020-05-07T08:46:31.400036Z	   56 Query	COMMIT
+2020-05-07T08:46:31.406546Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:31.411101Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:31.410907487+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.420556Z	   57 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:31.420656Z	   57 Query	SET autocommit=true
+2020-05-07T08:46:31.420716Z	   57 Query	SET NAMES utf8mb4
+2020-05-07T08:46:31.420801Z	   57 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'copy iteration 24 at 1588841191', 'Copy: 24000/100470 23.9%; Applied: 0; Backlog: 0/1000; Time: 2s(total), 2s(copy); streamer: mysql-bin.000006:762844; Lag: 0.10s, State: migrating; ETA: 6s')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.441307Z	   56 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:25 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'25000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.441982Z	   56 Query	START TRANSACTION
+2020-05-07T08:46:31.442069Z	   56 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.442159Z	   56 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'25000')) and ((`id` < _binary'26000') or ((`id` = _binary'26000')))) lock in share mode
+      )
+2020-05-07T08:46:31.449050Z	   56 Query	COMMIT
+2020-05-07T08:46:31.491878Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:26 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'26000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.492581Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.492693Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.492804Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'26000')) and ((`id` < _binary'27000') or ((`id` = _binary'27000')))) lock in share mode
+      )
+2020-05-07T08:46:31.498899Z	   56 Quit	
+2020-05-07T08:46:31.499024Z	   57 Query	COMMIT
+2020-05-07T08:46:31.506599Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:31.511086Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:31.510982872+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.515736Z	   57 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:27 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'27000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.516237Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.516313Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.516495Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'27000')) and ((`id` < _binary'28000') or ((`id` = _binary'28000')))) lock in share mode
+      )
+2020-05-07T08:46:31.522959Z	   57 Query	COMMIT
+2020-05-07T08:46:31.533223Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:28 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'28000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.533940Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.534051Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.534149Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'28000')) and ((`id` < _binary'29000') or ((`id` = _binary'29000')))) lock in share mode
+      )
+2020-05-07T08:46:31.541083Z	   57 Query	COMMIT
+2020-05-07T08:46:31.548632Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:29 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'29000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.549363Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.549464Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.549561Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'29000')) and ((`id` < _binary'30000') or ((`id` = _binary'30000')))) lock in share mode
+      )
+2020-05-07T08:46:31.555893Z	   57 Query	COMMIT
+2020-05-07T08:46:31.563843Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:30 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'30000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.564649Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.564738Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.564860Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'30000')) and ((`id` < _binary'31000') or ((`id` = _binary'31000')))) lock in share mode
+      )
+2020-05-07T08:46:31.571000Z	   57 Query	COMMIT
+2020-05-07T08:46:31.578026Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:31 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'31000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.578692Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.578792Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.579122Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'31000')) and ((`id` < _binary'32000') or ((`id` = _binary'32000')))) lock in share mode
+      )
+2020-05-07T08:46:31.585492Z	   57 Query	COMMIT
+2020-05-07T08:46:31.594038Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:32 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'32000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.594714Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.594875Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.594985Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'32000')) and ((`id` < _binary'33000') or ((`id` = _binary'33000')))) lock in share mode
+      )
+2020-05-07T08:46:31.601569Z	   57 Query	COMMIT
+2020-05-07T08:46:31.606591Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:31.610462Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:33 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'33000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.611099Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.611167Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.611257Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'33000')) and ((`id` < _binary'34000') or ((`id` = _binary'34000')))) lock in share mode
+      )
+2020-05-07T08:46:31.617472Z	   57 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:31.61102984+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.617656Z	   54 Query	COMMIT
+2020-05-07T08:46:31.635835Z	   57 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:34 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'34000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.637238Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.637382Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.637750Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'34000')) and ((`id` < _binary'35000') or ((`id` = _binary'35000')))) lock in share mode
+      )
+2020-05-07T08:46:31.643960Z	   54 Query	COMMIT
+2020-05-07T08:46:31.653975Z	   57 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:35 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'35000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.655293Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.655568Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.655670Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'35000')) and ((`id` < _binary'36000') or ((`id` = _binary'36000')))) lock in share mode
+      )
+2020-05-07T08:46:31.661910Z	   54 Query	COMMIT
+2020-05-07T08:46:31.670588Z	   57 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:36 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'36000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.672070Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.672158Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.672257Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'36000')) and ((`id` < _binary'37000') or ((`id` = _binary'37000')))) lock in share mode
+      )
+2020-05-07T08:46:31.679068Z	   54 Query	COMMIT
+2020-05-07T08:46:31.691988Z	   57 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:37 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'37000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.693265Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.693405Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.693510Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'37000')) and ((`id` < _binary'38000') or ((`id` = _binary'38000')))) lock in share mode
+      )
+2020-05-07T08:46:31.700014Z	   54 Query	COMMIT
+2020-05-07T08:46:31.707069Z	   57 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:31.710787Z	   57 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:31.710685703+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.714413Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:38 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'38000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.715296Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.715446Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.715543Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'38000')) and ((`id` < _binary'39000') or ((`id` = _binary'39000')))) lock in share mode
+      )
+2020-05-07T08:46:31.721725Z	   54 Query	COMMIT
+2020-05-07T08:46:31.730329Z	   41 Query	delete from `sbtest`.`t1_10w` where id=100006
+2020-05-07T08:46:31.735237Z	   57 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:39 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'39000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.737023Z	   54 Query	START TRANSACTION
+2020-05-07T08:46:31.737207Z	   54 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.737384Z	   54 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'39000')) and ((`id` < _binary'40000') or ((`id` = _binary'40000')))) lock in share mode
+      )
+2020-05-07T08:46:31.744497Z	   54 Query	COMMIT
+2020-05-07T08:46:31.759010Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.760291Z	   57 Query	SET SESSION time_zone = '+00:00', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.760473Z	   57 Query	delete /* gh-ost `sbtest`.`_t1_10w_gho` */
+				from
+					`sbtest`.`_t1_10w_gho`
+				where
+					((`id` = 100006))
+2020-05-07T08:46:31.760616Z	   57 Query	COMMIT
+2020-05-07T08:46:31.760744Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:40 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'40000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.761188Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.761274Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.761420Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'40000')) and ((`id` < _binary'41000') or ((`id` = _binary'41000')))) lock in share mode
+      )
+2020-05-07T08:46:31.768415Z	   57 Query	COMMIT
+2020-05-07T08:46:31.783865Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:41 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'41000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.785247Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.785624Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.785733Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'41000')) and ((`id` < _binary'42000') or ((`id` = _binary'42000')))) lock in share mode
+      )
+2020-05-07T08:46:31.792365Z	   57 Query	COMMIT
+2020-05-07T08:46:31.805279Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:42 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'42000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.806767Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:31.806954Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.807028Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.807118Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'42000')) and ((`id` < _binary'43000') or ((`id` = _binary'43000')))) lock in share mode
+      )
+2020-05-07T08:46:31.814020Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:31.813666363+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.814229Z	   57 Query	COMMIT
+2020-05-07T08:46:31.839275Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:43 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'43000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.839820Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.839927Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.840019Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'43000')) and ((`id` < _binary'44000') or ((`id` = _binary'44000')))) lock in share mode
+      )
+2020-05-07T08:46:31.846180Z	   57 Query	COMMIT
+2020-05-07T08:46:31.857568Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:44 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'44000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.860146Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.860262Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.860423Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'44000')) and ((`id` < _binary'45000') or ((`id` = _binary'45000')))) lock in share mode
+      )
+2020-05-07T08:46:31.866582Z	   57 Query	COMMIT
+2020-05-07T08:46:31.877494Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:45 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'45000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.878892Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.879037Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.879134Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'45000')) and ((`id` < _binary'46000') or ((`id` = _binary'46000')))) lock in share mode
+      )
+2020-05-07T08:46:31.885127Z	   57 Query	COMMIT
+2020-05-07T08:46:31.895787Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:46 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'46000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.897091Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.897183Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.897283Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'46000')) and ((`id` < _binary'47000') or ((`id` = _binary'47000')))) lock in share mode
+      )
+2020-05-07T08:46:31.903459Z	   57 Query	COMMIT
+2020-05-07T08:46:31.906937Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:31.910760Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:31.910685953+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:31.917102Z	   57 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:47 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'47000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.917631Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.917710Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.917842Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'47000')) and ((`id` < _binary'48000') or ((`id` = _binary'48000')))) lock in share mode
+      )
+2020-05-07T08:46:31.924033Z	   57 Query	COMMIT
+2020-05-07T08:46:31.934303Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:48 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'48000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.935005Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.935099Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.935197Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'48000')) and ((`id` < _binary'49000') or ((`id` = _binary'49000')))) lock in share mode
+      )
+2020-05-07T08:46:31.942085Z	   57 Query	COMMIT
+2020-05-07T08:46:31.953095Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:49 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'49000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.953582Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.953659Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.953752Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'49000')) and ((`id` < _binary'50000') or ((`id` = _binary'50000')))) lock in share mode
+      )
+2020-05-07T08:46:31.959801Z	   57 Query	COMMIT
+2020-05-07T08:46:31.968834Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:50 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'50000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.969290Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.969487Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.969586Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'50000')) and ((`id` < _binary'51000') or ((`id` = _binary'51000')))) lock in share mode
+      )
+2020-05-07T08:46:31.975883Z	   57 Query	COMMIT
+2020-05-07T08:46:31.984031Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:51 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'51000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:31.984796Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:31.984918Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:31.985021Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'51000')) and ((`id` < _binary'52000') or ((`id` = _binary'52000')))) lock in share mode
+      )
+2020-05-07T08:46:31.990800Z	   57 Query	COMMIT
+2020-05-07T08:46:32.000383Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:52 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'52000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.001133Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.001230Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.001386Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'52000')) and ((`id` < _binary'53000') or ((`id` = _binary'53000')))) lock in share mode
+      )
+2020-05-07T08:46:32.007635Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:32.007897Z	   57 Query	COMMIT
+2020-05-07T08:46:32.010925Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:32.010772271+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:32.015063Z	   57 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:53 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'53000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.015581Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.015654Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.015745Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'53000')) and ((`id` < _binary'54000') or ((`id` = _binary'54000')))) lock in share mode
+      )
+2020-05-07T08:46:32.022044Z	   57 Query	COMMIT
+2020-05-07T08:46:32.032229Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:54 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'54000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.032722Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.032796Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.032947Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'54000')) and ((`id` < _binary'55000') or ((`id` = _binary'55000')))) lock in share mode
+      )
+2020-05-07T08:46:32.039145Z	   57 Query	COMMIT
+2020-05-07T08:46:32.045093Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:55 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'55000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.046644Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.046752Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.046900Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'55000')) and ((`id` < _binary'56000') or ((`id` = _binary'56000')))) lock in share mode
+      )
+2020-05-07T08:46:32.053225Z	   57 Query	COMMIT
+2020-05-07T08:46:32.062676Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:56 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'56000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.065111Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.065209Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.065359Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'56000')) and ((`id` < _binary'57000') or ((`id` = _binary'57000')))) lock in share mode
+      )
+2020-05-07T08:46:32.071644Z	   57 Query	COMMIT
+2020-05-07T08:46:32.080768Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:57 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'57000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.082054Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.082138Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.082233Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'57000')) and ((`id` < _binary'58000') or ((`id` = _binary'58000')))) lock in share mode
+      )
+2020-05-07T08:46:32.088207Z	   57 Query	COMMIT
+2020-05-07T08:46:32.106575Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:32.110948Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:32.110857208+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:32.116244Z	   57 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:58 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'58000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.116701Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.116768Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.116928Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'58000')) and ((`id` < _binary'59000') or ((`id` = _binary'59000')))) lock in share mode
+      )
+2020-05-07T08:46:32.123391Z	   57 Query	COMMIT
+2020-05-07T08:46:32.138186Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:59 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'59000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.138653Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.138725Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.138838Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'59000')) and ((`id` < _binary'60000') or ((`id` = _binary'60000')))) lock in share mode
+      )
+2020-05-07T08:46:32.144796Z	   57 Query	COMMIT
+2020-05-07T08:46:32.154089Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:60 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'60000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.156211Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.156297Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.156470Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'60000')) and ((`id` < _binary'61000') or ((`id` = _binary'61000')))) lock in share mode
+      )
+2020-05-07T08:46:32.162754Z	   57 Query	COMMIT
+2020-05-07T08:46:32.172891Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:61 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'61000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.174100Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.174183Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.174275Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'61000')) and ((`id` < _binary'62000') or ((`id` = _binary'62000')))) lock in share mode
+      )
+2020-05-07T08:46:32.180274Z	   57 Query	COMMIT
+2020-05-07T08:46:32.192543Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:62 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'62000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.193970Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.194115Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.194294Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'62000')) and ((`id` < _binary'63000') or ((`id` = _binary'63000')))) lock in share mode
+      )
+2020-05-07T08:46:32.200194Z	   57 Query	COMMIT
+2020-05-07T08:46:32.207122Z	   54 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:32.209376Z	   54 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:63 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'63000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.209797Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.210100Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.210209Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'63000')) and ((`id` < _binary'64000') or ((`id` = _binary'64000')))) lock in share mode
+      )
+2020-05-07T08:46:32.216421Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:32.216289121+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:32.216597Z	   57 Query	COMMIT
+2020-05-07T08:46:32.307988Z	   58 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:32.308269Z	   58 Query	SET autocommit=true
+2020-05-07T08:46:32.308560Z	   58 Query	SET NAMES utf8mb4
+2020-05-07T08:46:32.308781Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:32.407217Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:32.421012Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'copy iteration 63 at 1588841192', 'Copy: 63000/100470 62.7%; Applied: 1; Backlog: 0/1000; Time: 3s(total), 3s(copy); streamer: mysql-bin.000006:971971; Lag: 0.30s, State: migrating; ETA: 1s')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:32.479380Z	   54 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:32.479000551+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:32.507959Z	   59 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:32.508238Z	   59 Query	SET autocommit=true
+2020-05-07T08:46:32.508511Z	   59 Query	SET NAMES utf8mb4
+2020-05-07T08:46:32.508730Z	   59 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:32.606786Z	   59 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:32.707243Z	   59 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:32.807193Z	   59 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:32.907035Z	   59 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:32.921598Z	   59 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:64 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'64000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.923243Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.923454Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.923598Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'64000')) and ((`id` < _binary'65000') or ((`id` = _binary'65000')))) lock in share mode
+      )
+2020-05-07T08:46:32.932826Z	   57 Query	COMMIT
+2020-05-07T08:46:32.954480Z	   59 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:32.954274437+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:32.954909Z	   54 Quit	
+2020-05-07T08:46:32.980031Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:65 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'65000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:32.983037Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:32.983216Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:32.983445Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'65000')) and ((`id` < _binary'66000') or ((`id` = _binary'66000')))) lock in share mode
+      )
+2020-05-07T08:46:33.009887Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:33.010140Z	   57 Query	COMMIT
+2020-05-07T08:46:33.010987Z	   59 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:33.010881003+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.027896Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:66 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'66000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.030466Z	   57 Query	START TRANSACTION
+2020-05-07T08:46:33.030736Z	   57 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.031421Z	   57 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'66000')) and ((`id` < _binary'67000') or ((`id` = _binary'67000')))) lock in share mode
+      )
+2020-05-07T08:46:33.046978Z	   57 Query	COMMIT
+2020-05-07T08:46:33.065165Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:67 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'67000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.068260Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.068635Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.068863Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'67000')) and ((`id` < _binary'68000') or ((`id` = _binary'68000')))) lock in share mode
+      )
+2020-05-07T08:46:33.077993Z	   57 Quit	
+2020-05-07T08:46:33.078155Z	   59 Query	COMMIT
+2020-05-07T08:46:33.087560Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:68 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'68000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.089543Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.089835Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.089997Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'68000')) and ((`id` < _binary'69000') or ((`id` = _binary'69000')))) lock in share mode
+      )
+2020-05-07T08:46:33.098597Z	   59 Query	COMMIT
+2020-05-07T08:46:33.107559Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:33.109362Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:69 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'69000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.109966Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.110063Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.110193Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'69000')) and ((`id` < _binary'70000') or ((`id` = _binary'70000')))) lock in share mode
+      )
+2020-05-07T08:46:33.116919Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:33.116736117+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.117185Z	   59 Query	COMMIT
+2020-05-07T08:46:33.141446Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:70 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'70000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.142785Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.142991Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.143093Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'70000')) and ((`id` < _binary'71000') or ((`id` = _binary'71000')))) lock in share mode
+      )
+2020-05-07T08:46:33.149318Z	   59 Query	COMMIT
+2020-05-07T08:46:33.166704Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:71 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'71000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.168198Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.168345Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.168449Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'71000')) and ((`id` < _binary'72000') or ((`id` = _binary'72000')))) lock in share mode
+      )
+2020-05-07T08:46:33.174992Z	   59 Query	COMMIT
+2020-05-07T08:46:33.197847Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:72 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'72000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.199265Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.199448Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.199565Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'72000')) and ((`id` < _binary'73000') or ((`id` = _binary'73000')))) lock in share mode
+      )
+2020-05-07T08:46:33.205929Z	   59 Query	COMMIT
+2020-05-07T08:46:33.207025Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:33.210954Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:33.210832902+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.234146Z	   59 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:73 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'73000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.234702Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.234779Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.234962Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'73000')) and ((`id` < _binary'74000') or ((`id` = _binary'74000')))) lock in share mode
+      )
+2020-05-07T08:46:33.241182Z	   59 Query	COMMIT
+2020-05-07T08:46:33.253551Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:74 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'74000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.254928Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.255017Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.255115Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'74000')) and ((`id` < _binary'75000') or ((`id` = _binary'75000')))) lock in share mode
+      )
+2020-05-07T08:46:33.261772Z	   59 Query	COMMIT
+2020-05-07T08:46:33.277494Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:75 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'75000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.278756Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.279028Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.279190Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'75000')) and ((`id` < _binary'76000') or ((`id` = _binary'76000')))) lock in share mode
+      )
+2020-05-07T08:46:33.285272Z	   59 Query	COMMIT
+2020-05-07T08:46:33.294935Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:76 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'76000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.296182Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.296266Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.296426Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'76000')) and ((`id` < _binary'77000') or ((`id` = _binary'77000')))) lock in share mode
+      )
+2020-05-07T08:46:33.302732Z	   59 Query	COMMIT
+2020-05-07T08:46:33.306565Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:33.310968Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:33.310878703+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.316825Z	   59 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:77 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'77000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.317396Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.317485Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.317577Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'77000')) and ((`id` < _binary'78000') or ((`id` = _binary'78000')))) lock in share mode
+      )
+2020-05-07T08:46:33.324581Z	   59 Query	COMMIT
+2020-05-07T08:46:33.338356Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:78 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'78000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.339677Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.339941Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.340056Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'78000')) and ((`id` < _binary'79000') or ((`id` = _binary'79000')))) lock in share mode
+      )
+2020-05-07T08:46:33.346134Z	   59 Query	COMMIT
+2020-05-07T08:46:33.353666Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:79 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'79000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.356196Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.356489Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.356603Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'79000')) and ((`id` < _binary'80000') or ((`id` = _binary'80000')))) lock in share mode
+      )
+2020-05-07T08:46:33.362521Z	   59 Query	COMMIT
+2020-05-07T08:46:33.376365Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:80 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'80000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.377770Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.377924Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.378022Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'80000')) and ((`id` < _binary'81000') or ((`id` = _binary'81000')))) lock in share mode
+      )
+2020-05-07T08:46:33.384336Z	   59 Query	COMMIT
+2020-05-07T08:46:33.397251Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:81 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'81000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.398617Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.398836Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.398941Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'81000')) and ((`id` < _binary'82000') or ((`id` = _binary'82000')))) lock in share mode
+      )
+2020-05-07T08:46:33.405045Z	   59 Query	COMMIT
+2020-05-07T08:46:33.407038Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:33.411069Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:33.410960649+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.420505Z	   60 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:33.420609Z	   60 Query	SET autocommit=true
+2020-05-07T08:46:33.420667Z	   60 Query	SET NAMES utf8mb4
+2020-05-07T08:46:33.420747Z	   60 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'copy iteration 81 at 1588841193', 'Copy: 81000/100470 80.6%; Applied: 1; Backlog: 0/1000; Time: 4s(total), 4s(copy); streamer: mysql-bin.000006:1069957; Lag: 0.10s, State: migrating; ETA: 0s')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.422184Z	   59 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:82 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'82000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.422666Z	   59 Query	START TRANSACTION
+2020-05-07T08:46:33.422736Z	   59 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.422878Z	   59 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'82000')) and ((`id` < _binary'83000') or ((`id` = _binary'83000')))) lock in share mode
+      )
+2020-05-07T08:46:33.428977Z	   59 Query	COMMIT
+2020-05-07T08:46:33.442825Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:83 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'83000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.444019Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.444147Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.444434Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'83000')) and ((`id` < _binary'84000') or ((`id` = _binary'84000')))) lock in share mode
+      )
+2020-05-07T08:46:33.451570Z	   59 Quit	
+2020-05-07T08:46:33.451690Z	   60 Query	COMMIT
+2020-05-07T08:46:33.461520Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:84 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'84000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.462182Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.462557Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.462692Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'84000')) and ((`id` < _binary'85000') or ((`id` = _binary'85000')))) lock in share mode
+      )
+2020-05-07T08:46:33.469160Z	   60 Query	COMMIT
+2020-05-07T08:46:33.476718Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:85 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'85000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.477388Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.477502Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.477594Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'85000')) and ((`id` < _binary'86000') or ((`id` = _binary'86000')))) lock in share mode
+      )
+2020-05-07T08:46:33.484133Z	   60 Query	COMMIT
+2020-05-07T08:46:33.493208Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:86 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'86000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.493873Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.493961Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.494054Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'86000')) and ((`id` < _binary'87000') or ((`id` = _binary'87000')))) lock in share mode
+      )
+2020-05-07T08:46:33.500511Z	   60 Query	COMMIT
+2020-05-07T08:46:33.507043Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:33.509421Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:87 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'87000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.510065Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.510174Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.510312Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'87000')) and ((`id` < _binary'88000') or ((`id` = _binary'88000')))) lock in share mode
+      )
+2020-05-07T08:46:33.516551Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:33.516398912+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.516744Z	   60 Query	COMMIT
+2020-05-07T08:46:33.529112Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:88 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'88000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.529723Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.529843Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.529967Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'88000')) and ((`id` < _binary'89000') or ((`id` = _binary'89000')))) lock in share mode
+      )
+2020-05-07T08:46:33.536330Z	   60 Query	COMMIT
+2020-05-07T08:46:33.545590Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:89 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'89000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.546093Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.546166Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.546260Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'89000')) and ((`id` < _binary'90000') or ((`id` = _binary'90000')))) lock in share mode
+      )
+2020-05-07T08:46:33.552368Z	   60 Query	COMMIT
+2020-05-07T08:46:33.564071Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:90 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'90000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.564811Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.564933Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.565030Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'90000')) and ((`id` < _binary'91000') or ((`id` = _binary'91000')))) lock in share mode
+      )
+2020-05-07T08:46:33.571265Z	   60 Query	COMMIT
+2020-05-07T08:46:33.581301Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:91 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'91000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.582068Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.582152Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.582249Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'91000')) and ((`id` < _binary'92000') or ((`id` = _binary'92000')))) lock in share mode
+      )
+2020-05-07T08:46:33.588487Z	   60 Query	COMMIT
+2020-05-07T08:46:33.599464Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:92 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'92000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.600170Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.600266Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.600417Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'92000')) and ((`id` < _binary'93000') or ((`id` = _binary'93000')))) lock in share mode
+      )
+2020-05-07T08:46:33.606791Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:33.607009Z	   60 Query	COMMIT
+2020-05-07T08:46:33.610891Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:33.610800333+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.614698Z	   60 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:93 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'93000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.615229Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.615369Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.615477Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'93000')) and ((`id` < _binary'94000') or ((`id` = _binary'94000')))) lock in share mode
+      )
+2020-05-07T08:46:33.621580Z	   60 Query	COMMIT
+2020-05-07T08:46:33.630493Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:94 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'94000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.631744Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.632015Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.632173Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'94000')) and ((`id` < _binary'95000') or ((`id` = _binary'95000')))) lock in share mode
+      )
+2020-05-07T08:46:33.638590Z	   60 Query	COMMIT
+2020-05-07T08:46:33.643668Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:95 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'95000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.644946Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.645032Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.645128Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'95000')) and ((`id` < _binary'96000') or ((`id` = _binary'96000')))) lock in share mode
+      )
+2020-05-07T08:46:33.651667Z	   60 Query	COMMIT
+2020-05-07T08:46:33.657014Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:96 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'96000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.658450Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.658567Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.658665Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'96000')) and ((`id` < _binary'97000') or ((`id` = _binary'97000')))) lock in share mode
+      )
+2020-05-07T08:46:33.665094Z	   60 Query	COMMIT
+2020-05-07T08:46:33.673330Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:97 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'97000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.674668Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.674838Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.674953Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'97000')) and ((`id` < _binary'98000') or ((`id` = _binary'98000')))) lock in share mode
+      )
+2020-05-07T08:46:33.681257Z	   60 Query	COMMIT
+2020-05-07T08:46:33.688098Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:98 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'98000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.689377Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.689461Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.689555Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'98000')) and ((`id` < _binary'99000') or ((`id` = _binary'99000')))) lock in share mode
+      )
+2020-05-07T08:46:33.695947Z	   60 Query	COMMIT
+2020-05-07T08:46:33.704191Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:99 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'99000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.705600Z	   60 Query	START TRANSACTION
+2020-05-07T08:46:33.705873Z	   60 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.706080Z	   60 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'99000')) and ((`id` < _binary'100000') or ((`id` = _binary'100000')))) lock in share mode
+      )
+2020-05-07T08:46:33.712711Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:33.711991314+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.713102Z	   61 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:33.713188Z	   61 Query	SET autocommit=true
+2020-05-07T08:46:33.713240Z	   61 Query	SET NAMES utf8mb4
+2020-05-07T08:46:33.713373Z	   61 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:33.713614Z	   60 Query	COMMIT
+2020-05-07T08:46:33.726121Z	   61 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:100 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'100000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.726699Z	   58 Query	select /* gh-ost `sbtest`.`t1_10w` iteration:100 */ `id`
+				from (
+					select
+							`id`
+						from
+							`sbtest`.`t1_10w`
+						where ((`id` > _binary'100000')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+						order by
+							`id` asc
+						limit 1000
+				) select_osc_chunk
+			order by
+				`id` desc
+			limit 1
+2020-05-07T08:46:33.726965Z	   61 Query	START TRANSACTION
+2020-05-07T08:46:33.727032Z	   61 Query	SET SESSION time_zone = 'SYSTEM', sql_mode = CONCAT(@@session.sql_mode, ',,NO_AUTO_VALUE_ON_ZERO,STRICT_ALL_TABLES')
+2020-05-07T08:46:33.727116Z	   61 Query	insert /* gh-ost `sbtest`.`t1_10w` */ ignore into `sbtest`.`_t1_10w_gho` (`id`)
+      (select `id` from `sbtest`.`t1_10w` force index (`PRIMARY`)
+        where (((`id` > _binary'100000')) and ((`id` < _binary'100005') or ((`id` = _binary'100005')))) lock in share mode
+      )
+2020-05-07T08:46:33.727505Z	   61 Query	COMMIT
+2020-05-07T08:46:33.727543Z	   60 Quit	
+2020-05-07T08:46:33.734038Z	   58 Query	select  /* gh-ost `sbtest`.`t1_10w` iteration:101 */
+						`id`
+					from
+						`sbtest`.`t1_10w`
+					where ((`id` > _binary'100005')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+					order by
+						`id` asc
+					limit 1
+					offset 999
+2020-05-07T08:46:33.734364Z	   61 Query	select /* gh-ost `sbtest`.`t1_10w` iteration:101 */ `id`
+				from (
+					select
+							`id`
+						from
+							`sbtest`.`t1_10w`
+						where ((`id` > _binary'100005')) and ((`id` < _binary'100006') or ((`id` = _binary'100006')))
+						order by
+							`id` asc
+						limit 1000
+				) select_osc_chunk
+			order by
+				`id` desc
+			limit 1
+2020-05-07T08:46:33.734634Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'copy iteration 101 at 1588841193', 'Copy: 100005/100005 100.0%; Applied: 1; Backlog: 0/1000; Time: 4s(total), 4s(copy); streamer: mysql-bin.000006:1172288; Lag: 0.10s, State: migrating; ETA: due')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.741386Z	   61 Query	START TRANSACTION
+2020-05-07T08:46:33.741503Z	   61 Query	select connection_id()
+2020-05-07T08:46:33.741599Z	   61 Query	select get_lock('gh-ost.61.lock', 0)
+2020-05-07T08:46:33.741674Z	   61 Query	set session lock_wait_timeout:=6
+2020-05-07T08:46:33.741861Z	   58 Query	show /* gh-ost */ table status from `sbtest` like '_t1_10w_del'
+2020-05-07T08:46:33.743114Z	   58 Query	create /* gh-ost */ table `sbtest`.`_t1_10w_del` (
+			id int auto_increment primary key
+		) engine=InnoDB comment='ghost-cut-over-sentry'
+2020-05-07T08:46:33.807209Z	   62 Connect	app_user@192.168.0.91 on sbtest using TCP/IP
+2020-05-07T08:46:33.807347Z	   62 Query	SET NAMES utf8mb4
+2020-05-07T08:46:33.807421Z	   62 Query	SET autocommit=true
+2020-05-07T08:46:33.807491Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:33.810875Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:33.810794279+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.824748Z	   61 Query	lock /* gh-ost */ tables `sbtest`.`t1_10w` write, `sbtest`.`_t1_10w_del` write
+2020-05-07T08:46:33.826685Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(2, 0), 'state', 'AllEventsUpToLockProcessed:1588841193826500776')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.853020Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'state at 1588841193852735844', 'AllEventsUpToLockProcessed:1588841193826500776')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:33.907128Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:33.911167Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:33.910984973+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.006998Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:34.011116Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:34.010908417+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.106743Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:34.111152Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:34.110965816+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.207179Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:34.210989Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:34.210751798+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.306852Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:34.311154Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:34.310950514+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.407143Z	   58 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:34.411174Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:34.410969996+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.420670Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'copy iteration 101 at 1588841194', 'Copy: 100005/100005 100.0%; Applied: 1; Backlog: 1/1000; Time: 5s(total), 4s(copy); streamer: mysql-bin.000006:1176638; Lag: 0.10s, State: migrating; ETA: due')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.507144Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:34.511079Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:34.510877666+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.606722Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:34.611049Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:34.610872508+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.707114Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:34.711035Z	   58 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:34.710867096+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.735545Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'copy iteration 101 at 1588841194', 'Copy: 100005/100005 100.0%; Applied: 1; Backlog: 0/1000; Time: 5s(total), 4s(copy); streamer: mysql-bin.000006:1178327; Lag: 0.10s, State: migrating; ETA: due')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.743394Z	   58 Query	START TRANSACTION
+2020-05-07T08:46:34.743902Z	   58 Query	select connection_id()
+2020-05-07T08:46:34.744919Z	   62 Query	select id
+			from information_schema.processlist
+			where
+				id != connection_id()
+				and 58 in (0, id)
+				and state like concat('%', 'metadata lock', '%')
+				and info  like concat('%', 'rename', '%')
+2020-05-07T08:46:34.748290Z	   58 Query	set session lock_wait_timeout:=3
+2020-05-07T08:46:34.749190Z	   58 Query	rename /* gh-ost */ table `sbtest`.`t1_10w` to `sbtest`.`_t1_10w_del`, `sbtest`.`_t1_10w_gho` to `sbtest`.`t1_10w`
+2020-05-07T08:46:34.806826Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:34.811379Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:34.811127776+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:34.907139Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:34.911190Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:34.910989513+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.006730Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:35.011158Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:35.010948322+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.107007Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:35.110982Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:35.110834383+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.206889Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:35.211125Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:35.210915333+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.306889Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:35.311132Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:35.310942448+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.406862Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:35.411074Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:35.410851884+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.421459Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(0, 0), 'copy iteration 101 at 1588841195', 'Copy: 100005/100005 100.0%; Applied: 1; Backlog: 0/1000; Time: 6s(total), 4s(copy); streamer: mysql-bin.000006:1181827; Lag: 0.10s, State: migrating; ETA: due')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.507098Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:35.511537Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:35.510860196+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.606736Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:35.610964Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:35.610719283+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.706891Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:35.711174Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:35.710960595+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.748614Z	   62 Query	select id
+			from information_schema.processlist
+			where
+				id != connection_id()
+				and 58 in (0, id)
+				and state like concat('%', 'metadata lock', '%')
+				and info  like concat('%', 'rename', '%')
+2020-05-07T08:46:35.750467Z	   62 Query	select is_used_lock('gh-ost.61.lock')
+2020-05-07T08:46:35.750797Z	   61 Query	drop /* gh-ost */ table if exists `sbtest`.`_t1_10w_del`
+2020-05-07T08:46:35.806931Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:35.811171Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:35.810978156+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.812659Z	   61 Query	unlock tables
+2020-05-07T08:46:35.817384Z	   61 Query	ROLLBACK
+2020-05-07T08:46:35.905420Z	   61 Query	show /* gh-ost */ table status from `sbtest` like '_t1_10w_del'
+2020-05-07T08:46:35.906672Z	   62 Query	select hint, value from `sbtest`.`_t1_10w_ghc` where hint = 'heartbeat' and id <= 255
+2020-05-07T08:46:35.907094Z	   58 Query	ROLLBACK
+2020-05-07T08:46:35.910855Z	   62 Query	insert /* gh-ost */ into `sbtest`.`_t1_10w_ghc`
+				(id, hint, value)
+			values
+				(NULLIF(1, 0), 'heartbeat', '2020-05-07T16:46:35.910764158+08:00')
+			on duplicate key update
+				last_update=NOW(),
+				value=VALUES(value)
+2020-05-07T08:46:35.922211Z	   58 Query	drop /* gh-ost */ table if exists `sbtest`.`_t1_10w_ghc`
+2020-05-07T08:46:35.948567Z	   61 Quit	
+2020-05-07T08:46:35.948697Z	   62 Quit	
+2020-05-07T08:46:35.949020Z	   53 Quit	
+2020-05-07T08:46:35.949175Z	   52 Quit	
+2020-05-07T08:46:35.950034Z	   58 Quit	

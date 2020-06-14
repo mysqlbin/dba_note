@@ -1,0 +1,251 @@
+
+
+架构如下:
+192.168.0.54  (仲裁)
+192.168.0.55  (副本)
+192.168.0.56  (主机)
+
+
+mongod -f /etc/mongodb.conf
+
+
+[root@centos ~]# mongo admin
+
+添加admin用户名密码,使用创建的用户登录MongoDB：
+
+> show dbs
+
+> use admin
+
+> db.addUser('admin','manager')
+
+> db.auth('admin','manager')
+
+> show collections
+
+> db.system.users.find()
+
+通过 IP 地址登录
+mongo --host ip_addr
+
+
+configs={_id:"myrepl",members:[{_id:0,host:"192.168.0.54:27017"},{_id:1,host:"192.168.0.55:27017"},{_id:2,host:"192.168.0.56:27017"}]};
+
+初始化:
+rs.initiate(configs);
+可以看到控制台上显示副本集还没有配置初始化信息，如下：
+[initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument Did not find replica set configuration document in local.system.replset
+
+> rs.initiate(configs);
+{
+	"ok" : 1,
+	"operationTime" : Timestamp(1539542778, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1539542778, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+查看状态:
+myrepl:SECONDARY> rs.status();
+{
+	"set" : "myrepl",
+	"date" : ISODate("2018-10-14T18:46:27.466Z"),
+	"myState" : 2,
+	"term" : NumberLong(0),
+	"syncingTo" : "",
+	"syncSourceHost" : "",
+	"syncSourceId" : -1,
+	"heartbeatIntervalMillis" : NumberLong(2000),
+	"optimes" : {
+		"lastCommittedOpTime" : {
+			"ts" : Timestamp(0, 0),
+			"t" : NumberLong(-1)
+		},
+		"appliedOpTime" : {
+			"ts" : Timestamp(1539542778, 1),
+			"t" : NumberLong(-1)
+		},
+		"durableOpTime" : {
+			"ts" : Timestamp(1539542778, 1),
+			"t" : NumberLong(-1)
+		}
+	},
+	"members" : [
+		{
+			"_id" : 0,
+			"name" : "192.168.0.54:27017",
+			"health" : 1,
+			"state" : 2,
+			"stateStr" : "SECONDARY",
+			"uptime" : 218815,
+			"optime" : {
+				"ts" : Timestamp(1539542778, 1),
+				"t" : NumberLong(-1)
+			},
+			"optimeDate" : ISODate("2018-10-14T18:46:18Z"),
+			"syncingTo" : "",
+			"syncSourceHost" : "",
+			"syncSourceId" : -1,
+			"infoMessage" : "could not find member to sync from",
+			"configVersion" : 1,
+			"self" : true,
+			"lastHeartbeatMessage" : ""
+		},
+		{
+			"_id" : 1,
+			"name" : "192.168.0.55:27017",
+			"health" : 1,
+			"state" : 2,
+			"stateStr" : "SECONDARY",
+			"uptime" : 9,
+			"optime" : {
+				"ts" : Timestamp(1539542778, 1),
+				"t" : NumberLong(-1)
+			},
+			"optimeDurable" : {
+				"ts" : Timestamp(0, 0),
+				"t" : NumberLong(-1)
+			},
+			"optimeDate" : ISODate("2018-10-14T18:46:18Z"),
+			"optimeDurableDate" : ISODate("1970-01-01T00:00:00Z"),
+			"lastHeartbeat" : ISODate("2018-10-14T18:46:27.380Z"),
+			"lastHeartbeatRecv" : ISODate("2018-10-14T18:46:27.009Z"),
+			"pingMs" : NumberLong(0),
+			"lastHeartbeatMessage" : "",
+			"syncingTo" : "",
+			"syncSourceHost" : "",
+			"syncSourceId" : -1,
+			"infoMessage" : "",
+			"configVersion" : 1
+		},
+		{
+			"_id" : 2,
+			"name" : "192.168.0.56:27017",
+			"health" : 1,
+			"state" : 2,
+			"stateStr" : "SECONDARY",
+			"uptime" : 9,
+			"optime" : {
+				"ts" : Timestamp(1539542778, 1),
+				"t" : NumberLong(-1)
+			},
+			"optimeDurable" : {
+				"ts" : Timestamp(0, 0),
+				"t" : NumberLong(-1)
+			},
+			"optimeDate" : ISODate("2018-10-14T18:46:18Z"),
+			"optimeDurableDate" : ISODate("1970-01-01T00:00:00Z"),
+			"lastHeartbeat" : ISODate("2018-10-14T18:46:27.382Z"),
+			"lastHeartbeatRecv" : ISODate("2018-10-14T18:46:27.019Z"),
+			"pingMs" : NumberLong(0),
+			"lastHeartbeatMessage" : "",
+			"syncingTo" : "",
+			"syncSourceHost" : "",
+			"syncSourceId" : -1,
+			"infoMessage" : "",
+			"configVersion" : 1
+		}
+	],
+	"ok" : 1,
+	"operationTime" : Timestamp(1539542778, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1539542778, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+
+模拟主节点故障后的日志:
+2018-09-07T23:07:15.806+0800 I ASIO     [NetworkInterfaceASIO-Replication-0] Connecting to 192.168.0.54:27017
+2018-09-07T23:07:15.806+0800 I ASIO     [NetworkInterfaceASIO-Replication-0] Failed to connect to 192.168.0.54:27017 - HostUnreachable: Connection refused
+2018-09-07T23:07:15.806+0800 I ASIO     [NetworkInterfaceASIO-Replication-0] Dropping all pooled connections to 192.168.0.54:27017 due to failed operation on a connection
+2018-09-07T23:07:15.806+0800 I REPL_HB  [replexec-87] Error in heartbeat (requestId: 487859) to 192.168.0.54:27017, response status: HostUnreachable: Connection refused
+
+
+故障后的主节点, 恢复并加入副本集后的日志:
+2018-10-17T03:37:38.986+0800 I NETWORK  [listener] connection accepted from 192.168.0.54:42044 #13 (7 connections now open)
+2018-10-17T03:37:38.987+0800 I NETWORK  [conn13] end connection 192.168.0.54:42044 (6 connections now open)
+2018-10-17T03:37:39.056+0800 I NETWORK  [listener] connection accepted from 192.168.0.54:42048 #14 (7 connections now open)
+2018-10-17T03:37:39.057+0800 I NETWORK  [conn14] received client metadata from 192.168.0.54:42048 conn14: { driver: { name: "NetworkInterfaceASIO-Replication", version: "3.6.8" }, os: { type: "Linux", name: "CentOS Linux release 7.4.1708 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-693.el7.x86_64" } }
+2018-10-17T03:37:39.946+0800 I ASIO     [NetworkInterfaceASIO-Replication-0] Connecting to 192.168.0.54:27017
+2018-10-17T03:37:39.948+0800 I ASIO     [NetworkInterfaceASIO-Replication-0] Successfully connected to 192.168.0.54:27017, took 2ms (1 connections now open to 192.168.0.54:27017)
+2018-10-17T03:37:39.949+0800 I REPL     [replexec-85] Member 192.168.0.54:27017 is now in state SECONDARY
+成为新的从节点后, 需要执行:
+rs.slaveOk();
+
+一.
+第一个节点启动错误日志如下:
+[root@mgr9 log]# tail -f mongod.log 
+2018-10-15T01:57:27.285+0800 I REPL     [conn1] replSetInitiate admin command received from client
+2018-10-15T01:57:27.286+0800 E REPL     [conn1] Attempting to initiate a replica set with name repset, but command line reports myrepl; rejecting
+
+原因:
+configs={_id:"repset",members:[{_id:0,host:"192.168.0.54:27017"},{_id:1,host:"192.168.0.55:27017"},{_id:2,host:"192.168.0.56:27017"}]};
+
+第一个_id是表示我们启动mongodb时--replset这个参数后面带的名称一致,即副本集的名称, 当前不一致, 应该改为:
+configs={_id:"myrepl",members:[{_id:0,host:"192.168.0.54:27017"},{_id:1,host:"192.168.0.55:27017"},{_id:2,host:"192.168.0.56:27017"}]};
+
+
+
+二.  
+> rs.initiate(configs);
+{
+	"ok" : 0,
+	"errmsg" : "replSetInitiate quorum check failed because not all proposed set members responded affirmatively: 192.168.0.56:27017 failed with Connection refused, 192.168.0.55:27017 failed with Connection refused",
+	"code" : 74,
+	"codeName" : "NodeNotFound",
+	"operationTime" : Timestamp(0, 0),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(0, 0),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+原因: 其它节点的mongodb未启动
+
+
+三.
+从节点不能同步数据:
+myrepl:SECONDARY> show collections
+2018-10-15T05:22:50.312+0800 E QUERY    [thread1] Error: listCollections failed: {
+	"operationTime" : Timestamp(1539543101, 1),
+	"ok" : 0,
+	"errmsg" : "not master and slaveOk=false",
+	"code" : 13435,
+	"codeName" : "NotMasterNoSlaveOk",
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1539543101, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+} :
+_getErrorWithCode@src/mongo/shell/utils.js:25:13
+DB.prototype._getCollectionInfosCommand@src/mongo/shell/db.js:941:1
+DB.prototype.getCollectionInfos@src/mongo/shell/db.js:953:19
+DB.prototype.getCollectionNames@src/mongo/shell/db.js:964:16
+shellHelper.show@src/mongo/shell/utils.js:842:9
+shellHelper@src/mongo/shell/utils.js:739:15
+@(shellhelp2):1:1
+
+这是正常的，因为SECONDARY是不允许读写的，如果非要解决，方法如下：
+
+SECONDARY> rs.slaveOk();
+
+默认情况下, MongoDB会阻止对于从服务器的查询, 因为数据可能比主节点慢. 所以必须通过在从节点的 shell里运行 rs.slaveOK() 命令来设置从节点允许读取操作.
+
+
+端口号不正确:
+[root@mgr9 slow]# mongostat -h 192.168.0.54:28001
+2018-10-17T02:34:28.553+0800	Failed: error connecting to db server: no reachable servers

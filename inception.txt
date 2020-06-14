@@ -1,0 +1,56 @@
+维克兄：
+目前是当作一个关键字  注释未添加 索引名不正确的过滤器 来用
+
+http://www.ywnds.com/?p=9423
+
+git clone https://github.com/mysql-inception/inception.git
+
+bison-2.5.tar.gz：
+http://ftp.gnu.org/gnu/bison/
+
+Inception服务的安装以及使用Python 3 实现MySQL的审计
+http://www.cnblogs.com/wy123/p/8322162.html
+
+
+yum install gcc gcc-c++ cmake openssl-devel ncurses-devel -y
+
+#yum install libncurses5-dev
+#yum install libssl-dev
+
+
+cd inception
+bash inception_build.sh debug
+
+/opt/python3/inception/debug/mysql/bin/Inception --defaults-file=/etc/inc.cnf &
+
+/opt/python/inception/debug/mysql/bin/Inception --defaults-file=/etc/inc.cnf &
+
+
+mysql -uroot -h127.0.0.1 -P6669
+mysql -uwzf1 -h127.0.0.1 -p -P6669
+
+
+/*--user=root;--password=123456abc;--host=127.0.0.1; --enable-check;--port=6669;*/
+
+
+alter table `django`.`test` add page_title44444 varchar(50) not null default '0' comment '网站浏览器头部的标题' after db_name_id
+
+
+error:
+[ 63%] Building CXX object client/CMakeFiles/mysql.dir/sql_string.cc.o
+Linking CXX executable mysql
+../libmysql/libmysqlclient.a(net_serv.cc.o):(.note.stapsdt+0x24): undefined reference to `mysql_net__write__start_semaphore'
+../libmysql/libmysqlclient.a(net_serv.cc.o):(.note.stapsdt+0x70): undefined reference to `mysql_net__write__done_semaphore'
+../libmysql/libmysqlclient.a(net_serv.cc.o):(.note.stapsdt+0xbc): undefined reference to `mysql_net__write__done_semaphore'
+../libmysql/libmysqlclient.a(net_serv.cc.o):(.note.stapsdt+0x108): undefined reference to `mysql_net__write__start_semaphore'
+../libmysql/libmysqlclient.a(net_serv.cc.o):(.note.stapsdt+0x154): undefined reference to `mysql_net__write__done_semaphore'
+../libmysql/libmysqlclient.a(net_serv.cc.o):(.note.stapsdt+0x1a0): undefined reference to `mysql_net__write__done_semaphore'
+../libmysql/libmysqlclient.a(net_serv.cc.o):(.note.stapsdt+0x1ec): undefined reference to `mysql_net__read__start_semaphore'
+../libmysql/libmysqlclient.a(net_serv.cc.o):(.note.stapsdt+0x230): undefined reference to `mysql_net__read__done_semaphore'
+collect2: error: ld returned 1 exit status
+make[2]: *** [client/mysql] Error 1
+make[1]: *** [client/CMakeFiles/mysql.dir/all] Error 2
+make: *** [all] Error 2
+
+Inception成功安装实例分享:
+http://www.bkjia.com/Linuxjc/1303280.html

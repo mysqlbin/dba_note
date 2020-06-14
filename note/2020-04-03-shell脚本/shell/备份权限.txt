@@ -1,0 +1,3 @@
+GRANT SELECT, RELOAD, REPLICATION CLIENT, EVENT ON *.* TO 'backup'@'localhost'
+
+GRANT all privileges ON *.* TO 'backup'@'192.168.0.%' identified by '123456abc';

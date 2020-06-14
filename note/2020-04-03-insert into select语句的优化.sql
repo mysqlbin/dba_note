@@ -1,0 +1,2 @@
+
+参数 innodb_autoinc_lock_mode

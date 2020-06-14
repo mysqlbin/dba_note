@@ -1,0 +1,727 @@
+innobackupex全备strace调用栈信息解释
+以下strace输出信息去掉了一些无用信息
+注意事项：
+留意open系统调用等号后边的数字，这个数字是open打开一个文件时系统分配的FD号，如果一旦调用了close(FD)之后，系统会回收该FD分配给其他open的文件使用，请留下下文中的FD切换
+innobackupex工具在备份过程中会创建几个线程，使用-f选项可以打印出这些线程的调用栈，请留意线程号，以便识别出哪个线程在做什么事情
+以下内容仅为个人理解，仅提供学习交流使用，如有错误还望指正，谢谢！！
+execve("/usr/bin/innobackupex", ["innobackupex", "--defaults-file=/home/mysql/conf/my1.cnf", "--user=admin", "--password=letsg0", "--no-timestamp", "/data/backup/full"], [/* 27 vars */]) = 0
+...... #加载共享库以及获取一些系统资源、系统配置等
+set_tid_address(0x7fa655d159f0)         = 35790  #注意，这里就是在操作系统中可见的innobackupex进程号，可以使用pgrep innobackupex命令来查看
+......
+stat("/home/mysql/conf/my1.cnf", {st_mode=S_IFREG|0644, st_size=4366, ...}) = 0  #打开指定的配置文件/home/mysql/conf/my1.cnf
+open("/home/mysql/conf/my1.cnf", O_RDONLY)           = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=4366, ...}) = 0
+mmap(NULL, 4096, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f3fe2fd2000
+read(3, "[client]\nloose_default-character"..., 4096) = 4096
+read(3, "uto-rehash\nshow-warnings\nprompt="..., 4096) = 270
+read(3, "", 4096)                       = 0
+close(3)                                = 0  #读取配置文件保存到内存中之后，关闭这个文件句柄
+munmap(0x7f3fe2fd2000, 4096)            = 0
+stat("/root/.mylogin.cnf", 0x7fffd99f0ee0) = -1 ENOENT (No such file or directory)  #如果这个文件存在，客户端登录的时候就算使用了--deafults-file选项指定了配置文件，也仍然会读取这个隐藏的配置文件
+stat("/data/backup/full", {st_mode=S_IFDIR|0750, st_size=4096, ...}) = 0
+open("/data/backup/full", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 3
+......
+write(2, "170704 15:52:08 innobackupex: St"..., 227170704 15:52:08 innobackupex: Starting the backup operation #向标准错误输出中打印日志信息
+IMPORTANT: Please check that the backup run completes successfully.
+           At the end of a successful backup run innobackupex
+           prints "completed OK!".
+) = 227
+lstat("/data", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/data/backup", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/data/backup/full", {st_mode=S_IFDIR|0750, st_size=4096, ...}) = 0
+pipe2([3, 4], O_CLOEXEC)                = 0
+clone(child_stack=0, flags=CLONE_CHILD_CLEARTID|CLONE_CHILD_SETTID|SIGCHLD, child_tidptr=0x7f3fe2fbe9f0) = 35958
+close(3)                                = 0
+...... # 加载perconal-toolkit需要的一些依赖库，以及读取一些用户系统环境信息
+write(2, "170704 15:52:12 Connecting to My"..., 152170704 15:52:12 Connecting to MySQL server host: localhost, user: admin, password: set, port: 3306, socket: /home/mysql/data/mysqldata1/sock/mysql.sock
+) = 152
+socket(PF_LOCAL, SOCK_STREAM, 0)        = 3  #创建一个socket对象
+connect(3, {sa_family=AF_LOCAL, sun_path="/home/mysql/data/mysqldata1/sock/mysql.sock"}, 110) = 0  #连接到mysqld的socket server端
+setsockopt(3, SOL_TCP, TCP_NODELAY, [1], 4) = -1 EOPNOTSUPP (Operation not supported)
+setsockopt(3, SOL_SOCKET, SO_KEEPALIVE, [1], 4) = 0
+......
+sendto(3, "\245\0\0\1\5\242\276\1\0\0\0@\10\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 169, 0, NULL, 0) = 169
+......
+sendto(3, "!\0\0\0\3SET SESSION wait_timeout=21"..., 37, 0, NULL, 0) = 37  #向数据库发送交互SQL语句
+......
+sendto(3, "\17\0\0\0\3SHOW VARIABLES", 19, 0, NULL, 0) = 19
+......
+write(2, "Using server version 5.7.17-log\n", 32Using server version 5.7.17-log
+) = 32
+stat("/home/mysql/data/mysqldata1/mydata", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0 
+open("/home/mysql/data/mysqldata1/mydata", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 4 #获取datadir = /home/mysql/data/mysqldata1/mydata下的文件和目录信息
+close(4)                                = 0
+stat("/home/mysql/data/mysqldata1/mydata/", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+open("/home/mysql/data/mysqldata1/mydata/", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 4
+close(4)                                = 0
+lstat("/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/home/mysql", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+lstat("/home/mysql/data", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/home/mysql/data/mysqldata1", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/home/mysql/data/mysqldata1/mydata", {st_mode=S_IFLNK|0777, st_size=23, ...}) = 0
+readlink("/home/mysql/data/mysqldata1/mydata", "/data/mysqldata1/mydata", 4095) = 23
+lstat("/data", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/data/mysqldata1", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/data/mysqldata1/mydata", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/home", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/home/mysql", {st_mode=S_IFDIR|0700, st_size=4096, ...}) = 0
+lstat("/home/mysql/data", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/home/mysql/data/mysqldata1", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/home/mysql/data/mysqldata1/mydata", {st_mode=S_IFLNK|0777, st_size=23, ...}) = 0
+readlink("/home/mysql/data/mysqldata1/mydata", "/data/mysqldata1/mydata", 4095) = 23   # 由于datadir是一个软链，这里读取软链指向的真实路径/data/mysqldata1/mydata
+lstat("/data", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/data/mysqldata1", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+lstat("/data/mysqldata1/mydata", {st_mode=S_IFDIR|0755, st_size=4096, ...}) = 0
+sendto(3, "\32\0\0\0\3SHOW ENGINE INNODB STATUS", 30, 0, NULL, 0) = 30
+......
+write(2, "innobackupex version 2.4.4 based"..., 94innobackupex version 2.4.4 based on MySQL server 5.7.13 Linux (x86_64) (revision id: df58cf2)
+) = 94
+write(2, "xtrabackup: uses posix_fadvise()"..., 34xtrabackup: uses posix_fadvise().
+) = 34
+chdir("/home/mysql/data/mysqldata1/mydata") = 0
+write(2, "xtrabackup: cd to /home/mysql/da"..., 53xtrabackup: cd to /home/mysql/data/mysqldata1/mydata
+) = 53
+getrlimit(RLIMIT_NOFILE, {rlim_cur=1024, rlim_max=4*1024}) = 0   #读取操作系统ulimit限制
+write(2, "xtrabackup: open files limit req"..., 54xtrabackup: open files limit requested 0, set to 1024
+) = 54
+getcwd("/data/mysqldata1/mydata", 4096) = 24
+# 打印innobackupex从配置文件中读取的需要使用的关键参数
+write(2, "xtrabackup: using the following "..., 54xtrabackup: using the following InnoDB configuration:
+) = 54
+write(2, "xtrabackup:   innodb_data_home_d"..., 75xtrabackup:   innodb_data_home_dir = /home/mysql/data/mysqldata1/innodb_ts
+) = 75
+write(2, "xtrabackup:   innodb_data_file_p"..., 62xtrabackup:   innodb_data_file_path = ibdata1:248M:autoextend
+) = 62
+write(2, "xtrabackup:   innodb_log_group_h"..., 81xtrabackup:   innodb_log_group_home_dir = /home/mysql/data/mysqldata1/innodb_log
+) = 81
+write(2, "xtrabackup:   innodb_log_files_i"..., 44xtrabackup:   innodb_log_files_in_group = 2
+) = 44
+write(2, "xtrabackup:   innodb_log_file_si"..., 47xtrabackup:   innodb_log_file_size = 134217728
+) = 47
+write(2, "2017-07-04 15:52:12 0x7f3fe2fbe7"..., 342017-07-04 15:52:12 0x7f3fe2fbe720) = 34
+write(2, " InnoDB: Using Linux native AIO\n", 32 InnoDB: Using Linux native AIO
+) = 32
+write(2, "xtrabackup: using O_DIRECT\n", 27xtrabackup: using O_DIRECT
+) = 27
+......
+open("/home/mysql/data/mysqldata1/innodb_log/ib_logfile0", O_RDONLY) = 4 #打开ib_logfile0文件，获取该文件真实大小之后退出
+lseek(4, 0, SEEK_CUR)                   = 0
+lseek(4, 0, SEEK_END)                   = 134217728
+lseek(4, 0, SEEK_SET)                   = 0
+close(4)                                = 0
+stat("/home/mysql/data/mysqldata1/innodb_log/ib_logfile0", {st_mode=S_IFREG|0640, st_size=134217728, ...}) = 0
+open("/home/mysql/data/mysqldata1/innodb_log/ib_logfile1", O_RDONLY) = 4  #打开ib_logfile1文件，获取该文件真实大小之后退出
+lseek(4, 0, SEEK_CUR)                   = 0
+lseek(4, 0, SEEK_END)                   = 134217728
+lseek(4, 0, SEEK_SET)                   = 0
+close(4)                                = 0
+stat("/home/mysql/data/mysqldata1/innodb_log/ib_logfile1", {st_mode=S_IFREG|0640, st_size=134217728, ...}) = 0
+stat("/data/backup/full", {st_mode=S_IFDIR|0750, st_size=4096, ...}) = 0
+open("/home/mysql/data/mysqldata1/innodb_log/ib_logfile0", O_RDONLY) = 4  #重新打开ib_logfile0，读取文件头，找到checkpoint点
+pread(4, "\0\0\0\1\0\0\0\0\0\0\0\0\0\0\"\0MySQL 5.7.17\0\0\0\0"..., 512, 0) = 512
+pread(4, "\0\0\0\0\0\0\0\36\0\0\0\0\7\214\fj\0\0\0\0\7\213\362j\0\0\0\0\0\200\0\0"..., 512, 512) = 512
+pread(4, "\0\0\0\0\0\0\0\35\0\0\0\0\7\214\f@\0\0\0\0\7\213\362@\0\0\0\0\0\200\0\0"..., 512, 1536) = 512
+pread(4, "\0\0\0\0\0\0\0\36\0\0\0\0\7\214\fj\0\0\0\0\7\213\362j\0\0\0\0\0\200\0\0"..., 512, 512) = 512
+pread(4, "\0\0\0\1\0\0\0\0\0\0\0\0\0\0\"\0MySQL 5.7.17\0\0\0\0"..., 2048, 0) = 2048
+pread(4, "\0\0\0\1\0\0\0\0\0\0\0\0\0\0\"\0MySQL 5.7.17\0\0\0\0"..., 512, 0) = 512
+pread(4, "\0\0\0\0\0\0\0\36\0\0\0\0\7\214\fj\0\0\0\0\7\213\362j\0\0\0\0\0\200\0\0"..., 512, 512) = 512
+pread(4, "\0\0\0\0\0\0\0\35\0\0\0\0\7\214\f@\0\0\0\0\7\213\362@\0\0\0\0\0\200\0\0"..., 512, 1536) = 512
+pread(4, "\0\0\0\0\0\0\0\36\0\0\0\0\7\214\fj\0\0\0\0\7\213\362j\0\0\0\0\0\200\0\0"..., 512, 512) = 512
+mkdir("/data/backup/full", 0750)        = -1 EEXIST (File exists)
+mkdir("/data/backup/full/", 0750)       = -1 EEXIST (File exists)  #创建备份目录（如果不存在）
+open("/data/backup/full/xtrabackup_logfile", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 5  #在备份目录中创建xtrabackup_logfile文件
+write(5, "\0\0\0\1\0\0\0\0\0\0\0\0\0\0\"\0xtrabkup 170704 "..., 2048) = 2048  #开始向xtrabackup_logfile文件中写入前2048字节内容，即redo log的文件头
+fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+pread(4, "\200\3\306\7\2\0\0000\0\0\0\37\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536, 126611968) = 65536  #从checkpoint点位置开始读取redo log
+# 需要注意的是，从这里开始，到最后执行flush engine logs语句之前，都是以65535字节为一个快进行拷贝的
+write(5, "\200\3\306\7\2\0\0000\0\0\0\37\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536) = 65536  #写入到xtrabackup_logfile文件中
+fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+pread(4, "\200\3\306\207\2\0\0R\0\0\0\37\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536, 126677504) = 65536
+write(5, "\200\3\306\207\2\0\0R\0\0\0\37\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536) = 65536
+fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+pread(4, "\200\3\307\7\2\0\0\22\0\0\0\0374\231\235\10\375\2\2\0\201b\0008\5\1\0\201b\0j\1"..., 65536, 126743040) = 65536
+write(5, "\200\3\307\7\2\0\0\22\0\0\0\0374\231\235\10\375\2\2\0\201b\0008\5\1\0\201b\0j\1"..., 65536) = 65536
+fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+pread(4, "\200\3\307\207\2\0\0/\0\0\0\37\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536, 126808576) = 65536
+write(5, "\200\3\307\207\2\0\0/\0\0\0\37\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536) = 65536
+fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+pread(4, "\200\3\310\7\2\0\0\31\0\0\0\37+\0008\2\4\0\5<F\306\20\326\37\30\0\201,\0\0\0"..., 65536, 126874112) = 65536
+write(5, "\200\3\310\7\2\0\0\31\0\0\0\37+\0008\2\4\0\5<F\306\20\326\37\30\0\201,\0\0\0"..., 65536) = 65536
+fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+pread(4, "\200\3\310\207\2\0\0\26\0\0\0\37\2\4\0\5<F\307c\277\37\30\0\205\1\0\0\0\v\373\2"..., 65536, 126939648) = 65536
+write(5, "\200\3\310\207\2\0\0\26\0\0\0\37\2\4\0\5<F\307c\277\37\30\0\205\1\0\0\0\v\373\2"..., 11264) = 11264
+fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+write(2, "170704 15:52:12 >> log scanned u"..., 49170704 15:52:12 >> log scanned up to (126957698)
+) = 49
+mmap(NULL, 10489856, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0x7f3fde8ef000
+mprotect(0x7f3fde8ef000, 4096, PROT_NONE) = 0
+# 使用clone()系统调用创建5个线程,从后续的一些系统调用上，36724确定为一个日志线程，而36725、36726、36727、36728看起来像是4个IO线程
+clone(child_stack=0x7f3fdf2eefd0, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tidptr=0x7f3fdf2ef9d0, tls=0x7f3fdf2ef700, child_tidptr=0x7f3fdf2ef9d0) = 36724
+mmap(NULL, 10489856, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0x7f3fddeee000
+mprotect(0x7f3fddeee000, 4096, PROT_NONE) = 0
+clone(child_stack=0x7f3fde8edfd0, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tidptr=0x7f3fde8ee9d0, tls=0x7f3fde8ee700, child_tidptr=0x7f3fde8ee9d0) = 36725
+mmap(NULL, 10489856, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0x7f3fdd4ed000
+mprotect(0x7f3fdd4ed000, 4096, PROT_NONE) = 0
+clone(child_stack=0x7f3fddeecfd0, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tidptr=0x7f3fddeed9d0, tls=0x7f3fddeed700, child_tidptr=0x7f3fddeed9d0) = 36726
+mmap(NULL, 10489856, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0x7f3fdcaec000
+mprotect(0x7f3fdcaec000, 4096, PROT_NONE) = 0
+clone(child_stack=0x7f3fdd4ebfd0, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tidptr=0x7f3fdd4ec9d0, tls=0x7f3fdd4ec700, child_tidptr=0x7f3fdd4ec9d0) = 36727
+mmap(NULL, 10489856, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0x7f3fdc0eb000
+mprotect(0x7f3fdc0eb000, 4096, PROT_NONE) = 0
+clone(child_stack=0x7f3fdcaeafd0, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tidptr=0x7f3fdcaeb9d0, tls=0x7f3fdcaeb700, child_tidptr=0x7f3fdcaeb9d0) = 36728
+nanosleep({0, 200000000}, Process 36724 attached
+ <unfinished ...>
+[pid 36724] set_robust_list(0x7f3fdf2ef9e0, 24) = 0
+[pid 36724] futex(0x2cc385c, FUTEX_WAIT_BITSET_PRIVATE|FUTEX_CLOCK_REALTIME, 1, {1499154733, 442566000}, ffffffffProcess 36725 attached
+ <unfinished ...>
+[pid 36725] set_robust_list(0x7f3fde8ee9e0, 24) = 0
+[pid 36725] io_getevents(139912366907392, 1, 256, Process 36726 attached
+ <unfinished ...>
+[pid 36726] set_robust_list(0x7f3fddeed9e0, 24) = 0
+[pid 36726] io_getevents(139912366895104, 1, 256, Process 36727 attached
+ <unfinished ...>
+[pid 36727] set_robust_list(0x7f3fdd4ec9e0, 24) = 0
+[pid 36727] io_getevents(139912366882816, 1, 256, Process 36728 attached
+ <unfinished ...>
+[pid 36728] set_robust_list(0x7f3fdcaeb9e0, 24) = 0
+[pid 36728] io_getevents(139912366870528, 1, 256,  <unfinished ...>
+# 主线程检测datadir下所有目录和文件列表，并获取文件的状态和大小，对于innodb事务表，使用open()系统调用只读方式打开，然后使用lseek()系统调用扫描到文件尾进行确认文件大小，关闭文件
+[pid 35790] <... nanosleep resumed> NULL) = 0
+[pid 35790] stat("/home/mysql/data/mysqldata1/innodb_ts/ibdata1", {st_mode=S_IFREG|0640, st_size=260046848, ...}) = 0
+[pid 35790] open("/home/mysql/data/mysqldata1/innodb_ts/ibdata1", O_RDONLY) = 6
+[pid 35790] close(6)                    = 0
+[pid 35790] open("/home/mysql/data/mysqldata1/innodb_ts/ibdata1", O_RDONLY) = 6
+[pid 35790] lseek(6, 0, SEEK_CUR)       = 0
+[pid 35790] lseek(6, 0, SEEK_END)       = 260046848
+[pid 35790] lseek(6, 0, SEEK_SET)       = 0
+[pid 35790] ioctl(6, 0x40049502, 0x7fffd99f4f9c) = -1 ENOTTY (Inappropriate ioctl for device)
+[pid 35790] mmap(NULL, 135168, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f3fdc0ca000
+[pid 35790] pread(6, "\307\31~\21\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\7\213\376\336\0\10\0\0\0\0\0\0"..., 65536, 0) = 65536
+[pid 35790] pread(6, "\210@\4@\0\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\7\220[\353\0\7\0\0\0\0\0\0"..., 16384, 81920) = 16384
+[pid 35790] mmap(NULL, 2117632, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f3fdbec5000
+[pid 35790] pread(6, "\236\236\357)\0\0\1)\0\0\0\0\0\0\0\0\0\0\0\0\7\221*\230\0\2\0\0\0\0\0\0"..., 1048576, 1048576) = 1048576
+[pid 35790] pread(6, "\235\245\325^\0\0\0\324\0\0\0\0\0\0\0\0\0\0\0\0\7\213 \214\0\6\0\0\0\0\0\0"..., 1048576, 2097152) = 1048576
+[pid 35790] close(6)                    = 0
+[pid 35790] stat("/home/mysql/data/mysqldata1/innodb_ts/ibdata1", {st_mode=S_IFREG|0640, st_size=260046848, ...}) = 0
+[pid 35790] stat("/home/mysql/data/mysqldata1/undo//undo001", 0x7fffd99f1ce0) = -1 ENOENT (No such file or directory)
+[pid 35790] open("/home/mysql/data/mysqldata1/undo//undo001", O_RDONLY) = -1 ENOENT (No such file or directory)
+[pid 35790] write(2, "xtrabackup: Generating a list of"..., 45xtrabackup: Generating a list of tablespaces
+) = 45
+[pid 35790] open(".", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 6
+[pid 35790] brk(0x2cfd000)              = 0x2cfd000
+[pid 35790] getdents(6, /* 10 entries */, 32768) = 320
+[pid 35790] stat("./luoxiaobo", {st_mode=S_IFDIR|0750, st_size=4096, ...}) = 0
+[pid 35790] open("./luoxiaobo", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 7
+[pid 35790] getdents(7, /* 8 entries */, 32768) = 280
+[pid 35790] stat("./luoxiaobo/t_luoxiaobo2.MYI", {st_mode=S_IFREG|0640, st_size=21557248, ...}) = 0
+[pid 35790] stat("./luoxiaobo/db.opt", {st_mode=S_IFREG|0640, st_size=54, ...}) = 0
+[pid 35790] stat("./luoxiaobo/t_luoxiaobo.ibd", {st_mode=S_IFREG|0640, st_size=79691776, ...}) = 0
+[pid 35790] open("./luoxiaobo/t_luoxiaobo.ibd", O_RDONLY) = 8
+[pid 35790] fstat(8, {st_mode=S_IFREG|0640, st_size=79691776, ...}) = 0
+[pid 35790] mmap(NULL, 135168, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f3fdbea4000
+[pid 35790] pread(8, "\241n\2016\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\7\212e)\0\10\0\0\0\0\0\0"..., 65536, 0) = 65536
+[pid 35790] lseek(8, 0, SEEK_CUR)       = 0
+[pid 35790] lseek(8, 0, SEEK_END)       = 79691776
+[pid 35790] lseek(8, 0, SEEK_SET)       = 0
+[pid 35790] write(2, "InnoDB: Allocated tablespace ID "..., 80InnoDB: Allocated tablespace ID 24 for luoxiaobo/t_luoxiaobo, old maximum was 0
+) = 80
+[pid 35790] stat("./luoxiaobo/t_luoxiaobo.ibd", {st_mode=S_IFREG|0640, st_size=79691776, ...}) = 0
+[pid 35790] open("./luoxiaobo/t_luoxiaobo.ibd", O_RDONLY) = 9
+[pid 35790] close(8)                    = 0
+...... 
+[pid 35790] mmap(NULL, 10489856, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_STACK, -1, 0) = 0x7f3fdb4c4000
+[pid 35790] mprotect(0x7f3fdb4c4000, 4096, PROT_NONE) = 0
+#创建一个新的线程，线程ID为36835，用于备份Innodb表，该线程会打开datadir下的innodb相关的数据文件，并在备份目录新建一个同名文件，使用pread()和write()系统调用对两个FD分别进行读和写操作实现数据拷贝
+[pid 35790] clone(child_stack=0x7f3fdbec3fd0, flags=CLONE_VM|CLONE_FS|CLONE_FILES|CLONE_SIGHAND|CLONE_THREAD|CLONE_SYSVSEM|CLONE_SETTLS|CLONE_PARENT_SETTID|CLONE_CHILD_CLEARTID, parent_tidptr=0x7f3fdbec49d0, tls=0x7f3fdbec4700, child_tidptr=0x7f3fdbec49d0) = 36835
+[pid 35790] nanosleep({1, 0},  <unfinished ...>
+#注：线程ID为36726、36725、36727、36728实在没看出来在做什么事情，看起来好像一直处于空闲状态，反复在打印这几行信息，看起来好像innobackupex模拟mysql instance的方式启动了一个mini instance，4个IO线程在这里没有作用，所以就一直空着，求喷！！！
+[pid 36726] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36725] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36726] io_getevents(139912366895104, 1, 256,  <unfinished ...>
+[pid 36725] io_getevents(139912366907392, 1, 256,  <unfinished ...>
+[pid 36728] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36727] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36728] io_getevents(139912366870528, 1, 256,  <unfinished ...>
+[pid 36727] io_getevents(139912366882816, 1, 256, Process 36835 attached
+ <unfinished ...>
+# 从这里开始，主线程35790把拷贝innodb事务表相关的数据文件的任务交给了新创建的线程36835，需要注意的是，如果表空间的size大于10485760字节，那么看起来都是以10485760字节（10M）一个块进行拷贝的
+[pid 36835] set_robust_list(0x7f3fdbec49e0, 24) = 0
+[pid 36835] open("/home/mysql/data/mysqldata1/innodb_ts/ibdata1", O_RDONLY) = 6
+[pid 36835] fstat(6, {st_mode=S_IFREG|0640, st_size=260046848, ...}) = 0
+[pid 36835] fcntl(6, F_SETFL, O_RDONLY|O_DIRECT) = 0
+[pid 36835] fadvise64(6, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+[pid 36835] mmap(NULL, 134217728, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0x7f3fd34c4000
+[pid 36835] munmap(0x7f3fd34c4000, 11780096) = 0
+[pid 36835] munmap(0x7f3fd8000000, 55328768) = 0
+[pid 36835] mprotect(0x7f3fd4000000, 266240, PROT_READ|PROT_WRITE) = 0
+[pid 36835] pread(6, "\307\31~\21\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\7\213\376\336\0\10\0\0\0\0\0\0"..., 4096, 0) = 4096
+[pid 36835] madvise(0x7f3fd4021000, 131072, MADV_DONTNEED) = 0
+[pid 36835] mmap(NULL, 10506240, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0) = 0x7f3fdaabf000
+[pid 36835] mkdir("/data/backup/full/", 0750) = -1 EEXIST (File exists)
+[pid 36835] open("/data/backup/full/ibdata1", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 7
+[pid 36835] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 36835] write(2, "170704 15:52:12 [01] Copying /ho"..., 104170704 15:52:12 [01] Copying /home/mysql/data/mysqldata1/innodb_ts/ibdata1 to /data/backup/full/ibdata1
+) = 104
+[pid 36835] pread(6, "\307\31~\21\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\7\213\376\336\0\10\0\0\0\0\0\0"..., 10485760, 0) = 10485760
+[pid 36835] fadvise64(6, 0, 10485760, POSIX_FADV_DONTNEED) = 0
+[pid 36835] write(7, "\307\31~\21\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\7\213\376\336\0\10\0\0\0\0\0\0"..., 10485760) = 10485760
+[pid 36835] fadvise64(7, 0, 0, POSIX_FADV_DONTNEED <unfinished ...>
+[pid 36724] <... futex resumed> )       = -1 ETIMEDOUT (Connection timed out)
+[pid 36728] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36727] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36726] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36725] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 35790] <... nanosleep resumed> NULL) = 0
+[pid 36728] io_getevents(139912366870528, 1, 256,  <unfinished ...>
+[pid 36727] io_getevents(139912366882816, 1, 256,  <unfinished ...>
+[pid 36726] io_getevents(139912366895104, 1, 256,  <unfinished ...>
+[pid 36725] io_getevents(139912366907392, 1, 256,  <unfinished ...>
+[pid 36724] futex(0x2cc3830, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+[pid 35790] nanosleep({1, 0},  <unfinished ...>
+[pid 36724] <... futex resumed> )       = 0
+# 从这里开始，主线程把拷贝redo log的工作移交给线程id为36724 的线程，需要注意的是，
+[pid 36724] pread(4, "\200\3\310\235\2\0\0\202\0\0\0\37\0\0\0\0\0\300\36\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536, 126950912) = 65536
+[pid 36724] write(5, "\200\3\310\235\2\0\0\202\0\0\0\37\0\0\0\0\0\300\36\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 19456) = 19456
+[pid 36724] fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 36724] mmap(NULL, 134217728, PROT_NONE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_NORESERVE, -1, 0) = 0x7f3fcc000000
+[pid 36724] munmap(0x7f3fd0000000, 67108864) = 0
+[pid 36724] mprotect(0x7f3fcc000000, 135168, PROT_READ|PROT_WRITE) = 0
+[pid 36724] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 36724] write(2, "170704 15:52:13 >> log scanned u"..., 49170704 15:52:13 >> log scanned up to (126977347)
+) = 49
+[pid 36724] futex(0x2cc385c, FUTEX_WAIT_BITSET_PRIVATE|FUTEX_CLOCK_REALTIME, 3, {1499154734, 961524000}, ffffffff <unfinished ...>
+[pid 36835] <... fadvise64 resumed> )   = 0
+[pid 36835] pread(6, "\353\304s\206\0\0\2\200\0\0\0\0\0\0\0\0\0\0\0\0\3\373b\237\0\2\0\0\0\0\0\0"..., 10485760, 10485760) = 10485760
+[pid 36835] fadvise64(6, 10485760, 10485760, POSIX_FADV_DONTNEED) = 0
+[pid 36835] write(7, "\353\304s\206\0\0\2\200\0\0\0\0\0\0\0\0\0\0\0\0\3\373b\237\0\2\0\0\0\0\0\0"..., 10485760) = 10485760
+[pid 36835] fadvise64(7, 0, 0, POSIX_FADV_DONTNEED <unfinished ...>
+[pid 36728] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36727] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36726] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36725] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36728] io_getevents(139912366870528, 1, 256,  <unfinished ...>
+[pid 36727] io_getevents(139912366882816, 1, 256,  <unfinished ...>
+[pid 36726] io_getevents(139912366895104, 1, 256,  <unfinished ...>
+[pid 36725] io_getevents(139912366907392, 1, 256,  <unfinished ...>
+[pid 36835] <... fadvise64 resumed> )   = 0
+[pid 36835] pread(6,  <unfinished ...>
+[pid 35790] <... nanosleep resumed> NULL) = 0
+[pid 36724] <... futex resumed> )       = -1 ETIMEDOUT (Connection timed out)
+[pid 35790] nanosleep({1, 0},  <unfinished ...>
+[pid 36724] futex(0x2cc3830, FUTEX_WAKE_PRIVATE, 1) = 0
+[pid 36724] pread(4, "\200\3\310\303\2\0\0+\0\0\0\37\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536, 126970368) = 65536
+[pid 36724] write(5, "\200\3\310\303\2\0\0+\0\0\0\37\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 18432) = 18432
+[pid 36724] fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 36724] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 36724] write(2, "170704 15:52:15 >> log scanned u"..., 49170704 15:52:15 >> log scanned up to (126995898)
+) = 49
+[pid 36724] futex(0x2cc385c, FUTEX_WAIT_BITSET_PRIVATE|FUTEX_CLOCK_REALTIME, 5, {1499154736, 15308000}, ffffffff <unfinished ...>
+[pid 36835] <... pread resumed> "\322\256\5\5\0\0\5\0\0\0\0\0\0\0\0\0\0\0\0\0\7\213\353\277\0\2\0\0\0\0\0\0"..., 10485760, 20971520) = 10485760
+...... #省略掉中间备份表空间，undo log、其他innodb表、循环备份redo log的输出,下面，t_luoxiaobo表就是我们需要备份的innodb数据表
+[pid 36835] mprotect(0x7f3fd4041000, 10272768, PROT_READ|PROT_WRITE) = 0
+[pid 36835] mkdir("/data/backup/full/luoxiaobo/", 0750) = 0
+[pid 36835] open("/data/backup/full/luoxiaobo/t_luoxiaobo.ibd", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 6
+[pid 36835] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 36835] write(2, "170704 15:52:36 [01] Copying ./l"..., 104170704 15:52:36 [01] Copying ./luoxiaobo/t_luoxiaobo.ibd to /data/backup/full/luoxiaobo/t_luoxiaobo.ibd
+) = 104
+[pid 36835] pread(9,  <unfinished ...>
+......
+[pid 36835] <... pread resumed> "\241n\2016\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\7\212e)\0\10\0\0\0\0\0\0"..., 10485760, 0) = 10485760
+[pid 36835] fadvise64(9, 0, 10485760, POSIX_FADV_DONTNEED) = 0
+[pid 36835] write(6, "\241n\2016\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\7\212e)\0\10\0\0\0\0\0\0"..., 10485760) = 10485760
+[pid 36835] fadvise64(6, 0, 0, POSIX_FADV_DONTNEED <unfinished ...>
+[pid 35790] <... nanosleep resumed> NULL) = 0
+......
+[pid 35790] nanosleep({1, 0},  <unfinished ...>
+[pid 36724] <... futex resumed> )       = -1 ETIMEDOUT (Connection timed out)
+[pid 36724] futex(0x2cc3830, FUTEX_WAKE_PRIVATE, 1) = 0
+[pid 36724] pread(4, "\200\3\314F\2\0\0\235\0\0\0#\30\4\0\201S\0\214\0\36\0\201S\0\220\0\200MySQ"..., 65536, 127430656) = 65536
+[pid 36724] write(5, "\200\3\314F\2\0\0\235\0\0\0#\30\4\0\201S\0\214\0\36\0\201S\0\220\0\200MySQ"..., 17920) = 17920
+[pid 36724] fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 36724] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 36724] write(2, "170704 15:52:37 >> log scanned u"..., 49170704 15:52:37 >> log scanned up to (127455493)
+) = 49
+......
+[pid 36835] mkdir("/data/backup/full/qfsys/", 0750) = 0
+[pid 36835] open("/data/backup/full/qfsys/qfsys_heartbeat.ibd", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 6
+[pid 36835] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 36835] write(2, "170704 15:52:44 [01] Copying ./q"..., 104170704 15:52:44 [01] Copying ./qfsys/qfsys_heartbeat.ibd to /data/backup/full/qfsys/qfsys_heartbeat.ibd
+) = 104
+[pid 36835] pread(30, "\233\350\212^\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&\277\23\0\10\0\0\0\0\0\0"..., 98304, 0) = 98304
+[pid 36835] fadvise64(30, 0, 98304, POSIX_FADV_DONTNEED) = 0
+[pid 36835] write(6, "\233\350\212^\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0&\277\23\0\10\0\0\0\0\0\0"..., 98304) = 98304
+[pid 36835] fadvise64(6, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 36835] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 36835] write(2, "170704 15:52:44 [01]        ...d"..., 36170704 15:52:44 [01]        ...done
+) = 36
+[pid 36835] close(30)                   = 0
+[pid 36835] fdatasync(6)                = 0
+[pid 36835] close(6)                    = 0
+[pid 36835] futex(0x7f3fe1531af0, FUTEX_WAKE_PRIVATE, 2147483647) = 0
+[pid 36835] madvise(0x7f3fdb4c4000, 10465280, MADV_DONTNEED) = 0
+[pid 36835] _exit(0)                    = ?
+[pid 36835] +++ exited with 0 +++  #备份完最后一张innodb表数据文件之后，备份innodb表的线程退出
+......
+[pid 35790] <... nanosleep resumed> NULL) = 0
+[pid 35790] sendto(3, "'\0\0\0\3SET SESSION lock_wait_timeo"..., 43, 0, NULL, 0) = 43  #设置session lock_wait_timeout参数为31536000S，防止后续FLUSH NO_WRITE_TO_BINLOG TABLES和FLUSH TABLES WITH READ LOCK语句超时，需要注意的是，从这里开始，非事务表的数据拷贝是主线程35790来做的
+......
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:45 Executing FLUSH "..., 61170704 15:52:45 Executing FLUSH NO_WRITE_TO_BINLOG TABLES...
+) = 61
+[pid 35790] sendto(3, " \0\0\0\3FLUSH NO_WRITE_TO_BINLOG TA"..., 36, 0, NULL, 0) = 36  #向数据库发送FLUSH NO_WRITE_TO_BINLOG TABLES语句
+......
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:45 Executing FLUSH "..., 57170704 15:52:45 Executing FLUSH TABLES WITH READ LOCK...
+) = 57
+[pid 35790] sendto(3, "\34\0\0\0\3FLUSH TABLES WITH READ LOCK", 32, 0, NULL, 0) = 32 #向数据库发送FLUSH TABLES WITH READ LOCK语句
+......
+[pid 35790] write(2, "170704 15:52:45 Starting to back"..., 63170704 15:52:45 Starting to backup non-InnoDB tables and files
+) = 63
+# 在datadir目录下，开始备份非事务引擎表数据文件，事务表的.frm、.opt文件
+[pid 35790] open(".", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 6
+[pid 35790] getdents(6, /* 10 entries */, 32768) = 320
+[pid 35790] stat("./luoxiaobo", {st_mode=S_IFDIR|0750, st_size=4096, ...}) = 0
+[pid 35790] open("./luoxiaobo", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 7
+[pid 35790] getdents(7, /* 8 entries */, 32768) = 280
+[pid 35790] stat("./luoxiaobo/t_luoxiaobo2.MYI", {st_mode=S_IFREG|0640, st_size=21557248, ...}) = 0 #这里就是我们要备份的数据表t_luoxiaobo2的索引文件
+[pid 35790] open("./luoxiaobo/t_luoxiaobo2.MYI", O_RDONLY) = 8
+[pid 35790] fstat(8, {st_mode=S_IFREG|0640, st_size=21557248, ...}) = 0
+[pid 35790] fadvise64(8, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+[pid 35790] brk(0x3705000)              = 0x3705000
+[pid 35790] mkdir("/data/backup/full/luoxiaobo/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/luoxiaobo/t_luoxiaobo2.MYI", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 9
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:45 [01] Copying ./l"..., 106170704 15:52:45 [01] Copying ./luoxiaobo/t_luoxiaobo2.MYI to /data/backup/full/luoxiaobo/t_luoxiaobo2.MYI
+) = 106
+[pid 35790] read(8,  <unfinished ...>
+[pid 36724] <... futex resumed> )       = -1 ETIMEDOUT (Connection timed out)
+[pid 36724] futex(0x2cc3830, FUTEX_WAKE_PRIVATE, 1) = 0
+[pid 36724] pread(4, "\200\3\315a\2\0\0\31\0\0\0$\0\205#\0\10\v\0)\4\0J\32$\246\30\220\222\0\5\0"..., 65536, 127575552) = 65536
+[pid 36724] write(5, "\200\3\315a\2\0\0\31\0\0\0$\0\205#\0\10\v\0)\4\0J\32$\246\30\220\222\0\5\0"..., 30208) = 30208
+[pid 36724] fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 36724] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 36724] write(2, "170704 15:52:45 >> log scanned u"..., 49170704 15:52:45 >> log scanned up to (127612793)
+) = 49
+......
+[pid 35790] mkdir("/data/backup/full/luoxiaobo/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/luoxiaobo/db.opt", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 9
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:46 [01] Copying ./l"..., 86170704 15:52:46 [01] Copying ./luoxiaobo/db.opt to /data/backup/full/luoxiaobo/db.opt
+) = 86
+......
+[pid 35790] mkdir("/data/backup/full/luoxiaobo/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/luoxiaobo/t_luoxiaobo.frm", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 9  #这里就是我们要备份的innodb表t_luoxiaobo的.frm文件
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:46 [01] Copying ./l"..., 104170704 15:52:46 [01] Copying ./luoxiaobo/t_luoxiaobo.frm to /data/backup/full/luoxiaobo/t_luoxiaobo.frm
+) = 104
+[pid 35790] read(8, "\376\1\n\f\3\0\0\20\1\0\0000\0\0i\1\241\0\0\0\0\0\0\0\0\0\0\2!\0\t\0"..., 8628) = 8628
+[pid 35790] fadvise64(8, 0, 8628, POSIX_FADV_DONTNEED) = 0
+[pid 35790] write(9, "\376\1\n\f\3\0\0\20\1\0\0000\0\0i\1\241\0\0\0\0\0\0\0\0\0\0\2!\0\t\0"..., 8628) = 8628
+[pid 35790] fadvise64(9, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:46 [01]        ...d"..., 36170704 15:52:46 [01]        ...done
+) = 36
+[pid 35790] close(8)                    = 0
+[pid 35790] fdatasync(9)                = 0
+[pid 35790] close(9)                    = 0
+[pid 35790] stat("./luoxiaobo/t_luoxiaobo2.MYD", {st_mode=S_IFREG|0640, st_size=41943040, ...}) = 0  #这里就是我们要备份的myisam表t_luoxiaobo2的数据文件
+[pid 35790] open("./luoxiaobo/t_luoxiaobo2.MYD", O_RDONLY) = 8
+[pid 35790] fstat(8, {st_mode=S_IFREG|0640, st_size=41943040, ...}) = 0
+[pid 35790] fadvise64(8, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+[pid 35790] mkdir("/data/backup/full/luoxiaobo/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/luoxiaobo/t_luoxiaobo2.MYD", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 9
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:46 [01] Copying ./l"..., 106170704 15:52:46 [01] Copying ./luoxiaobo/t_luoxiaobo2.MYD to /data/backup/full/luoxiaobo/t_luoxiaobo2.MYD
+) = 106
+[pid 35790] read(8, "\3\0\r\3\0\374\2\0\0\0\0011\231\235\10\365\35\0\0\0\3\0\r\3\0\374\4\0\0\0\0012"..., 10485760) = 10485760
+[pid 35790] fadvise64(8, 0, 10485760, POSIX_FADV_DONTNEED) = 0
+[pid 35790] write(9, "\3\0\r\3\0\374\2\0\0\0\0011\231\235\10\365\35\0\0\0\3\0\r\3\0\374\4\0\0\0\0012"..., 10485760) = 10485760
+[pid 35790] fadvise64(9, 0, 0, POSIX_FADV_DONTNEED <unfinished ...>
+[pid 36728] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36727] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36726] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36725] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36728] io_getevents(139912366870528, 1, 256,  <unfinished ...>
+[pid 36727] io_getevents(139912366882816, 1, 256,  <unfinished ...>
+[pid 36726] io_getevents(139912366895104, 1, 256,  <unfinished ...>
+[pid 36725] io_getevents(139912366907392, 1, 256,  <unfinished ...>
+[pid 35790] <... fadvise64 resumed> )   = 0
+[pid 35790] read(8, "\3\0\r\3\0\374\2\0\20\0\0011\231\235\10\365e\0\0\0\3\0\r\3\0\374\4\0\20\0\0012"..., 10485760) = 10485760
+[pid 35790] fadvise64(8, 10485760, 10485760, POSIX_FADV_DONTNEED) = 0
+[pid 35790] write(9, "\3\0\r\3\0\374\2\0\20\0\0011\231\235\10\365e\0\0\0\3\0\r\3\0\374\4\0\20\0\0012"..., 10485760) = 10485760
+[pid 35790] fadvise64(9, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] read(8, "\3\0\r\3\0\374\2\0 \0\0011\231\235\10\365i\0\0\0\3\0\r\3\0\374\4\0 \0\0012"..., 10485760) = 10485760
+[pid 35790] fadvise64(8, 20971520, 10485760, POSIX_FADV_DONTNEED) = 0
+[pid 35790] write(9, "\3\0\r\3\0\374\2\0 \0\0011\231\235\10\365i\0\0\0\3\0\r\3\0\374\4\0 \0\0012"..., 10485760) = 10485760
+[pid 35790] fadvise64(9, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] read(8, "\3\0\r\3\0\374\2\0000\0\0011\231\235\10\365i\0\0\0\3\0\r\3\0\374\4\0000\0\0012"..., 10485760) = 10485760
+[pid 35790] fadvise64(8, 31457280, 10485760, POSIX_FADV_DONTNEED) = 0
+[pid 35790] write(9, "\3\0\r\3\0\374\2\0000\0\0011\231\235\10\365i\0\0\0\3\0\r\3\0\374\4\0000\0\0012"..., 10485760) = 10485760
+[pid 35790] fadvise64(9, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:47 [01]        ...d"..., 36170704 15:52:47 [01]        ...done
+) = 36
+[pid 35790] close(8)                    = 0
+[pid 35790] fdatasync(9 <unfinished ...>
+......
+[pid 36724] futex(0x2cc3830, FUTEX_WAKE_PRIVATE, 1) = 0
+[pid 36724] pread(4, "\200\3\315\234\1\335\0a\0\0\0%\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536, 127605760) = 65536
+[pid 36724] fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 36724] stat("/etc/localtime",  <unfinished ...>
+[pid 35790] <... fdatasync resumed> )   = 0
+[pid 36724] <... stat resumed> {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 36724] write(2, "170704 15:52:48 >> log scanned u"..., 49170704 15:52:48 >> log scanned up to (127612893)
+) = 49
+[pid 36724] futex(0x2cc385c, FUTEX_WAIT_BITSET_PRIVATE|FUTEX_CLOCK_REALTIME, 67, {1499154769, 95549000}, ffffffff <unfinished ...>
+[pid 35790] close(9)                    = 0
+[pid 35790] stat("./luoxiaobo/t_luoxiaobo2.frm", {st_mode=S_IFREG|0640, st_size=8628, ...}) = 0  #这里就是我们要备份的myisam表t_luoxiaobo2的.frm文件
+[pid 35790] open("./luoxiaobo/t_luoxiaobo2.frm", O_RDONLY) = 8
+[pid 35790] fstat(8, {st_mode=S_IFREG|0640, st_size=8628, ...}) = 0
+[pid 35790] fadvise64(8, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+[pid 35790] mkdir("/data/backup/full/luoxiaobo/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/luoxiaobo/t_luoxiaobo2.frm", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 9
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [01] Copying ./l"..., 106170704 15:52:48 [01] Copying ./luoxiaobo/t_luoxiaobo2.frm to /data/backup/full/luoxiaobo/t_luoxiaobo2.frm
+) = 106
+[pid 35790] read(8, "\376\1\n\t\3\0\0\20\1\0\0000\0\0i\1\241\0\0\0\0\0\0\0\0\0\0\2!\0\t\0"..., 8628) = 8628
+[pid 35790] fadvise64(8, 0, 8628, POSIX_FADV_DONTNEED) = 0
+[pid 35790] write(9, "\376\1\n\t\3\0\0\20\1\0\0000\0\0i\1\241\0\0\0\0\0\0\0\0\0\0\2!\0\t\0"..., 8628) = 8628
+[pid 35790] fadvise64(9, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [01]        ...d"..., 36170704 15:52:48 [01]        ...done
+) = 36
+[pid 35790] close(8)                    = 0
+[pid 35790] fdatasync(9)                = 0
+[pid 35790] close(9)                    = 0
+[pid 35790] getdents(7, /* 0 entries */, 32768) = 0
+[pid 35790] close(7)                    = 0
+#这里开始拷贝performance_schema下的视图.frm文件
+[pid 35790] stat("./performance_schema", {st_mode=S_IFDIR|0750, st_size=4096, ...}) = 0
+[pid 35790] open("./performance_schema", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 7
+[pid 35790] getdents(7, /* 90 entries */, 32768) = 4952
+[pid 35790] stat("./performance_schema/events_transactions_summary_by_host_by_event_name.frm", {st_mode=S_IFREG|0640, st_size=9438, ...}) = 0
+[pid 35790] open("./performance_schema/events_transactions_summary_by_host_by_event_name.frm", O_RDONLY) = 8
+[pid 35790] fstat(8, {st_mode=S_IFREG|0640, st_size=9438, ...}) = 0
+[pid 35790] fadvise64(8, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+[pid 35790] mkdir("/data/backup/full/performance_schema/", 0750) = 0
+[pid 35790] open("/data/backup/full/performance_schema/events_transactions_summary_by_host_by_event_name.frm", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 9
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [01] Copying ./p"..., 198170704 15:52:48 [01] Copying ./performance_schema/events_transactions_summary_by_host_by_event_name.frm to /data/backup/full/performance_schema/events_transactions_summary_by_host_by_event_name.frm
+) = 198
+[pid 35790] read(8, "\376\1\n\34\3\0\0\20\1\0\0000\0\0\20\0\257\2\0\0\0\0\0\0\0\0\0\2\10\0\t\0"..., 9438) = 9438
+[pid 35790] fadvise64(8, 0, 9438, POSIX_FADV_DONTNEED) = 0
+[pid 35790] write(9, "\376\1\n\34\3\0\0\20\1\0\0000\0\0\20\0\257\2\0\0\0\0\0\0\0\0\0\2\10\0\t\0"..., 9438) = 9438
+[pid 35790] fadvise64(9, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [01]        ...d"..., 36170704 15:52:48 [01]        ...done
+) = 36
+[pid 35790] close(8)                    = 0
+[pid 35790] fdatasync(9)                = 0
+[pid 35790] close(9)                    = 0
+...... #到这里performance_schema和sys schema都备份完了，开始备份mysql库下的非事务表数据文件和事务表的.frm文件
+[pid 35790] stat("./mysql", {st_mode=S_IFDIR|0750, st_size=4096, ...}) = 0
+[pid 35790] open("./mysql", O_RDONLY|O_NONBLOCK|O_DIRECTORY|O_CLOEXEC) = 7
+[pid 35790] getdents(7, /* 77 entries */, 32768) = 3008
+[pid 35790] stat("./mysql/slow_log.CSM", {st_mode=S_IFREG|0640, st_size=35, ...}) = 0
+[pid 35790] open("./mysql/slow_log.CSM", O_RDONLY) = 8
+[pid 35790] fstat(8, {st_mode=S_IFREG|0640, st_size=35, ...}) = 0
+[pid 35790] fadvise64(8, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+[pid 35790] mkdir("/data/backup/full/mysql/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/mysql/slow_log.CSM", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 9
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [01] Copying ./m"..., 90170704 15:52:48 [01] Copying ./mysql/slow_log.CSM to /data/backup/full/mysql/slow_log.CSM
+) = 90
+[pid 35790] read(8, "\376\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 35) = 35
+[pid 35790] fadvise64(8, 0, 35, POSIX_FADV_DONTNEED) = 0
+[pid 35790] write(9, "\376\1\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 35) = 35
+[pid 35790] fadvise64(9, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [01]        ...d"..., 36170704 15:52:48 [01]        ...done
+) = 36
+[pid 35790] close(8)                    = 0
+[pid 35790] fdatasync(9)                = 0
+[pid 35790] close(9)                    = 0
+[pid 35790] stat("./mysql/time_zone_name.ibd", {st_mode=S_IFREG|0640, st_size=98304, ...}) = 0
+[pid 35790] stat("./mysql/tables_priv.frm", {st_mode=S_IFREG|0640, st_size=8955, ...}) = 0
+[pid 35790] open("./mysql/tables_priv.frm", O_RDONLY) = 8
+[pid 35790] fstat(8, {st_mode=S_IFREG|0640, st_size=8955, ...}) = 0
+[pid 35790] fadvise64(8, 0, 0, POSIX_FADV_SEQUENTIAL) = 0
+[pid 35790] mkdir("/data/backup/full/mysql/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/mysql/tables_priv.frm", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 9
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [01] Copying ./m"..., 96170704 15:52:48 [01] Copying ./mysql/tables_priv.frm to /data/backup/full/mysql/tables_priv.frm
+) = 96
+[pid 35790] read(8, "\376\1\t\t\3\0\0\20\1\0\0000\0\0\302\2\263\3\0\0\0\0\0\0\0\0\0\2U\0\10\0"..., 8955) = 8955
+[pid 35790] fadvise64(8, 0, 8955, POSIX_FADV_DONTNEED) = 0
+[pid 35790] write(9, "\376\1\t\t\3\0\0\20\1\0\0000\0\0\302\2\263\3\0\0\0\0\0\0\0\0\0\2U\0\10\0"..., 8955) = 8955
+[pid 35790] fadvise64(9, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [01]        ...d"..., 36170704 15:52:48 [01]        ...done
+) = 36
+[pid 35790] close(8)                    = 0
+[pid 35790] fdatasync(9)                = 0
+[pid 35790] close(9)                    = 0
+...... #非事务表数据文件和事务表.frm文件备份完成
+[pid 35790] write(2, "170704 15:52:48 Finished backing"..., 64170704 15:52:48 Finished backing up non-InnoDB tables and files
+) = 64
+[pid 35790] close(6)                    = 0
+[pid 35790] sendto(3, "\23\0\0\0\3SHOW MASTER STATUS", 23, 0, NULL, 0) = 23  #向数据库发送SHOW MASTER STATUS语句，获取binlog pos位置
+......
+[pid 35790] sendto(3, "\17\0\0\0\3SHOW VARIABLES", 19, 0, NULL, 0) = 19
+......
+[pid 35790] mkdir("/data/backup/full/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/xtrabackup_binlog_info", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 6  #生成xtrabackup_binlog_info文件
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [00] Writing xtr"..., 52170704 15:52:48 [00] Writing xtrabackup_binlog_info
+) = 52
+[pid 35790] write(6, "mysql-bin.000002\t1333398\t6b1cb79"..., 69) = 69
+[pid 35790] fadvise64(6, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [00]        ...d"..., 36170704 15:52:48 [00]        ...done
+) = 36
+[pid 35790] fdatasync(6)                = 0
+[pid 35790] close(6)                    = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 Executing FLUSH "..., 66170704 15:52:48 Executing FLUSH NO_WRITE_TO_BINLOG ENGINE LOGS...
+) = 66
+[pid 35790] sendto(3, "%\0\0\0\3FLUSH NO_WRITE_TO_BINLOG EN"..., 41, 0, NULL, 0) = 41  #向数据库发送FLUSH NO_WRITE_TO_BINLOG ENGINE LOGS语句，把与binlog pos位置点一致的且是最后一部分redo log buffer落盘
+...... #重新读取redo log文件头，找到当前的checkpoint点
+[pid 35790] pread(4, "\0\0\0\1\0\0\0\0\0\0\0\0\0\0\"\0MySQL 5.7.17\0\0\0\0"..., 512, 0) = 512
+[pid 35790] pread(4, "\0\0\0\0\0\0\0$\0\0\0\0\7\214\220\30\0\0\0\0\7\214v\30\0\0\0\0\0\200\0\0"..., 512, 512) = 512
+[pid 35790] pread(4, "\0\0\0\0\0\0\0%\0\0\0\0\7\2337\263\0\0\0\0\7\233\35\263\0\0\0\0\0\200\0\0"..., 512, 1536) = 512
+[pid 35790] pread(4, "\0\0\0\0\0\0\0%\0\0\0\0\7\2337\263\0\0\0\0\7\233\35\263\0\0\0\0\0\200\0\0"..., 512, 1536) = 512
+[pid 35790] write(2, "xtrabackup: The latest check poi"..., 66xtrabackup: The latest check point (for incremental): '127612851' #当前的checkpoint点为 127612851 ，即为备份结束时，数据库中的 checkpoint 点
+) = 66
+......
+[pid 36724] pread(4, "\200\3\315\234\1\335\0a\0\0\0%\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536, 127605760) = 65536  #拷贝redo log中最后一部分日志
+[pid 36724] write(5, "\200\3\315\234\1\335\0a\0\0\0%\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 512 <unfinished ...>
+[pid 35790] <... futex resumed> )       = 1
+[pid 35790] write(2, "xtrabackup: Stopping log copying"..., 41xtrabackup: Stopping log copying thread.
+) = 41
+[pid 35790] write(2, ".", 1.)            = 1
+[pid 35790] nanosleep({0, 200000000},  <unfinished ...>
+[pid 36724] <... write resumed> )       = 512
+[pid 36724] fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 36724] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 36724] write(2, "170704 15:52:48 >> log scanned u"..., 49170704 15:52:48 >> log scanned up to (127612893)
+) = 49
+[pid 36724] madvise(0x7f3fde8ef000, 10465280, MADV_DONTNEED) = 0
+[pid 36724] _exit(0)                    = ?
+[pid 36724] +++ exited with 0 +++  # redo log的copy线程退出
+[pid 35790] <... nanosleep resumed> NULL) = 0
+[pid 35790] write(2, "\n", 1
+)           = 1
+[pid 35790] fdatasync(5)                = 0  # xtrabackup_logfile文件数据刷盘
+[pid 35790] close(5)                    = 0  # xtrabackup_logfile文件句柄关闭
+[pid 35790] mkdir("/data/backup/full/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/xtrabackup_checkpoints", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 5  #生成xtrabackup_checkpoints文件
+[pid 35790] write(5, "backup_type = full-backuped\nfrom"..., 117) = 117
+[pid 35790] fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] fdatasync(5)                = 0
+[pid 35790] close(5)                    = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 Executing UNLOCK"..., 40170704 15:52:48 Executing UNLOCK TABLES
+) = 40
+[pid 35790] sendto(3, "\16\0\0\0\3UNLOCK TABLES", 18, 0, NULL, 0) = 18  #向数据库发送UNLOCK TABLES，释放全局读锁
+......
+[pid 35790] write(2, "MySQL binlog position: filename "..., 142MySQL binlog position: filename 'mysql-bin.000002', position '1333398', GTID of the last change '6b1cb79c-6088-11e7-af14-000c29b9e747:1-3546'
+) = 142
+[pid 35790] mkdir("/data/backup/full/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/backup-my.cnf", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 5  #生成backup-my.cnf文件
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [00] Writing bac"..., 43170704 15:52:48 [00] Writing backup-my.cnf
+) = 43
+[pid 35790] write(5, "# This MySQL options file was ge"..., 463) = 463
+[pid 35790] fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:48 [00]        ...d"..., 36170704 15:52:48 [00]        ...done
+) = 36
+[pid 35790] fdatasync(5 <unfinished ...>
+......
+[pid 35790] <... fdatasync resumed> )   = 0
+[pid 35790] close(5)                    = 0
+[pid 35790] sendto(3, "\16\0\0\0\3SELECT UUID()", 18, 0, NULL, 0) = 18
+[pid 35790] recvfrom(3, "\1\0\0\1\1\34\0\0\2\3def\0\0\0\6UUID()\0\f\10\0$\0\0\0\375"..., 16384, 0, NULL, NULL) = 89
+[pid 35790] sendto(3, "\21\0\0\0\3SELECT VERSION()", 21, 0, NULL, 0) = 21
+[pid 35790] recvfrom(3, "\1\0\0\1\1\37\0\0\2\3def\0\0\0\tVERSION()\0\f\10\0\n\0"..., 16384, 0, NULL, NULL) = 66
+[pid 35790] mkdir("/data/backup/full/", 0750) = -1 EEXIST (File exists)
+[pid 35790] open("/data/backup/full/xtrabackup_info", O_WRONLY|O_CREAT|O_EXCL|O_NOFOLLOW, 0640) = 5  #生成xtrabackup_info文件
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:49 [00] Writing xtr"..., 45170704 15:52:49 [00] Writing xtrabackup_info
+) = 45
+[pid 35790] write(5, "uuid = c64306a6-608d-11e7-b491-0"..., 594) = 594
+[pid 35790] fadvise64(5, 0, 0, POSIX_FADV_DONTNEED) = 0
+[pid 35790] stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+[pid 35790] write(2, "170704 15:52:49 [00]        ...d"..., 36170704 15:52:49 [00]        ...done
+) = 36
+[pid 35790] fdatasync(5)                = 0
+[pid 35790] close(5)                    = 0
+[pid 35790] write(2, "xtrabackup: Transaction log of l"..., 74xtrabackup: Transaction log of lsn (126618730) to (127612893) was copied.
+) = 74
+[pid 35790] nanosleep({0, 100000000}, NULL) = 0
+[pid 35790] nanosleep({0, 100000000}, NULL) = 0
+[pid 35790] nanosleep({0, 100000000}, NULL) = 0
+[pid 35790] nanosleep({0, 100000000}, NULL) = 0
+[pid 35790] nanosleep({0, 100000000},  <unfinished ...>
+[pid 36728] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36727] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36726] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36725] <... io_getevents resumed> {}{0, 500000000}) = 0
+[pid 36728] madvise(0x7f3fdc0eb000, 10465280, MADV_DONTNEED <unfinished ...>
+[pid 36727] madvise(0x7f3fdcaec000, 10465280, MADV_DONTNEED <unfinished ...>
+[pid 36726] madvise(0x7f3fdd4ed000, 10465280, MADV_DONTNEED <unfinished ...>
+[pid 36725] madvise(0x7f3fddeee000, 10465280, MADV_DONTNEED <unfinished ...>
+[pid 36728] <... madvise resumed> )     = 0
+[pid 36727] <... madvise resumed> )     = 0
+[pid 36726] <... madvise resumed> )     = 0
+[pid 36725] <... madvise resumed> )     = 0
+[pid 36728] futex(0x7f3fe2db42b0, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+[pid 36727] futex(0x7f3fe2db42b0, FUTEX_WAIT_PRIVATE, 2, NULL <unfinished ...>
+[pid 36726] _exit(0)                    = ?
+[pid 36725] munmap(0x7f3fdb4c4000, 10489856 <unfinished ...>
+# 几个IO线程依次退出
+[pid 36726] +++ exited with 0 +++
+[pid 36725] <... munmap resumed> )      = 0
+[pid 36725] futex(0x7f3fe2db42b0, FUTEX_WAKE_PRIVATE, 1 <unfinished ...>
+[pid 36728] <... futex resumed> )       = 0
+[pid 36725] <... futex resumed> )       = 1
+[pid 36728] munmap(0x7f3fde8ef000, 10489856 <unfinished ...>
+[pid 36725] _exit(0)                    = ?
+[pid 36728] <... munmap resumed> )      = 0
+[pid 36725] +++ exited with 0 +++
+[pid 36728] futex(0x7f3fe2db42b0, FUTEX_WAKE_PRIVATE, 1) = 1
+[pid 36727] <... futex resumed> )       = 0
+[pid 36728] _exit(0)                    = ?
+[pid 36727] munmap(0x7f3fdd4ed000, 10489856 <unfinished ...>
+[pid 36728] +++ exited with 0 +++
+[pid 36727] <... munmap resumed> )      = 0
+[pid 36727] futex(0x7f3fe2db42b0, FUTEX_WAKE_PRIVATE, 1) = 0
+[pid 36727] _exit(0)                    = ?
+[pid 36727] +++ exited with 0 +++
+<... nanosleep resumed> NULL)           = 0
+nanosleep({0, 100000000}, NULL)         = 0
+#回收内存空间
+munmap(0x7f3fe2e1a000, 765952)          = 0
+munmap(0x7f3fe2ee1000, 258048)          = 0
+close(4)                                = 0
+munmap(0x7f3fe06b4000, 409600)          = 0
+munmap(0x7f3fe0650000, 409600)          = 0
+munmap(0x7f3fdbec5000, 2117632)         = 0
+munmap(0x7f3fdf44e000, 2101248)         = 0
+munmap(0x7f3fdf64f000, 16781312)        = 0
+munmap(0x7f3fe0718000, 4198400)         = 0
+munmap(0x7f3fdf37e000, 290816)          = 0
+munmap(0x7f3fdf337000, 290816)          = 0
+munmap(0x7f3fdf2f0000, 290816)          = 0
+munmap(0x7f3fdf3c5000, 561152)          = 0
+munmap(0x7f3fe2f20000, 643072)          = 0
+sendto(3, "\1\0\0\0\1", 5, 0, NULL, 0)  = 5
+shutdown(3, SHUT_RDWR)                  = 0  #备份结束，mini instance执行shutdown
+close(3)                                = 0
+stat("/etc/localtime", {st_mode=S_IFREG|0644, st_size=405, ...}) = 0
+write(2, "170704 15:52:49 completed OK!\n", 30170704 15:52:49 completed OK!
+) = 30
+munmap(0x7f3fdc0ca000, 135168)          = 0
+exit_group(0)                           = ?
++++ exited with 0 +++

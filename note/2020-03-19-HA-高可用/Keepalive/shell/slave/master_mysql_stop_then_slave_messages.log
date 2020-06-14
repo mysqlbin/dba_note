@@ -1,0 +1,18 @@
+
+Nov  4 08:46:41 kp05 Keepalived_vrrp[1691]: (VI_1) Backup received priority 0 advertisement
+Nov  4 08:46:42 kp05 Keepalived_vrrp[1691]: (VI_1) Receive advertisement timeout
+Nov  4 08:46:42 kp05 Keepalived_vrrp[1691]: (VI_1) Entering MASTER STATE
+Nov  4 08:46:42 kp05 Keepalived_vrrp[1691]: (VI_1) setting VIPs.
+Nov  4 08:46:42 kp05 Keepalived_vrrp[1691]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  4 08:46:42 kp05 Keepalived_vrrp[1691]: (VI_1) Sending/queueing gratuitous ARPs on enp0s3 for 192.168.0.93
+Nov  4 08:46:42 kp05 Keepalived_vrrp[1691]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  4 08:46:42 kp05 Keepalived_vrrp[1691]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  4 08:46:42 kp05 Keepalived_vrrp[1691]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  4 08:46:42 kp05 Keepalived_vrrp[1691]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  4 08:46:47 kp05 Keepalived_vrrp[1691]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  4 08:46:47 kp05 Keepalived_vrrp[1691]: (VI_1) Sending/queueing gratuitous ARPs on enp0s3 for 192.168.0.93
+Nov  4 08:46:47 kp05 Keepalived_vrrp[1691]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  4 08:46:47 kp05 Keepalived_vrrp[1691]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  4 08:46:47 kp05 Keepalived_vrrp[1691]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+Nov  4 08:46:47 kp05 Keepalived_vrrp[1691]: Sending gratuitous ARP on enp0s3 for 192.168.0.93
+

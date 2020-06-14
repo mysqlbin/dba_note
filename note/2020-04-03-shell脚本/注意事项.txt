@@ -1,0 +1,11 @@
+
+
+your_name = "lujb"
+echo $your_name
+
+
+	your_name: command not found
+
+	# 变量名和值之间不能有空格
+	
+	

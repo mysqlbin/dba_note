@@ -1,0 +1,403 @@
+
+
+repl_set:PRIMARY> use test_db
+switched to db test_db
+
+repl_set:PRIMARY> for(var i=0;i<100000;i++){db.test.insert({"name":"test"+i,"age":123})}
+
+repl_set:PRIMARY> db.local.find()
+repl_set:PRIMARY> db.local.count()
+10000
+
+
+实验环境：
+	3节点的副本集，从节点1设置优先级为1， 从节点2设置优先级为2
+	模拟 从节点2 延迟， 这时候主节点宕机，看看选举的日志是怎么样的
+	# 不存在这样的场景, 当在某个从节点设置了最高优先级之后, 如果该节点的数据是最新的, 那么就会被选举为主节点 
+	
+	# 当优先级高的从节点成为主节点之后，如果优先级高的主节点宕机， 这时候发生故障切换， 如果旧的主节点(优先级高的主节点)修复之后，会被选举为主节点。
+	
+	
+	hostname      主机IP          Version  Role
+	mongodb01	  192.168.0.121   4.0.13   PRIMARY
+	mongodb02	  192.168.0.122   4.0.13   SECONDARY
+	mongodb03	  192.168.0.123   4.0.13   SECONDARY
+	
+	查看副本集状态
+		repl_set:PRIMARY> rs.status()
+		{
+			"set" : "repl_set",
+			"date" : ISODate("2019-11-27T04:43:26.745Z"),
+			"myState" : 1,
+			"term" : NumberLong(3),
+			"syncingTo" : "",
+			"syncSourceHost" : "",
+			"syncSourceId" : -1,
+			"heartbeatIntervalMillis" : NumberLong(2000),
+			"optimes" : {
+				"lastCommittedOpTime" : {
+					"ts" : Timestamp(1574829800, 1),
+					"t" : NumberLong(3)
+				},
+				"readConcernMajorityOpTime" : {
+					"ts" : Timestamp(1574829800, 1),
+					"t" : NumberLong(3)
+				},
+				"appliedOpTime" : {
+					"ts" : Timestamp(1574829800, 1),
+					"t" : NumberLong(3)
+				},
+				"durableOpTime" : {
+					"ts" : Timestamp(1574829800, 1),
+					"t" : NumberLong(3)
+				}
+			},
+			"lastStableCheckpointTimestamp" : Timestamp(1574829770, 1),
+			"members" : [
+				{
+					"_id" : 0,
+					"name" : "192.168.0.121:27017",
+					"health" : 1,
+					"state" : 1,
+					"stateStr" : "PRIMARY",
+					"uptime" : 3733,
+					"optime" : {
+						"ts" : Timestamp(1574829800, 1),
+						"t" : NumberLong(3)
+					},
+					"optimeDate" : ISODate("2019-11-27T04:43:20Z"),
+					"syncingTo" : "",
+					"syncSourceHost" : "",
+					"syncSourceId" : -1,
+					"infoMessage" : "",
+					"electionTime" : Timestamp(1574829216, 2),
+					"electionDate" : ISODate("2019-11-27T04:33:36Z"),
+					"configVersion" : 1,
+					"self" : true,
+					"lastHeartbeatMessage" : ""
+				},
+				{
+					"_id" : 1,
+					"name" : "192.168.0.122:27017",
+					"health" : 1,
+					"state" : 2,
+					"stateStr" : "SECONDARY",
+					"uptime" : 95,
+					"optime" : {
+						"ts" : Timestamp(1574829800, 1),
+						"t" : NumberLong(3)
+					},
+					"optimeDurable" : {
+						"ts" : Timestamp(1574829800, 1),
+						"t" : NumberLong(3)
+					},
+					"optimeDate" : ISODate("2019-11-27T04:43:20Z"),
+					"optimeDurableDate" : ISODate("2019-11-27T04:43:20Z"),
+					"lastHeartbeat" : ISODate("2019-11-27T04:43:25.558Z"),
+					"lastHeartbeatRecv" : ISODate("2019-11-27T04:43:26.283Z"),
+					"pingMs" : NumberLong(0),
+					"lastHeartbeatMessage" : "",
+					"syncingTo" : "192.168.0.123:27017",
+					"syncSourceHost" : "192.168.0.123:27017",
+					"syncSourceId" : 2,
+					"infoMessage" : "",
+					"configVersion" : 1
+				},
+				{
+					"_id" : 2,
+					"name" : "192.168.0.123:27017",
+					"health" : 1,
+					"state" : 2,
+					"stateStr" : "SECONDARY",
+					"uptime" : 3105,
+					"optime" : {
+						"ts" : Timestamp(1574829800, 1),
+						"t" : NumberLong(3)
+					},
+					"optimeDurable" : {
+						"ts" : Timestamp(1574829800, 1),
+						"t" : NumberLong(3)
+					},
+					"optimeDate" : ISODate("2019-11-27T04:43:20Z"),
+					"optimeDurableDate" : ISODate("2019-11-27T04:43:20Z"),
+					"lastHeartbeat" : ISODate("2019-11-27T04:43:25.205Z"),
+					"lastHeartbeatRecv" : ISODate("2019-11-27T04:43:26.283Z"),
+					"pingMs" : NumberLong(0),
+					"lastHeartbeatMessage" : "",
+					"syncingTo" : "192.168.0.121:27017",
+					"syncSourceHost" : "192.168.0.121:27017",
+					"syncSourceId" : 0,
+					"infoMessage" : "",
+					"configVersion" : 1
+				}
+			],
+			"ok" : 1,
+			"operationTime" : Timestamp(1574829800, 1),
+			"$clusterTime" : {
+				"clusterTime" : Timestamp(1574829800, 1),
+				"signature" : {
+					"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+					"keyId" : NumberLong(0)
+				}
+			}
+		}
+
+	
+	
+	# 修改 mongodb03 的 priority 为最高 
+	repl_set:PRIMARY> cfg=rs.conf() 
+	repl_set:PRIMARY> cfg.members[2].priority=2 
+	2
+	
+	# 重新加载配置
+	#重新加载配置文件，强制了副本集进行一次选举，优先级高的成为Primary。在这之间整个集群的所有节点都是secondary
+	
+		repl_set:PRIMARY> rs.reconfig(cfg)
+		{
+			"ok" : 1,
+			"operationTime" : Timestamp(1574830143, 1),
+			"$clusterTime" : {
+				"clusterTime" : Timestamp(1574830143, 1),
+				"signature" : {
+					"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+					"keyId" : NumberLong(0)
+				}
+			}
+		}
+
+	
+	# 触发选举
+	repl_set:PRIMARY> 
+	2019-11-27T06:59:51.858+0800 I NETWORK  [js] DBClientConnection failed to receive message from localhost:27019 - HostUnreachable: Connection closed by peer
+	2019-11-27T06:59:51.860+0800 I NETWORK  [js] trying reconnect to localhost:27019 failed
+	2019-11-27T06:59:51.861+0800 I NETWORK  [js] reconnect localhost:27019 ok
+	
+	# 新主的日志
+		2019-11-27T12:50:13.603+0800 I NETWORK  [listener] connection accepted from 192.168.0.121:60458 #35 (9 connections now open)
+		2019-11-27T12:50:13.604+0800 I NETWORK  [conn35] end connection 192.168.0.121:60458 (8 connections now open)
+		2019-11-27T12:50:13.608+0800 I NETWORK  [listener] connection accepted from 192.168.0.121:60460 #36 (9 connections now open)
+		2019-11-27T12:50:13.615+0800 I NETWORK  [listener] connection accepted from 192.168.0.122:51836 #37 (10 connections now open)
+		2019-11-27T12:50:13.616+0800 I REPL     [replication-1] Choosing new sync source because the config version supplied by 192.168.0.121:27017, 2, does not match ours, 1
+		2019-11-27T12:50:13.616+0800 I REPL     [replication-1] Canceling oplog query due to OplogQueryMetadata. We have to choose a new sync source. Current source: 192.168.0.121:27017, OpTime { ts: Timestamp(1574830143, 1), t: 3 }, its sync source index:-1
+		2019-11-27T12:50:13.616+0800 W REPL     [rsBackgroundSync] Fetcher stopped querying remote oplog with error: InvalidSyncSource: sync source 192.168.0.121:27017 (config version: 2; last applied optime: { ts: Timestamp(1574830143, 1), t: 3 }; sync source index: -1; primary index: 0) is no longer valid
+		2019-11-27T12:50:13.616+0800 I REPL     [rsBackgroundSync] Clearing sync source 192.168.0.121:27017 to choose a new one.
+		2019-11-27T12:50:13.616+0800 I REPL     [rsBackgroundSync] could not find member to sync from
+		2019-11-27T12:50:13.620+0800 I REPL     [SyncSourceFeedback] SyncSourceFeedback error sending update to 192.168.0.121:27017: InvalidSyncSource: Sync source was cleared. Was 192.168.0.121:27017
+		2019-11-27T12:50:13.621+0800 I NETWORK  [conn36] received client metadata from 192.168.0.121:60460 conn36: { driver: { name: "NetworkInterfaceTL", version: "4.0.13" }, os: { type: "Linux", name: "CentOS Linux release 7.4.1708 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-693.el7.x86_64" } }
+		2019-11-27T12:50:13.625+0800 I NETWORK  [conn37] end connection 192.168.0.122:51836 (9 connections now open)
+		2019-11-27T12:50:13.629+0800 I REPL     [replexec-13] New replica set config in use: { _id: "repl_set", version: 2, protocolVersion: 1, writeConcernMajorityJournalDefault: true, members: [ { _id: 0, host: "192.168.0.121:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 1.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 1, host: "192.168.0.122:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 1.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 2, host: "192.168.0.123:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 2.0, tags: {}, slaveDelay: 0, votes: 1 } ], settings: { chainingAllowed: true, heartbeatIntervalMillis: 2000, heartbeatTimeoutSecs: 10, electionTimeoutMillis: 10000, catchUpTimeoutMillis: -1, catchUpTakeoverDelayMillis: 30000, getLastErrorModes: {}, getLastErrorDefaults: { w: 1, wtimeout: 0 }, replicaSetId: ObjectId('5dddf2cc06e25c57fda787eb') } }
+		2019-11-27T12:50:13.629+0800 I REPL     [replexec-13] This node is 192.168.0.123:27017 in the config
+		2019-11-27T12:50:13.630+0800 I ASIO     [Replication] Connecting to 192.168.0.122:27017
+		2019-11-27T12:50:13.631+0800 I REPL     [replexec-13] Scheduling priority takeover at 2019-11-27T12:50:25.123+0800
+		2019-11-27T12:50:23.605+0800 I NETWORK  [conn3] end connection 192.168.0.121:58816 (8 connections now open)
+		2019-11-27T12:50:23.627+0800 I CONNPOOL [Replication] Ending connection to host 192.168.0.122:27017 due to bad connection status; 1 connections to that host remain open
+		2019-11-27T12:50:25.123+0800 I REPL     [replexec-13] Canceling priority takeover callback
+		2019-11-27T12:50:25.123+0800 I REPL     [replexec-13] Starting an election for a priority takeover
+		2019-11-27T12:50:25.123+0800 I REPL     [replexec-13] conducting a dry run election to see if we could be elected. current term: 3
+		2019-11-27T12:50:25.124+0800 I REPL     [replexec-22] VoteRequester(term 3 dry run) received a yes vote from 192.168.0.121:27017; response message: { term: 3, voteGranted: true, reason: "", ok: 1.0, operationTime: Timestamp(1574830143, 1), $clusterTime: { clusterTime: Timestamp(1574830143, 1), signature: { hash: BinData(0, 0000000000000000000000000000000000000000), keyId: 0 } } }
+		2019-11-27T12:50:25.124+0800 I REPL     [replexec-22] dry election run succeeded, running for election in term 4
+		2019-11-27T12:50:25.127+0800 I ASIO     [Replication] Connecting to 192.168.0.122:27017
+		2019-11-27T12:50:25.133+0800 I REPL     [replexec-24] VoteRequester(term 4) received a yes vote from 192.168.0.121:27017; response message: { term: 4, voteGranted: true, reason: "", ok: 1.0, operationTime: Timestamp(1574830143, 1), $clusterTime: { clusterTime: Timestamp(1574830143, 1), signature: { hash: BinData(0, 0000000000000000000000000000000000000000), keyId: 0 } } }
+		2019-11-27T12:50:25.133+0800 I REPL     [replexec-24] election succeeded, assuming primary role in term 4
+		2019-11-27T12:50:25.133+0800 I REPL     [replexec-24] transition to PRIMARY from SECONDARY
+		2019-11-27T12:50:25.133+0800 I REPL     [replexec-24] Resetting sync source to empty, which was :27017
+		2019-11-27T12:50:25.134+0800 I REPL     [replexec-24] Entering primary catch-up mode.
+		2019-11-27T12:50:25.134+0800 I ASIO     [Replication] Connecting to 192.168.0.122:27017
+		2019-11-27T12:50:25.135+0800 I REPL     [replexec-23] Member 192.168.0.121:27017 is now in state SECONDARY
+		2019-11-27T12:50:25.137+0800 I REPL     [replexec-22] Caught up to the latest optime known via heartbeats after becoming primary. Target optime: { ts: Timestamp(1574830143, 1), t: 3 }. My Last Applied: { ts: Timestamp(1574830143, 1), t: 3 }
+		2019-11-27T12:50:25.137+0800 I REPL     [replexec-22] Exited primary catch-up mode.
+		2019-11-27T12:50:25.137+0800 I REPL     [replexec-22] Stopping replication producer
+		2019-11-27T12:50:26.619+0800 I REPL     [rsSync-0] transition to primary complete; database writes are now permitted
+		2019-11-27T12:50:27.480+0800 I NETWORK  [listener] connection accepted from 192.168.0.121:60462 #43 (9 connections now open)
+		2019-11-27T12:50:27.481+0800 I NETWORK  [conn43] received client metadata from 192.168.0.121:60462 conn43: { driver: { name: "NetworkInterfaceTL", version: "4.0.13" }, os: { type: "Linux", name: "CentOS Linux release 7.4.1708 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-693.el7.x86_64" } }
+		2019-11-27T12:50:27.485+0800 I NETWORK  [listener] connection accepted from 192.168.0.121:60464 #44 (10 connections now open)
+		2019-11-27T12:50:27.486+0800 I NETWORK  [conn44] received client metadata from 192.168.0.121:60464 conn44: { driver: { name: "NetworkInterfaceTL", version: "4.0.13" }, os: { type: "Linux", name: "CentOS Linux release 7.4.1708 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-693.el7.x86_64" } }
+		2019-11-27T12:50:35.123+0800 I CONNPOOL [Replication] Ending connection to host 192.168.0.122:27017 due to bad connection status; 2 connections to that host remain open
+		2019-11-27T12:50:35.127+0800 I CONNPOOL [Replication] Ending connection to host 192.168.0.122:27017 due to bad connection status; 1 connections to that host remain open
+
+
+
+	# mongodb02 从节点的日志
+		2019-11-27T12:49:52.387+0800 I NETWORK  [listener] connection accepted from 192.168.0.121:34692 #17 (6 connections now open)
+		2019-11-27T12:49:52.388+0800 I NETWORK  [conn17] end connection 192.168.0.121:34692 (5 connections now open)
+		2019-11-27T12:49:52.411+0800 I REPL     [replexec-0] New replica set config in use: { _id: "repl_set", version: 2, protocolVersion: 1, writeConcernMajorityJournalDefault: true, members: [ { _id: 0, host: "192.168.0.121:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 1.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 1, host: "192.168.0.122:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 1.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 2, host: "192.168.0.123:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 2.0, tags: {}, slaveDelay: 0, votes: 1 } ], settings: { chainingAllowed: true, heartbeatIntervalMillis: 2000, heartbeatTimeoutSecs: 10, electionTimeoutMillis: 10000, catchUpTimeoutMillis: -1, catchUpTakeoverDelayMillis: 30000, getLastErrorModes: {}, getLastErrorDefaults: { w: 1, wtimeout: 0 }, replicaSetId: ObjectId('5dddf2cc06e25c57fda787eb') } }
+		2019-11-27T12:49:52.411+0800 I REPL     [replexec-0] This node is 192.168.0.122:27017 in the config
+		2019-11-27T12:49:52.411+0800 I NETWORK  [listener] connection accepted from 192.168.0.123:41742 #20 (6 connections now open)
+		2019-11-27T12:49:52.414+0800 I NETWORK  [conn20] end connection 192.168.0.123:41742 (5 connections now open)
+		2019-11-27T12:49:52.417+0800 I NETWORK  [listener] connection accepted from 192.168.0.123:41744 #21 (6 connections now open)
+		2019-11-27T12:49:52.417+0800 I NETWORK  [conn21] received client metadata from 192.168.0.123:41744 conn21: { driver: { name: "NetworkInterfaceTL", version: "4.0.13" }, os: { type: "Linux", name: "CentOS Linux release 7.4.1708 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-693.el7.x86_64" } }
+		2019-11-27T12:49:57.403+0800 I REPL     [replication-0] Choosing new sync source because our current sync source, 192.168.0.123:27017, has an OpTime ({ ts: Timestamp(1574830143, 1), t: 3 }) which is not ahead of ours ({ ts: Timestamp(1574830143, 1), t: 3 }), it does not have a sync source, and it's not the primary (192.168.0.121:27017 is)
+		2019-11-27T12:49:57.403+0800 I REPL     [replication-0] Canceling oplog query due to OplogQueryMetadata. We have to choose a new sync source. Current source: 192.168.0.123:27017, OpTime { ts: Timestamp(1574830143, 1), t: 3 }, its sync source index:-1
+		2019-11-27T12:49:57.403+0800 W REPL     [rsBackgroundSync] Fetcher stopped querying remote oplog with error: InvalidSyncSource: sync source 192.168.0.123:27017 (config version: 2; last applied optime: { ts: Timestamp(1574830143, 1), t: 3 }; sync source index: -1; primary index: 0) is no longer valid
+		2019-11-27T12:49:57.403+0800 I REPL     [rsBackgroundSync] Clearing sync source 192.168.0.123:27017 to choose a new one.
+		2019-11-27T12:49:57.403+0800 I REPL     [rsBackgroundSync] could not find member to sync from
+		2019-11-27T12:49:57.414+0800 I REPL     [SyncSourceFeedback] SyncSourceFeedback error sending update to 192.168.0.123:27017: InvalidSyncSource: Sync source was cleared. Was 192.168.0.123:27017
+		2019-11-27T12:50:02.413+0800 I NETWORK  [conn8] end connection 192.168.0.123:41736 (5 connections now open)
+		2019-11-27T12:50:03.914+0800 I NETWORK  [listener] connection accepted from 192.168.0.123:41746 #22 (6 connections now open)
+		2019-11-27T12:50:03.915+0800 I NETWORK  [conn22] received client metadata from 192.168.0.123:41746 conn22: { driver: { name: "NetworkInterfaceTL", version: "4.0.13" }, os: { type: "Linux", name: "CentOS Linux release 7.4.1708 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-693.el7.x86_64" } }
+		2019-11-27T12:50:03.917+0800 I REPL     [replexec-8] Member 192.168.0.121:27017 is now in state SECONDARY
+		2019-11-27T12:50:03.921+0800 I NETWORK  [listener] connection accepted from 192.168.0.123:41748 #23 (7 connections now open)
+		2019-11-27T12:50:03.922+0800 I NETWORK  [conn23] received client metadata from 192.168.0.123:41748 conn23: { driver: { name: "NetworkInterfaceTL", version: "4.0.13" }, os: { type: "Linux", name: "CentOS Linux release 7.4.1708 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-693.el7.x86_64" } }
+		2019-11-27T12:50:04.415+0800 I REPL     [replexec-3] Member 192.168.0.123:27017 is now in state PRIMARY
+		2019-11-27T12:50:06.407+0800 I REPL     [rsBackgroundSync] sync source candidate: 192.168.0.123:27017
+		2019-11-27T12:50:06.410+0800 I REPL     [rsBackgroundSync] Changed sync source from empty to 192.168.0.123:27017
+		2019-11-27T12:50:13.909+0800 I NETWORK  [conn21] end connection 192.168.0.123:41744 (6 connections now open)
+		2019-11-27T12:50:13.913+0800 I NETWORK  [conn22] end connection 192.168.0.123:41746 (5 connections now open)
+
+	
+	# mongodb01 原主节点的日志
+
+		2019-11-27T12:49:03.330+0800 I REPL     [conn27] replSetReconfig admin command received from client; new config: { _id: "repl_set", version: 2, protocolVersion: 1, writeConcernMajorityJournalDefault: true, members: [ { _id: 0, host: "192.168.0.121:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 1.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 1, host: "192.168.0.122:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 1.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 2, host: "192.168.0.123:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 2.0, tags: {}, slaveDelay: 0, votes: 1 } ], settings: { chainingAllowed: true, heartbeatIntervalMillis: 2000, heartbeatTimeoutSecs: 10, electionTimeoutMillis: 10000, catchUpTimeoutMillis: -1, catchUpTakeoverDelayMillis: 30000, getLastErrorModes: {}, getLastErrorDefaults: { w: 1, wtimeout: 0 }, replicaSetId: ObjectId('5dddf2cc06e25c57fda787eb') } }
+		2019-11-27T12:49:03.335+0800 I REPL     [conn27] replSetReconfig config object with 3 members parses ok
+		2019-11-27T12:49:03.337+0800 I REPL     [replexec-39] New replica set config in use: { _id: "repl_set", version: 2, protocolVersion: 1, writeConcernMajorityJournalDefault: true, members: [ { _id: 0, host: "192.168.0.121:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 1.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 1, host: "192.168.0.122:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 1.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 2, host: "192.168.0.123:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 2.0, tags: {}, slaveDelay: 0, votes: 1 } ], settings: { chainingAllowed: true, heartbeatIntervalMillis: 2000, heartbeatTimeoutSecs: 10, electionTimeoutMillis: 10000, catchUpTimeoutMillis: -1, catchUpTakeoverDelayMillis: 30000, getLastErrorModes: {}, getLastErrorDefaults: { w: 1, wtimeout: 0 }, replicaSetId: ObjectId('5dddf2cc06e25c57fda787eb') } }
+		2019-11-27T12:49:03.337+0800 I REPL     [replexec-39] This node is 192.168.0.121:27017 in the config
+		2019-11-27T12:49:03.337+0800 I ASIO     [Replication] Connecting to 192.168.0.123:27017
+		2019-11-27T12:49:03.341+0800 I NETWORK  [listener] connection accepted from 192.168.0.122:48176 #48 (13 connections now open)
+		2019-11-27T12:49:03.343+0800 I NETWORK  [conn48] end connection 192.168.0.122:48176 (12 connections now open)
+		2019-11-27T12:49:03.351+0800 I NETWORK  [listener] connection accepted from 192.168.0.123:46554 #49 (13 connections now open)
+		2019-11-27T12:49:03.353+0800 I NETWORK  [conn49] end connection 192.168.0.123:46554 (12 connections now open)
+		2019-11-27T12:49:13.335+0800 I CONNPOOL [Replication] Ending connection to host 192.168.0.123:27017 due to bad connection status; 1 connections to that host remain open
+		2019-11-27T12:49:14.858+0800 I REPL     [conn10] stepping down from primary, because a new term has begun: 4
+		2019-11-27T12:49:14.858+0800 I REPL     [replexec-43] transition to SECONDARY from PRIMARY
+		2019-11-27T12:49:14.858+0800 I NETWORK  [replexec-43] Skip closing connection for connection # 40
+		2019-11-27T12:49:14.859+0800 I NETWORK  [replexec-43] Skip closing connection for connection # 18
+		2019-11-27T12:49:14.859+0800 I NETWORK  [replexec-43] Skip closing connection for connection # 15
+		2019-11-27T12:49:14.859+0800 I NETWORK  [replexec-43] Skip closing connection for connection # 10
+		2019-11-27T12:49:14.859+0800 I NETWORK  [conn44] end connection 192.168.0.122:48174 (11 connections now open)
+		2019-11-27T12:49:14.859+0800 I NETWORK  [conn43] end connection 192.168.0.122:48172 (10 connections now open)
+		2019-11-27T12:49:14.859+0800 I NETWORK  [conn42] end connection 192.168.0.122:48168 (9 connections now open)
+		2019-11-27T12:49:14.859+0800 I NETWORK  [conn38] end connection 192.168.0.123:45206 (8 connections now open)
+		2019-11-27T12:49:14.859+0800 I NETWORK  [conn37] end connection 192.168.0.123:45204 (7 connections now open)
+		2019-11-27T12:49:14.859+0800 I NETWORK  [conn34] end connection 192.168.0.121:44284 (6 connections now open)
+		2019-11-27T12:49:14.859+0800 I NETWORK  [conn30] end connection 192.168.0.123:44908 (5 connections now open)
+		2019-11-27T12:49:14.860+0800 I NETWORK  [conn27] end connection 127.0.0.1:35242 (4 connections now open)
+		2019-11-27T12:49:15.361+0800 I REPL     [replexec-42] Member 192.168.0.123:27017 is now in state PRIMARY
+		2019-11-27T12:49:17.209+0800 I REPL     [rsBackgroundSync] sync source candidate: 192.168.0.123:27017
+		2019-11-27T12:49:17.209+0800 I ASIO     [RS] Connecting to 192.168.0.123:27017
+		2019-11-27T12:49:17.213+0800 I REPL     [rsBackgroundSync] Changed sync source from empty to 192.168.0.123:27017
+		2019-11-27T12:49:17.214+0800 I ASIO     [RS] Connecting to 192.168.0.123:27017
+
+	# 查看副本集状态
+		repl_set:PRIMARY> rs.status()
+		{
+			"set" : "repl_set",
+			"date" : ISODate("2019-11-27T04:54:19.747Z"),
+			"myState" : 1,
+			"term" : NumberLong(4),
+			"syncingTo" : "",
+			"syncSourceHost" : "",
+			"syncSourceId" : -1,
+			"heartbeatIntervalMillis" : NumberLong(2000),
+			"optimes" : {
+				"lastCommittedOpTime" : {
+					"ts" : Timestamp(1574830456, 1),
+					"t" : NumberLong(4)
+				},
+				"readConcernMajorityOpTime" : {
+					"ts" : Timestamp(1574830456, 1),
+					"t" : NumberLong(4)
+				},
+				"appliedOpTime" : {
+					"ts" : Timestamp(1574830456, 1),
+					"t" : NumberLong(4)
+				},
+				"durableOpTime" : {
+					"ts" : Timestamp(1574830456, 1),
+					"t" : NumberLong(4)
+				}
+			},
+			"lastStableCheckpointTimestamp" : Timestamp(1574830446, 1),
+			"members" : [
+				{
+					"_id" : 0,
+					"name" : "192.168.0.121:27017",
+					"health" : 1,
+					"state" : 2,
+					"stateStr" : "SECONDARY",
+					"uptime" : 3686,
+					"optime" : {
+						"ts" : Timestamp(1574830456, 1),
+						"t" : NumberLong(4)
+					},
+					"optimeDurable" : {
+						"ts" : Timestamp(1574830456, 1),
+						"t" : NumberLong(4)
+					},
+					"optimeDate" : ISODate("2019-11-27T04:54:16Z"),
+					"optimeDurableDate" : ISODate("2019-11-27T04:54:16Z"),
+					"lastHeartbeat" : ISODate("2019-11-27T04:54:19.225Z"),
+					"lastHeartbeatRecv" : ISODate("2019-11-27T04:54:19.716Z"),
+					"pingMs" : NumberLong(0),
+					"lastHeartbeatMessage" : "",
+					"syncingTo" : "192.168.0.123:27017",
+					"syncSourceHost" : "192.168.0.123:27017",
+					"syncSourceId" : 2,
+					"infoMessage" : "",
+					"configVersion" : 2
+				},
+				{
+					"_id" : 1,
+					"name" : "192.168.0.122:27017",
+					"health" : 1,
+					"state" : 2,
+					"stateStr" : "SECONDARY",
+					"uptime" : 676,
+					"optime" : {
+						"ts" : Timestamp(1574830456, 1),
+						"t" : NumberLong(4)
+					},
+					"optimeDurable" : {
+						"ts" : Timestamp(1574830456, 1),
+						"t" : NumberLong(4)
+					},
+					"optimeDate" : ISODate("2019-11-27T04:54:16Z"),
+					"optimeDurableDate" : ISODate("2019-11-27T04:54:16Z"),
+					"lastHeartbeat" : ISODate("2019-11-27T04:54:19.232Z"),
+					"lastHeartbeatRecv" : ISODate("2019-11-27T04:54:19.725Z"),
+					"pingMs" : NumberLong(0),
+					"lastHeartbeatMessage" : "",
+					"syncingTo" : "192.168.0.123:27017",
+					"syncSourceHost" : "192.168.0.123:27017",
+					"syncSourceId" : 2,
+					"infoMessage" : "",
+					"configVersion" : 2
+				},
+				{
+					"_id" : 2,
+					"name" : "192.168.0.123:27017",
+					"health" : 1,
+					"state" : 1,
+					"stateStr" : "PRIMARY",
+					"uptime" : 3824,
+					"optime" : {
+						"ts" : Timestamp(1574830456, 1),
+						"t" : NumberLong(4)
+					},
+					"optimeDate" : ISODate("2019-11-27T04:54:16Z"),
+					"syncingTo" : "",
+					"syncSourceHost" : "",
+					"syncSourceId" : -1,
+					"infoMessage" : "",
+					"electionTime" : Timestamp(1574830225, 1),
+					"electionDate" : ISODate("2019-11-27T04:50:25Z"),
+					"configVersion" : 2,
+					"self" : true,
+					"lastHeartbeatMessage" : ""
+				}
+			],
+			"ok" : 1,
+			"operationTime" : Timestamp(1574830456, 1),
+			"$clusterTime" : {
+				"clusterTime" : Timestamp(1574830456, 1),
+				"signature" : {
+					"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+					"keyId" : NumberLong(0)
+				}
+			}
+		}
+
+	
+	
+	
+	
+	

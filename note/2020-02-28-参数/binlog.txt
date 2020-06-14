@@ -1,0 +1,51 @@
+#binlog
+binlog_format = row
+server-id = 143306
+log-bin = /data/mysql/mysql3306/logs/mysql-bin
+binlog_cache_size = 1M
+#binlog二进制日志默认大小
+max_binlog_size = 200M
+max_binlog_cache_size = 2G
+sync_binlog = 0
+# binlog日志设置保存时间10天
+expire_logs_days = 10
+
+binlog_cache_size :
+记录了使用缓冲写二进制日志的次数.
+
+binlog_cache_disk_use :
+记录了使用临时文件写二进制日志的次数.
+
+
+
+sync_binlog：
+当 sync_binlog=[N]表示每写缓冲多少次就同步到磁盘。
+
+=1:
+表示采用同步写磁盘的方式来写二进制日志（在一个事务发出COMMIT动作之前）
+如果不是1呢 是0呢
+
+
+工作机制：
+
+
+作用：
+
+
+
+注意：
+事务是在引擎层进行COMMIT之后写 redo log;
+
+binlog 属于 server 层
+redo log 属于 存储引擎层。
+ 
+
+
+疑问：
+是否有 binlog buffer 这个东西？
+binlog 刷盘是把日志写入二进制文件？
+写 binlog 是在COMMIT前还是COMMIT后？
+
+参考：
+MYSQL 什么时候同步binlog文件以及它的临时文件在哪里？
+MySQL Binlog实用攻略

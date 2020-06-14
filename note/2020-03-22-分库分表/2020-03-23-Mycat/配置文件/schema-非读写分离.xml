@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<!DOCTYPE mycat:schema SYSTEM "schema.dtd">
+<mycat:schema xmlns:mycat="http://io.mycat/">
+	
+	<!-- 设置表的存储方式.schema name="mycat_db" 与 server.xml中的 mycat_db 设置一致  -->  
+	
+	<schema name="mycat_db" checkSQLschema="true" sqlMaxLimit="100" randomDataNode="dn1">
+		<!-- auto sharding by id (long) -->
+		<!--splitTableNames 启用<table name 属性使用逗号分割配置多个表,即多个表使用这个配置-->
+		
+		<table name="test1" primaryKey="ID" autoIncrement="true" dataNode="dn1,dn2,dn5,dn9"  rule="sharding-by-partbyday" splitTableNames ="true"/>   <!--表test1 拆分的节点以及拆分规则-->
+		
+		<table name="test4" primaryKey="ID" autoIncrement="true" dataNode="dn$1-12" rule="sharding-by-partbymonth" splitTableNames ="true"/>
+		
+		
+		<!-- <table name="oc_call" primaryKey="ID" dataNode="dn1$0-743" rule="latest-month-calldate"
+			/> -->
+	</schema>
+	<!-- <dataNode name="dn1$0-743" dataHost="localhost1" database="db$0-743"
+		/> -->
+		
+	<!-- 设置dataNode 对应的数据库信息，及 mycat 连接的地址dataHost，database是真实的物理数据库名称 --> 
+
+	
+	<dataNode name="dn1" dataHost="datahost_201" database="db1" />
+	<dataNode name="dn2" dataHost="datahost_201" database="db2" />
+	<dataNode name="dn3" dataHost="datahost_201" database="db3" />
+	<dataNode name="dn4" dataHost="datahost_201" database="db4" />
+	
+	<dataNode name="dn5" dataHost="datahost_202" database="db1" />
+	<dataNode name="dn6" dataHost="datahost_202" database="db2" />
+	<dataNode name="dn7" dataHost="datahost_202" database="db3" />
+	<dataNode name="dn8" dataHost="datahost_202" database="db4" />
+	
+	<dataNode name="dn9"  dataHost="datahost_203" database="db1" />
+	<dataNode name="dn10" dataHost="datahost_203" database="db2" />
+	<dataNode name="dn11" dataHost="datahost_203" database="db3" />
+	<dataNode name="dn12" dataHost="datahost_203" database="db4" />
+	
+	
+	<!-- <dataNode name="dn1" dataHost="datahost_201" database="db1" /> -->
+	<!-- <dataNode name="dn3" dataHost="datahost_202" database="db3" /> --> 
+	
+	<!--<dataNode name="dn4" dataHost="sequoiadb1" database="SAMPLE" />
+	 <dataNode name="jdbc_dn1" dataHost="jdbchost" database="db1" />
+	<dataNode	name="jdbc_dn2" dataHost="jdbchost" database="db2" />
+	<dataNode name="jdbc_dn3" 	dataHost="jdbchost" database="db3" /> -->
+	
+	<!--
+	create user 'mycat_user'@'192.168.0.%' identified by '123456abc';
+	grant all privileges on *.* to 'mycat_user'@'192.168.0.%' with grant option;
+	
+	create user 'root'@'192.168.0.%' identified by '123456abc';
+	grant all privileges on *.* to 'root'@'192.168.0.%' with grant option;
+	
+	
+	-->
+	
+	<!-- mycat 逻辑主机dataHost对应的物理主机.其中也设置对应的mysql登陆信息 -->  
+	
+	<dataHost name="datahost_201" maxCon="1000" minCon="10" balance="0"  
+			  writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">   <!-- 底层MySQL登录方式-->
+		<heartbeat>select user()</heartbeat>
+		<!-- can have multi write hosts -->
+		<writeHost host="mycat01" url="192.168.0.201:3306" user="root" password="123456abc">
+		</writeHost>
+		<!-- <writeHost host="hostM2" url="localhost:3316" user="root" password="123456"/> -->
+	</dataHost>
+	
+	<dataHost name="datahost_202" maxCon="1000" minCon="10" balance="0" 
+			  writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">   <!-- 底层MySQL登录方式-->
+		<heartbeat>select user()</heartbeat>
+		<!-- can have multi write hosts -->
+		<writeHost host="mycat02" url="192.168.0.202:3306" user="root" password="123456abc">
+		</writeHost>
+		<!-- <writeHost host="hostM2" url="localhost:3316" user="root" password="123456"/> -->
+	</dataHost>
+	
+	
+	<dataHost name="datahost_203" maxCon="1000" minCon="10" balance="0" 
+			  writeType="0" dbType="mysql" dbDriver="native" switchType="1"  slaveThreshold="100">   <!-- 底层MySQL登录方式-->
+		<heartbeat>select user()</heartbeat>
+		<!-- can have multi write hosts -->
+		<writeHost host="mycat03" url="192.168.0.203:3306" user="root" password="123456abc">
+		</writeHost>
+		<!-- <writeHost host="hostM2" url="localhost:3316" user="root" password="123456"/> -->
+	</dataHost>
+	
+	<!--
+		<dataHost name="sequoiadb1" maxCon="1000" minCon="1" balance="0" dbType="sequoiadb" dbDriver="jdbc">
+		<heartbeat> 		</heartbeat>
+		 <writeHost host="hostM1" url="sequoiadb://1426587161.dbaas.sequoialab.net:11920/SAMPLE" user="jifeng" 	password="jifeng"></writeHost>
+		 </dataHost>
+
+	  <dataHost name="oracle1" maxCon="1000" minCon="1" balance="0" writeType="0" 	dbType="oracle" dbDriver="jdbc"> <heartbeat>select 1 from dual</heartbeat>
+		<connectionInitSql>alter session set nls_date_format='yyyy-mm-dd hh24:mi:ss'</connectionInitSql>
+		<writeHost host="hostM1" url="jdbc:oracle:thin:@127.0.0.1:1521:nange" user="base" 	password="123456" > </writeHost> </dataHost>
+
+		<dataHost name="jdbchost" maxCon="1000" 	minCon="1" balance="0" writeType="0" dbType="mongodb" dbDriver="jdbc">
+		<heartbeat>select 	user()</heartbeat>
+		<writeHost host="hostM" url="mongodb://192.168.0.99/test" user="admin" password="123456" ></writeHost> </dataHost>
+
+		<dataHost name="sparksql" maxCon="1000" minCon="1" balance="0" dbType="spark" dbDriver="jdbc">
+		<heartbeat> </heartbeat>
+		 <writeHost host="hostM1" url="jdbc:hive2://feng01:10000" user="jifeng" 	password="jifeng"></writeHost> </dataHost> -->
+
+	<!-- <dataHost name="jdbchost" maxCon="1000" minCon="10" balance="0" dbType="mysql"
+		dbDriver="jdbc"> <heartbeat>select user()</heartbeat> <writeHost host="hostM1"
+		url="jdbc:mysql://localhost:3306" user="root" password="123456"> </writeHost>
+		</dataHost> -->
+</mycat:schema>

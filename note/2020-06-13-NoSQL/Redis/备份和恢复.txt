@@ -1,0 +1,41 @@
+
+
+
+
+Redis 环境: 
+	hostname    主机IP          Role
+	redis01     192.168.0.111   备份
+	mha01       192.168.0.101   单节点(测试与恢复)
+	
+	
+备份数据生成RDB文件
+	redis-cli -h 192.168.0.111 bgsave
+
+
+从RDB文件恢复Redis数据
+	1. 检查Redis 是否启用了 AOF:
+		[root@mha01 src]# redis-cli -h 192.168.0.101 CONFIG GET appendonly
+		1) "appendonly"
+		2) "yes"
+	
+	2. 如果有启用 AOF, 就先禁用 AOF:
+		redis-cli -h 192.168.0.101 CONFIG SET appendonly no
+		redis-cli -h 192.168.0.101 CONFIG REWRITE
+		
+		[root@mha01 src]# redis-cli -h 192.168.0.101 CONFIG GET appendonly
+		1) "appendonly"
+		2) "no"
+	3. 关闭Redis 服务器, 并将数据目录中的 AOF和RDB文件删除和重命名:
+		redis-cli -h 192.168.0.101 shutdown
+		rm -rf *.aof  *.rdb
+		
+	4. 上传rdb文件到数据目录中, 并将其命名为 dump.rdb(确保与配置中的 dbfilename匹配):
+		
+	5. 启动 Redis 服务器:
+		redis-server /data/redis/6379/conf/redis.conf
+		
+	6. 如果有必要, 重新启用 AOF持久化:
+		redis-cli -h 192.168.0.101 CONFIG SET appendonly yes
+		redis-cli -h 192.168.0.101 CONFIG SET REWRITE
+		
+	

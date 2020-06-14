@@ -1,0 +1,30 @@
+
+
+
+<head>
+	<link href="./css/bootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+	<ul>
+		<li>a</li>
+		<li>b</li>
+		<li>c</li>
+		<li>d</li>
+		<li>e</li>
+	</ul>
+	<script src="./js/jquery.min.js"></script>
+	<script src="./js/bootstrap.js"></script>
+	
+</body>
+
+<script type="text/javascript">
+	$(function(){
+		$("li:first-child").css("color", "blue");
+		$("li:last-child").css("color", "red");
+		$("li:nth-child(3)").css("color", "yellow");
+		$("li:nth-child(2n)").css("color", "orange");
+	})
+</script>
+	
+

@@ -1,0 +1,19 @@
+ROOT NODE #3: 2 records, 26 bytes
+  NODE POINTER RECORD ≥ (id=1) → #7
+  INTERNAL NODE #7: 1128 records, 14664 bytes
+    NODE POINTER RECORD ≥ (id=1) → #5
+    LEAF NODE #5: 574 records, 14924 bytes
+      RECORD: (id=1) → (num=1)
+      RECORD: (id=2) → (num=2)
+      RECORD: (id=3) → (num=3)
+      RECORD: (id=4) → (num=4)
+      RECORD: (id=5) → (num=5)
+	  
+	  ...........................
+	  
+	  
+	  RECORD: (id=999996) → (num=999996)
+      RECORD: (id=999997) → (num=999997)
+      RECORD: (id=999998) → (num=999998)
+      RECORD: (id=999999) → (num=999999)
+      RECORD: (id=1000000) → (num=1000000)

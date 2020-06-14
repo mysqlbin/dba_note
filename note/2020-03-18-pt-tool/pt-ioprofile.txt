@@ -1,0 +1,35 @@
+
+
+
+shell> pt-ioprofile --help
+Usage: pt-ioprofile [OPTIONS] [FILE]
+
+For more information, 'man pt-ioprofile' or 'perldoc /usr/bin/pt-ioprofile'.
+
+Command line options:
+
+  --aggregate       The aggregate function, either C<sum> or C<avg>.
+  --cell            The cell contents.
+  --group-by        The group-by item.
+  --help            Print help and exit.
+  --profile-pid     The PID to profile, overrides L<"--profile-process">.
+  --profile-process The process name to profile.
+  --run-time        How long to profile.
+  --save-samples    Filename to save samples in; these can be used for later
+                    analysis.
+  --version         Print the tool's version and exit.
+
+Options and values after processing arguments:
+
+  --aggregate                      sum
+  --cell                           times
+  --group-by                       filename
+  --help                           TRUE
+  --profile-pid                    (No value)
+  --profile-process                mysqld
+  --run-time                       30
+  --save-samples                   (No value)
+  --version                        FALSE
+
+  
+  

@@ -1,0 +1,53 @@
+
+
+
+[RO] Query List (? for help) 
+When   Load  Cxns     QPS    Slow    Se/In/Up/De%  QCacheHit  KCacheHit  BpsIn  BpsOut
+Now    2.15  127      12.32   0       0/33/22/ 0       0.00%    100.00%  3.62M   7.54M
+Total  0.00    2.93k  15.54  45.25k  13/ 8/ 4/ 0       0.70%     99.98%  1.44k   5.50k
+
+
+
+_____________________________ Buffer Pool ______________________________
+Size     Free Bufs  Pages   Dirty Pages  Hit Rate     Memory  Add'l Pool
+640.00k       1943  652679        28811  1000 / 1000  10.24G            
+
+______________________ Page Statistics ______________________
+Reads   Writes    Created  Reads/Sec  Writes/Sec  Creates/Sec
+303749  23365850  1265861       0.00      904.81       362.46
+
+______________________ Insert Buffers ______________________
+Inserts  Merged Recs  Merges  Size  Free List Len  Seg. Size
+                   0       0     1          95913      95915
+
+__________________ Adaptive Hash Index __________________
+Size   Cells Used  Node Heap Bufs  Hash/Sec  Non-Hash/Sec
+2.53M                          20  53563.84      43798.82
+
+
+
+
+_________________________ I/O Threads __________________________
+Thread  Purpose               Thread Status                     
+     0  insert buffer thread  waiting for completed aio requests
+     1  log thread            waiting for completed aio requests
+     2  read thread           waiting for completed aio requests
+     3  read thread           waiting for completed aio requests
+     4  read thread           waiting for completed aio requests
+     5  read thread           waiting for completed aio requests
+     6  write thread          waiting for completed aio requests
+     7  write thread          waiting for completed aio requests
+     8  write thread          waiting for completed aio requests
+     9  write thread          waiting for completed aio requests
+
+____________________________ Pending I/O _____________________________
+Async Rds  Async Wrt  IBuf Async Rds  Sync I/Os  Log Flushes  Log I/Os
+                                                           0          
+
+________________________ File I/O Misc _________________________
+OS Reads  OS Writes  OS fsyncs  Reads/Sec  Writes/Sec  Bytes/Sec
+  317079   36459988   15659508       0.00     1015.26          0
+
+______________________ Log Statistics _______________________
+Sequence No.  Flushed To    Last Checkpoint  IO Done   IO/Sec
+157636227154  157635597218  157338714013     11060394   10.07

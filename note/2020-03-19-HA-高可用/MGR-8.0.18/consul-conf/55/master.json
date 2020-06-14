@@ -1,0 +1,19 @@
+{
+  "services": [
+    {
+      "name": "mgr-3306-write",
+      "tags": [
+        "mgr-master-write"
+      ],
+      "address": "192.168.0.55",
+      "port": 3306,
+      "checks": [
+        {
+          "Args": ["/data/consul/shell/check_mysql_mgr_master.sh"],
+		  "Shell": "/bin/bash",
+          "interval": "15s"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+
+show global status like 'max_used_connections';   #当前已使用的数据库连接数

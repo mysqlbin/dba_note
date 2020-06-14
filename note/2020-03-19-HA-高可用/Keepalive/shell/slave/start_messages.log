@@ -1,0 +1,21 @@
+Nov  4 08:39:01 kp05 systemd: Starting LVS and VRRP High Availability Monitor...
+Nov  4 08:39:01 kp05 Keepalived[1689]: Starting Keepalived v2.0.19 (10/19,2019)
+Nov  4 08:39:01 kp05 Keepalived[1689]: Running on Linux 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 (built for Linux 3.10.0)
+Nov  4 08:39:01 kp05 Keepalived[1689]: Command line: '/usr/local/sbin/keepalived' '-D'
+Nov  4 08:39:01 kp05 Keepalived[1689]: Opening file '/etc/keepalived/keepalived.conf'.
+Nov  4 08:39:01 kp05 systemd: PID file /run/keepalived.pid not readable (yet?) after start.
+Nov  4 08:39:01 kp05 Keepalived[1690]: Starting VRRP child process, pid=1691
+Nov  4 08:39:01 kp05 systemd: Started LVS and VRRP High Availability Monitor.
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: Registering Kernel netlink reflector
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: Registering Kernel netlink command channel
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: Opening file '/etc/keepalived/keepalived.conf'.
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: WARNING - default user 'keepalived_script' for script execution does not exist - please create.
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: Script /usr/local/python cannot be accessed - No such file or directory
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: Disabling track script check_run since not found/accessible
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: SECURITY VIOLATION - scripts are being executed but script_security not enabled.
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: Assigned address 192.168.0.92 for interface enp0s3
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: Assigned address fe80::a00:27ff:fea6:62f6 for interface enp0s3
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: Registering gratuitous ARP shared channel
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: (VI_1) removing VIPs.
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: (VI_1) Entering BACKUP STATE (init)
+Nov  4 08:39:02 kp05 Keepalived_vrrp[1691]: VRRP sockpool: [ifindex(2), family(IPv4), proto(112), unicast(0), fd(11,12)]

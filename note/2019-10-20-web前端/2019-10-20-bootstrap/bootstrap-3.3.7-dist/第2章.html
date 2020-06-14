@@ -1,0 +1,61 @@
+
+<head>
+	<link href="./css/bootstrap.css" rel="stylesheet">
+</head>
+
+<body>
+
+	<table class="table table-striped table-bordered">
+		<tr>
+			<th>姓名</th>
+			<th>年龄</th>
+			<th>职业</th>
+		</tr>
+		
+		<tr>
+			<td>lujianbin</td>
+			<td>26</td>
+			<td>MySQL DBA</td>
+		</tr>
+		
+		<tr>
+			<td>lujialing</td>
+			<td>26</td>
+			<td>MySQL DBA</td>
+		</tr>
+		
+	</table>
+	
+	<!--顶部导航条, 通用组件调用 -->
+	<!--
+	<ul class="nav navbar-nav">
+		<li><a href="#">首页</a></li>
+		<li><a href="#">产品展示</a></li>
+		<li><a href="#">关于我们</a></li>
+		<li><a href="#">联系我们</a></li>
+	</ul>
+	-->
+	
+	<!--添加 Javascrript效果 -->
+	
+
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="#home" data-toggle="tab">首页</a></li>
+		<li><a href="#profile" data-toggle="tab">概述</a></li>
+		<li><a href="#messages" data-toggle="tab">信息</a></li>
+		<li><a href="#settings" data-toggle="tab">设置</a></li>
+	</ul>
+	
+	
+	<div class="tab-content">
+		<div class="tab-pane active" id="home">我是首页内容</div>
+		<div class="tab-pane" id="profile">我是概述</div>
+		<div class="tab-pane" id="messages">我是信息</div>
+		<div class="tab-pane" id="settings">我是设置</div>
+	</div>
+	
+	
+	
+	<script src="./js/jquery.min.js"></script>
+	<script src="./js/bootstrap.js"></script>
+</body>

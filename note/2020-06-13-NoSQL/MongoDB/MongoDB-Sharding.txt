@@ -1,0 +1,305 @@
+
+
+环境规划如下：
+ip: 192.168.0.54    ip: 192.168.0.55    ip: 192.168.0.56
+mongos: 20000  		mongos: 20000 		mongos: 20000
+config: 21000  		config: 21000 		config: 21000
+shard1: 27001主节点 shard1: 27001副节点 shard1: 27001仲裁
+shard2: 27002仲裁   shard2: 27002主节点 shard2: 27002副节点
+shard3: 27003副节点 shard3: 27003仲裁   shard3: 27003主节点
+
+端口分配：
+
+mongos： 20000
+config： 21000
+shard1： 27001
+shard2： 27002
+shard3： 27003
+
+
+
+1) 三个节点都安装Mongodb
+
+分别在每台机器建立conf、mongos、config、shard1、shard2、shard3六个目录; 
+因为mongos不存储数据，只需要建立日志文件目录即可。
+
+mkdir -p /data/mongodb/conf
+
+mkdir -p /data/mongodb/mongos/{log,run}
+
+mkdir -p /data/mongodb/config/{data,log,run}
+
+mkdir -p /data/mongodb/shard1/{data,log,run}
+mkdir -p /data/mongodb/shard2/{data,log,run}
+mkdir -p /data/mongodb/shard3/{data,log,run}
+
+
+chown -R mongodb:mongodb /data/mongodb/*
+
+
+
+2) 三个节点配置 config server 并启动
+
+#启动：
+
+mongod -f /data/mongodb/conf/config.conf
+
+3) 登录任意一台配置服务器，初始化配置副本集
+
+mongo --host 192.168.0.55 --port 21000
+mongo --host 192.168.0.55 --port 21001
+mongo --host 192.168.0.56 --port 21001
+
+configs={_id:"myshard",members:[{_id:0,host:"192.168.0.54:21000"},{_id:1,host:"192.168.0.55:21000"},{_id:2,host:"192.168.0.56:21000"}]};
+
+
+#初始化副本集
+
+rs.initiate(configs) #3.4以后设置分片必须要配置副本集，否则失败
+	
+	
+4) 三个节点都配置分片副本集
+
+  设置第一个分片副本集	
+  配置文件
+  vi /data/mongodb/conf/shard1.conf
+  mongod -f /data/mongodb/conf/shard1.conf
+
+5) 登陆任意一台服务器，初始化副本集
+mongo --host 192.168.0.54 --port 27001
+#使用admin数据库
+
+use admin
+
+#定义副本集配置，第三个节点设置为仲裁节点。
+
+config = {
+
+_id : "shard1",
+
+members : [
+
+{_id : 0, host : "192.168.0.54:27001" },
+
+{_id : 1, host : "192.168.0.55:27001" },
+
+{_id : 2, host : "192.168.0.56:27001", arbiterOnly:true }]}
+
+#初始化副本集配置
+
+rs.initiate(config);
+
+
+6) 同理，设置第二个分片和第三个分片副本集并初始化
+	
+	
+	a) 设置第二个分片副本集并初始化
+	
+		mongod -f /data/mongodb/conf/shard2.conf
+		
+		mongo --host 192.168.0.55 --port 27002
+
+		use admin
+
+		#定义副本集配置，第1个节点设置为仲裁节点。
+
+		config = {
+
+		_id : "shard2",
+
+		members : [
+
+		{_id : 0, host : "192.168.0.55:27002" },
+
+		{_id : 1, host : "192.168.0.56:27002" },
+
+		{_id : 2, host : "192.168.0.54:27002", arbiterOnly:true }]}
+
+		#初始化副本集配置
+
+		rs.initiate(config);
+
+
+	a) 设置第二个分片副本集并初始化
+	
+		mongod -f /data/mongodb/conf/shard3.conf
+		
+		mongo --host 192.168.0.56 --port 27003
+
+		use admin
+
+		#定义副本集配置，第1个节点设置为仲裁节点。
+
+		config = {
+
+		_id : "shard3",
+
+		members : [
+
+		{_id : 0, host : "192.168.0.56:27003" },
+
+		{_id : 1, host : "192.168.0.54:27003" },
+
+		{_id : 2, host : "192.168.0.55:27003", arbiterOnly:true }]}
+
+		#初始化副本集配置
+
+		rs.initiate(config);
+
+
+
+
+
+7) 设置Mongs路由服务器
+
+先启动配置服务器和分片服务器,后启动路由实例启动路由实例:
+
+启动三台服务器的mongos server
+
+mongos -f /data/mongodb/conf/mongos.conf
+
+W NETWORK [mongosMain] No primary detected for set configs:	
+http://www.cnblogs.com/ityouknow/p/7566682.html
+	
+	
+8) 设置三节点的分片和路由配置服务器串联成集群
+
+登陆任意一台mongos
+
+mongo --host 192.168.0.54 --port 20000
+
+#使用admin数据库
+
+use admin
+
+#串联 路由服务器 与 分片副本集 -----------------------------------------------
+
+sh.addShard("shard1/192.168.0.54:27001,192.168.0.55:27001,192.168.0.56:27001")
+
+sh.addShard("shard2/192.168.0.54:27002,192.168.0.55:27002,192.168.0.56:27002")
+
+sh.addShard("shard3/192.168.0.54:27003,192.168.0.55:27003,192.168.0.56:27003")
+
+#查看集群状态
+
+sh.status()
+
+报错：
+mongos> sh.addShard("shard1/192.168.0.54:27001,192.168.0.55:27001,192.168.0.56:27001")
+{
+	"ok" : 0,
+	"errmsg" : "failed to satisfy writeConcern for command { update: \"system.version\", bypassDocumentValidation: false, ordered: true, updates: [ { q: { _id: \"shardIdentity\", shardName: \"shard1\", clusterId: ObjectId('5bd952b0ebca002718ee668f') }, u: { $set: { configsvrConnectionString: \"myshard/192.168.0.54:21000,192.168.0.55:21000,192.168.0.56:21000\" } }, multi: false, upsert: true } ], writeConcern: { w: \"majority\", wtimeout: 15000 } } when attempting to add shard shard1/192.168.0.54:27001,192.168.0.55:27001 :: caused by :: WriteConcernFailed: waiting for replication timed out. Error details: { wtimeout: true }",
+	"code" : 96,
+	"codeName" : "OperationFailed",
+	"operationTime" : Timestamp(1541028304, 1),
+	"$clusterTime" : {
+		"clusterTime" : Timestamp(1541028304, 1),
+		"signature" : {
+			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
+			"keyId" : NumberLong(0)
+		}
+	}
+}
+
+解决办法：
+	需要再执行一次  sh.addShard("shard1/192.168.0.54:27001,192.168.0.55:27001,192.168.0.56:27001") 就好了。
+	
+
+
+9) 启用分片
+
+db.runCommand( { enablesharding :"posdb"});  #设置POSDB数据库分片生效
+
+#设置数据库posdb里test表根据id自动分片到shard1,2,3中
+#db.runCommand( { shardcollection : "库名.集合名",key : {id: 1} } )
+db.runCommand( { shardcollection : "posdb.test",key : {id: 1} } )
+
+
+
+use  posdb;
+
+for (var i = 1; i <= 100000; i++){
+	db.test.save({id:i,"test":"val1"});
+}
+db.table1.stats();
+
+
+
+10) 查看分片数据：
+
+mongos> db.account.stats() #查看集合的分布情况
+
+
+
+测试1）
+
+use  test2db;
+
+#指定testdb分片生效
+db.runCommand( { enablesharding :"test2db"});
+#指定数据库里需要分片的集合和片键
+db.runCommand( { shardcollection : "test2db.table1",key : {id: 1} } )
+
+for (var i = 1; i <= 10000000; i++){
+	db.table1.save({id:i,"test1":"testvall"});
+}
+
+
+#指定testdb分片生效
+db.runCommand( { enablesharding :"test3db"});
+#指定数据库里需要分片的集合和片键
+db.runCommand( { shardcollection : "test3db.table3",key : {id: 1} } )
+
+for (var i = 1; i <= 200000; i++){
+	db.table3.save({id:i,"table3":"testvall"});
+}
+
+
+config.settings 集合里主要存储sharded cluster的配置信息，比如chunk size，是否开启balancer等
+
+mongos> db.settings.find()
+{ "_id" : "balancer", "mode" : "full", "stopped" : false }
+{ "_id" : "chunksize", "value" : 2 }
+
+balancer
+sh.setBalancerState(true)
+db.settings.save( { _id:"chunksize", value: 64 } );
+
+
+
+
+测试2）------- OK
+use shardtest
+use admin
+mongos> sh.enableSharding("shardtest")
+db.runCommand( { enablesharding :"shardtest"});
+
+use admin
+
+###片键必须是一个索引，通过sh.shardCollection加会自动创建索引（前提是此集合不存在的情况下）:
+sh.shardCollection("shardtest.user",{userid:"hashed"})
+
+使用sh.status()方法或db.printShardingStatus()命令查看分片状态信息
+
+for(i=0;i<100000;i++)(db.user.insert({"userid":i}));
+
+登录到 shard 节点进行数据查看：
+shard1:PRIMARY> use shardtest
+switched to db shardtest
+shard1:PRIMARY> db.user.count()
+33755
+
+
+参考：
+https://www.cnblogs.com/mysql-dba/p/5057559.html
+
+http://www.mongoing.com/archives/2782
+
+
+
+总结:
+
+Sharding 启动顺序:
+mongod -f /data/mongodb/conf/config.conf
+mongod -f /data/mongodb/conf/shard1.conf
+mongos -f /data/mongodb/conf/mongos.conf

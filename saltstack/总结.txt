@@ -1,0 +1,63 @@
+
+
+salt内置模块列表:
+https://blog.csdn.net/chengxuyuanyonghu/article/details/64519496
+
+https://www.cnblogs.com/yexiaochong/p/6069079.html
+
+https://docs.saltstack.com/en/latest/ref/modules/all/index.html 
+
+总结:
+salt 参数： (target, fun, arg)
+
+target -> 目标机器ID, salt '*'：表示 操作所有的 minion
+fun-> 使用的 salt 模块，比如 state.sls, cmd.run, cmd.run表示实现远程的命令的执行; 
+cmd模块，grains 模块， disk 模块
+arg-> 传入的命令或sls文件
+
+fun 的例子：
+cmd.run
+
+
+arg的例子：
+free -m 
+netstat -an |grep 8888
+ps aux|grep salt-api
+
+
+（3）grains 模块： 收集主机相关信息
+salt \* grains.items
+只获取主机信息：
+salt \* grains.item host
+
+salt \* grains.item ipv4
+
+ (4) disk 模块：显示目前磁盘空间使用情况
+salt \* disk.usage 
+disk.usage -> df -h
+
+
+key 的管理：
+
+
+
+
+
+1. 
+saltstack（九）returner : 
+http://blog.51cto.com/lixcto/1430638
+
+module-salt.returners.mysql:
+https://docs.saltstack.com/en/latest/ref/returners/all/salt.returners.mysql.html#module-salt.returners.mysql
+https://github.com/saltstack/salt/blob/develop/salt/returners/mysql.py
+https://github.com/yueyongyue/saltshaker
+
+Returner 通过 https://github.com/yueyongyue/saltshaker/blob/master/install.txt 来配置
+
+2. 
+python 3.x 不再支持MySQLdb　模块：
+https://blog.csdn.net/zhanglh046/article/details/71056689
+
+
+
+

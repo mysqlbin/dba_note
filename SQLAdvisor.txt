@@ -1,0 +1,96 @@
+yum install Percona-Server-shared-56
+
+
+cmake -DBUILD_CONFIG=mysql_release -DCMAKE_BUILD_TYPE=debug -DCMAKE_INSTALL_PREFIX=/usr/local/sqlparser ./
+
+
+错误：
+[root@env sqladvisor]# make
+Linking CXX executable sqladvisor
+/usr/bin/ld: cannot find -lperconaserverclient_r
+解决办法：
+https://www.cnblogs.com/beliveli/articles/6541936.html
+
+
+
+
+yum install Percona-Server-shared-56 出现以下问题，
+Error: Percona-Server-devel-57 conflicts with Percona-Server-devel-56-5.6.39-rel83.1.el7.x86_64
+Error: Percona-Server-devel-57 conflicts with Percona-Server-devel-55-5.5.60-rel38.12.el7.x86_64
+Error: Percona-Server-devel-56 conflicts with Percona-Server-devel-55-5.5.60-rel38.12.el7.x86_64
+Error: Percona-Server-shared-compat-57 conflicts with Percona-Server-shared-56-5.6.39-rel83.1.el7.x86_64
+
+解决办法：
+
+yum install Percona-Server-shared-56 --skip-broken 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+详细步骤：
+yum install cmake libaio-devel libffi-devel glib2 glib2-devel
+
+yum install http://www.percona.com/downloads/percona-release/redhat/0.1-3/percona-release-0.1-3.noarch.rpm
+
+yum install Percona-Server-shared-56 --skip-broken 
+
+
+ln -s /usr/lib64/libperconaserverclient_r.so.18 /usr/lib64/libperconaserverclient_r.so
+
+
+
+编译依赖项sqlparser
+[root@node14 SQLAdvisor]# pwd
+/opt/python/SQLAdvisor
+cmake -DBUILD_CONFIG=mysql_release -DCMAKE_BUILD_TYPE=debug -DCMAKE_INSTALL_PREFIX=/usr/local/sqlparser ./
+make && make install
+
+
+安装SQLAdvisor源码
+cd SQLAdvisor/sqladvisor/
+cmake -DCMAKE_BUILD_TYPE=debug ./
+make
+
+
+
+
+
+
+
+
+
+test:
+SELECT
+	`myapp_db_account_test`.`id`,
+	`myapp_db_account_test`.`user`,
+	`myapp_db_account_test`.`passwd`,
+	`myapp_db_account_test`.`role`,
+	`myapp_db_account_test`.`tags`
+FROM
+	`myapp_db_account_test`
+INNER JOIN `myapp_db_account_dbname_test` ON (
+	`myapp_db_account_test`.`user` = `myapp_db_account_dbname_test`.`db_account_id`
+)
+WHERE
+	`myapp_db_account_dbname_test`.`db_name_id` = 1
+
+	
+select * from myapp_db_account_test where user='aaa' group by user
+
+
+
+
+
+

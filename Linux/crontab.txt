@@ -1,0 +1,20 @@
+
+
+
+
+查看crontab服务状态：
+	service crond status
+
+手动启动crontab服务：
+	service crond start
+
+重启服务:
+	sudo /sbin/service crond restart 
+
+
+7点-23点,每隔2分钟执行一次:
+	*/2 7-23 * * *
+	
+7点-23点,每隔2分钟执行一次:	
+	*/30 0-7 * * *
+	

@@ -1,0 +1,167 @@
+
+
+1. 创建一个帐号
+groupadd mysql
+useradd -g mysql -d /usr/local/mysql -s /sbin/nologin -M mysql
+id mysql
+
+
+[root@voice local]# groupadd mysql
+groupadd: group 'mysql' already exists
+[root@voice local]# useradd -g mysql -d /usr/local/mysql -s /sbin/nologin -M mysql
+useradd: user 'mysql' already exists
+[root@voice local]# id mysql
+uid=1001(mysql) gid=1001(mysql) groups=1001(mysql)
+
+
+
+2. 基本软件安装
+解压目录
+
+tar zxvf mysql-5.7.22-linux-glibc2.12-x86_64.tar.gz
+
+mv mysql-5.7.22-linux-glibc2.12-x86_64 mysql
+ 
+安装目录
+
+chown -R mysql:mysql /usr/local/mysql/
+
+
+
+3. 数据库相关的目录创建出来
+配置文件：/etc/my.cnf
+/data  是一个单独挂载的一个分区
+datadir /mydata/mysql/mysql3306/data
+binlog  /mydata/mysql/mysql3306/logs
+        /mydata/mysql/mysql3306/tmp
+mkdir /mydata/mysql/mysql3306/{data,logs,tmp} -p
+
+
+
+chown mysql:mysql /mydata/mysql/mysql3306/
+
+	[root@voice mysql]# ll
+	total 4
+	drwxr-xr-x 5 mysql mysql 4096 Mar  2 10:22 mysql3306
+	[root@voice mysql]# cd mysql3306/
+	[root@voice mysql3306]# ll
+	total 12
+	drwxr-xr-x 2 root root 4096 Mar  2 10:22 data
+	drwxr-xr-x 2 root root 4096 Mar  2 10:22 logs
+	drwxr-xr-x 2 root root 4096 Mar  2 10:22 tmp
+	
+	
+chown -R mysql:mysql /mydata/mysql/mysql3306/
+	[root@voice mysql3306]# chown -R mysql:mysql /mydata/mysql/mysql3306/
+	[root@voice mysql3306]# ll
+	total 12
+	drwxr-xr-x 2 mysql mysql 4096 Mar  2 10:22 data
+	drwxr-xr-x 2 mysql mysql 4096 Mar  2 10:22 logs
+	drwxr-xr-x 2 mysql mysql 4096 Mar  2 10:22 tmp
+
+
+4. 初始化
+先上传配置文件
+
+/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --initialize      //生成data目录下的文件 ，如果没有生成数据库文件 ，会报“pid”错误
+/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --initialize-insecure //生成data目录下的文件 ，如果没有生成数据库文件 ，会报“pid”错误
+(mysql -h 192.168.23.3 -uroot -P3308 OR mysql)
+
+
+[root@redis01 data]# cat error.log 
+2020-03-24T08:41:25.650772Z 0 [Warning] option 'ft_min_word_len': unsigned value 0 adjusted to 1
+2020-03-24T16:41:25.650989+08:00 0 [Warning] 'NO_ZERO_DATE', 'NO_ZERO_IN_DATE' and 'ERROR_FOR_DIVISION_BY_ZERO' sql modes should be used with strict mode. They will be merged with strict mode in a future release.
+2020-03-24T16:41:25.651001+08:00 0 [Warning] 'NO_AUTO_CREATE_USER' sql mode was not set.
+ 100 200 300 400 500 600 700 800 900 1000
+ 100 200 300 400 500 600 700 800 900 1000
+ 100 200 300 400 500 600 700 800 900 1000
+ 100 200 300 400 500 600 700 800 900 1000
+2020-03-24T16:41:49.117065+08:00 0 [Warning] InnoDB: New log files created, LSN=129530
+2020-03-24T16:41:49.957173+08:00 0 [Warning] InnoDB: Creating foreign key constraint system tables.
+2020-03-24T16:41:50.172269+08:00 0 [Warning] No existing UUID has been found, so we assume that this is the first time that this server has been started. Generating a new UUID: 4de223ef-6dab-11ea-a74c-0800276af083.
+2020-03-24T16:41:50.174211+08:00 0 [Warning] Gtid table is not ready to be used. Table 'mysql.gtid_executed' cannot be opened.
+2020-03-24T16:41:50.176271+08:00 1 [Note] A temporary password is generated for root@localhost: KxajRLubK3+y
+2020-03-24T16:41:51.789243+08:00 1 [Warning] 'user' entry 'root@localhost' ignored in --skip-name-resolve mode.
+2020-03-24T16:41:51.789261+08:00 1 [Warning] 'user' entry 'mysql.session@localhost' ignored in --skip-name-resolve mode.
+2020-03-24T16:41:51.789267+08:00 1 [Warning] 'user' entry 'mysql.sys@localhost' ignored in --skip-name-resolve mode.
+2020-03-24T16:41:51.789285+08:00 1 [Warning] 'db' entry 'performance_schema mysql.session@localhost' ignored in --skip-name-resolve mode.
+2020-03-24T16:41:51.789304+08:00 1 [Warning] 'db' entry 'sys mysql.sys@localhost' ignored in --skip-name-resolve mode.
+2020-03-24T16:41:51.789310+08:00 1 [Warning] 'proxies_priv' entry '@ root@localhost' ignored in --skip-name-resolve mode.
+2020-03-24T16:41:51.789340+08:00 1 [Warning] 'tables_priv' entry 'user mysql.session@localhost' ignored in --skip-name-resolve mode.
+2020-03-24T16:41:51.789344+08:00 1 [Warning] 'tables_priv' entry 'sys_config mysql.sys@localhost' ignored in --skip-name-resolve mode.
+
+
+
+报错：
+./bin/mysqld: error while loading shared libraries: libaio.so.1: cannot open shared object file: No such file or directory
+yum install -y libaio  //安装后在初始化就OK了
+
+
+5.6,5.5,5.1
+./script/mysql_db_install
+
+./bin/mysql_db_install
+
+
+
+5. 启动
+cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql
+/etc/init.d/mysql start
+
+OR 
+
+/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf & (生成.sock文件)
+
+/usr/local/mysql/bin/mysqld --defaults-file=/mydata/mysql/mysql3306/my.cnf &
+
+
+
+
+
+
+6：
+添加环境变量：
+echo $PATH
+echo "export PATH=$PATH:/usr/local/mysql/bin">>/etc/profile
+source /etc/profile  //让配置生效
+
+7：查看密码：
+[root@voice data]# cat error.log |grep password
+2020-03-02T02:28:19.457889Z 1 [Note] A temporary password is generated for root@localhost: L&De)_<;t7ul
+2020-03-02T02:32:09.348170Z 3 [Note] Access denied for user 'root'@'localhost' (using password: NO)
+2020-03-02T02:32:40.612000Z 4 [Note] Access denied for user 'root'@'localhost' (using password: NO)
+
+
+6.连接
+mysql -S /tmp/mysql3306.sock -p
+mysql -uroot -p
+>alter user user() identified by '123456abc';
+
+7. 关闭mysql
+/etc/init.d/mysql stop
+
+
+判断MYSQL服务器是否安装成功：：
+进程在不在
+启动日志 error.log
+看看能不能连接
+
+查看所有的日志
+show global variables like '%log%'
+
+show binary logs;
+
+help show
+
+
+
+
+
+
+
+/etc/init.d/mysql start
+mysql -S /tmp/mysql3306.sock -p
+
+
+
+sudo scripts/anemometer_collect.sh --socket /tmp/mysql3306.sock  --interval 30 --history-db-host 192.168.1.23 --defaults-file scripts/anemometer.server.cnf --history-defaults-file scripts/anemometer.localhost.cnf

@@ -1,0 +1,105 @@
+[root@env backup]# innobackupex    --apply-log 2020-03-20_15-46-42/
+200320 15:49:17 innobackupex: Starting the apply-log operation
+
+IMPORTANT: Please check that the apply-log run completes successfully.
+           At the end of a successful apply-log run innobackupex
+           prints "completed OK!".
+
+innobackupex version 2.4.9 based on MySQL server 5.7.13 Linux (x86_64) (revision id: a467167cdd4)
+xtrabackup: cd to /data/backup/2020-03-20_15-46-42/
+xtrabackup: This target seems to be not prepared yet.
+InnoDB: Number of pools: 1
+xtrabackup: xtrabackup_logfile detected: size=8388608, start_lsn=(18269808000)
+xtrabackup: using the following InnoDB configuration for recovery:
+xtrabackup:   innodb_data_home_dir = .
+xtrabackup:   innodb_data_file_path = ibdata1:100M:autoextend
+xtrabackup:   innodb_log_group_home_dir = .
+xtrabackup:   innodb_log_files_in_group = 1
+xtrabackup:   innodb_log_file_size = 8388608
+xtrabackup: using the following InnoDB configuration for recovery:
+xtrabackup:   innodb_data_home_dir = .
+xtrabackup:   innodb_data_file_path = ibdata1:100M:autoextend
+xtrabackup:   innodb_log_group_home_dir = .
+xtrabackup:   innodb_log_files_in_group = 1
+xtrabackup:   innodb_log_file_size = 8388608
+xtrabackup: Starting InnoDB instance for recovery.
+xtrabackup: Using 104857600 bytes for buffer pool (set by --use-memory parameter)
+InnoDB: PUNCH HOLE support available
+InnoDB: Mutexes and rw_locks use GCC atomic builtins
+InnoDB: Uses event mutexes
+InnoDB: GCC builtin __sync_synchronize() is used for memory barrier
+InnoDB: Compressed tables use zlib 1.2.3
+InnoDB: Number of pools: 1
+InnoDB: Using CPU crc32 instructions
+InnoDB: Initializing buffer pool, total size = 100M, instances = 1, chunk size = 100M
+InnoDB: Completed initialization of buffer pool
+InnoDB: page_cleaner coordinator priority: -20
+InnoDB: Highest supported file format is Barracuda.
+InnoDB: Log scan progressed past the checkpoint lsn 18269808000
+InnoDB: Doing recovery: scanned up to log sequence number 18269808009 (0%)
+InnoDB: Doing recovery: scanned up to log sequence number 18269808009 (0%)
+InnoDB: Database was not shutdown normally!
+InnoDB: Starting crash recovery.
+InnoDB: xtrabackup: Last MySQL binlog file position 5039, file name mysql-bin.000006
+InnoDB: Creating shared tablespace for temporary tables
+InnoDB: Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+InnoDB: File './ibtmp1' size is now 12 MB.
+InnoDB: 96 redo rollback segment(s) found. 1 redo rollback segment(s) are active.
+InnoDB: 32 non-redo rollback segment(s) are active.
+InnoDB: Waiting for purge to start
+InnoDB: 5.7.13 started; log sequence number 18269808009
+InnoDB: xtrabackup: Last MySQL binlog file position 5039, file name mysql-bin.000006
+
+xtrabackup: starting shutdown with innodb_fast_shutdown = 1
+InnoDB: FTS optimize thread exiting.
+InnoDB: Starting shutdown...
+InnoDB: Shutdown completed; log sequence number 18269808028
+InnoDB: Number of pools: 1
+xtrabackup: using the following InnoDB configuration for recovery:
+xtrabackup:   innodb_data_home_dir = .
+xtrabackup:   innodb_data_file_path = ibdata1:100M:autoextend
+xtrabackup:   innodb_log_group_home_dir = .
+xtrabackup:   innodb_log_files_in_group = 3
+xtrabackup:   innodb_log_file_size = 104857600
+InnoDB: PUNCH HOLE support available
+InnoDB: Mutexes and rw_locks use GCC atomic builtins
+InnoDB: Uses event mutexes
+InnoDB: GCC builtin __sync_synchronize() is used for memory barrier
+InnoDB: Compressed tables use zlib 1.2.3
+InnoDB: Number of pools: 1
+InnoDB: Using CPU crc32 instructions
+InnoDB: Initializing buffer pool, total size = 100M, instances = 1, chunk size = 100M
+InnoDB: Completed initialization of buffer pool
+InnoDB: page_cleaner coordinator priority: -20
+InnoDB: Setting log file ./ib_logfile101 size to 100 MB
+InnoDB: Progress in MB:
+ 100
+InnoDB: Setting log file ./ib_logfile1 size to 100 MB
+InnoDB: Progress in MB:
+ 100
+InnoDB: Setting log file ./ib_logfile2 size to 100 MB
+InnoDB: Progress in MB:
+ 100
+InnoDB: Renaming log file ./ib_logfile101 to ./ib_logfile0
+InnoDB: New log files created, LSN=18269808028
+InnoDB: Highest supported file format is Barracuda.
+InnoDB: Log scan progressed past the checkpoint lsn 18269808140
+InnoDB: Doing recovery: scanned up to log sequence number 18269808149 (0%)
+InnoDB: Doing recovery: scanned up to log sequence number 18269808149 (0%)
+InnoDB: Database was not shutdown normally!
+InnoDB: Starting crash recovery.
+InnoDB: xtrabackup: Last MySQL binlog file position 5039, file name mysql-bin.000006
+InnoDB: Removed temporary tablespace data file: "ibtmp1"
+InnoDB: Creating shared tablespace for temporary tables
+InnoDB: Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+InnoDB: File './ibtmp1' size is now 12 MB.
+InnoDB: 96 redo rollback segment(s) found. 1 redo rollback segment(s) are active.
+InnoDB: 32 non-redo rollback segment(s) are active.
+InnoDB: Waiting for purge to start
+InnoDB: 5.7.13 started; log sequence number 18269808149
+xtrabackup: starting shutdown with innodb_fast_shutdown = 1
+InnoDB: page_cleaner: 1000ms intended loop took 8974ms. The settings might not be optimal. (flushed=0 and evicted=0, during the time.)
+InnoDB: FTS optimize thread exiting.
+InnoDB: Starting shutdown...
+InnoDB: Shutdown completed; log sequence number 18269808168
+200320 15:49:30 completed OK!

@@ -1,0 +1,9 @@
+{
+  "data_dir": "/data/consul",
+  "enable_script_checks": true,
+  "bind_addr": "192.168.0.58",
+  "retry_join": ["192.168.0.54"],
+  "retry_interval": "30s",
+  "rejoin_after_leave": true,
+  "start_join": ["192.168.0.54"]
+}

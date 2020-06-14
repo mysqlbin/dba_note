@@ -1,0 +1,4 @@
+
+参数 innodb_force_recovery 影响了整个InnoDB存储引擎恢复的状况.
+
+InnoDB 恢复级别：可选0-6，从最小开始尝试起

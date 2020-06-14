@@ -1,0 +1,7 @@
+
+
+磁盘临时表使用的引擎默认是InnoDB, 是由参数  internal_tmp_disk_storage_engine 控制的.
+
+当使用磁盘临时表的时候, 对应的就是一个没有显示索引的InnoDB表的排序过程.
+
+

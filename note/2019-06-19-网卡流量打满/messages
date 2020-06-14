@@ -1,0 +1,2511 @@
+Jun 17 03:30:01 database-05 systemd: Started Session 42601 of user root.
+Jun 17 03:30:01 database-05 systemd: Starting Session 42601 of user root.
+Jun 17 03:30:12 database-05 systemd-logind: New session 42602 of user root.
+Jun 17 03:30:12 database-05 systemd: Started Session 42602 of user root.
+Jun 17 03:30:12 database-05 systemd: Starting Session 42602 of user root.
+Jun 17 03:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 03:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 17 03:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 17 03:30:22 database-05 systemd-logind: New session 42603 of user dba1.
+Jun 17 03:30:22 database-05 systemd: Started Session 42603 of user dba1.
+Jun 17 03:30:22 database-05 systemd: Starting Session 42603 of user dba1.
+Jun 17 03:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 03:31:12 database-05 systemd-logind: Removed session 42602.
+Jun 17 03:31:22 database-05 systemd-logind: Removed session 42603.
+Jun 17 03:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 03:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 03:31:27 database-05 systemd-logind: New session 42604 of user root.
+Jun 17 03:31:27 database-05 systemd: Started Session 42604 of user root.
+Jun 17 03:31:27 database-05 systemd: Starting Session 42604 of user root.
+Jun 17 03:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 03:31:30 database-05 systemd: Created slice user-1002.slice.
+Jun 17 03:31:30 database-05 systemd: Starting user-1002.slice.
+Jun 17 03:31:30 database-05 systemd-logind: New session 42605 of user dba2.
+Jun 17 03:31:30 database-05 systemd: Started Session 42605 of user dba2.
+Jun 17 03:31:30 database-05 systemd: Starting Session 42605 of user dba2.
+Jun 17 03:31:31 database-05 ansible-ping: Invoked with data=pong
+Jun 17 03:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 17 03:32:31 database-05 systemd-logind: Removed session 42605.
+Jun 17 03:32:31 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 03:32:31 database-05 systemd: Stopping user-1002.slice.
+Jun 17 03:32:42 database-05 systemd-logind: Removed session 42604.
+Jun 17 03:40:01 database-05 systemd: Started Session 42606 of user root.
+Jun 17 03:40:01 database-05 systemd: Starting Session 42606 of user root.
+Jun 17 03:50:01 database-05 systemd: Started Session 42607 of user root.
+Jun 17 03:50:01 database-05 systemd: Starting Session 42607 of user root.
+Jun 17 04:00:01 database-05 systemd: Started Session 42608 of user root.
+Jun 17 04:00:01 database-05 systemd: Starting Session 42608 of user root.
+Jun 17 04:01:01 database-05 systemd: Started Session 42609 of user root.
+Jun 17 04:01:01 database-05 systemd: Starting Session 42609 of user root.
+Jun 17 04:10:01 database-05 systemd: Started Session 42610 of user root.
+Jun 17 04:10:01 database-05 systemd: Starting Session 42610 of user root.
+Jun 17 04:20:01 database-05 systemd: Started Session 42611 of user root.
+Jun 17 04:20:01 database-05 systemd: Starting Session 42611 of user root.
+Jun 17 04:30:01 database-05 systemd: Started Session 42612 of user root.
+Jun 17 04:30:01 database-05 systemd: Starting Session 42612 of user root.
+Jun 17 04:30:11 database-05 systemd-logind: New session 42613 of user root.
+Jun 17 04:30:11 database-05 systemd: Started Session 42613 of user root.
+Jun 17 04:30:11 database-05 systemd: Starting Session 42613 of user root.
+Jun 17 04:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 04:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 17 04:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 17 04:30:22 database-05 systemd-logind: New session 42614 of user dba1.
+Jun 17 04:30:22 database-05 systemd: Started Session 42614 of user dba1.
+Jun 17 04:30:22 database-05 systemd: Starting Session 42614 of user dba1.
+Jun 17 04:30:23 database-05 ansible-ping: Invoked with data=pong
+Jun 17 04:31:12 database-05 systemd-logind: Removed session 42613.
+Jun 17 04:31:23 database-05 systemd-logind: Removed session 42614.
+Jun 17 04:31:23 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 04:31:23 database-05 systemd: Stopping user-1003.slice.
+Jun 17 04:31:25 database-05 systemd-logind: New session 42615 of user root.
+Jun 17 04:31:25 database-05 systemd: Started Session 42615 of user root.
+Jun 17 04:31:25 database-05 systemd: Starting Session 42615 of user root.
+Jun 17 04:31:26 database-05 ansible-ping: Invoked with data=pong
+Jun 17 04:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 17 04:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 17 04:31:28 database-05 systemd-logind: New session 42616 of user dba2.
+Jun 17 04:31:28 database-05 systemd: Started Session 42616 of user dba2.
+Jun 17 04:31:28 database-05 systemd: Starting Session 42616 of user dba2.
+Jun 17 04:31:28 database-05 ansible-ping: Invoked with data=pong
+Jun 17 04:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 17 04:32:28 database-05 systemd-logind: Removed session 42616.
+Jun 17 04:32:28 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 04:32:28 database-05 systemd: Stopping user-1002.slice.
+Jun 17 04:32:42 database-05 systemd-logind: Removed session 42615.
+Jun 17 04:40:01 database-05 systemd: Started Session 42617 of user root.
+Jun 17 04:40:01 database-05 systemd: Starting Session 42617 of user root.
+Jun 17 04:50:01 database-05 systemd: Started Session 42618 of user root.
+Jun 17 04:50:01 database-05 systemd: Starting Session 42618 of user root.
+Jun 17 05:00:01 database-05 systemd: Started Session 42619 of user root.
+Jun 17 05:00:01 database-05 systemd: Starting Session 42619 of user root.
+Jun 17 05:01:01 database-05 systemd: Started Session 42620 of user root.
+Jun 17 05:01:01 database-05 systemd: Starting Session 42620 of user root.
+Jun 17 05:10:01 database-05 systemd: Started Session 42621 of user root.
+Jun 17 05:10:01 database-05 systemd: Starting Session 42621 of user root.
+Jun 17 05:20:01 database-05 systemd: Started Session 42622 of user root.
+Jun 17 05:20:01 database-05 systemd: Starting Session 42622 of user root.
+Jun 17 05:30:01 database-05 systemd: Started Session 42623 of user root.
+Jun 17 05:30:01 database-05 systemd: Starting Session 42623 of user root.
+Jun 17 05:30:11 database-05 systemd-logind: New session 42624 of user root.
+Jun 17 05:30:11 database-05 systemd: Started Session 42624 of user root.
+Jun 17 05:30:11 database-05 systemd: Starting Session 42624 of user root.
+Jun 17 05:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 05:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 05:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 05:30:21 database-05 systemd-logind: New session 42625 of user dba1.
+Jun 17 05:30:21 database-05 systemd: Started Session 42625 of user dba1.
+Jun 17 05:30:21 database-05 systemd: Starting Session 42625 of user dba1.
+Jun 17 05:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 05:31:12 database-05 systemd-logind: Removed session 42624.
+Jun 17 05:31:22 database-05 systemd-logind: Removed session 42625.
+Jun 17 05:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 05:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 05:31:26 database-05 systemd-logind: New session 42626 of user root.
+Jun 17 05:31:26 database-05 systemd: Started Session 42626 of user root.
+Jun 17 05:31:26 database-05 systemd: Starting Session 42626 of user root.
+Jun 17 05:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 05:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 05:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 05:31:29 database-05 systemd-logind: New session 42627 of user dba2.
+Jun 17 05:31:29 database-05 systemd: Started Session 42627 of user dba2.
+Jun 17 05:31:29 database-05 systemd: Starting Session 42627 of user dba2.
+Jun 17 05:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 17 05:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 05:32:30 database-05 systemd-logind: Removed session 42627.
+Jun 17 05:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 05:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 17 05:32:41 database-05 systemd-logind: Removed session 42626.
+Jun 17 05:40:01 database-05 systemd: Started Session 42628 of user root.
+Jun 17 05:40:01 database-05 systemd: Starting Session 42628 of user root.
+Jun 17 05:50:01 database-05 systemd: Started Session 42629 of user root.
+Jun 17 05:50:01 database-05 systemd: Starting Session 42629 of user root.
+Jun 17 06:00:01 database-05 systemd: Started Session 42630 of user root.
+Jun 17 06:00:01 database-05 systemd: Starting Session 42630 of user root.
+Jun 17 06:01:01 database-05 systemd: Started Session 42631 of user root.
+Jun 17 06:01:01 database-05 systemd: Starting Session 42631 of user root.
+Jun 17 06:10:01 database-05 systemd: Started Session 42632 of user root.
+Jun 17 06:10:01 database-05 systemd: Starting Session 42632 of user root.
+Jun 17 06:20:01 database-05 systemd: Started Session 42633 of user root.
+Jun 17 06:20:01 database-05 systemd: Starting Session 42633 of user root.
+Jun 17 06:30:01 database-05 systemd: Started Session 42634 of user root.
+Jun 17 06:30:01 database-05 systemd: Starting Session 42634 of user root.
+Jun 17 06:30:11 database-05 systemd-logind: New session 42635 of user root.
+Jun 17 06:30:11 database-05 systemd: Started Session 42635 of user root.
+Jun 17 06:30:11 database-05 systemd: Starting Session 42635 of user root.
+Jun 17 06:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 06:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 06:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 06:30:21 database-05 systemd-logind: New session 42636 of user dba1.
+Jun 17 06:30:21 database-05 systemd: Started Session 42636 of user dba1.
+Jun 17 06:30:21 database-05 systemd: Starting Session 42636 of user dba1.
+Jun 17 06:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 06:31:12 database-05 systemd-logind: Removed session 42635.
+Jun 17 06:31:22 database-05 systemd-logind: Removed session 42636.
+Jun 17 06:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 06:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 06:31:26 database-05 systemd-logind: New session 42637 of user root.
+Jun 17 06:31:26 database-05 systemd: Started Session 42637 of user root.
+Jun 17 06:31:26 database-05 systemd: Starting Session 42637 of user root.
+Jun 17 06:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 06:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 17 06:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 17 06:31:28 database-05 systemd-logind: New session 42638 of user dba2.
+Jun 17 06:31:28 database-05 systemd: Started Session 42638 of user dba2.
+Jun 17 06:31:28 database-05 systemd: Starting Session 42638 of user dba2.
+Jun 17 06:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 06:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 06:32:29 database-05 systemd-logind: Removed session 42638.
+Jun 17 06:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 06:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 06:32:41 database-05 systemd-logind: Removed session 42637.
+Jun 17 06:40:01 database-05 systemd: Started Session 42639 of user root.
+Jun 17 06:40:01 database-05 systemd: Starting Session 42639 of user root.
+Jun 17 06:50:01 database-05 systemd: Started Session 42640 of user root.
+Jun 17 06:50:01 database-05 systemd: Starting Session 42640 of user root.
+Jun 17 07:00:01 database-05 systemd: Started Session 42641 of user root.
+Jun 17 07:00:01 database-05 systemd: Starting Session 42641 of user root.
+Jun 17 07:01:01 database-05 systemd: Started Session 42642 of user root.
+Jun 17 07:01:01 database-05 systemd: Starting Session 42642 of user root.
+Jun 17 07:10:01 database-05 systemd: Started Session 42643 of user root.
+Jun 17 07:10:01 database-05 systemd: Starting Session 42643 of user root.
+Jun 17 07:20:01 database-05 systemd: Started Session 42644 of user root.
+Jun 17 07:20:01 database-05 systemd: Starting Session 42644 of user root.
+Jun 17 07:30:01 database-05 systemd: Started Session 42645 of user root.
+Jun 17 07:30:01 database-05 systemd: Starting Session 42645 of user root.
+Jun 17 07:30:11 database-05 systemd-logind: New session 42646 of user root.
+Jun 17 07:30:11 database-05 systemd: Started Session 42646 of user root.
+Jun 17 07:30:11 database-05 systemd: Starting Session 42646 of user root.
+Jun 17 07:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 07:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 07:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 07:30:21 database-05 systemd-logind: New session 42647 of user dba1.
+Jun 17 07:30:21 database-05 systemd: Started Session 42647 of user dba1.
+Jun 17 07:30:21 database-05 systemd: Starting Session 42647 of user dba1.
+Jun 17 07:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 07:31:12 database-05 systemd-logind: Removed session 42646.
+Jun 17 07:31:22 database-05 systemd-logind: Removed session 42647.
+Jun 17 07:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 07:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 07:31:26 database-05 systemd-logind: New session 42648 of user root.
+Jun 17 07:31:26 database-05 systemd: Started Session 42648 of user root.
+Jun 17 07:31:26 database-05 systemd: Starting Session 42648 of user root.
+Jun 17 07:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 07:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 07:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 07:31:29 database-05 systemd-logind: New session 42649 of user dba2.
+Jun 17 07:31:29 database-05 systemd: Started Session 42649 of user dba2.
+Jun 17 07:31:29 database-05 systemd: Starting Session 42649 of user dba2.
+Jun 17 07:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 07:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 07:32:29 database-05 systemd-logind: Removed session 42649.
+Jun 17 07:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 07:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 07:32:41 database-05 systemd-logind: Removed session 42648.
+Jun 17 07:40:01 database-05 systemd: Started Session 42650 of user root.
+Jun 17 07:40:01 database-05 systemd: Starting Session 42650 of user root.
+Jun 17 07:50:01 database-05 systemd: Started Session 42651 of user root.
+Jun 17 07:50:01 database-05 systemd: Starting Session 42651 of user root.
+Jun 17 08:00:01 database-05 systemd: Started Session 42652 of user root.
+Jun 17 08:00:01 database-05 systemd: Starting Session 42652 of user root.
+Jun 17 08:01:01 database-05 systemd: Started Session 42653 of user root.
+Jun 17 08:01:01 database-05 systemd: Starting Session 42653 of user root.
+Jun 17 08:10:01 database-05 systemd: Started Session 42654 of user root.
+Jun 17 08:10:01 database-05 systemd: Starting Session 42654 of user root.
+Jun 17 08:20:01 database-05 systemd: Started Session 42655 of user root.
+Jun 17 08:20:01 database-05 systemd: Starting Session 42655 of user root.
+Jun 17 08:30:01 database-05 systemd: Started Session 42656 of user root.
+Jun 17 08:30:01 database-05 systemd: Starting Session 42656 of user root.
+Jun 17 08:30:11 database-05 systemd-logind: New session 42657 of user root.
+Jun 17 08:30:11 database-05 systemd: Started Session 42657 of user root.
+Jun 17 08:30:11 database-05 systemd: Starting Session 42657 of user root.
+Jun 17 08:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 08:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 17 08:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 17 08:30:22 database-05 systemd-logind: New session 42658 of user dba1.
+Jun 17 08:30:22 database-05 systemd: Started Session 42658 of user dba1.
+Jun 17 08:30:22 database-05 systemd: Starting Session 42658 of user dba1.
+Jun 17 08:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 08:31:12 database-05 systemd-logind: Removed session 42657.
+Jun 17 08:31:22 database-05 systemd-logind: Removed session 42658.
+Jun 17 08:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 08:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 08:31:26 database-05 systemd-logind: New session 42659 of user root.
+Jun 17 08:31:26 database-05 systemd: Started Session 42659 of user root.
+Jun 17 08:31:26 database-05 systemd: Starting Session 42659 of user root.
+Jun 17 08:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 08:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 08:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 08:31:29 database-05 systemd-logind: New session 42660 of user dba2.
+Jun 17 08:31:29 database-05 systemd: Started Session 42660 of user dba2.
+Jun 17 08:31:29 database-05 systemd: Starting Session 42660 of user dba2.
+Jun 17 08:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 08:31:40 database-05 ansible-ping: Invoked with data=pong
+Jun 17 08:32:29 database-05 systemd-logind: Removed session 42660.
+Jun 17 08:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 08:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 08:32:40 database-05 systemd-logind: Removed session 42659.
+Jun 17 08:40:01 database-05 systemd: Started Session 42661 of user root.
+Jun 17 08:40:01 database-05 systemd: Starting Session 42661 of user root.
+Jun 17 08:50:01 database-05 systemd: Started Session 42662 of user root.
+Jun 17 08:50:01 database-05 systemd: Starting Session 42662 of user root.
+Jun 17 08:55:59 database-05 systemd-logind: New session 42663 of user root.
+Jun 17 08:55:59 database-05 systemd: Started Session 42663 of user root.
+Jun 17 08:55:59 database-05 systemd: Starting Session 42663 of user root.
+Jun 17 08:56:00 database-05 systemd-logind: New session 42664 of user root.
+Jun 17 08:56:00 database-05 systemd: Started Session 42664 of user root.
+Jun 17 08:56:00 database-05 systemd: Starting Session 42664 of user root.
+Jun 17 08:56:02 database-05 systemd-logind: New session 42665 of user root.
+Jun 17 08:56:02 database-05 systemd: Started Session 42665 of user root.
+Jun 17 08:56:02 database-05 systemd: Starting Session 42665 of user root.
+Jun 17 08:56:50 database-05 sz[746]: [root] yldb_master.2019-06-17_08-56-28.log/ZMODEM: 7650 Bytes, 484 BPS
+Jun 17 08:56:50 database-05 sz[746]: [root] yldb_slave.2019-06-17_08-56-28.log/ZMODEM: 7464 Bytes, 433701 BPS
+Jun 17 08:56:50 database-05 sz[746]: [root] yqdb_master.2019-06-17_08-56-29.log/ZMODEM: 11451 Bytes, 637301 BPS
+Jun 17 08:56:50 database-05 sz[746]: [root] yqdb_slave.2019-06-17_08-56-29.log/ZMODEM: 11493 Bytes, 682937 BPS
+Jun 17 09:00:01 database-05 systemd: Started Session 42666 of user root.
+Jun 17 09:00:01 database-05 systemd: Starting Session 42666 of user root.
+Jun 17 09:01:01 database-05 systemd: Started Session 42667 of user root.
+Jun 17 09:01:01 database-05 systemd: Starting Session 42667 of user root.
+Jun 17 09:10:01 database-05 systemd: Started Session 42668 of user root.
+Jun 17 09:10:01 database-05 systemd: Starting Session 42668 of user root.
+Jun 17 09:20:01 database-05 systemd: Started Session 42669 of user root.
+Jun 17 09:20:01 database-05 systemd: Starting Session 42669 of user root.
+Jun 17 09:30:01 database-05 systemd: Started Session 42670 of user root.
+Jun 17 09:30:01 database-05 systemd: Starting Session 42670 of user root.
+Jun 17 09:30:11 database-05 systemd-logind: New session 42671 of user root.
+Jun 17 09:30:11 database-05 systemd: Started Session 42671 of user root.
+Jun 17 09:30:11 database-05 systemd: Starting Session 42671 of user root.
+Jun 17 09:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 09:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 09:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 09:30:21 database-05 systemd-logind: New session 42672 of user dba1.
+Jun 17 09:30:21 database-05 systemd: Started Session 42672 of user dba1.
+Jun 17 09:30:21 database-05 systemd: Starting Session 42672 of user dba1.
+Jun 17 09:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 09:31:12 database-05 systemd-logind: Removed session 42671.
+Jun 17 09:31:22 database-05 systemd-logind: Removed session 42672.
+Jun 17 09:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 09:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 09:31:27 database-05 systemd-logind: New session 42673 of user root.
+Jun 17 09:31:27 database-05 systemd: Started Session 42673 of user root.
+Jun 17 09:31:27 database-05 systemd: Starting Session 42673 of user root.
+Jun 17 09:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 09:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 09:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 09:31:29 database-05 systemd-logind: New session 42674 of user dba2.
+Jun 17 09:31:29 database-05 systemd: Started Session 42674 of user dba2.
+Jun 17 09:31:29 database-05 systemd: Starting Session 42674 of user dba2.
+Jun 17 09:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 09:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 09:32:29 database-05 systemd-logind: Removed session 42674.
+Jun 17 09:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 09:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 09:32:42 database-05 systemd-logind: Removed session 42673.
+Jun 17 09:33:52 database-05 rz[2452]: [root] no.name/ZMODEM: got error
+Jun 17 09:40:01 database-05 systemd: Started Session 42675 of user root.
+Jun 17 09:40:01 database-05 systemd: Starting Session 42675 of user root.
+Jun 17 09:50:01 database-05 systemd: Started Session 42676 of user root.
+Jun 17 09:50:01 database-05 systemd: Starting Session 42676 of user root.
+Jun 17 10:00:01 database-05 systemd: Started Session 42677 of user root.
+Jun 17 10:00:01 database-05 systemd: Starting Session 42677 of user root.
+Jun 17 10:01:01 database-05 systemd: Started Session 42678 of user root.
+Jun 17 10:01:01 database-05 systemd: Starting Session 42678 of user root.
+Jun 17 10:10:01 database-05 systemd: Started Session 42679 of user root.
+Jun 17 10:10:01 database-05 systemd: Starting Session 42679 of user root.
+Jun 17 10:20:01 database-05 systemd: Started Session 42680 of user root.
+Jun 17 10:20:01 database-05 systemd: Starting Session 42680 of user root.
+Jun 17 10:30:01 database-05 systemd: Started Session 42681 of user root.
+Jun 17 10:30:01 database-05 systemd: Starting Session 42681 of user root.
+Jun 17 10:30:11 database-05 systemd-logind: New session 42682 of user root.
+Jun 17 10:30:11 database-05 systemd: Started Session 42682 of user root.
+Jun 17 10:30:11 database-05 systemd: Starting Session 42682 of user root.
+Jun 17 10:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 10:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 10:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 10:30:21 database-05 systemd-logind: New session 42683 of user dba1.
+Jun 17 10:30:21 database-05 systemd: Started Session 42683 of user dba1.
+Jun 17 10:30:21 database-05 systemd: Starting Session 42683 of user dba1.
+Jun 17 10:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 10:31:12 database-05 systemd-logind: Removed session 42682.
+Jun 17 10:31:22 database-05 systemd-logind: Removed session 42683.
+Jun 17 10:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 10:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 10:31:27 database-05 systemd-logind: New session 42684 of user root.
+Jun 17 10:31:27 database-05 systemd: Started Session 42684 of user root.
+Jun 17 10:31:27 database-05 systemd: Starting Session 42684 of user root.
+Jun 17 10:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 10:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 10:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 10:31:29 database-05 systemd-logind: New session 42685 of user dba2.
+Jun 17 10:31:29 database-05 systemd: Started Session 42685 of user dba2.
+Jun 17 10:31:29 database-05 systemd: Starting Session 42685 of user dba2.
+Jun 17 10:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 17 10:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 10:32:30 database-05 systemd-logind: Removed session 42685.
+Jun 17 10:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 10:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 17 10:32:41 database-05 systemd-logind: Removed session 42684.
+Jun 17 10:40:01 database-05 systemd: Started Session 42686 of user root.
+Jun 17 10:40:01 database-05 systemd: Starting Session 42686 of user root.
+Jun 17 10:50:01 database-05 systemd: Started Session 42687 of user root.
+Jun 17 10:50:01 database-05 systemd: Starting Session 42687 of user root.
+Jun 17 11:00:01 database-05 systemd: Started Session 42688 of user root.
+Jun 17 11:00:01 database-05 systemd: Starting Session 42688 of user root.
+Jun 17 11:01:01 database-05 systemd: Started Session 42689 of user root.
+Jun 17 11:01:01 database-05 systemd: Starting Session 42689 of user root.
+Jun 17 11:10:01 database-05 systemd: Started Session 42690 of user root.
+Jun 17 11:10:01 database-05 systemd: Starting Session 42690 of user root.
+Jun 17 11:20:01 database-05 systemd: Started Session 42691 of user root.
+Jun 17 11:20:01 database-05 systemd: Starting Session 42691 of user root.
+Jun 17 11:25:37 database-05 rz[2522]: [root] niuniu_db_20190419_060001.dump.gz/ZMODEM: 695093369 Bytes, 103733 BPS
+Jun 17 11:30:01 database-05 systemd: Started Session 42692 of user root.
+Jun 17 11:30:01 database-05 systemd: Starting Session 42692 of user root.
+Jun 17 11:30:11 database-05 systemd-logind: New session 42693 of user root.
+Jun 17 11:30:11 database-05 systemd: Started Session 42693 of user root.
+Jun 17 11:30:11 database-05 systemd: Starting Session 42693 of user root.
+Jun 17 11:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 11:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 11:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 11:30:21 database-05 systemd-logind: New session 42694 of user dba1.
+Jun 17 11:30:21 database-05 systemd: Started Session 42694 of user dba1.
+Jun 17 11:30:21 database-05 systemd: Starting Session 42694 of user dba1.
+Jun 17 11:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 11:31:12 database-05 systemd-logind: Removed session 42693.
+Jun 17 11:31:22 database-05 systemd-logind: Removed session 42694.
+Jun 17 11:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 11:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 11:31:26 database-05 systemd-logind: New session 42695 of user root.
+Jun 17 11:31:26 database-05 systemd: Started Session 42695 of user root.
+Jun 17 11:31:26 database-05 systemd: Starting Session 42695 of user root.
+Jun 17 11:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 11:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 11:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 11:31:29 database-05 systemd-logind: New session 42696 of user dba2.
+Jun 17 11:31:29 database-05 systemd: Started Session 42696 of user dba2.
+Jun 17 11:31:29 database-05 systemd: Starting Session 42696 of user dba2.
+Jun 17 11:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 11:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 11:32:29 database-05 systemd-logind: Removed session 42696.
+Jun 17 11:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 11:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 11:32:41 database-05 systemd-logind: Removed session 42695.
+Jun 17 11:39:20 database-05 systemd-logind: New session 42697 of user root.
+Jun 17 11:39:20 database-05 systemd: Started Session 42697 of user root.
+Jun 17 11:39:20 database-05 systemd: Starting Session 42697 of user root.
+Jun 17 11:40:01 database-05 systemd: Started Session 42698 of user root.
+Jun 17 11:40:01 database-05 systemd: Starting Session 42698 of user root.
+Jun 17 11:50:02 database-05 systemd: Started Session 42699 of user root.
+Jun 17 11:50:03 database-05 systemd: Starting Session 42699 of user root.
+Jun 17 12:00:01 database-05 systemd: Started Session 42700 of user root.
+Jun 17 12:00:02 database-05 systemd: Starting Session 42700 of user root.
+Jun 17 12:01:01 database-05 systemd: Started Session 42701 of user root.
+Jun 17 12:01:01 database-05 systemd: Starting Session 42701 of user root.
+Jun 17 12:10:01 database-05 systemd: Started Session 42702 of user root.
+Jun 17 12:10:01 database-05 systemd: Starting Session 42702 of user root.
+Jun 17 12:20:01 database-05 systemd: Started Session 42703 of user root.
+Jun 17 12:20:01 database-05 systemd: Starting Session 42703 of user root.
+Jun 17 12:30:01 database-05 systemd: Started Session 42704 of user root.
+Jun 17 12:30:02 database-05 systemd: Starting Session 42704 of user root.
+Jun 17 12:30:12 database-05 systemd: Started Session 42705 of user root.
+Jun 17 12:30:12 database-05 systemd: Starting Session 42705 of user root.
+Jun 17 12:30:12 database-05 systemd-logind: New session 42705 of user root.
+Jun 17 12:30:14 database-05 ansible-ping: Invoked with data=pong
+Jun 17 12:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 17 12:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 17 12:30:22 database-05 systemd-logind: New session 42706 of user dba1.
+Jun 17 12:30:22 database-05 systemd: Started Session 42706 of user dba1.
+Jun 17 12:30:22 database-05 systemd: Starting Session 42706 of user dba1.
+Jun 17 12:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 12:31:14 database-05 systemd-logind: Removed session 42705.
+Jun 17 12:31:22 database-05 systemd-logind: Removed session 42706.
+Jun 17 12:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 12:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 12:31:26 database-05 systemd-logind: New session 42707 of user root.
+Jun 17 12:31:26 database-05 systemd: Started Session 42707 of user root.
+Jun 17 12:31:26 database-05 systemd: Starting Session 42707 of user root.
+Jun 17 12:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 12:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 12:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 12:31:29 database-05 systemd-logind: New session 42708 of user dba2.
+Jun 17 12:31:29 database-05 systemd: Started Session 42708 of user dba2.
+Jun 17 12:31:29 database-05 systemd: Starting Session 42708 of user dba2.
+Jun 17 12:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 12:31:40 database-05 ansible-ping: Invoked with data=pong
+Jun 17 12:32:29 database-05 systemd-logind: Removed session 42708.
+Jun 17 12:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 12:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 12:32:40 database-05 systemd-logind: Removed session 42707.
+Jun 17 12:40:01 database-05 systemd: Started Session 42709 of user root.
+Jun 17 12:40:01 database-05 systemd: Starting Session 42709 of user root.
+Jun 17 12:50:01 database-05 systemd: Started Session 42710 of user root.
+Jun 17 12:50:01 database-05 systemd: Starting Session 42710 of user root.
+Jun 17 12:50:27 database-05 systemd: Starting Cleanup of Temporary Directories...
+Jun 17 12:50:28 database-05 systemd: Started Cleanup of Temporary Directories.
+Jun 17 13:00:01 database-05 systemd: Started Session 42711 of user root.
+Jun 17 13:00:01 database-05 systemd: Starting Session 42711 of user root.
+Jun 17 13:01:01 database-05 systemd: Started Session 42712 of user root.
+Jun 17 13:01:01 database-05 systemd: Starting Session 42712 of user root.
+Jun 17 13:10:01 database-05 systemd: Started Session 42713 of user root.
+Jun 17 13:10:01 database-05 systemd: Starting Session 42713 of user root.
+Jun 17 13:20:01 database-05 systemd: Started Session 42714 of user root.
+Jun 17 13:20:01 database-05 systemd: Starting Session 42714 of user root.
+Jun 17 13:30:01 database-05 systemd: Started Session 42715 of user root.
+Jun 17 13:30:01 database-05 systemd: Starting Session 42715 of user root.
+Jun 17 13:30:12 database-05 systemd-logind: New session 42716 of user root.
+Jun 17 13:30:12 database-05 systemd: Started Session 42716 of user root.
+Jun 17 13:30:12 database-05 systemd: Starting Session 42716 of user root.
+Jun 17 13:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 13:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 13:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 13:30:21 database-05 systemd-logind: New session 42717 of user dba1.
+Jun 17 13:30:21 database-05 systemd: Started Session 42717 of user dba1.
+Jun 17 13:30:21 database-05 systemd: Starting Session 42717 of user dba1.
+Jun 17 13:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 13:31:12 database-05 systemd-logind: Removed session 42716.
+Jun 17 13:31:22 database-05 systemd-logind: Removed session 42717.
+Jun 17 13:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 13:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 13:31:26 database-05 systemd-logind: New session 42718 of user root.
+Jun 17 13:31:26 database-05 systemd: Started Session 42718 of user root.
+Jun 17 13:31:26 database-05 systemd: Starting Session 42718 of user root.
+Jun 17 13:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 13:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 17 13:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 17 13:31:28 database-05 systemd-logind: New session 42719 of user dba2.
+Jun 17 13:31:28 database-05 systemd: Started Session 42719 of user dba2.
+Jun 17 13:31:28 database-05 systemd: Starting Session 42719 of user dba2.
+Jun 17 13:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 13:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 13:32:29 database-05 systemd-logind: Removed session 42719.
+Jun 17 13:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 13:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 13:32:42 database-05 systemd-logind: Removed session 42718.
+Jun 17 13:40:01 database-05 systemd: Started Session 42720 of user root.
+Jun 17 13:40:01 database-05 systemd: Starting Session 42720 of user root.
+Jun 17 13:50:01 database-05 systemd: Started Session 42721 of user root.
+Jun 17 13:50:01 database-05 systemd: Starting Session 42721 of user root.
+Jun 17 14:00:01 database-05 systemd: Started Session 42722 of user root.
+Jun 17 14:00:01 database-05 systemd: Starting Session 42722 of user root.
+Jun 17 14:01:01 database-05 systemd: Started Session 42723 of user root.
+Jun 17 14:01:01 database-05 systemd: Starting Session 42723 of user root.
+Jun 17 14:10:01 database-05 systemd: Started Session 42724 of user root.
+Jun 17 14:10:01 database-05 systemd: Starting Session 42724 of user root.
+Jun 17 14:20:01 database-05 systemd: Started Session 42725 of user root.
+Jun 17 14:20:01 database-05 systemd: Starting Session 42725 of user root.
+Jun 17 14:30:01 database-05 systemd: Started Session 42726 of user root.
+Jun 17 14:30:01 database-05 systemd: Starting Session 42726 of user root.
+Jun 17 14:30:12 database-05 systemd-logind: New session 42727 of user root.
+Jun 17 14:30:12 database-05 systemd: Started Session 42727 of user root.
+Jun 17 14:30:12 database-05 systemd: Starting Session 42727 of user root.
+Jun 17 14:30:13 database-05 ansible-ping: Invoked with data=pong
+Jun 17 14:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 14:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 14:30:21 database-05 systemd-logind: New session 42728 of user dba1.
+Jun 17 14:30:21 database-05 systemd: Started Session 42728 of user dba1.
+Jun 17 14:30:21 database-05 systemd: Starting Session 42728 of user dba1.
+Jun 17 14:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 14:31:13 database-05 systemd-logind: Removed session 42727.
+Jun 17 14:31:22 database-05 systemd-logind: Removed session 42728.
+Jun 17 14:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 14:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 14:31:26 database-05 systemd-logind: New session 42729 of user root.
+Jun 17 14:31:26 database-05 systemd: Started Session 42729 of user root.
+Jun 17 14:31:26 database-05 systemd: Starting Session 42729 of user root.
+Jun 17 14:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 14:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 14:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 14:31:29 database-05 systemd-logind: New session 42730 of user dba2.
+Jun 17 14:31:29 database-05 systemd: Started Session 42730 of user dba2.
+Jun 17 14:31:29 database-05 systemd: Starting Session 42730 of user dba2.
+Jun 17 14:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 14:31:40 database-05 ansible-ping: Invoked with data=pong
+Jun 17 14:32:29 database-05 systemd-logind: Removed session 42730.
+Jun 17 14:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 14:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 14:32:40 database-05 systemd-logind: Removed session 42729.
+Jun 17 14:40:01 database-05 systemd: Started Session 42731 of user root.
+Jun 17 14:40:01 database-05 systemd: Starting Session 42731 of user root.
+Jun 17 14:50:01 database-05 systemd: Started Session 42732 of user root.
+Jun 17 14:50:01 database-05 systemd: Starting Session 42732 of user root.
+Jun 17 15:00:01 database-05 systemd: Started Session 42733 of user root.
+Jun 17 15:00:01 database-05 systemd: Starting Session 42733 of user root.
+Jun 17 15:01:01 database-05 systemd: Started Session 42734 of user root.
+Jun 17 15:01:01 database-05 systemd: Starting Session 42734 of user root.
+Jun 17 15:10:01 database-05 systemd: Started Session 42735 of user root.
+Jun 17 15:10:01 database-05 systemd: Starting Session 42735 of user root.
+Jun 17 15:20:01 database-05 systemd: Started Session 42736 of user root.
+Jun 17 15:20:01 database-05 systemd: Starting Session 42736 of user root.
+Jun 17 15:30:01 database-05 systemd: Started Session 42737 of user root.
+Jun 17 15:30:01 database-05 systemd: Starting Session 42737 of user root.
+Jun 17 15:30:11 database-05 systemd-logind: New session 42738 of user root.
+Jun 17 15:30:11 database-05 systemd: Started Session 42738 of user root.
+Jun 17 15:30:11 database-05 systemd: Starting Session 42738 of user root.
+Jun 17 15:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 15:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 17 15:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 17 15:30:22 database-05 systemd-logind: New session 42739 of user dba1.
+Jun 17 15:30:22 database-05 systemd: Started Session 42739 of user dba1.
+Jun 17 15:30:22 database-05 systemd: Starting Session 42739 of user dba1.
+Jun 17 15:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 15:31:12 database-05 systemd-logind: Removed session 42738.
+Jun 17 15:31:22 database-05 systemd-logind: Removed session 42739.
+Jun 17 15:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 15:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 15:31:27 database-05 systemd-logind: New session 42740 of user root.
+Jun 17 15:31:27 database-05 systemd: Started Session 42740 of user root.
+Jun 17 15:31:27 database-05 systemd: Starting Session 42740 of user root.
+Jun 17 15:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 15:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 17 15:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 17 15:31:28 database-05 systemd-logind: New session 42741 of user dba2.
+Jun 17 15:31:28 database-05 systemd: Started Session 42741 of user dba2.
+Jun 17 15:31:28 database-05 systemd: Starting Session 42741 of user dba2.
+Jun 17 15:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 15:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 15:32:29 database-05 systemd-logind: Removed session 42741.
+Jun 17 15:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 15:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 15:32:41 database-05 systemd-logind: Removed session 42740.
+Jun 17 15:40:01 database-05 systemd: Started Session 42742 of user root.
+Jun 17 15:40:01 database-05 systemd: Starting Session 42742 of user root.
+Jun 17 15:50:01 database-05 systemd: Started Session 42743 of user root.
+Jun 17 15:50:01 database-05 systemd: Starting Session 42743 of user root.
+Jun 17 16:00:01 database-05 systemd: Started Session 42744 of user root.
+Jun 17 16:00:01 database-05 systemd: Starting Session 42744 of user root.
+Jun 17 16:01:01 database-05 systemd: Started Session 42745 of user root.
+Jun 17 16:01:01 database-05 systemd: Starting Session 42745 of user root.
+Jun 17 16:10:01 database-05 systemd: Started Session 42746 of user root.
+Jun 17 16:10:01 database-05 systemd: Starting Session 42746 of user root.
+Jun 17 16:20:01 database-05 systemd: Started Session 42747 of user root.
+Jun 17 16:20:01 database-05 systemd: Starting Session 42747 of user root.
+Jun 17 16:30:01 database-05 systemd: Started Session 42748 of user root.
+Jun 17 16:30:01 database-05 systemd: Starting Session 42748 of user root.
+Jun 17 16:30:11 database-05 systemd-logind: New session 42749 of user root.
+Jun 17 16:30:11 database-05 systemd: Started Session 42749 of user root.
+Jun 17 16:30:11 database-05 systemd: Starting Session 42749 of user root.
+Jun 17 16:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 16:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 16:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 16:30:21 database-05 systemd-logind: New session 42750 of user dba1.
+Jun 17 16:30:21 database-05 systemd: Started Session 42750 of user dba1.
+Jun 17 16:30:21 database-05 systemd: Starting Session 42750 of user dba1.
+Jun 17 16:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 16:31:12 database-05 systemd-logind: Removed session 42749.
+Jun 17 16:31:22 database-05 systemd-logind: Removed session 42750.
+Jun 17 16:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 16:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 16:31:27 database-05 systemd-logind: New session 42751 of user root.
+Jun 17 16:31:27 database-05 systemd: Started Session 42751 of user root.
+Jun 17 16:31:27 database-05 systemd: Starting Session 42751 of user root.
+Jun 17 16:31:28 database-05 ansible-ping: Invoked with data=pong
+Jun 17 16:31:30 database-05 systemd: Created slice user-1002.slice.
+Jun 17 16:31:30 database-05 systemd: Starting user-1002.slice.
+Jun 17 16:31:30 database-05 systemd-logind: New session 42752 of user dba2.
+Jun 17 16:31:30 database-05 systemd: Started Session 42752 of user dba2.
+Jun 17 16:31:30 database-05 systemd: Starting Session 42752 of user dba2.
+Jun 17 16:31:31 database-05 ansible-ping: Invoked with data=pong
+Jun 17 16:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 16:32:31 database-05 systemd-logind: Removed session 42752.
+Jun 17 16:32:31 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 16:32:31 database-05 systemd: Stopping user-1002.slice.
+Jun 17 16:32:41 database-05 systemd-logind: Removed session 42751.
+Jun 17 16:40:01 database-05 systemd: Started Session 42753 of user root.
+Jun 17 16:40:01 database-05 systemd: Starting Session 42753 of user root.
+Jun 17 16:50:01 database-05 systemd: Started Session 42754 of user root.
+Jun 17 16:50:01 database-05 systemd: Starting Session 42754 of user root.
+Jun 17 17:00:01 database-05 systemd: Started Session 42755 of user root.
+Jun 17 17:00:01 database-05 systemd: Starting Session 42755 of user root.
+Jun 17 17:01:01 database-05 systemd: Started Session 42756 of user root.
+Jun 17 17:01:01 database-05 systemd: Starting Session 42756 of user root.
+Jun 17 17:10:01 database-05 systemd: Started Session 42757 of user root.
+Jun 17 17:10:01 database-05 systemd: Starting Session 42757 of user root.
+Jun 17 17:20:01 database-05 systemd: Started Session 42758 of user root.
+Jun 17 17:20:01 database-05 systemd: Starting Session 42758 of user root.
+Jun 17 17:30:01 database-05 systemd: Started Session 42759 of user root.
+Jun 17 17:30:01 database-05 systemd: Starting Session 42759 of user root.
+Jun 17 17:30:12 database-05 systemd-logind: New session 42760 of user root.
+Jun 17 17:30:12 database-05 systemd: Started Session 42760 of user root.
+Jun 17 17:30:12 database-05 systemd: Starting Session 42760 of user root.
+Jun 17 17:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 17:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 17:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 17:30:21 database-05 systemd-logind: New session 42761 of user dba1.
+Jun 17 17:30:21 database-05 systemd: Started Session 42761 of user dba1.
+Jun 17 17:30:21 database-05 systemd: Starting Session 42761 of user dba1.
+Jun 17 17:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 17:31:12 database-05 systemd-logind: Removed session 42760.
+Jun 17 17:31:22 database-05 systemd-logind: Removed session 42761.
+Jun 17 17:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 17:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 17:31:27 database-05 systemd-logind: New session 42762 of user root.
+Jun 17 17:31:27 database-05 systemd: Started Session 42762 of user root.
+Jun 17 17:31:27 database-05 systemd: Starting Session 42762 of user root.
+Jun 17 17:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 17:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 17:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 17:31:29 database-05 systemd-logind: New session 42763 of user dba2.
+Jun 17 17:31:29 database-05 systemd: Started Session 42763 of user dba2.
+Jun 17 17:31:29 database-05 systemd: Starting Session 42763 of user dba2.
+Jun 17 17:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 17 17:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 17:32:30 database-05 systemd-logind: Removed session 42763.
+Jun 17 17:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 17:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 17 17:32:41 database-05 systemd-logind: Removed session 42762.
+Jun 17 17:40:01 database-05 systemd: Started Session 42764 of user root.
+Jun 17 17:40:01 database-05 systemd: Starting Session 42764 of user root.
+Jun 17 17:50:01 database-05 systemd: Started Session 42765 of user root.
+Jun 17 17:50:01 database-05 systemd: Starting Session 42765 of user root.
+Jun 17 18:00:01 database-05 systemd: Started Session 42766 of user root.
+Jun 17 18:00:01 database-05 systemd: Starting Session 42766 of user root.
+Jun 17 18:01:01 database-05 systemd: Started Session 42767 of user root.
+Jun 17 18:01:01 database-05 systemd: Starting Session 42767 of user root.
+Jun 17 18:10:01 database-05 systemd: Started Session 42768 of user root.
+Jun 17 18:10:01 database-05 systemd: Starting Session 42768 of user root.
+Jun 17 18:20:01 database-05 systemd: Started Session 42769 of user root.
+Jun 17 18:20:01 database-05 systemd: Starting Session 42769 of user root.
+Jun 17 18:30:01 database-05 systemd: Started Session 42770 of user root.
+Jun 17 18:30:01 database-05 systemd: Starting Session 42770 of user root.
+Jun 17 18:30:11 database-05 systemd-logind: New session 42771 of user root.
+Jun 17 18:30:11 database-05 systemd: Started Session 42771 of user root.
+Jun 17 18:30:11 database-05 systemd: Starting Session 42771 of user root.
+Jun 17 18:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 18:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 18:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 18:30:21 database-05 systemd-logind: New session 42772 of user dba1.
+Jun 17 18:30:21 database-05 systemd: Started Session 42772 of user dba1.
+Jun 17 18:30:21 database-05 systemd: Starting Session 42772 of user dba1.
+Jun 17 18:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 18:31:12 database-05 systemd-logind: Removed session 42771.
+Jun 17 18:31:22 database-05 systemd-logind: Removed session 42772.
+Jun 17 18:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 18:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 18:31:27 database-05 systemd-logind: New session 42773 of user root.
+Jun 17 18:31:27 database-05 systemd: Started Session 42773 of user root.
+Jun 17 18:31:27 database-05 systemd: Starting Session 42773 of user root.
+Jun 17 18:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 18:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 18:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 18:31:29 database-05 systemd-logind: New session 42774 of user dba2.
+Jun 17 18:31:29 database-05 systemd: Started Session 42774 of user dba2.
+Jun 17 18:31:29 database-05 systemd: Starting Session 42774 of user dba2.
+Jun 17 18:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 17 18:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 18:32:30 database-05 systemd-logind: Removed session 42774.
+Jun 17 18:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 18:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 17 18:32:42 database-05 systemd-logind: Removed session 42773.
+Jun 17 18:40:01 database-05 systemd: Started Session 42775 of user root.
+Jun 17 18:40:01 database-05 systemd: Starting Session 42775 of user root.
+Jun 17 18:50:01 database-05 systemd: Started Session 42776 of user root.
+Jun 17 18:50:01 database-05 systemd: Starting Session 42776 of user root.
+Jun 17 19:00:01 database-05 systemd: Started Session 42777 of user root.
+Jun 17 19:00:01 database-05 systemd: Starting Session 42777 of user root.
+Jun 17 19:01:01 database-05 systemd: Started Session 42778 of user root.
+Jun 17 19:01:01 database-05 systemd: Starting Session 42778 of user root.
+Jun 17 19:10:01 database-05 systemd: Started Session 42779 of user root.
+Jun 17 19:10:01 database-05 systemd: Starting Session 42779 of user root.
+Jun 17 19:20:01 database-05 systemd: Started Session 42780 of user root.
+Jun 17 19:20:01 database-05 systemd: Starting Session 42780 of user root.
+Jun 17 19:30:01 database-05 systemd: Started Session 42781 of user root.
+Jun 17 19:30:01 database-05 systemd: Starting Session 42781 of user root.
+Jun 17 19:30:12 database-05 systemd-logind: New session 42782 of user root.
+Jun 17 19:30:12 database-05 systemd: Started Session 42782 of user root.
+Jun 17 19:30:12 database-05 systemd: Starting Session 42782 of user root.
+Jun 17 19:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 19:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 19:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 19:30:21 database-05 systemd-logind: New session 42783 of user dba1.
+Jun 17 19:30:21 database-05 systemd: Started Session 42783 of user dba1.
+Jun 17 19:30:21 database-05 systemd: Starting Session 42783 of user dba1.
+Jun 17 19:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 19:31:12 database-05 systemd-logind: Removed session 42782.
+Jun 17 19:31:22 database-05 systemd-logind: Removed session 42783.
+Jun 17 19:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 19:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 19:31:26 database-05 systemd-logind: New session 42784 of user root.
+Jun 17 19:31:26 database-05 systemd: Started Session 42784 of user root.
+Jun 17 19:31:26 database-05 systemd: Starting Session 42784 of user root.
+Jun 17 19:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 19:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 19:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 19:31:29 database-05 systemd-logind: New session 42785 of user dba2.
+Jun 17 19:31:29 database-05 systemd: Started Session 42785 of user dba2.
+Jun 17 19:31:29 database-05 systemd: Starting Session 42785 of user dba2.
+Jun 17 19:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 19:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 19:32:29 database-05 systemd-logind: Removed session 42785.
+Jun 17 19:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 19:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 19:32:41 database-05 systemd-logind: Removed session 42784.
+Jun 17 19:40:01 database-05 systemd: Started Session 42786 of user root.
+Jun 17 19:40:01 database-05 systemd: Starting Session 42786 of user root.
+Jun 17 19:50:01 database-05 systemd: Started Session 42787 of user root.
+Jun 17 19:50:01 database-05 systemd: Starting Session 42787 of user root.
+Jun 17 20:00:01 database-05 systemd: Started Session 42788 of user root.
+Jun 17 20:00:01 database-05 systemd: Starting Session 42788 of user root.
+Jun 17 20:01:01 database-05 systemd: Started Session 42789 of user root.
+Jun 17 20:01:01 database-05 systemd: Starting Session 42789 of user root.
+Jun 17 20:10:01 database-05 systemd: Started Session 42790 of user root.
+Jun 17 20:10:01 database-05 systemd: Starting Session 42790 of user root.
+Jun 17 20:20:01 database-05 systemd: Started Session 42791 of user root.
+Jun 17 20:20:01 database-05 systemd: Starting Session 42791 of user root.
+Jun 17 20:30:01 database-05 systemd: Started Session 42792 of user root.
+Jun 17 20:30:01 database-05 systemd: Starting Session 42792 of user root.
+Jun 17 20:30:12 database-05 systemd-logind: New session 42793 of user root.
+Jun 17 20:30:12 database-05 systemd: Started Session 42793 of user root.
+Jun 17 20:30:12 database-05 systemd: Starting Session 42793 of user root.
+Jun 17 20:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 20:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 17 20:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 17 20:30:22 database-05 systemd-logind: New session 42794 of user dba1.
+Jun 17 20:30:22 database-05 systemd: Started Session 42794 of user dba1.
+Jun 17 20:30:22 database-05 systemd: Starting Session 42794 of user dba1.
+Jun 17 20:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 20:31:12 database-05 systemd-logind: Removed session 42793.
+Jun 17 20:31:23 database-05 systemd-logind: Removed session 42794.
+Jun 17 20:31:23 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 20:31:23 database-05 systemd: Stopping user-1003.slice.
+Jun 17 20:31:27 database-05 systemd-logind: New session 42795 of user root.
+Jun 17 20:31:27 database-05 systemd: Started Session 42795 of user root.
+Jun 17 20:31:27 database-05 systemd: Starting Session 42795 of user root.
+Jun 17 20:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 20:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 17 20:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 17 20:31:28 database-05 systemd-logind: New session 42796 of user dba2.
+Jun 17 20:31:28 database-05 systemd: Started Session 42796 of user dba2.
+Jun 17 20:31:28 database-05 systemd: Starting Session 42796 of user dba2.
+Jun 17 20:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 20:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 20:32:29 database-05 systemd-logind: Removed session 42796.
+Jun 17 20:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 20:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 20:32:41 database-05 systemd-logind: Removed session 42795.
+Jun 17 20:40:01 database-05 systemd: Started Session 42797 of user root.
+Jun 17 20:40:01 database-05 systemd: Starting Session 42797 of user root.
+Jun 17 20:50:01 database-05 systemd: Started Session 42798 of user root.
+Jun 17 20:50:01 database-05 systemd: Starting Session 42798 of user root.
+Jun 17 21:00:01 database-05 systemd: Started Session 42799 of user root.
+Jun 17 21:00:01 database-05 systemd: Starting Session 42799 of user root.
+Jun 17 21:01:01 database-05 systemd: Started Session 42800 of user root.
+Jun 17 21:01:01 database-05 systemd: Starting Session 42800 of user root.
+Jun 17 21:10:01 database-05 systemd: Started Session 42801 of user root.
+Jun 17 21:10:01 database-05 systemd: Starting Session 42801 of user root.
+Jun 17 21:20:01 database-05 systemd: Started Session 42802 of user root.
+Jun 17 21:20:01 database-05 systemd: Starting Session 42802 of user root.
+Jun 17 21:30:01 database-05 systemd: Started Session 42803 of user root.
+Jun 17 21:30:01 database-05 systemd: Starting Session 42803 of user root.
+Jun 17 21:30:11 database-05 systemd-logind: New session 42804 of user root.
+Jun 17 21:30:11 database-05 systemd: Started Session 42804 of user root.
+Jun 17 21:30:11 database-05 systemd: Starting Session 42804 of user root.
+Jun 17 21:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 21:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 21:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 21:30:21 database-05 systemd-logind: New session 42805 of user dba1.
+Jun 17 21:30:21 database-05 systemd: Started Session 42805 of user dba1.
+Jun 17 21:30:21 database-05 systemd: Starting Session 42805 of user dba1.
+Jun 17 21:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 21:31:12 database-05 systemd-logind: Removed session 42804.
+Jun 17 21:31:22 database-05 systemd-logind: Removed session 42805.
+Jun 17 21:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 21:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 21:31:26 database-05 systemd-logind: New session 42806 of user root.
+Jun 17 21:31:26 database-05 systemd: Started Session 42806 of user root.
+Jun 17 21:31:26 database-05 systemd: Starting Session 42806 of user root.
+Jun 17 21:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 21:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 21:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 21:31:29 database-05 systemd-logind: New session 42807 of user dba2.
+Jun 17 21:31:29 database-05 systemd: Started Session 42807 of user dba2.
+Jun 17 21:31:29 database-05 systemd: Starting Session 42807 of user dba2.
+Jun 17 21:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 21:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 21:32:29 database-05 systemd-logind: Removed session 42807.
+Jun 17 21:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 21:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 21:32:41 database-05 systemd-logind: Removed session 42806.
+Jun 17 21:40:01 database-05 systemd: Started Session 42808 of user root.
+Jun 17 21:40:01 database-05 systemd: Starting Session 42808 of user root.
+Jun 17 21:50:01 database-05 systemd: Started Session 42809 of user root.
+Jun 17 21:50:01 database-05 systemd: Starting Session 42809 of user root.
+Jun 17 22:00:01 database-05 systemd: Started Session 42810 of user root.
+Jun 17 22:00:01 database-05 systemd: Starting Session 42810 of user root.
+Jun 17 22:01:01 database-05 systemd: Started Session 42811 of user root.
+Jun 17 22:01:01 database-05 systemd: Starting Session 42811 of user root.
+Jun 17 22:10:01 database-05 systemd: Started Session 42812 of user root.
+Jun 17 22:10:01 database-05 systemd: Starting Session 42812 of user root.
+Jun 17 22:20:01 database-05 systemd: Started Session 42813 of user root.
+Jun 17 22:20:01 database-05 systemd: Starting Session 42813 of user root.
+Jun 17 22:30:01 database-05 systemd: Started Session 42814 of user root.
+Jun 17 22:30:01 database-05 systemd: Starting Session 42814 of user root.
+Jun 17 22:30:12 database-05 systemd-logind: New session 42815 of user root.
+Jun 17 22:30:12 database-05 systemd: Started Session 42815 of user root.
+Jun 17 22:30:12 database-05 systemd: Starting Session 42815 of user root.
+Jun 17 22:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 22:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 22:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 22:30:21 database-05 systemd-logind: New session 42816 of user dba1.
+Jun 17 22:30:21 database-05 systemd: Started Session 42816 of user dba1.
+Jun 17 22:30:21 database-05 systemd: Starting Session 42816 of user dba1.
+Jun 17 22:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 22:31:12 database-05 systemd-logind: Removed session 42815.
+Jun 17 22:31:22 database-05 systemd-logind: Removed session 42816.
+Jun 17 22:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 22:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 22:31:27 database-05 systemd-logind: New session 42817 of user root.
+Jun 17 22:31:27 database-05 systemd: Started Session 42817 of user root.
+Jun 17 22:31:27 database-05 systemd: Starting Session 42817 of user root.
+Jun 17 22:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 22:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 22:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 22:31:29 database-05 systemd-logind: New session 42818 of user dba2.
+Jun 17 22:31:29 database-05 systemd: Started Session 42818 of user dba2.
+Jun 17 22:31:29 database-05 systemd: Starting Session 42818 of user dba2.
+Jun 17 22:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 22:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 22:32:29 database-05 systemd-logind: Removed session 42818.
+Jun 17 22:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 22:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 22:32:41 database-05 systemd-logind: Removed session 42817.
+Jun 17 22:40:01 database-05 systemd: Started Session 42819 of user root.
+Jun 17 22:40:01 database-05 systemd: Starting Session 42819 of user root.
+Jun 17 22:50:01 database-05 systemd: Started Session 42820 of user root.
+Jun 17 22:50:01 database-05 systemd: Starting Session 42820 of user root.
+Jun 17 23:00:01 database-05 systemd: Started Session 42821 of user root.
+Jun 17 23:00:01 database-05 systemd: Starting Session 42821 of user root.
+Jun 17 23:01:01 database-05 systemd: Started Session 42822 of user root.
+Jun 17 23:01:01 database-05 systemd: Starting Session 42822 of user root.
+Jun 17 23:10:01 database-05 systemd: Started Session 42823 of user root.
+Jun 17 23:10:01 database-05 systemd: Starting Session 42823 of user root.
+Jun 17 23:20:01 database-05 systemd: Started Session 42824 of user root.
+Jun 17 23:20:01 database-05 systemd: Starting Session 42824 of user root.
+Jun 17 23:30:01 database-05 systemd: Started Session 42825 of user root.
+Jun 17 23:30:01 database-05 systemd: Starting Session 42825 of user root.
+Jun 17 23:30:11 database-05 systemd-logind: New session 42826 of user root.
+Jun 17 23:30:11 database-05 systemd: Started Session 42826 of user root.
+Jun 17 23:30:11 database-05 systemd: Starting Session 42826 of user root.
+Jun 17 23:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 17 23:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 17 23:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 17 23:30:21 database-05 systemd-logind: New session 42827 of user dba1.
+Jun 17 23:30:21 database-05 systemd: Started Session 42827 of user dba1.
+Jun 17 23:30:21 database-05 systemd: Starting Session 42827 of user dba1.
+Jun 17 23:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 17 23:31:12 database-05 systemd-logind: Removed session 42826.
+Jun 17 23:31:22 database-05 systemd-logind: Removed session 42827.
+Jun 17 23:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 17 23:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 17 23:31:26 database-05 systemd-logind: New session 42828 of user root.
+Jun 17 23:31:26 database-05 systemd: Started Session 42828 of user root.
+Jun 17 23:31:26 database-05 systemd: Starting Session 42828 of user root.
+Jun 17 23:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 17 23:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 17 23:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 17 23:31:29 database-05 systemd-logind: New session 42829 of user dba2.
+Jun 17 23:31:29 database-05 systemd: Started Session 42829 of user dba2.
+Jun 17 23:31:29 database-05 systemd: Starting Session 42829 of user dba2.
+Jun 17 23:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 17 23:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 17 23:32:29 database-05 systemd-logind: Removed session 42829.
+Jun 17 23:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 17 23:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 17 23:32:41 database-05 systemd-logind: Removed session 42828.
+Jun 17 23:40:01 database-05 systemd: Started Session 42830 of user root.
+Jun 17 23:40:01 database-05 systemd: Starting Session 42830 of user root.
+Jun 17 23:50:01 database-05 systemd: Started Session 42831 of user root.
+Jun 17 23:50:01 database-05 systemd: Starting Session 42831 of user root.
+Jun 17 23:53:01 database-05 systemd: Started Session 42832 of user root.
+Jun 17 23:53:01 database-05 systemd: Starting Session 42832 of user root.
+Jun 18 00:00:01 database-05 systemd: Started Session 42833 of user root.
+Jun 18 00:00:01 database-05 systemd: Starting Session 42833 of user root.
+Jun 18 00:01:01 database-05 systemd: Started Session 42834 of user root.
+Jun 18 00:01:01 database-05 systemd: Starting Session 42834 of user root.
+Jun 18 00:10:01 database-05 systemd: Started Session 42835 of user root.
+Jun 18 00:10:01 database-05 systemd: Starting Session 42835 of user root.
+Jun 18 00:20:01 database-05 systemd: Started Session 42836 of user root.
+Jun 18 00:20:01 database-05 systemd: Starting Session 42836 of user root.
+Jun 18 00:30:01 database-05 systemd: Started Session 42837 of user root.
+Jun 18 00:30:01 database-05 systemd: Starting Session 42837 of user root.
+Jun 18 00:30:12 database-05 systemd-logind: New session 42838 of user root.
+Jun 18 00:30:12 database-05 systemd: Started Session 42838 of user root.
+Jun 18 00:30:12 database-05 systemd: Starting Session 42838 of user root.
+Jun 18 00:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 00:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 00:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 00:30:21 database-05 systemd-logind: New session 42839 of user dba1.
+Jun 18 00:30:21 database-05 systemd: Started Session 42839 of user dba1.
+Jun 18 00:30:21 database-05 systemd: Starting Session 42839 of user dba1.
+Jun 18 00:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 00:31:12 database-05 systemd-logind: Removed session 42838.
+Jun 18 00:31:22 database-05 systemd-logind: Removed session 42839.
+Jun 18 00:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 00:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 00:31:27 database-05 systemd-logind: New session 42840 of user root.
+Jun 18 00:31:27 database-05 systemd: Started Session 42840 of user root.
+Jun 18 00:31:27 database-05 systemd: Starting Session 42840 of user root.
+Jun 18 00:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 00:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 18 00:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 18 00:31:28 database-05 systemd-logind: New session 42841 of user dba2.
+Jun 18 00:31:28 database-05 systemd: Started Session 42841 of user dba2.
+Jun 18 00:31:28 database-05 systemd: Starting Session 42841 of user dba2.
+Jun 18 00:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 00:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 18 00:32:29 database-05 systemd-logind: Removed session 42841.
+Jun 18 00:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 00:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 00:32:42 database-05 systemd-logind: Removed session 42840.
+Jun 18 00:40:01 database-05 systemd: Started Session 42842 of user root.
+Jun 18 00:40:01 database-05 systemd: Starting Session 42842 of user root.
+Jun 18 00:50:01 database-05 systemd: Started Session 42843 of user root.
+Jun 18 00:50:01 database-05 systemd: Starting Session 42843 of user root.
+Jun 18 01:00:01 database-05 systemd: Started Session 42844 of user root.
+Jun 18 01:00:02 database-05 systemd: Starting Session 42844 of user root.
+Jun 18 01:01:01 database-05 systemd: Started Session 42845 of user root.
+Jun 18 01:01:01 database-05 systemd: Starting Session 42845 of user root.
+Jun 18 01:10:01 database-05 systemd: Started Session 42846 of user root.
+Jun 18 01:10:01 database-05 systemd: Starting Session 42846 of user root.
+Jun 18 01:20:01 database-05 systemd: Started Session 42847 of user root.
+Jun 18 01:20:01 database-05 systemd: Starting Session 42847 of user root.
+Jun 18 01:30:01 database-05 systemd: Started Session 42848 of user root.
+Jun 18 01:30:01 database-05 systemd: Starting Session 42848 of user root.
+Jun 18 01:30:11 database-05 systemd-logind: New session 42849 of user root.
+Jun 18 01:30:11 database-05 systemd: Started Session 42849 of user root.
+Jun 18 01:30:11 database-05 systemd: Starting Session 42849 of user root.
+Jun 18 01:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 01:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 01:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 01:30:22 database-05 systemd-logind: New session 42850 of user dba1.
+Jun 18 01:30:22 database-05 systemd: Started Session 42850 of user dba1.
+Jun 18 01:30:22 database-05 systemd: Starting Session 42850 of user dba1.
+Jun 18 01:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 01:31:12 database-05 systemd-logind: Removed session 42849.
+Jun 18 01:31:22 database-05 systemd-logind: Removed session 42850.
+Jun 18 01:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 01:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 01:31:26 database-05 systemd-logind: New session 42851 of user root.
+Jun 18 01:31:26 database-05 systemd: Started Session 42851 of user root.
+Jun 18 01:31:26 database-05 systemd: Starting Session 42851 of user root.
+Jun 18 01:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 01:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 01:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 01:31:29 database-05 systemd-logind: New session 42852 of user dba2.
+Jun 18 01:31:29 database-05 systemd: Started Session 42852 of user dba2.
+Jun 18 01:31:29 database-05 systemd: Starting Session 42852 of user dba2.
+Jun 18 01:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 01:31:40 database-05 ansible-ping: Invoked with data=pong
+Jun 18 01:32:29 database-05 systemd-logind: Removed session 42852.
+Jun 18 01:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 01:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 01:32:41 database-05 systemd-logind: Removed session 42851.
+Jun 18 01:40:01 database-05 systemd: Started Session 42853 of user root.
+Jun 18 01:40:01 database-05 systemd: Starting Session 42853 of user root.
+Jun 18 01:50:01 database-05 systemd: Started Session 42854 of user root.
+Jun 18 01:50:01 database-05 systemd: Starting Session 42854 of user root.
+Jun 18 02:00:01 database-05 systemd: Started Session 42855 of user root.
+Jun 18 02:00:01 database-05 systemd: Starting Session 42855 of user root.
+Jun 18 02:01:01 database-05 systemd: Started Session 42856 of user root.
+Jun 18 02:01:01 database-05 systemd: Starting Session 42856 of user root.
+Jun 18 02:10:01 database-05 systemd: Started Session 42857 of user root.
+Jun 18 02:10:01 database-05 systemd: Starting Session 42857 of user root.
+Jun 18 02:20:01 database-05 systemd: Started Session 42858 of user root.
+Jun 18 02:20:01 database-05 systemd: Starting Session 42858 of user root.
+Jun 18 02:30:01 database-05 systemd: Started Session 42859 of user root.
+Jun 18 02:30:01 database-05 systemd: Starting Session 42859 of user root.
+Jun 18 02:30:11 database-05 systemd-logind: New session 42860 of user root.
+Jun 18 02:30:11 database-05 systemd: Started Session 42860 of user root.
+Jun 18 02:30:11 database-05 systemd: Starting Session 42860 of user root.
+Jun 18 02:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 02:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 02:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 02:30:21 database-05 systemd-logind: New session 42861 of user dba1.
+Jun 18 02:30:21 database-05 systemd: Started Session 42861 of user dba1.
+Jun 18 02:30:21 database-05 systemd: Starting Session 42861 of user dba1.
+Jun 18 02:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 02:31:12 database-05 systemd-logind: Removed session 42860.
+Jun 18 02:31:22 database-05 systemd-logind: Removed session 42861.
+Jun 18 02:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 02:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 02:31:27 database-05 systemd-logind: New session 42862 of user root.
+Jun 18 02:31:27 database-05 systemd: Started Session 42862 of user root.
+Jun 18 02:31:27 database-05 systemd: Starting Session 42862 of user root.
+Jun 18 02:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 02:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 02:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 02:31:29 database-05 systemd-logind: New session 42863 of user dba2.
+Jun 18 02:31:29 database-05 systemd: Started Session 42863 of user dba2.
+Jun 18 02:31:29 database-05 systemd: Starting Session 42863 of user dba2.
+Jun 18 02:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 18 02:31:40 database-05 ansible-ping: Invoked with data=pong
+Jun 18 02:32:30 database-05 systemd-logind: Removed session 42863.
+Jun 18 02:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 02:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 18 02:32:40 database-05 systemd-logind: Removed session 42862.
+Jun 18 02:40:01 database-05 systemd: Started Session 42864 of user root.
+Jun 18 02:40:01 database-05 systemd: Starting Session 42864 of user root.
+Jun 18 02:50:01 database-05 systemd: Started Session 42865 of user root.
+Jun 18 02:50:01 database-05 systemd: Starting Session 42865 of user root.
+Jun 18 03:00:01 database-05 systemd: Started Session 42866 of user root.
+Jun 18 03:00:01 database-05 systemd: Starting Session 42866 of user root.
+Jun 18 03:01:01 database-05 systemd: Started Session 42867 of user root.
+Jun 18 03:01:01 database-05 systemd: Starting Session 42867 of user root.
+Jun 18 03:10:01 database-05 systemd: Started Session 42868 of user root.
+Jun 18 03:10:01 database-05 systemd: Starting Session 42868 of user root.
+Jun 18 03:20:01 database-05 systemd: Started Session 42869 of user root.
+Jun 18 03:20:01 database-05 systemd: Starting Session 42869 of user root.
+Jun 18 03:30:01 database-05 systemd: Started Session 42870 of user root.
+Jun 18 03:30:01 database-05 systemd: Starting Session 42870 of user root.
+Jun 18 03:30:11 database-05 systemd-logind: New session 42871 of user root.
+Jun 18 03:30:11 database-05 systemd: Started Session 42871 of user root.
+Jun 18 03:30:11 database-05 systemd: Starting Session 42871 of user root.
+Jun 18 03:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 03:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 03:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 03:30:21 database-05 systemd-logind: New session 42872 of user dba1.
+Jun 18 03:30:21 database-05 systemd: Started Session 42872 of user dba1.
+Jun 18 03:30:21 database-05 systemd: Starting Session 42872 of user dba1.
+Jun 18 03:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 03:31:12 database-05 systemd-logind: Removed session 42871.
+Jun 18 03:31:22 database-05 systemd-logind: Removed session 42872.
+Jun 18 03:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 03:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 03:31:26 database-05 systemd-logind: New session 42873 of user root.
+Jun 18 03:31:26 database-05 systemd: Started Session 42873 of user root.
+Jun 18 03:31:26 database-05 systemd: Starting Session 42873 of user root.
+Jun 18 03:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 03:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 03:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 03:31:29 database-05 systemd-logind: New session 42874 of user dba2.
+Jun 18 03:31:29 database-05 systemd: Started Session 42874 of user dba2.
+Jun 18 03:31:29 database-05 systemd: Starting Session 42874 of user dba2.
+Jun 18 03:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 03:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 18 03:32:29 database-05 systemd-logind: Removed session 42874.
+Jun 18 03:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 03:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 03:32:41 database-05 systemd-logind: Removed session 42873.
+Jun 18 03:40:01 database-05 systemd: Started Session 42875 of user root.
+Jun 18 03:40:01 database-05 systemd: Starting Session 42875 of user root.
+Jun 18 03:50:01 database-05 systemd: Started Session 42876 of user root.
+Jun 18 03:50:01 database-05 systemd: Starting Session 42876 of user root.
+Jun 18 04:00:01 database-05 systemd: Started Session 42877 of user root.
+Jun 18 04:00:01 database-05 systemd: Starting Session 42877 of user root.
+Jun 18 04:01:01 database-05 systemd: Started Session 42878 of user root.
+Jun 18 04:01:01 database-05 systemd: Starting Session 42878 of user root.
+Jun 18 04:10:01 database-05 systemd: Started Session 42879 of user root.
+Jun 18 04:10:01 database-05 systemd: Starting Session 42879 of user root.
+Jun 18 04:20:01 database-05 systemd: Started Session 42880 of user root.
+Jun 18 04:20:01 database-05 systemd: Starting Session 42880 of user root.
+Jun 18 04:30:01 database-05 systemd: Started Session 42881 of user root.
+Jun 18 04:30:01 database-05 systemd: Starting Session 42881 of user root.
+Jun 18 04:30:11 database-05 systemd-logind: New session 42882 of user root.
+Jun 18 04:30:11 database-05 systemd: Started Session 42882 of user root.
+Jun 18 04:30:11 database-05 systemd: Starting Session 42882 of user root.
+Jun 18 04:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 04:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 04:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 04:30:22 database-05 systemd-logind: New session 42883 of user dba1.
+Jun 18 04:30:22 database-05 systemd: Started Session 42883 of user dba1.
+Jun 18 04:30:22 database-05 systemd: Starting Session 42883 of user dba1.
+Jun 18 04:30:23 database-05 ansible-ping: Invoked with data=pong
+Jun 18 04:31:12 database-05 systemd-logind: Removed session 42882.
+Jun 18 04:31:23 database-05 systemd-logind: Removed session 42883.
+Jun 18 04:31:23 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 04:31:23 database-05 systemd: Stopping user-1003.slice.
+Jun 18 04:31:25 database-05 systemd-logind: New session 42884 of user root.
+Jun 18 04:31:25 database-05 systemd: Started Session 42884 of user root.
+Jun 18 04:31:25 database-05 systemd: Starting Session 42884 of user root.
+Jun 18 04:31:26 database-05 ansible-ping: Invoked with data=pong
+Jun 18 04:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 18 04:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 18 04:31:28 database-05 systemd-logind: New session 42885 of user dba2.
+Jun 18 04:31:28 database-05 systemd: Started Session 42885 of user dba2.
+Jun 18 04:31:28 database-05 systemd: Starting Session 42885 of user dba2.
+Jun 18 04:31:28 database-05 ansible-ping: Invoked with data=pong
+Jun 18 04:31:40 database-05 ansible-ping: Invoked with data=pong
+Jun 18 04:32:28 database-05 systemd-logind: Removed session 42885.
+Jun 18 04:32:28 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 04:32:28 database-05 systemd: Stopping user-1002.slice.
+Jun 18 04:32:40 database-05 systemd-logind: Removed session 42884.
+Jun 18 04:40:01 database-05 systemd: Started Session 42886 of user root.
+Jun 18 04:40:01 database-05 systemd: Starting Session 42886 of user root.
+Jun 18 04:50:01 database-05 systemd: Started Session 42887 of user root.
+Jun 18 04:50:01 database-05 systemd: Starting Session 42887 of user root.
+Jun 18 05:00:01 database-05 systemd: Started Session 42888 of user root.
+Jun 18 05:00:01 database-05 systemd: Starting Session 42888 of user root.
+Jun 18 05:01:01 database-05 systemd: Started Session 42889 of user root.
+Jun 18 05:01:01 database-05 systemd: Starting Session 42889 of user root.
+Jun 18 05:10:01 database-05 systemd: Started Session 42890 of user root.
+Jun 18 05:10:01 database-05 systemd: Starting Session 42890 of user root.
+Jun 18 05:20:01 database-05 systemd: Started Session 42891 of user root.
+Jun 18 05:20:01 database-05 systemd: Starting Session 42891 of user root.
+Jun 18 05:30:01 database-05 systemd: Started Session 42892 of user root.
+Jun 18 05:30:01 database-05 systemd: Starting Session 42892 of user root.
+Jun 18 05:30:12 database-05 systemd-logind: New session 42893 of user root.
+Jun 18 05:30:12 database-05 systemd: Started Session 42893 of user root.
+Jun 18 05:30:12 database-05 systemd: Starting Session 42893 of user root.
+Jun 18 05:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 05:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 05:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 05:30:22 database-05 systemd-logind: New session 42894 of user dba1.
+Jun 18 05:30:22 database-05 systemd: Started Session 42894 of user dba1.
+Jun 18 05:30:22 database-05 systemd: Starting Session 42894 of user dba1.
+Jun 18 05:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 05:31:12 database-05 systemd-logind: Removed session 42893.
+Jun 18 05:31:22 database-05 systemd-logind: Removed session 42894.
+Jun 18 05:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 05:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 05:31:26 database-05 systemd-logind: New session 42895 of user root.
+Jun 18 05:31:26 database-05 systemd: Started Session 42895 of user root.
+Jun 18 05:31:26 database-05 systemd: Starting Session 42895 of user root.
+Jun 18 05:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 05:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 05:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 05:31:29 database-05 systemd-logind: New session 42896 of user dba2.
+Jun 18 05:31:29 database-05 systemd: Started Session 42896 of user dba2.
+Jun 18 05:31:29 database-05 systemd: Starting Session 42896 of user dba2.
+Jun 18 05:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 18 05:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 18 05:32:30 database-05 systemd-logind: Removed session 42896.
+Jun 18 05:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 05:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 18 05:32:42 database-05 systemd-logind: Removed session 42895.
+Jun 18 05:40:01 database-05 systemd: Started Session 42897 of user root.
+Jun 18 05:40:01 database-05 systemd: Starting Session 42897 of user root.
+Jun 18 05:50:01 database-05 systemd: Started Session 42898 of user root.
+Jun 18 05:50:01 database-05 systemd: Starting Session 42898 of user root.
+Jun 18 06:00:01 database-05 systemd: Started Session 42899 of user root.
+Jun 18 06:00:01 database-05 systemd: Starting Session 42899 of user root.
+Jun 18 06:01:01 database-05 systemd: Started Session 42900 of user root.
+Jun 18 06:01:01 database-05 systemd: Starting Session 42900 of user root.
+Jun 18 06:10:01 database-05 systemd: Started Session 42901 of user root.
+Jun 18 06:10:01 database-05 systemd: Starting Session 42901 of user root.
+Jun 18 06:20:01 database-05 systemd: Started Session 42902 of user root.
+Jun 18 06:20:01 database-05 systemd: Starting Session 42902 of user root.
+Jun 18 06:30:01 database-05 systemd: Started Session 42903 of user root.
+Jun 18 06:30:01 database-05 systemd: Starting Session 42903 of user root.
+Jun 18 06:30:12 database-05 systemd-logind: New session 42904 of user root.
+Jun 18 06:30:12 database-05 systemd: Started Session 42904 of user root.
+Jun 18 06:30:12 database-05 systemd: Starting Session 42904 of user root.
+Jun 18 06:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 06:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 06:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 06:30:22 database-05 systemd-logind: New session 42905 of user dba1.
+Jun 18 06:30:22 database-05 systemd: Started Session 42905 of user dba1.
+Jun 18 06:30:22 database-05 systemd: Starting Session 42905 of user dba1.
+Jun 18 06:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 06:31:12 database-05 systemd-logind: Removed session 42904.
+Jun 18 06:31:22 database-05 systemd-logind: Removed session 42905.
+Jun 18 06:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 06:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 06:31:27 database-05 systemd-logind: New session 42906 of user root.
+Jun 18 06:31:27 database-05 systemd: Started Session 42906 of user root.
+Jun 18 06:31:27 database-05 systemd: Starting Session 42906 of user root.
+Jun 18 06:31:28 database-05 ansible-ping: Invoked with data=pong
+Jun 18 06:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 18 06:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 18 06:31:28 database-05 systemd-logind: New session 42907 of user dba2.
+Jun 18 06:31:28 database-05 systemd: Started Session 42907 of user dba2.
+Jun 18 06:31:28 database-05 systemd: Starting Session 42907 of user dba2.
+Jun 18 06:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 06:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 18 06:32:29 database-05 systemd-logind: Removed session 42907.
+Jun 18 06:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 06:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 06:32:41 database-05 systemd-logind: Removed session 42906.
+Jun 18 06:40:01 database-05 systemd: Started Session 42908 of user root.
+Jun 18 06:40:01 database-05 systemd: Starting Session 42908 of user root.
+Jun 18 06:50:01 database-05 systemd: Started Session 42909 of user root.
+Jun 18 06:50:01 database-05 systemd: Starting Session 42909 of user root.
+Jun 18 07:00:01 database-05 systemd: Started Session 42910 of user root.
+Jun 18 07:00:01 database-05 systemd: Starting Session 42910 of user root.
+Jun 18 07:01:01 database-05 systemd: Started Session 42911 of user root.
+Jun 18 07:01:01 database-05 systemd: Starting Session 42911 of user root.
+Jun 18 07:10:01 database-05 systemd: Started Session 42912 of user root.
+Jun 18 07:10:01 database-05 systemd: Starting Session 42912 of user root.
+Jun 18 07:20:01 database-05 systemd: Started Session 42913 of user root.
+Jun 18 07:20:01 database-05 systemd: Starting Session 42913 of user root.
+Jun 18 07:30:01 database-05 systemd: Started Session 42914 of user root.
+Jun 18 07:30:01 database-05 systemd: Starting Session 42914 of user root.
+Jun 18 07:30:12 database-05 systemd-logind: New session 42915 of user root.
+Jun 18 07:30:12 database-05 systemd: Started Session 42915 of user root.
+Jun 18 07:30:12 database-05 systemd: Starting Session 42915 of user root.
+Jun 18 07:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 07:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 07:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 07:30:21 database-05 systemd-logind: New session 42916 of user dba1.
+Jun 18 07:30:21 database-05 systemd: Started Session 42916 of user dba1.
+Jun 18 07:30:21 database-05 systemd: Starting Session 42916 of user dba1.
+Jun 18 07:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 07:31:12 database-05 systemd-logind: Removed session 42915.
+Jun 18 07:31:22 database-05 systemd-logind: Removed session 42916.
+Jun 18 07:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 07:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 07:31:27 database-05 systemd-logind: New session 42917 of user root.
+Jun 18 07:31:27 database-05 systemd: Started Session 42917 of user root.
+Jun 18 07:31:27 database-05 systemd: Starting Session 42917 of user root.
+Jun 18 07:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 07:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 07:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 07:31:29 database-05 systemd-logind: New session 42918 of user dba2.
+Jun 18 07:31:29 database-05 systemd: Started Session 42918 of user dba2.
+Jun 18 07:31:29 database-05 systemd: Starting Session 42918 of user dba2.
+Jun 18 07:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 18 07:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 18 07:32:30 database-05 systemd-logind: Removed session 42918.
+Jun 18 07:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 07:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 18 07:32:41 database-05 systemd-logind: Removed session 42917.
+Jun 18 07:40:01 database-05 systemd: Started Session 42919 of user root.
+Jun 18 07:40:01 database-05 systemd: Starting Session 42919 of user root.
+Jun 18 07:50:01 database-05 systemd: Started Session 42920 of user root.
+Jun 18 07:50:01 database-05 systemd: Starting Session 42920 of user root.
+Jun 18 08:00:01 database-05 systemd: Started Session 42921 of user root.
+Jun 18 08:00:01 database-05 systemd: Starting Session 42921 of user root.
+Jun 18 08:01:01 database-05 systemd: Started Session 42922 of user root.
+Jun 18 08:01:01 database-05 systemd: Starting Session 42922 of user root.
+Jun 18 08:10:01 database-05 systemd: Started Session 42923 of user root.
+Jun 18 08:10:01 database-05 systemd: Starting Session 42923 of user root.
+Jun 18 08:20:01 database-05 systemd: Started Session 42924 of user root.
+Jun 18 08:20:01 database-05 systemd: Starting Session 42924 of user root.
+Jun 18 08:30:01 database-05 systemd: Started Session 42925 of user root.
+Jun 18 08:30:01 database-05 systemd: Starting Session 42925 of user root.
+Jun 18 08:30:11 database-05 systemd-logind: New session 42926 of user root.
+Jun 18 08:30:11 database-05 systemd: Started Session 42926 of user root.
+Jun 18 08:30:11 database-05 systemd: Starting Session 42926 of user root.
+Jun 18 08:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 08:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 08:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 08:30:21 database-05 systemd-logind: New session 42927 of user dba1.
+Jun 18 08:30:21 database-05 systemd: Started Session 42927 of user dba1.
+Jun 18 08:30:21 database-05 systemd: Starting Session 42927 of user dba1.
+Jun 18 08:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 08:31:12 database-05 systemd-logind: Removed session 42926.
+Jun 18 08:31:22 database-05 systemd-logind: Removed session 42927.
+Jun 18 08:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 08:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 08:31:26 database-05 systemd-logind: New session 42928 of user root.
+Jun 18 08:31:26 database-05 systemd: Started Session 42928 of user root.
+Jun 18 08:31:26 database-05 systemd: Starting Session 42928 of user root.
+Jun 18 08:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 08:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 08:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 08:31:29 database-05 systemd-logind: New session 42929 of user dba2.
+Jun 18 08:31:29 database-05 systemd: Started Session 42929 of user dba2.
+Jun 18 08:31:29 database-05 systemd: Starting Session 42929 of user dba2.
+Jun 18 08:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 08:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 18 08:32:29 database-05 systemd-logind: Removed session 42929.
+Jun 18 08:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 08:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 08:32:41 database-05 systemd-logind: Removed session 42928.
+Jun 18 08:40:01 database-05 systemd: Started Session 42930 of user root.
+Jun 18 08:40:01 database-05 systemd: Starting Session 42930 of user root.
+Jun 18 08:50:01 database-05 systemd: Started Session 42931 of user root.
+Jun 18 08:50:01 database-05 systemd: Starting Session 42931 of user root.
+Jun 18 09:00:01 database-05 systemd: Started Session 42932 of user root.
+Jun 18 09:00:01 database-05 systemd: Starting Session 42932 of user root.
+Jun 18 09:01:01 database-05 systemd: Started Session 42933 of user root.
+Jun 18 09:01:01 database-05 systemd: Starting Session 42933 of user root.
+Jun 18 09:10:01 database-05 systemd: Started Session 42934 of user root.
+Jun 18 09:10:01 database-05 systemd: Starting Session 42934 of user root.
+Jun 18 09:20:01 database-05 systemd: Started Session 42935 of user root.
+Jun 18 09:20:01 database-05 systemd: Starting Session 42935 of user root.
+Jun 18 09:30:01 database-05 systemd: Started Session 42936 of user root.
+Jun 18 09:30:01 database-05 systemd: Starting Session 42936 of user root.
+Jun 18 09:30:11 database-05 systemd-logind: New session 42937 of user root.
+Jun 18 09:30:11 database-05 systemd: Started Session 42937 of user root.
+Jun 18 09:30:11 database-05 systemd: Starting Session 42937 of user root.
+Jun 18 09:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 09:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 09:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 09:30:21 database-05 systemd-logind: New session 42938 of user dba1.
+Jun 18 09:30:21 database-05 systemd: Started Session 42938 of user dba1.
+Jun 18 09:30:21 database-05 systemd: Starting Session 42938 of user dba1.
+Jun 18 09:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 09:31:12 database-05 systemd-logind: Removed session 42937.
+Jun 18 09:31:22 database-05 systemd-logind: Removed session 42938.
+Jun 18 09:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 09:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 09:31:27 database-05 systemd-logind: New session 42939 of user root.
+Jun 18 09:31:27 database-05 systemd: Started Session 42939 of user root.
+Jun 18 09:31:27 database-05 systemd: Starting Session 42939 of user root.
+Jun 18 09:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 09:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 09:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 09:31:29 database-05 systemd-logind: New session 42940 of user dba2.
+Jun 18 09:31:29 database-05 systemd: Started Session 42940 of user dba2.
+Jun 18 09:31:29 database-05 systemd: Starting Session 42940 of user dba2.
+Jun 18 09:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 09:31:43 database-05 ansible-ping: Invoked with data=pong
+Jun 18 09:32:29 database-05 systemd-logind: Removed session 42940.
+Jun 18 09:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 09:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 09:32:43 database-05 systemd-logind: Removed session 42939.
+Jun 18 09:40:01 database-05 systemd: Started Session 42941 of user root.
+Jun 18 09:40:01 database-05 systemd: Starting Session 42941 of user root.
+Jun 18 09:50:01 database-05 systemd: Started Session 42942 of user root.
+Jun 18 09:50:01 database-05 systemd: Starting Session 42942 of user root.
+Jun 18 10:00:01 database-05 systemd: Started Session 42943 of user root.
+Jun 18 10:00:01 database-05 systemd: Starting Session 42943 of user root.
+Jun 18 10:01:01 database-05 systemd: Started Session 42944 of user root.
+Jun 18 10:01:01 database-05 systemd: Starting Session 42944 of user root.
+Jun 18 10:10:01 database-05 systemd: Started Session 42945 of user root.
+Jun 18 10:10:01 database-05 systemd: Starting Session 42945 of user root.
+Jun 18 10:20:01 database-05 systemd: Started Session 42946 of user root.
+Jun 18 10:20:01 database-05 systemd: Starting Session 42946 of user root.
+Jun 18 10:30:01 database-05 systemd: Started Session 42947 of user root.
+Jun 18 10:30:01 database-05 systemd: Starting Session 42947 of user root.
+Jun 18 10:30:11 database-05 systemd-logind: New session 42948 of user root.
+Jun 18 10:30:11 database-05 systemd: Started Session 42948 of user root.
+Jun 18 10:30:11 database-05 systemd: Starting Session 42948 of user root.
+Jun 18 10:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 10:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 10:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 10:30:21 database-05 systemd-logind: New session 42949 of user dba1.
+Jun 18 10:30:21 database-05 systemd: Started Session 42949 of user dba1.
+Jun 18 10:30:21 database-05 systemd: Starting Session 42949 of user dba1.
+Jun 18 10:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 10:31:12 database-05 systemd-logind: Removed session 42948.
+Jun 18 10:31:22 database-05 systemd-logind: Removed session 42949.
+Jun 18 10:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 10:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 10:31:27 database-05 systemd-logind: New session 42950 of user root.
+Jun 18 10:31:27 database-05 systemd: Started Session 42950 of user root.
+Jun 18 10:31:27 database-05 systemd: Starting Session 42950 of user root.
+Jun 18 10:31:28 database-05 ansible-ping: Invoked with data=pong
+Jun 18 10:31:31 database-05 systemd: Created slice user-1002.slice.
+Jun 18 10:31:31 database-05 systemd: Starting user-1002.slice.
+Jun 18 10:31:31 database-05 systemd-logind: New session 42951 of user dba2.
+Jun 18 10:31:31 database-05 systemd: Started Session 42951 of user dba2.
+Jun 18 10:31:31 database-05 systemd: Starting Session 42951 of user dba2.
+Jun 18 10:31:32 database-05 ansible-ping: Invoked with data=pong
+Jun 18 10:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 18 10:32:32 database-05 systemd-logind: Removed session 42951.
+Jun 18 10:32:32 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 10:32:32 database-05 systemd: Stopping user-1002.slice.
+Jun 18 10:32:42 database-05 systemd-logind: Removed session 42950.
+Jun 18 10:39:18 database-05 systemd-logind: Removed session 42663.
+Jun 18 10:39:19 database-05 systemd-logind: Removed session 42697.
+Jun 18 10:40:01 database-05 systemd: Started Session 42952 of user root.
+Jun 18 10:40:01 database-05 systemd: Starting Session 42952 of user root.
+Jun 18 10:50:01 database-05 systemd: Started Session 42953 of user root.
+Jun 18 10:50:01 database-05 systemd: Starting Session 42953 of user root.
+Jun 18 11:00:01 database-05 systemd: Started Session 42954 of user root.
+Jun 18 11:00:01 database-05 systemd: Starting Session 42954 of user root.
+Jun 18 11:01:01 database-05 systemd: Started Session 42955 of user root.
+Jun 18 11:01:01 database-05 systemd: Starting Session 42955 of user root.
+Jun 18 11:10:01 database-05 systemd: Started Session 42956 of user root.
+Jun 18 11:10:01 database-05 systemd: Starting Session 42956 of user root.
+Jun 18 11:20:01 database-05 systemd: Started Session 42957 of user root.
+Jun 18 11:20:01 database-05 systemd: Starting Session 42957 of user root.
+Jun 18 11:30:01 database-05 systemd: Started Session 42958 of user root.
+Jun 18 11:30:01 database-05 systemd: Starting Session 42958 of user root.
+Jun 18 11:30:12 database-05 systemd-logind: New session 42959 of user root.
+Jun 18 11:30:12 database-05 systemd: Started Session 42959 of user root.
+Jun 18 11:30:12 database-05 systemd: Starting Session 42959 of user root.
+Jun 18 11:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 11:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 11:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 11:30:22 database-05 systemd-logind: New session 42960 of user dba1.
+Jun 18 11:30:22 database-05 systemd: Started Session 42960 of user dba1.
+Jun 18 11:30:22 database-05 systemd: Starting Session 42960 of user dba1.
+Jun 18 11:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 11:31:12 database-05 systemd-logind: Removed session 42959.
+Jun 18 11:31:22 database-05 systemd-logind: Removed session 42960.
+Jun 18 11:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 11:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 11:31:26 database-05 systemd-logind: New session 42961 of user root.
+Jun 18 11:31:26 database-05 systemd: Started Session 42961 of user root.
+Jun 18 11:31:26 database-05 systemd: Starting Session 42961 of user root.
+Jun 18 11:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 11:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 18 11:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 18 11:31:28 database-05 systemd-logind: New session 42962 of user dba2.
+Jun 18 11:31:28 database-05 systemd: Started Session 42962 of user dba2.
+Jun 18 11:31:28 database-05 systemd: Starting Session 42962 of user dba2.
+Jun 18 11:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 11:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 18 11:32:29 database-05 systemd-logind: Removed session 42962.
+Jun 18 11:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 11:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 11:32:41 database-05 systemd-logind: Removed session 42961.
+Jun 18 11:40:01 database-05 systemd: Started Session 42963 of user root.
+Jun 18 11:40:01 database-05 systemd: Starting Session 42963 of user root.
+Jun 18 11:50:01 database-05 systemd: Started Session 42964 of user root.
+Jun 18 11:50:01 database-05 systemd: Starting Session 42964 of user root.
+Jun 18 12:00:01 database-05 systemd: Started Session 42965 of user root.
+Jun 18 12:00:01 database-05 systemd: Starting Session 42965 of user root.
+Jun 18 12:01:01 database-05 systemd: Started Session 42966 of user root.
+Jun 18 12:01:01 database-05 systemd: Starting Session 42966 of user root.
+Jun 18 12:10:01 database-05 systemd: Started Session 42967 of user root.
+Jun 18 12:10:01 database-05 systemd: Starting Session 42967 of user root.
+Jun 18 12:20:01 database-05 systemd: Started Session 42968 of user root.
+Jun 18 12:20:01 database-05 systemd: Starting Session 42968 of user root.
+Jun 18 12:30:01 database-05 systemd: Started Session 42969 of user root.
+Jun 18 12:30:01 database-05 systemd: Starting Session 42969 of user root.
+Jun 18 12:30:12 database-05 systemd-logind: New session 42970 of user root.
+Jun 18 12:30:12 database-05 systemd: Started Session 42970 of user root.
+Jun 18 12:30:12 database-05 systemd: Starting Session 42970 of user root.
+Jun 18 12:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 12:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 12:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 12:30:22 database-05 systemd-logind: New session 42971 of user dba1.
+Jun 18 12:30:22 database-05 systemd: Started Session 42971 of user dba1.
+Jun 18 12:30:22 database-05 systemd: Starting Session 42971 of user dba1.
+Jun 18 12:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 12:31:12 database-05 systemd-logind: Removed session 42970.
+Jun 18 12:31:22 database-05 systemd-logind: Removed session 42971.
+Jun 18 12:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 12:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 12:31:28 database-05 systemd-logind: New session 42972 of user root.
+Jun 18 12:31:28 database-05 systemd: Started Session 42972 of user root.
+Jun 18 12:31:28 database-05 systemd: Starting Session 42972 of user root.
+Jun 18 12:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 12:31:30 database-05 systemd: Created slice user-1002.slice.
+Jun 18 12:31:30 database-05 systemd: Starting user-1002.slice.
+Jun 18 12:31:30 database-05 systemd-logind: New session 42973 of user dba2.
+Jun 18 12:31:30 database-05 systemd: Started Session 42973 of user dba2.
+Jun 18 12:31:30 database-05 systemd: Starting Session 42973 of user dba2.
+Jun 18 12:31:31 database-05 ansible-ping: Invoked with data=pong
+Jun 18 12:31:44 database-05 ansible-ping: Invoked with data=pong
+Jun 18 12:32:31 database-05 systemd-logind: Removed session 42973.
+Jun 18 12:32:31 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 12:32:31 database-05 systemd: Stopping user-1002.slice.
+Jun 18 12:32:44 database-05 systemd-logind: Removed session 42972.
+Jun 18 12:40:01 database-05 systemd: Started Session 42974 of user root.
+Jun 18 12:40:01 database-05 systemd: Starting Session 42974 of user root.
+Jun 18 12:50:01 database-05 systemd: Started Session 42975 of user root.
+Jun 18 12:50:01 database-05 systemd: Starting Session 42975 of user root.
+Jun 18 12:51:27 database-05 systemd: Starting Cleanup of Temporary Directories...
+Jun 18 12:51:28 database-05 systemd: Started Cleanup of Temporary Directories.
+Jun 18 13:00:01 database-05 systemd: Started Session 42976 of user root.
+Jun 18 13:00:01 database-05 systemd: Starting Session 42976 of user root.
+Jun 18 13:01:01 database-05 systemd: Started Session 42977 of user root.
+Jun 18 13:01:01 database-05 systemd: Starting Session 42977 of user root.
+Jun 18 13:10:01 database-05 systemd: Started Session 42978 of user root.
+Jun 18 13:10:01 database-05 systemd: Starting Session 42978 of user root.
+Jun 18 13:20:01 database-05 systemd: Started Session 42979 of user root.
+Jun 18 13:20:01 database-05 systemd: Starting Session 42979 of user root.
+Jun 18 13:30:01 database-05 systemd: Started Session 42980 of user root.
+Jun 18 13:30:01 database-05 systemd: Starting Session 42980 of user root.
+Jun 18 13:30:11 database-05 systemd-logind: New session 42981 of user root.
+Jun 18 13:30:11 database-05 systemd: Started Session 42981 of user root.
+Jun 18 13:30:11 database-05 systemd: Starting Session 42981 of user root.
+Jun 18 13:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 13:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 13:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 13:30:21 database-05 systemd-logind: New session 42982 of user dba1.
+Jun 18 13:30:21 database-05 systemd: Started Session 42982 of user dba1.
+Jun 18 13:30:21 database-05 systemd: Starting Session 42982 of user dba1.
+Jun 18 13:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 13:31:12 database-05 systemd-logind: Removed session 42981.
+Jun 18 13:31:22 database-05 systemd-logind: Removed session 42982.
+Jun 18 13:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 13:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 13:31:27 database-05 systemd-logind: New session 42983 of user root.
+Jun 18 13:31:27 database-05 systemd: Started Session 42983 of user root.
+Jun 18 13:31:27 database-05 systemd: Starting Session 42983 of user root.
+Jun 18 13:31:28 database-05 ansible-ping: Invoked with data=pong
+Jun 18 13:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 13:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 13:31:29 database-05 systemd-logind: New session 42984 of user dba2.
+Jun 18 13:31:29 database-05 systemd: Started Session 42984 of user dba2.
+Jun 18 13:31:29 database-05 systemd: Starting Session 42984 of user dba2.
+Jun 18 13:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 18 13:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 18 13:32:30 database-05 systemd-logind: Removed session 42984.
+Jun 18 13:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 13:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 18 13:32:41 database-05 systemd-logind: Removed session 42983.
+Jun 18 13:40:01 database-05 systemd: Started Session 42985 of user root.
+Jun 18 13:40:01 database-05 systemd: Starting Session 42985 of user root.
+Jun 18 13:50:01 database-05 systemd: Started Session 42986 of user root.
+Jun 18 13:50:01 database-05 systemd: Starting Session 42986 of user root.
+Jun 18 14:00:01 database-05 systemd: Started Session 42987 of user root.
+Jun 18 14:00:01 database-05 systemd: Starting Session 42987 of user root.
+Jun 18 14:01:01 database-05 systemd: Started Session 42988 of user root.
+Jun 18 14:01:01 database-05 systemd: Starting Session 42988 of user root.
+Jun 18 14:10:01 database-05 systemd: Started Session 42989 of user root.
+Jun 18 14:10:01 database-05 systemd: Starting Session 42989 of user root.
+Jun 18 14:20:01 database-05 systemd: Started Session 42990 of user root.
+Jun 18 14:20:01 database-05 systemd: Starting Session 42990 of user root.
+Jun 18 14:30:01 database-05 systemd: Started Session 42991 of user root.
+Jun 18 14:30:01 database-05 systemd: Starting Session 42991 of user root.
+Jun 18 14:30:11 database-05 systemd-logind: New session 42992 of user root.
+Jun 18 14:30:11 database-05 systemd: Started Session 42992 of user root.
+Jun 18 14:30:11 database-05 systemd: Starting Session 42992 of user root.
+Jun 18 14:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 14:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 14:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 14:30:22 database-05 systemd-logind: New session 42993 of user dba1.
+Jun 18 14:30:22 database-05 systemd: Started Session 42993 of user dba1.
+Jun 18 14:30:22 database-05 systemd: Starting Session 42993 of user dba1.
+Jun 18 14:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 14:31:12 database-05 systemd-logind: Removed session 42992.
+Jun 18 14:31:22 database-05 systemd-logind: Removed session 42993.
+Jun 18 14:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 14:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 14:31:27 database-05 systemd-logind: New session 42994 of user root.
+Jun 18 14:31:27 database-05 systemd: Started Session 42994 of user root.
+Jun 18 14:31:27 database-05 systemd: Starting Session 42994 of user root.
+Jun 18 14:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 14:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 14:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 14:31:29 database-05 systemd-logind: New session 42995 of user dba2.
+Jun 18 14:31:29 database-05 systemd: Started Session 42995 of user dba2.
+Jun 18 14:31:29 database-05 systemd: Starting Session 42995 of user dba2.
+Jun 18 14:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 14:31:43 database-05 ansible-ping: Invoked with data=pong
+Jun 18 14:32:30 database-05 systemd-logind: Removed session 42995.
+Jun 18 14:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 14:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 18 14:32:43 database-05 systemd-logind: Removed session 42994.
+Jun 18 14:39:49 database-05 systemd-logind: Removed session 42664.
+Jun 18 14:39:51 database-05 systemd-logind: Removed session 42665.
+Jun 18 14:40:01 database-05 systemd: Started Session 42996 of user root.
+Jun 18 14:40:01 database-05 systemd: Starting Session 42996 of user root.
+Jun 18 14:44:33 database-05 systemd-logind: New session 42997 of user root.
+Jun 18 14:44:33 database-05 systemd: Started Session 42997 of user root.
+Jun 18 14:44:33 database-05 systemd: Starting Session 42997 of user root.
+Jun 18 14:48:36 database-05 systemd-logind: New session 42998 of user root.
+Jun 18 14:48:36 database-05 systemd: Started Session 42998 of user root.
+Jun 18 14:48:36 database-05 systemd: Starting Session 42998 of user root.
+Jun 18 14:50:01 database-05 systemd: Started Session 42999 of user root.
+Jun 18 14:50:01 database-05 systemd: Starting Session 42999 of user root.
+Jun 18 14:58:03 database-05 systemd-logind: New session 43000 of user root.
+Jun 18 14:58:03 database-05 systemd: Started Session 43000 of user root.
+Jun 18 14:58:03 database-05 systemd: Starting Session 43000 of user root.
+Jun 18 15:00:01 database-05 systemd: Started Session 43001 of user root.
+Jun 18 15:00:01 database-05 systemd: Starting Session 43001 of user root.
+Jun 18 15:01:01 database-05 systemd: Started Session 43002 of user root.
+Jun 18 15:01:02 database-05 systemd: Starting Session 43002 of user root.
+Jun 18 15:09:41 database-05 rz[15922]: [root] no.name/ZMODEM: got error
+Jun 18 15:09:59 database-05 rz[15929]: [root] psutil.py/ZMODEM: 635 Bytes, 3462 BPS
+Jun 18 15:10:02 database-05 systemd: Started Session 43003 of user root.
+Jun 18 15:10:02 database-05 systemd: Starting Session 43003 of user root.
+Jun 18 15:10:47 database-05 systemd: Started Session 43004 of user root.
+Jun 18 15:10:47 database-05 systemd: Starting Session 43004 of user root.
+Jun 18 15:10:47 database-05 systemd-logind: New session 43004 of user root.
+Jun 18 15:20:01 database-05 systemd: Started Session 43005 of user root.
+Jun 18 15:20:01 database-05 systemd: Starting Session 43005 of user root.
+Jun 18 15:21:29 database-05 rz[16497]: [root] psutils.py/ZMODEM: 651 Bytes, 98534 BPS
+Jun 18 15:30:01 database-05 systemd: Started Session 43006 of user root.
+Jun 18 15:30:02 database-05 systemd: Starting Session 43006 of user root.
+Jun 18 15:30:12 database-05 systemd: Started Session 43007 of user root.
+Jun 18 15:30:12 database-05 systemd: Starting Session 43007 of user root.
+Jun 18 15:30:12 database-05 systemd-logind: New session 43007 of user root.
+Jun 18 15:30:15 database-05 ansible-ping: Invoked with data=pong
+Jun 18 15:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 15:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 15:30:21 database-05 systemd-logind: New session 43008 of user dba1.
+Jun 18 15:30:22 database-05 systemd: Started Session 43008 of user dba1.
+Jun 18 15:30:22 database-05 systemd: Starting Session 43008 of user dba1.
+Jun 18 15:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 15:31:15 database-05 systemd-logind: Removed session 43007.
+Jun 18 15:31:22 database-05 systemd-logind: Removed session 43008.
+Jun 18 15:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 15:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 15:31:27 database-05 systemd-logind: New session 43009 of user root.
+Jun 18 15:31:27 database-05 systemd: Started Session 43009 of user root.
+Jun 18 15:31:27 database-05 systemd: Starting Session 43009 of user root.
+Jun 18 15:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 15:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 15:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 15:31:29 database-05 systemd-logind: New session 43010 of user dba2.
+Jun 18 15:31:29 database-05 systemd: Started Session 43010 of user dba2.
+Jun 18 15:31:29 database-05 systemd: Starting Session 43010 of user dba2.
+Jun 18 15:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 18 15:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 18 15:32:30 database-05 systemd-logind: Removed session 43010.
+Jun 18 15:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 15:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 18 15:32:42 database-05 systemd-logind: Removed session 43009.
+Jun 18 15:40:01 database-05 systemd: Started Session 43011 of user root.
+Jun 18 15:40:01 database-05 systemd: Starting Session 43011 of user root.
+Jun 18 15:50:01 database-05 systemd: Started Session 43012 of user root.
+Jun 18 15:50:01 database-05 systemd: Starting Session 43012 of user root.
+Jun 18 16:00:01 database-05 systemd: Started Session 43013 of user root.
+Jun 18 16:00:01 database-05 systemd: Starting Session 43013 of user root.
+Jun 18 16:01:01 database-05 systemd: Started Session 43014 of user root.
+Jun 18 16:01:01 database-05 systemd: Starting Session 43014 of user root.
+Jun 18 16:02:06 database-05 rz[18411]: [root] psutils.py/ZMODEM: 1062 Bytes, 187102 BPS
+Jun 18 16:10:02 database-05 systemd: Started Session 43015 of user root.
+Jun 18 16:10:02 database-05 systemd: Starting Session 43015 of user root.
+Jun 18 16:14:13 database-05 rz[18877]: [root] psutils.py/ZMODEM: 2000 Bytes, 261335 BPS
+Jun 18 16:18:56 database-05 rz[19071]: [root] psutils.py/ZMODEM: 2040 Bytes, 254684 BPS
+Jun 18 16:20:01 database-05 systemd: Started Session 43016 of user root.
+Jun 18 16:20:01 database-05 systemd: Starting Session 43016 of user root.
+Jun 18 16:30:01 database-05 systemd: Started Session 43017 of user root.
+Jun 18 16:30:01 database-05 systemd: Starting Session 43017 of user root.
+Jun 18 16:30:13 database-05 systemd: Started Session 43018 of user root.
+Jun 18 16:30:13 database-05 systemd: Starting Session 43018 of user root.
+Jun 18 16:30:13 database-05 systemd-logind: New session 43018 of user root.
+Jun 18 16:30:14 database-05 ansible-ping: Invoked with data=pong
+Jun 18 16:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 16:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 16:30:22 database-05 systemd-logind: New session 43019 of user dba1.
+Jun 18 16:30:22 database-05 systemd: Started Session 43019 of user dba1.
+Jun 18 16:30:22 database-05 systemd: Starting Session 43019 of user dba1.
+Jun 18 16:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 16:31:14 database-05 systemd-logind: Removed session 43018.
+Jun 18 16:31:22 database-05 systemd-logind: Removed session 43019.
+Jun 18 16:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 16:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 16:31:26 database-05 systemd-logind: New session 43020 of user root.
+Jun 18 16:31:26 database-05 systemd: Started Session 43020 of user root.
+Jun 18 16:31:26 database-05 systemd: Starting Session 43020 of user root.
+Jun 18 16:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 16:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 16:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 16:31:29 database-05 systemd-logind: New session 43021 of user dba2.
+Jun 18 16:31:29 database-05 systemd: Started Session 43021 of user dba2.
+Jun 18 16:31:29 database-05 systemd: Starting Session 43021 of user dba2.
+Jun 18 16:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 16:31:40 database-05 ansible-ping: Invoked with data=pong
+Jun 18 16:32:29 database-05 systemd-logind: Removed session 43021.
+Jun 18 16:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 16:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 16:32:40 database-05 systemd-logind: Removed session 43020.
+Jun 18 16:40:01 database-05 systemd: Started Session 43022 of user root.
+Jun 18 16:40:01 database-05 systemd: Starting Session 43022 of user root.
+Jun 18 16:50:01 database-05 systemd: Started Session 43023 of user root.
+Jun 18 16:50:01 database-05 systemd: Starting Session 43023 of user root.
+Jun 18 17:00:01 database-05 systemd: Started Session 43024 of user root.
+Jun 18 17:00:01 database-05 systemd: Starting Session 43024 of user root.
+Jun 18 17:01:01 database-05 systemd: Started Session 43025 of user root.
+Jun 18 17:01:01 database-05 systemd: Starting Session 43025 of user root.
+Jun 18 17:10:01 database-05 systemd: Started Session 43026 of user root.
+Jun 18 17:10:01 database-05 systemd: Starting Session 43026 of user root.
+Jun 18 17:20:01 database-05 systemd: Started Session 43027 of user root.
+Jun 18 17:20:01 database-05 systemd: Starting Session 43027 of user root.
+Jun 18 17:30:01 database-05 systemd: Started Session 43028 of user root.
+Jun 18 17:30:01 database-05 systemd: Starting Session 43028 of user root.
+Jun 18 17:30:12 database-05 systemd-logind: New session 43029 of user root.
+Jun 18 17:30:12 database-05 systemd: Started Session 43029 of user root.
+Jun 18 17:30:12 database-05 systemd: Starting Session 43029 of user root.
+Jun 18 17:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 17:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 17:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 17:30:22 database-05 systemd-logind: New session 43030 of user dba1.
+Jun 18 17:30:22 database-05 systemd: Started Session 43030 of user dba1.
+Jun 18 17:30:22 database-05 systemd: Starting Session 43030 of user dba1.
+Jun 18 17:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 17:31:12 database-05 systemd-logind: Removed session 43029.
+Jun 18 17:31:22 database-05 systemd-logind: Removed session 43030.
+Jun 18 17:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 17:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 17:31:27 database-05 systemd-logind: New session 43031 of user root.
+Jun 18 17:31:27 database-05 systemd: Started Session 43031 of user root.
+Jun 18 17:31:27 database-05 systemd: Starting Session 43031 of user root.
+Jun 18 17:31:28 database-05 ansible-ping: Invoked with data=pong
+Jun 18 17:31:30 database-05 systemd: Created slice user-1002.slice.
+Jun 18 17:31:30 database-05 systemd: Starting user-1002.slice.
+Jun 18 17:31:30 database-05 systemd-logind: New session 43032 of user dba2.
+Jun 18 17:31:30 database-05 systemd: Started Session 43032 of user dba2.
+Jun 18 17:31:30 database-05 systemd: Starting Session 43032 of user dba2.
+Jun 18 17:31:32 database-05 ansible-ping: Invoked with data=pong
+Jun 18 17:31:43 database-05 ansible-ping: Invoked with data=pong
+Jun 18 17:32:32 database-05 systemd-logind: Removed session 43032.
+Jun 18 17:32:32 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 17:32:32 database-05 systemd: Stopping user-1002.slice.
+Jun 18 17:32:43 database-05 systemd-logind: Removed session 43031.
+Jun 18 17:40:01 database-05 systemd: Started Session 43033 of user root.
+Jun 18 17:40:01 database-05 systemd: Starting Session 43033 of user root.
+Jun 18 17:50:01 database-05 systemd: Started Session 43034 of user root.
+Jun 18 17:50:01 database-05 systemd: Starting Session 43034 of user root.
+Jun 18 18:00:01 database-05 systemd: Started Session 43035 of user root.
+Jun 18 18:00:01 database-05 systemd: Starting Session 43035 of user root.
+Jun 18 18:01:01 database-05 systemd: Started Session 43036 of user root.
+Jun 18 18:01:01 database-05 systemd: Starting Session 43036 of user root.
+Jun 18 18:10:01 database-05 systemd: Started Session 43037 of user root.
+Jun 18 18:10:01 database-05 systemd: Starting Session 43037 of user root.
+Jun 18 18:20:01 database-05 systemd: Started Session 43038 of user root.
+Jun 18 18:20:01 database-05 systemd: Starting Session 43038 of user root.
+Jun 18 18:30:01 database-05 systemd: Started Session 43039 of user root.
+Jun 18 18:30:01 database-05 systemd: Starting Session 43039 of user root.
+Jun 18 18:30:12 database-05 systemd-logind: New session 43040 of user root.
+Jun 18 18:30:12 database-05 systemd: Started Session 43040 of user root.
+Jun 18 18:30:12 database-05 systemd: Starting Session 43040 of user root.
+Jun 18 18:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 18:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 18:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 18:30:21 database-05 systemd-logind: New session 43041 of user dba1.
+Jun 18 18:30:21 database-05 systemd: Started Session 43041 of user dba1.
+Jun 18 18:30:21 database-05 systemd: Starting Session 43041 of user dba1.
+Jun 18 18:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 18:31:12 database-05 systemd-logind: Removed session 43040.
+Jun 18 18:31:22 database-05 systemd-logind: Removed session 43041.
+Jun 18 18:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 18:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 18:31:27 database-05 systemd-logind: New session 43042 of user root.
+Jun 18 18:31:27 database-05 systemd: Started Session 43042 of user root.
+Jun 18 18:31:27 database-05 systemd: Starting Session 43042 of user root.
+Jun 18 18:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 18:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 18 18:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 18 18:31:28 database-05 systemd-logind: New session 43043 of user dba2.
+Jun 18 18:31:28 database-05 systemd: Started Session 43043 of user dba2.
+Jun 18 18:31:28 database-05 systemd: Starting Session 43043 of user dba2.
+Jun 18 18:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 18:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 18 18:32:29 database-05 systemd-logind: Removed session 43043.
+Jun 18 18:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 18:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 18:32:42 database-05 systemd-logind: Removed session 43042.
+Jun 18 18:38:05 database-05 systemd-logind: Removed session 42998.
+Jun 18 18:38:05 database-05 systemd-logind: Removed session 43000.
+Jun 18 18:38:05 database-05 systemd-logind: Removed session 42997.
+Jun 18 18:38:05 database-05 systemd-logind: Removed session 43004.
+Jun 18 18:40:01 database-05 systemd: Started Session 43044 of user root.
+Jun 18 18:40:01 database-05 systemd: Starting Session 43044 of user root.
+Jun 18 18:50:01 database-05 systemd: Started Session 43045 of user root.
+Jun 18 18:50:01 database-05 systemd: Starting Session 43045 of user root.
+Jun 18 19:00:01 database-05 systemd: Started Session 43046 of user root.
+Jun 18 19:00:01 database-05 systemd: Starting Session 43046 of user root.
+Jun 18 19:01:01 database-05 systemd: Started Session 43047 of user root.
+Jun 18 19:01:01 database-05 systemd: Starting Session 43047 of user root.
+Jun 18 19:10:01 database-05 systemd: Started Session 43048 of user root.
+Jun 18 19:10:01 database-05 systemd: Starting Session 43048 of user root.
+Jun 18 19:20:01 database-05 systemd: Started Session 43049 of user root.
+Jun 18 19:20:01 database-05 systemd: Starting Session 43049 of user root.
+Jun 18 19:30:01 database-05 systemd: Started Session 43050 of user root.
+Jun 18 19:30:01 database-05 systemd: Starting Session 43050 of user root.
+Jun 18 19:30:12 database-05 systemd-logind: New session 43051 of user root.
+Jun 18 19:30:12 database-05 systemd: Started Session 43051 of user root.
+Jun 18 19:30:12 database-05 systemd: Starting Session 43051 of user root.
+Jun 18 19:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 19:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 18 19:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 18 19:30:21 database-05 systemd-logind: New session 43052 of user dba1.
+Jun 18 19:30:21 database-05 systemd: Started Session 43052 of user dba1.
+Jun 18 19:30:21 database-05 systemd: Starting Session 43052 of user dba1.
+Jun 18 19:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 19:31:12 database-05 systemd-logind: Removed session 43051.
+Jun 18 19:31:22 database-05 systemd-logind: Removed session 43052.
+Jun 18 19:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 19:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 19:31:26 database-05 systemd-logind: New session 43053 of user root.
+Jun 18 19:31:26 database-05 systemd: Started Session 43053 of user root.
+Jun 18 19:31:26 database-05 systemd: Starting Session 43053 of user root.
+Jun 18 19:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 19:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 18 19:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 18 19:31:28 database-05 systemd-logind: New session 43054 of user dba2.
+Jun 18 19:31:28 database-05 systemd: Started Session 43054 of user dba2.
+Jun 18 19:31:28 database-05 systemd: Starting Session 43054 of user dba2.
+Jun 18 19:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 19:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 18 19:32:29 database-05 systemd-logind: Removed session 43054.
+Jun 18 19:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 19:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 19:32:42 database-05 systemd-logind: Removed session 43053.
+Jun 18 19:40:01 database-05 systemd: Started Session 43055 of user root.
+Jun 18 19:40:01 database-05 systemd: Starting Session 43055 of user root.
+Jun 18 19:50:01 database-05 systemd: Started Session 43056 of user root.
+Jun 18 19:50:01 database-05 systemd: Starting Session 43056 of user root.
+Jun 18 20:00:01 database-05 systemd: Started Session 43057 of user root.
+Jun 18 20:00:01 database-05 systemd: Starting Session 43057 of user root.
+Jun 18 20:01:01 database-05 systemd: Started Session 43058 of user root.
+Jun 18 20:01:01 database-05 systemd: Starting Session 43058 of user root.
+Jun 18 20:10:01 database-05 systemd: Started Session 43059 of user root.
+Jun 18 20:10:01 database-05 systemd: Starting Session 43059 of user root.
+Jun 18 20:20:01 database-05 systemd: Started Session 43060 of user root.
+Jun 18 20:20:01 database-05 systemd: Starting Session 43060 of user root.
+Jun 18 20:30:01 database-05 systemd: Started Session 43061 of user root.
+Jun 18 20:30:01 database-05 systemd: Starting Session 43061 of user root.
+Jun 18 20:30:12 database-05 systemd-logind: New session 43062 of user root.
+Jun 18 20:30:12 database-05 systemd: Started Session 43062 of user root.
+Jun 18 20:30:12 database-05 systemd: Starting Session 43062 of user root.
+Jun 18 20:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 20:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 20:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 20:30:22 database-05 systemd-logind: New session 43063 of user dba1.
+Jun 18 20:30:22 database-05 systemd: Started Session 43063 of user dba1.
+Jun 18 20:30:22 database-05 systemd: Starting Session 43063 of user dba1.
+Jun 18 20:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 20:31:12 database-05 systemd-logind: Removed session 43062.
+Jun 18 20:31:22 database-05 systemd-logind: Removed session 43063.
+Jun 18 20:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 20:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 20:31:27 database-05 systemd-logind: New session 43064 of user root.
+Jun 18 20:31:27 database-05 systemd: Started Session 43064 of user root.
+Jun 18 20:31:27 database-05 systemd: Starting Session 43064 of user root.
+Jun 18 20:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 20:31:30 database-05 systemd: Created slice user-1002.slice.
+Jun 18 20:31:30 database-05 systemd: Starting user-1002.slice.
+Jun 18 20:31:30 database-05 systemd-logind: New session 43065 of user dba2.
+Jun 18 20:31:30 database-05 systemd: Started Session 43065 of user dba2.
+Jun 18 20:31:30 database-05 systemd: Starting Session 43065 of user dba2.
+Jun 18 20:31:31 database-05 ansible-ping: Invoked with data=pong
+Jun 18 20:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 18 20:32:31 database-05 systemd-logind: Removed session 43065.
+Jun 18 20:32:31 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 20:32:31 database-05 systemd: Stopping user-1002.slice.
+Jun 18 20:32:42 database-05 systemd-logind: Removed session 43064.
+Jun 18 20:40:01 database-05 systemd: Started Session 43066 of user root.
+Jun 18 20:40:01 database-05 systemd: Starting Session 43066 of user root.
+Jun 18 20:50:01 database-05 systemd: Started Session 43067 of user root.
+Jun 18 20:50:01 database-05 systemd: Starting Session 43067 of user root.
+Jun 18 21:00:01 database-05 systemd: Started Session 43068 of user root.
+Jun 18 21:00:01 database-05 systemd: Starting Session 43068 of user root.
+Jun 18 21:01:01 database-05 systemd: Started Session 43069 of user root.
+Jun 18 21:01:01 database-05 systemd: Starting Session 43069 of user root.
+Jun 18 21:10:01 database-05 systemd: Started Session 43070 of user root.
+Jun 18 21:10:01 database-05 systemd: Starting Session 43070 of user root.
+Jun 18 21:20:01 database-05 systemd: Started Session 43071 of user root.
+Jun 18 21:20:01 database-05 systemd: Starting Session 43071 of user root.
+Jun 18 21:30:01 database-05 systemd: Started Session 43072 of user root.
+Jun 18 21:30:01 database-05 systemd: Starting Session 43072 of user root.
+Jun 18 21:30:12 database-05 systemd-logind: New session 43073 of user root.
+Jun 18 21:30:12 database-05 systemd: Started Session 43073 of user root.
+Jun 18 21:30:12 database-05 systemd: Starting Session 43073 of user root.
+Jun 18 21:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 21:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 21:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 21:30:22 database-05 systemd-logind: New session 43074 of user dba1.
+Jun 18 21:30:22 database-05 systemd: Started Session 43074 of user dba1.
+Jun 18 21:30:22 database-05 systemd: Starting Session 43074 of user dba1.
+Jun 18 21:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 21:31:12 database-05 systemd-logind: Removed session 43073.
+Jun 18 21:31:22 database-05 systemd-logind: Removed session 43074.
+Jun 18 21:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 21:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 21:31:27 database-05 systemd-logind: New session 43075 of user root.
+Jun 18 21:31:27 database-05 systemd: Started Session 43075 of user root.
+Jun 18 21:31:27 database-05 systemd: Starting Session 43075 of user root.
+Jun 18 21:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 21:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 18 21:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 18 21:31:29 database-05 systemd-logind: New session 43076 of user dba2.
+Jun 18 21:31:29 database-05 systemd: Started Session 43076 of user dba2.
+Jun 18 21:31:29 database-05 systemd: Starting Session 43076 of user dba2.
+Jun 18 21:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 18 21:31:43 database-05 ansible-ping: Invoked with data=pong
+Jun 18 21:32:30 database-05 systemd-logind: Removed session 43076.
+Jun 18 21:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 21:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 18 21:32:43 database-05 systemd-logind: Removed session 43075.
+Jun 18 21:40:01 database-05 systemd: Started Session 43077 of user root.
+Jun 18 21:40:01 database-05 systemd: Starting Session 43077 of user root.
+Jun 18 21:50:01 database-05 systemd: Started Session 43078 of user root.
+Jun 18 21:50:01 database-05 systemd: Starting Session 43078 of user root.
+Jun 18 22:00:01 database-05 systemd: Started Session 43079 of user root.
+Jun 18 22:00:01 database-05 systemd: Starting Session 43079 of user root.
+Jun 18 22:01:01 database-05 systemd: Started Session 43080 of user root.
+Jun 18 22:01:01 database-05 systemd: Starting Session 43080 of user root.
+Jun 18 22:10:01 database-05 systemd: Started Session 43081 of user root.
+Jun 18 22:10:01 database-05 systemd: Starting Session 43081 of user root.
+Jun 18 22:20:01 database-05 systemd: Started Session 43082 of user root.
+Jun 18 22:20:01 database-05 systemd: Starting Session 43082 of user root.
+Jun 18 22:30:01 database-05 systemd: Started Session 43083 of user root.
+Jun 18 22:30:01 database-05 systemd: Starting Session 43083 of user root.
+Jun 18 22:30:12 database-05 systemd-logind: New session 43084 of user root.
+Jun 18 22:30:12 database-05 systemd: Started Session 43084 of user root.
+Jun 18 22:30:12 database-05 systemd: Starting Session 43084 of user root.
+Jun 18 22:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 22:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 22:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 22:30:22 database-05 systemd-logind: New session 43085 of user dba1.
+Jun 18 22:30:22 database-05 systemd: Started Session 43085 of user dba1.
+Jun 18 22:30:22 database-05 systemd: Starting Session 43085 of user dba1.
+Jun 18 22:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 22:31:12 database-05 systemd-logind: Removed session 43084.
+Jun 18 22:31:22 database-05 systemd-logind: Removed session 43085.
+Jun 18 22:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 22:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 22:31:27 database-05 systemd-logind: New session 43086 of user root.
+Jun 18 22:31:27 database-05 systemd: Started Session 43086 of user root.
+Jun 18 22:31:27 database-05 systemd: Starting Session 43086 of user root.
+Jun 18 22:31:28 database-05 ansible-ping: Invoked with data=pong
+Jun 18 22:31:30 database-05 systemd: Created slice user-1002.slice.
+Jun 18 22:31:30 database-05 systemd: Starting user-1002.slice.
+Jun 18 22:31:30 database-05 systemd-logind: New session 43087 of user dba2.
+Jun 18 22:31:30 database-05 systemd: Started Session 43087 of user dba2.
+Jun 18 22:31:30 database-05 systemd: Starting Session 43087 of user dba2.
+Jun 18 22:31:31 database-05 ansible-ping: Invoked with data=pong
+Jun 18 22:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 18 22:32:31 database-05 systemd-logind: Removed session 43087.
+Jun 18 22:32:31 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 22:32:31 database-05 systemd: Stopping user-1002.slice.
+Jun 18 22:32:42 database-05 systemd-logind: Removed session 43086.
+Jun 18 22:40:01 database-05 systemd: Started Session 43088 of user root.
+Jun 18 22:40:01 database-05 systemd: Starting Session 43088 of user root.
+Jun 18 22:50:01 database-05 systemd: Started Session 43089 of user root.
+Jun 18 22:50:01 database-05 systemd: Starting Session 43089 of user root.
+Jun 18 23:00:01 database-05 systemd: Started Session 43090 of user root.
+Jun 18 23:00:01 database-05 systemd: Starting Session 43090 of user root.
+Jun 18 23:01:01 database-05 systemd: Started Session 43091 of user root.
+Jun 18 23:01:01 database-05 systemd: Starting Session 43091 of user root.
+Jun 18 23:10:01 database-05 systemd: Started Session 43092 of user root.
+Jun 18 23:10:01 database-05 systemd: Starting Session 43092 of user root.
+Jun 18 23:20:01 database-05 systemd: Started Session 43093 of user root.
+Jun 18 23:20:01 database-05 systemd: Starting Session 43093 of user root.
+Jun 18 23:30:01 database-05 systemd: Started Session 43094 of user root.
+Jun 18 23:30:01 database-05 systemd: Starting Session 43094 of user root.
+Jun 18 23:30:12 database-05 systemd-logind: New session 43095 of user root.
+Jun 18 23:30:12 database-05 systemd: Started Session 43095 of user root.
+Jun 18 23:30:12 database-05 systemd: Starting Session 43095 of user root.
+Jun 18 23:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 18 23:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 18 23:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 18 23:30:22 database-05 systemd-logind: New session 43096 of user dba1.
+Jun 18 23:30:22 database-05 systemd: Started Session 43096 of user dba1.
+Jun 18 23:30:22 database-05 systemd: Starting Session 43096 of user dba1.
+Jun 18 23:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 18 23:31:12 database-05 systemd-logind: Removed session 43095.
+Jun 18 23:31:22 database-05 systemd-logind: Removed session 43096.
+Jun 18 23:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 18 23:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 18 23:31:27 database-05 systemd-logind: New session 43097 of user root.
+Jun 18 23:31:27 database-05 systemd: Started Session 43097 of user root.
+Jun 18 23:31:27 database-05 systemd: Starting Session 43097 of user root.
+Jun 18 23:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 18 23:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 18 23:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 18 23:31:28 database-05 systemd-logind: New session 43098 of user dba2.
+Jun 18 23:31:28 database-05 systemd: Started Session 43098 of user dba2.
+Jun 18 23:31:28 database-05 systemd: Starting Session 43098 of user dba2.
+Jun 18 23:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 18 23:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 18 23:32:29 database-05 systemd-logind: Removed session 43098.
+Jun 18 23:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 18 23:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 18 23:32:42 database-05 systemd-logind: Removed session 43097.
+Jun 18 23:40:01 database-05 systemd: Started Session 43099 of user root.
+Jun 18 23:40:02 database-05 systemd: Starting Session 43099 of user root.
+Jun 18 23:50:01 database-05 systemd: Started Session 43100 of user root.
+Jun 18 23:50:01 database-05 systemd: Starting Session 43100 of user root.
+Jun 18 23:53:01 database-05 systemd: Started Session 43101 of user root.
+Jun 18 23:53:01 database-05 systemd: Starting Session 43101 of user root.
+Jun 19 00:00:01 database-05 systemd: Started Session 43102 of user root.
+Jun 19 00:00:01 database-05 systemd: Starting Session 43102 of user root.
+Jun 19 00:01:01 database-05 systemd: Started Session 43103 of user root.
+Jun 19 00:01:01 database-05 systemd: Starting Session 43103 of user root.
+Jun 19 00:10:01 database-05 systemd: Started Session 43104 of user root.
+Jun 19 00:10:01 database-05 systemd: Starting Session 43104 of user root.
+Jun 19 00:20:01 database-05 systemd: Started Session 43105 of user root.
+Jun 19 00:20:01 database-05 systemd: Starting Session 43105 of user root.
+Jun 19 00:30:01 database-05 systemd: Started Session 43106 of user root.
+Jun 19 00:30:01 database-05 systemd: Starting Session 43106 of user root.
+Jun 19 00:30:12 database-05 systemd-logind: New session 43107 of user root.
+Jun 19 00:30:12 database-05 systemd: Started Session 43107 of user root.
+Jun 19 00:30:12 database-05 systemd: Starting Session 43107 of user root.
+Jun 19 00:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 19 00:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 19 00:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 19 00:30:21 database-05 systemd-logind: New session 43108 of user dba1.
+Jun 19 00:30:21 database-05 systemd: Started Session 43108 of user dba1.
+Jun 19 00:30:21 database-05 systemd: Starting Session 43108 of user dba1.
+Jun 19 00:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 19 00:31:12 database-05 systemd-logind: Removed session 43107.
+Jun 19 00:31:22 database-05 systemd-logind: Removed session 43108.
+Jun 19 00:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 19 00:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 19 00:31:27 database-05 systemd-logind: New session 43109 of user root.
+Jun 19 00:31:27 database-05 systemd: Started Session 43109 of user root.
+Jun 19 00:31:27 database-05 systemd: Starting Session 43109 of user root.
+Jun 19 00:31:28 database-05 ansible-ping: Invoked with data=pong
+Jun 19 00:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 19 00:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 19 00:31:29 database-05 systemd-logind: New session 43110 of user dba2.
+Jun 19 00:31:29 database-05 systemd: Started Session 43110 of user dba2.
+Jun 19 00:31:29 database-05 systemd: Starting Session 43110 of user dba2.
+Jun 19 00:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 19 00:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 19 00:32:29 database-05 systemd-logind: Removed session 43110.
+Jun 19 00:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 19 00:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 19 00:32:41 database-05 systemd-logind: Removed session 43109.
+Jun 19 00:40:01 database-05 systemd: Started Session 43111 of user root.
+Jun 19 00:40:01 database-05 systemd: Starting Session 43111 of user root.
+Jun 19 00:50:01 database-05 systemd: Started Session 43112 of user root.
+Jun 19 00:50:01 database-05 systemd: Starting Session 43112 of user root.
+Jun 19 01:00:01 database-05 systemd: Started Session 43113 of user root.
+Jun 19 01:00:01 database-05 systemd: Starting Session 43113 of user root.
+Jun 19 01:01:01 database-05 systemd: Started Session 43114 of user root.
+Jun 19 01:01:01 database-05 systemd: Starting Session 43114 of user root.
+Jun 19 01:10:01 database-05 systemd: Started Session 43115 of user root.
+Jun 19 01:10:01 database-05 systemd: Starting Session 43115 of user root.
+Jun 19 01:20:01 database-05 systemd: Started Session 43116 of user root.
+Jun 19 01:20:01 database-05 systemd: Starting Session 43116 of user root.
+Jun 19 01:30:01 database-05 systemd: Started Session 43117 of user root.
+Jun 19 01:30:01 database-05 systemd: Starting Session 43117 of user root.
+Jun 19 01:30:13 database-05 systemd-logind: New session 43118 of user root.
+Jun 19 01:30:13 database-05 systemd: Started Session 43118 of user root.
+Jun 19 01:30:13 database-05 systemd: Starting Session 43118 of user root.
+Jun 19 01:30:13 database-05 ansible-ping: Invoked with data=pong
+Jun 19 01:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 19 01:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 19 01:30:22 database-05 systemd-logind: New session 43119 of user dba1.
+Jun 19 01:30:22 database-05 systemd: Started Session 43119 of user dba1.
+Jun 19 01:30:22 database-05 systemd: Starting Session 43119 of user dba1.
+Jun 19 01:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 19 01:31:13 database-05 systemd-logind: Removed session 43118.
+Jun 19 01:31:22 database-05 systemd-logind: Removed session 43119.
+Jun 19 01:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 19 01:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 19 01:31:26 database-05 systemd-logind: New session 43120 of user root.
+Jun 19 01:31:26 database-05 systemd: Started Session 43120 of user root.
+Jun 19 01:31:26 database-05 systemd: Starting Session 43120 of user root.
+Jun 19 01:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 19 01:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 19 01:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 19 01:31:28 database-05 systemd-logind: New session 43121 of user dba2.
+Jun 19 01:31:28 database-05 systemd: Started Session 43121 of user dba2.
+Jun 19 01:31:28 database-05 systemd: Starting Session 43121 of user dba2.
+Jun 19 01:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 19 01:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 19 01:32:29 database-05 systemd-logind: Removed session 43121.
+Jun 19 01:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 19 01:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 19 01:32:41 database-05 systemd-logind: Removed session 43120.
+Jun 19 01:40:01 database-05 systemd: Started Session 43122 of user root.
+Jun 19 01:40:01 database-05 systemd: Starting Session 43122 of user root.
+Jun 19 01:50:01 database-05 systemd: Started Session 43123 of user root.
+Jun 19 01:50:01 database-05 systemd: Starting Session 43123 of user root.
+Jun 19 02:00:01 database-05 systemd: Started Session 43124 of user root.
+Jun 19 02:00:01 database-05 systemd: Starting Session 43124 of user root.
+Jun 19 02:01:02 database-05 systemd: Started Session 43125 of user root.
+Jun 19 02:01:02 database-05 systemd: Starting Session 43125 of user root.
+Jun 19 02:10:01 database-05 systemd: Started Session 43126 of user root.
+Jun 19 02:10:01 database-05 systemd: Starting Session 43126 of user root.
+Jun 19 02:20:01 database-05 systemd: Started Session 43127 of user root.
+Jun 19 02:20:01 database-05 systemd: Starting Session 43127 of user root.
+Jun 19 02:30:01 database-05 systemd: Started Session 43128 of user root.
+Jun 19 02:30:01 database-05 systemd: Starting Session 43128 of user root.
+Jun 19 02:30:12 database-05 systemd-logind: New session 43129 of user root.
+Jun 19 02:30:12 database-05 systemd: Started Session 43129 of user root.
+Jun 19 02:30:12 database-05 systemd: Starting Session 43129 of user root.
+Jun 19 02:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 19 02:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 19 02:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 19 02:30:21 database-05 systemd-logind: New session 43130 of user dba1.
+Jun 19 02:30:21 database-05 systemd: Started Session 43130 of user dba1.
+Jun 19 02:30:21 database-05 systemd: Starting Session 43130 of user dba1.
+Jun 19 02:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 19 02:31:12 database-05 systemd-logind: Removed session 43129.
+Jun 19 02:31:22 database-05 systemd-logind: Removed session 43130.
+Jun 19 02:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 19 02:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 19 02:31:26 database-05 systemd-logind: New session 43131 of user root.
+Jun 19 02:31:26 database-05 systemd: Started Session 43131 of user root.
+Jun 19 02:31:26 database-05 systemd: Starting Session 43131 of user root.
+Jun 19 02:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 19 02:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 19 02:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 19 02:31:29 database-05 systemd-logind: New session 43132 of user dba2.
+Jun 19 02:31:29 database-05 systemd: Started Session 43132 of user dba2.
+Jun 19 02:31:29 database-05 systemd: Starting Session 43132 of user dba2.
+Jun 19 02:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 19 02:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 19 02:32:29 database-05 systemd-logind: Removed session 43132.
+Jun 19 02:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 19 02:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 19 02:32:42 database-05 systemd-logind: Removed session 43131.
+Jun 19 02:40:01 database-05 systemd: Started Session 43133 of user root.
+Jun 19 02:40:01 database-05 systemd: Starting Session 43133 of user root.
+Jun 19 02:50:01 database-05 systemd: Started Session 43134 of user root.
+Jun 19 02:50:01 database-05 systemd: Starting Session 43134 of user root.
+Jun 19 03:00:01 database-05 systemd: Started Session 43135 of user root.
+Jun 19 03:00:01 database-05 systemd: Starting Session 43135 of user root.
+Jun 19 03:01:01 database-05 systemd: Started Session 43136 of user root.
+Jun 19 03:01:01 database-05 systemd: Starting Session 43136 of user root.
+Jun 19 03:10:01 database-05 systemd: Started Session 43137 of user root.
+Jun 19 03:10:01 database-05 systemd: Starting Session 43137 of user root.
+Jun 19 03:20:01 database-05 systemd: Started Session 43138 of user root.
+Jun 19 03:20:01 database-05 systemd: Starting Session 43138 of user root.
+Jun 19 03:30:01 database-05 systemd: Started Session 43139 of user root.
+Jun 19 03:30:01 database-05 systemd: Starting Session 43139 of user root.
+Jun 19 03:30:11 database-05 systemd-logind: New session 43140 of user root.
+Jun 19 03:30:11 database-05 systemd: Started Session 43140 of user root.
+Jun 19 03:30:11 database-05 systemd: Starting Session 43140 of user root.
+Jun 19 03:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 19 03:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 19 03:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 19 03:30:22 database-05 systemd-logind: New session 43141 of user dba1.
+Jun 19 03:30:22 database-05 systemd: Started Session 43141 of user dba1.
+Jun 19 03:30:22 database-05 systemd: Starting Session 43141 of user dba1.
+Jun 19 03:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 19 03:31:12 database-05 systemd-logind: Removed session 43140.
+Jun 19 03:31:22 database-05 systemd-logind: Removed session 43141.
+Jun 19 03:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 19 03:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 19 03:31:27 database-05 systemd-logind: New session 43142 of user root.
+Jun 19 03:31:27 database-05 systemd: Started Session 43142 of user root.
+Jun 19 03:31:27 database-05 systemd: Starting Session 43142 of user root.
+Jun 19 03:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 19 03:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 19 03:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 19 03:31:29 database-05 systemd-logind: New session 43143 of user dba2.
+Jun 19 03:31:29 database-05 systemd: Started Session 43143 of user dba2.
+Jun 19 03:31:29 database-05 systemd: Starting Session 43143 of user dba2.
+Jun 19 03:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 19 03:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 19 03:32:29 database-05 systemd-logind: Removed session 43143.
+Jun 19 03:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 19 03:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 19 03:32:42 database-05 systemd-logind: Removed session 43142.
+Jun 19 03:40:01 database-05 systemd: Started Session 43144 of user root.
+Jun 19 03:40:01 database-05 systemd: Starting Session 43144 of user root.
+Jun 19 03:50:01 database-05 systemd: Started Session 43145 of user root.
+Jun 19 03:50:01 database-05 systemd: Starting Session 43145 of user root.
+Jun 19 04:00:01 database-05 systemd: Started Session 43146 of user root.
+Jun 19 04:00:01 database-05 systemd: Starting Session 43146 of user root.
+Jun 19 04:01:01 database-05 systemd: Started Session 43147 of user root.
+Jun 19 04:01:01 database-05 systemd: Starting Session 43147 of user root.
+Jun 19 04:10:01 database-05 systemd: Started Session 43148 of user root.
+Jun 19 04:10:01 database-05 systemd: Starting Session 43148 of user root.
+Jun 19 04:20:01 database-05 systemd: Started Session 43149 of user root.
+Jun 19 04:20:01 database-05 systemd: Starting Session 43149 of user root.
+Jun 19 04:30:01 database-05 systemd: Started Session 43150 of user root.
+Jun 19 04:30:01 database-05 systemd: Starting Session 43150 of user root.
+Jun 19 04:30:12 database-05 systemd-logind: New session 43151 of user root.
+Jun 19 04:30:12 database-05 systemd: Started Session 43151 of user root.
+Jun 19 04:30:12 database-05 systemd: Starting Session 43151 of user root.
+Jun 19 04:30:13 database-05 ansible-ping: Invoked with data=pong
+Jun 19 04:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 19 04:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 19 04:30:22 database-05 systemd-logind: New session 43152 of user dba1.
+Jun 19 04:30:22 database-05 systemd: Started Session 43152 of user dba1.
+Jun 19 04:30:22 database-05 systemd: Starting Session 43152 of user dba1.
+Jun 19 04:30:23 database-05 ansible-ping: Invoked with data=pong
+Jun 19 04:31:13 database-05 systemd-logind: Removed session 43151.
+Jun 19 04:31:23 database-05 systemd-logind: Removed session 43152.
+Jun 19 04:31:23 database-05 systemd: Removed slice user-1003.slice.
+Jun 19 04:31:23 database-05 systemd: Stopping user-1003.slice.
+Jun 19 04:31:25 database-05 systemd-logind: New session 43153 of user root.
+Jun 19 04:31:25 database-05 systemd: Started Session 43153 of user root.
+Jun 19 04:31:25 database-05 systemd: Starting Session 43153 of user root.
+Jun 19 04:31:26 database-05 ansible-ping: Invoked with data=pong
+Jun 19 04:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 19 04:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 19 04:31:28 database-05 systemd-logind: New session 43154 of user dba2.
+Jun 19 04:31:28 database-05 systemd: Started Session 43154 of user dba2.
+Jun 19 04:31:28 database-05 systemd: Starting Session 43154 of user dba2.
+Jun 19 04:31:28 database-05 ansible-ping: Invoked with data=pong
+Jun 19 04:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 19 04:32:28 database-05 systemd-logind: Removed session 43154.
+Jun 19 04:32:28 database-05 systemd: Removed slice user-1002.slice.
+Jun 19 04:32:28 database-05 systemd: Stopping user-1002.slice.
+Jun 19 04:32:41 database-05 systemd-logind: Removed session 43153.
+Jun 19 04:40:01 database-05 systemd: Started Session 43155 of user root.
+Jun 19 04:40:01 database-05 systemd: Starting Session 43155 of user root.
+Jun 19 04:50:01 database-05 systemd: Started Session 43156 of user root.
+Jun 19 04:50:01 database-05 systemd: Starting Session 43156 of user root.
+Jun 19 05:00:01 database-05 systemd: Started Session 43157 of user root.
+Jun 19 05:00:01 database-05 systemd: Starting Session 43157 of user root.
+Jun 19 05:01:01 database-05 systemd: Started Session 43158 of user root.
+Jun 19 05:01:01 database-05 systemd: Starting Session 43158 of user root.
+Jun 19 05:10:01 database-05 systemd: Started Session 43159 of user root.
+Jun 19 05:10:01 database-05 systemd: Starting Session 43159 of user root.
+Jun 19 05:20:01 database-05 systemd: Started Session 43160 of user root.
+Jun 19 05:20:01 database-05 systemd: Starting Session 43160 of user root.
+Jun 19 05:30:01 database-05 systemd: Started Session 43161 of user root.
+Jun 19 05:30:02 database-05 systemd: Starting Session 43161 of user root.
+Jun 19 05:30:11 database-05 systemd-logind: New session 43162 of user root.
+Jun 19 05:30:11 database-05 systemd: Started Session 43162 of user root.
+Jun 19 05:30:11 database-05 systemd: Starting Session 43162 of user root.
+Jun 19 05:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 19 05:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 19 05:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 19 05:30:21 database-05 systemd-logind: New session 43163 of user dba1.
+Jun 19 05:30:21 database-05 systemd: Started Session 43163 of user dba1.
+Jun 19 05:30:21 database-05 systemd: Starting Session 43163 of user dba1.
+Jun 19 05:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 19 05:31:12 database-05 systemd-logind: Removed session 43162.
+Jun 19 05:31:22 database-05 systemd-logind: Removed session 43163.
+Jun 19 05:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 19 05:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 19 05:31:26 database-05 systemd-logind: New session 43164 of user root.
+Jun 19 05:31:26 database-05 systemd: Started Session 43164 of user root.
+Jun 19 05:31:26 database-05 systemd: Starting Session 43164 of user root.
+Jun 19 05:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 19 05:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 19 05:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 19 05:31:29 database-05 systemd-logind: New session 43165 of user dba2.
+Jun 19 05:31:29 database-05 systemd: Started Session 43165 of user dba2.
+Jun 19 05:31:29 database-05 systemd: Starting Session 43165 of user dba2.
+Jun 19 05:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 19 05:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 19 05:32:29 database-05 systemd-logind: Removed session 43165.
+Jun 19 05:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 19 05:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 19 05:32:41 database-05 systemd-logind: Removed session 43164.
+Jun 19 05:40:01 database-05 systemd: Started Session 43166 of user root.
+Jun 19 05:40:02 database-05 systemd: Starting Session 43166 of user root.
+Jun 19 05:50:01 database-05 systemd: Started Session 43167 of user root.
+Jun 19 05:50:01 database-05 systemd: Starting Session 43167 of user root.
+Jun 19 06:00:01 database-05 systemd: Started Session 43168 of user root.
+Jun 19 06:00:01 database-05 systemd: Starting Session 43168 of user root.
+Jun 19 06:01:01 database-05 systemd: Started Session 43169 of user root.
+Jun 19 06:01:01 database-05 systemd: Starting Session 43169 of user root.
+Jun 19 06:10:01 database-05 systemd: Started Session 43170 of user root.
+Jun 19 06:10:01 database-05 systemd: Starting Session 43170 of user root.
+Jun 19 06:20:01 database-05 systemd: Started Session 43171 of user root.
+Jun 19 06:20:01 database-05 systemd: Starting Session 43171 of user root.
+Jun 19 06:30:01 database-05 systemd: Started Session 43172 of user root.
+Jun 19 06:30:01 database-05 systemd: Starting Session 43172 of user root.
+Jun 19 06:30:12 database-05 systemd-logind: New session 43173 of user root.
+Jun 19 06:30:12 database-05 systemd: Started Session 43173 of user root.
+Jun 19 06:30:12 database-05 systemd: Starting Session 43173 of user root.
+Jun 19 06:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 19 06:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 19 06:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 19 06:30:21 database-05 systemd-logind: New session 43174 of user dba1.
+Jun 19 06:30:21 database-05 systemd: Started Session 43174 of user dba1.
+Jun 19 06:30:21 database-05 systemd: Starting Session 43174 of user dba1.
+Jun 19 06:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 19 06:31:12 database-05 systemd-logind: Removed session 43173.
+Jun 19 06:31:22 database-05 systemd-logind: Removed session 43174.
+Jun 19 06:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 19 06:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 19 06:31:26 database-05 systemd-logind: New session 43175 of user root.
+Jun 19 06:31:26 database-05 systemd: Started Session 43175 of user root.
+Jun 19 06:31:26 database-05 systemd: Starting Session 43175 of user root.
+Jun 19 06:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 19 06:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 19 06:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 19 06:31:28 database-05 systemd-logind: New session 43176 of user dba2.
+Jun 19 06:31:28 database-05 systemd: Started Session 43176 of user dba2.
+Jun 19 06:31:28 database-05 systemd: Starting Session 43176 of user dba2.
+Jun 19 06:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 19 06:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 19 06:32:29 database-05 systemd-logind: Removed session 43176.
+Jun 19 06:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 19 06:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 19 06:32:42 database-05 systemd-logind: Removed session 43175.
+Jun 19 06:40:01 database-05 systemd: Started Session 43177 of user root.
+Jun 19 06:40:01 database-05 systemd: Starting Session 43177 of user root.
+Jun 19 06:50:01 database-05 systemd: Started Session 43178 of user root.
+Jun 19 06:50:01 database-05 systemd: Starting Session 43178 of user root.
+Jun 19 07:00:01 database-05 systemd: Started Session 43179 of user root.
+Jun 19 07:00:01 database-05 systemd: Starting Session 43179 of user root.
+Jun 19 07:01:01 database-05 systemd: Started Session 43180 of user root.
+Jun 19 07:01:01 database-05 systemd: Starting Session 43180 of user root.
+Jun 19 07:10:01 database-05 systemd: Started Session 43181 of user root.
+Jun 19 07:10:01 database-05 systemd: Starting Session 43181 of user root.
+Jun 19 07:20:01 database-05 systemd: Started Session 43182 of user root.
+Jun 19 07:20:01 database-05 systemd: Starting Session 43182 of user root.
+Jun 19 07:30:01 database-05 systemd: Started Session 43183 of user root.
+Jun 19 07:30:01 database-05 systemd: Starting Session 43183 of user root.
+Jun 19 07:30:11 database-05 systemd-logind: New session 43184 of user root.
+Jun 19 07:30:11 database-05 systemd: Started Session 43184 of user root.
+Jun 19 07:30:11 database-05 systemd: Starting Session 43184 of user root.
+Jun 19 07:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 19 07:30:22 database-05 systemd: Created slice user-1003.slice.
+Jun 19 07:30:22 database-05 systemd: Starting user-1003.slice.
+Jun 19 07:30:22 database-05 systemd-logind: New session 43185 of user dba1.
+Jun 19 07:30:22 database-05 systemd: Started Session 43185 of user dba1.
+Jun 19 07:30:22 database-05 systemd: Starting Session 43185 of user dba1.
+Jun 19 07:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 19 07:31:12 database-05 systemd-logind: Removed session 43184.
+Jun 19 07:31:22 database-05 systemd-logind: Removed session 43185.
+Jun 19 07:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 19 07:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 19 07:31:26 database-05 systemd-logind: New session 43186 of user root.
+Jun 19 07:31:26 database-05 systemd: Started Session 43186 of user root.
+Jun 19 07:31:26 database-05 systemd: Starting Session 43186 of user root.
+Jun 19 07:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 19 07:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 19 07:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 19 07:31:29 database-05 systemd-logind: New session 43187 of user dba2.
+Jun 19 07:31:29 database-05 systemd: Started Session 43187 of user dba2.
+Jun 19 07:31:29 database-05 systemd: Starting Session 43187 of user dba2.
+Jun 19 07:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 19 07:31:41 database-05 ansible-ping: Invoked with data=pong
+Jun 19 07:32:30 database-05 systemd-logind: Removed session 43187.
+Jun 19 07:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 19 07:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 19 07:32:41 database-05 systemd-logind: Removed session 43186.
+Jun 19 07:40:01 database-05 systemd: Started Session 43188 of user root.
+Jun 19 07:40:01 database-05 systemd: Starting Session 43188 of user root.
+Jun 19 07:50:01 database-05 systemd: Started Session 43189 of user root.
+Jun 19 07:50:01 database-05 systemd: Starting Session 43189 of user root.
+Jun 19 08:00:01 database-05 systemd: Started Session 43190 of user root.
+Jun 19 08:00:01 database-05 systemd: Starting Session 43190 of user root.
+Jun 19 08:01:01 database-05 systemd: Started Session 43191 of user root.
+Jun 19 08:01:01 database-05 systemd: Starting Session 43191 of user root.
+Jun 19 08:10:01 database-05 systemd: Started Session 43192 of user root.
+Jun 19 08:10:01 database-05 systemd: Starting Session 43192 of user root.
+Jun 19 08:20:01 database-05 systemd: Started Session 43193 of user root.
+Jun 19 08:20:01 database-05 systemd: Starting Session 43193 of user root.
+Jun 19 08:30:01 database-05 systemd: Started Session 43194 of user root.
+Jun 19 08:30:01 database-05 systemd: Starting Session 43194 of user root.
+Jun 19 08:30:12 database-05 systemd-logind: New session 43195 of user root.
+Jun 19 08:30:12 database-05 systemd: Started Session 43195 of user root.
+Jun 19 08:30:12 database-05 systemd: Starting Session 43195 of user root.
+Jun 19 08:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 19 08:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 19 08:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 19 08:30:21 database-05 systemd-logind: New session 43196 of user dba1.
+Jun 19 08:30:21 database-05 systemd: Started Session 43196 of user dba1.
+Jun 19 08:30:21 database-05 systemd: Starting Session 43196 of user dba1.
+Jun 19 08:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 19 08:31:12 database-05 systemd-logind: Removed session 43195.
+Jun 19 08:31:22 database-05 systemd-logind: Removed session 43196.
+Jun 19 08:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 19 08:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 19 08:31:27 database-05 systemd-logind: New session 43197 of user root.
+Jun 19 08:31:27 database-05 systemd: Started Session 43197 of user root.
+Jun 19 08:31:27 database-05 systemd: Starting Session 43197 of user root.
+Jun 19 08:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 19 08:31:29 database-05 systemd: Created slice user-1002.slice.
+Jun 19 08:31:29 database-05 systemd: Starting user-1002.slice.
+Jun 19 08:31:29 database-05 systemd-logind: New session 43198 of user dba2.
+Jun 19 08:31:29 database-05 systemd: Started Session 43198 of user dba2.
+Jun 19 08:31:29 database-05 systemd: Starting Session 43198 of user dba2.
+Jun 19 08:31:30 database-05 ansible-ping: Invoked with data=pong
+Jun 19 08:31:42 database-05 ansible-ping: Invoked with data=pong
+Jun 19 08:32:30 database-05 systemd-logind: Removed session 43198.
+Jun 19 08:32:30 database-05 systemd: Removed slice user-1002.slice.
+Jun 19 08:32:30 database-05 systemd: Stopping user-1002.slice.
+Jun 19 08:32:42 database-05 systemd-logind: Removed session 43197.
+Jun 19 08:40:01 database-05 systemd: Started Session 43199 of user root.
+Jun 19 08:40:01 database-05 systemd: Starting Session 43199 of user root.
+Jun 19 08:50:01 database-05 systemd: Started Session 43200 of user root.
+Jun 19 08:50:01 database-05 systemd: Starting Session 43200 of user root.
+Jun 19 09:00:01 database-05 systemd: Started Session 43201 of user root.
+Jun 19 09:00:01 database-05 systemd: Starting Session 43201 of user root.
+Jun 19 09:01:01 database-05 systemd: Started Session 43202 of user root.
+Jun 19 09:01:01 database-05 systemd: Starting Session 43202 of user root.
+Jun 19 09:07:55 database-05 systemd-logind: New session 43203 of user root.
+Jun 19 09:07:55 database-05 systemd: Started Session 43203 of user root.
+Jun 19 09:07:55 database-05 systemd: Starting Session 43203 of user root.
+Jun 19 09:08:21 database-05 systemd-logind: New session 43204 of user root.
+Jun 19 09:08:21 database-05 systemd: Started Session 43204 of user root.
+Jun 19 09:08:21 database-05 systemd: Starting Session 43204 of user root.
+Jun 19 09:08:23 database-05 systemd-logind: New session 43205 of user root.
+Jun 19 09:08:23 database-05 systemd: Started Session 43205 of user root.
+Jun 19 09:08:23 database-05 systemd: Starting Session 43205 of user root.
+Jun 19 09:09:43 database-05 systemd-logind: New session 43206 of user root.
+Jun 19 09:09:43 database-05 systemd: Started Session 43206 of user root.
+Jun 19 09:09:43 database-05 systemd: Starting Session 43206 of user root.
+Jun 19 09:10:01 database-05 systemd: Started Session 43207 of user root.
+Jun 19 09:10:01 database-05 systemd: Starting Session 43207 of user root.
+Jun 19 09:20:01 database-05 systemd: Started Session 43208 of user root.
+Jun 19 09:20:01 database-05 systemd: Starting Session 43208 of user root.
+Jun 19 09:30:01 database-05 systemd: Started Session 43209 of user root.
+Jun 19 09:30:01 database-05 systemd: Starting Session 43209 of user root.
+Jun 19 09:30:12 database-05 systemd-logind: New session 43210 of user root.
+Jun 19 09:30:12 database-05 systemd: Started Session 43210 of user root.
+Jun 19 09:30:12 database-05 systemd: Starting Session 43210 of user root.
+Jun 19 09:30:12 database-05 ansible-ping: Invoked with data=pong
+Jun 19 09:30:21 database-05 systemd: Created slice user-1003.slice.
+Jun 19 09:30:21 database-05 systemd: Starting user-1003.slice.
+Jun 19 09:30:21 database-05 systemd-logind: New session 43211 of user dba1.
+Jun 19 09:30:21 database-05 systemd: Started Session 43211 of user dba1.
+Jun 19 09:30:21 database-05 systemd: Starting Session 43211 of user dba1.
+Jun 19 09:30:22 database-05 ansible-ping: Invoked with data=pong
+Jun 19 09:31:12 database-05 systemd-logind: Removed session 43210.
+Jun 19 09:31:22 database-05 systemd-logind: Removed session 43211.
+Jun 19 09:31:22 database-05 systemd: Removed slice user-1003.slice.
+Jun 19 09:31:22 database-05 systemd: Stopping user-1003.slice.
+Jun 19 09:31:27 database-05 systemd-logind: New session 43212 of user root.
+Jun 19 09:31:27 database-05 systemd: Started Session 43212 of user root.
+Jun 19 09:31:27 database-05 systemd: Starting Session 43212 of user root.
+Jun 19 09:31:27 database-05 ansible-ping: Invoked with data=pong
+Jun 19 09:31:28 database-05 systemd: Created slice user-1002.slice.
+Jun 19 09:31:28 database-05 systemd: Starting user-1002.slice.
+Jun 19 09:31:28 database-05 systemd-logind: New session 43213 of user dba2.
+Jun 19 09:31:28 database-05 systemd: Started Session 43213 of user dba2.
+Jun 19 09:31:28 database-05 systemd: Starting Session 43213 of user dba2.
+Jun 19 09:31:29 database-05 ansible-ping: Invoked with data=pong
+Jun 19 09:31:43 database-05 ansible-ping: Invoked with data=pong
+Jun 19 09:32:29 database-05 systemd-logind: Removed session 43213.
+Jun 19 09:32:29 database-05 systemd: Removed slice user-1002.slice.
+Jun 19 09:32:29 database-05 systemd: Stopping user-1002.slice.
+Jun 19 09:32:43 database-05 systemd-logind: Removed session 43212.
+Jun 19 09:34:35 database-05 kernel: mysqld invoked oom-killer: gfp_mask=0x201da, order=0, oom_score_adj=0
+Jun 19 09:34:36 database-05 kernel: mysqld cpuset=/ mems_allowed=0
+Jun 19 09:34:36 database-05 kernel: CPU: 3 PID: 32256 Comm: mysqld Not tainted 3.10.0-514.26.2.el7.x86_64 #1
+Jun 19 09:34:36 database-05 kernel: Hardware name: Alibaba Cloud Alibaba Cloud ECS, BIOS rel-1.7.5-0-ge51488c-20140602_164612-nilsson.home.kraxel.org 04/01/2014
+Jun 19 09:34:36 database-05 kernel: ffff8804272e1f60 000000003a24a9e6 ffff88043fe3b910 ffffffff81687133
+Jun 19 09:34:36 database-05 kernel: ffff88043fe3b9a0 ffffffff816820de ffffffff810eb0dc ffff8800367e6590
+Jun 19 09:34:36 database-05 kernel: ffff8800367e65a8 0000000000000206 ffff8804272e1f60 ffff88043fe3b990
+Jun 19 09:34:36 database-05 kernel: Call Trace:
+Jun 19 09:34:36 database-05 kernel: [<ffffffff81687133>] dump_stack+0x19/0x1b
+Jun 19 09:34:36 database-05 kernel: [<ffffffff816820de>] dump_header+0x8e/0x225
+Jun 19 09:34:36 database-05 kernel: [<ffffffff810eb0dc>] ? ktime_get_ts64+0x4c/0xf0
+Jun 19 09:34:36 database-05 kernel: [<ffffffff8113d22f>] ? delayacct_end+0x8f/0xb0
+Jun 19 09:34:36 database-05 kernel: [<ffffffff81184d0e>] oom_kill_process+0x24e/0x3c0
+Jun 19 09:34:36 database-05 kernel: [<ffffffff811847ad>] ? oom_unkillable_task+0xcd/0x120
+Jun 19 09:34:36 database-05 kernel: [<ffffffff81184856>] ? find_lock_task_mm+0x56/0xc0
+Jun 19 09:34:36 database-05 kernel: [<ffffffff81185546>] out_of_memory+0x4b6/0x4f0
+Jun 19 09:34:36 database-05 kernel: [<ffffffff81682be7>] __alloc_pages_slowpath+0x5d7/0x725
+Jun 19 09:34:36 database-05 kernel: [<ffffffff8118b655>] __alloc_pages_nodemask+0x405/0x420
+Jun 19 09:34:36 database-05 kernel: [<ffffffff811cf9ca>] alloc_pages_current+0xaa/0x170
+Jun 19 09:34:36 database-05 kernel: [<ffffffff81180be7>] __page_cache_alloc+0x97/0xb0
+Jun 19 09:34:36 database-05 kernel: [<ffffffff81183760>] filemap_fault+0x170/0x410
+Jun 19 09:34:36 database-05 kernel: [<ffffffffa01af016>] ext4_filemap_fault+0x36/0x50 [ext4]
+Jun 19 09:34:36 database-05 kernel: [<ffffffff811ac83c>] __do_fault+0x4c/0xc0
+Jun 19 09:34:36 database-05 kernel: [<ffffffff811accd3>] do_read_fault.isra.42+0x43/0x130
+Jun 19 09:34:36 database-05 kernel: [<ffffffff811b1461>] handle_mm_fault+0x6b1/0x1000
+Jun 19 09:34:36 database-05 kernel: [<ffffffff810f55c0>] ? futex_wake+0x80/0x160
+Jun 19 09:34:36 database-05 kernel: [<ffffffff81692cc4>] __do_page_fault+0x154/0x450
+Jun 19 09:34:36 database-05 kernel: [<ffffffff810295ec>] ? __switch_to+0x15c/0x4c0
+Jun 19 09:34:36 database-05 kernel: [<ffffffff816930a6>] trace_do_page_fault+0x56/0x150
+Jun 19 09:34:36 database-05 kernel: [<ffffffff8169274b>] do_async_page_fault+0x1b/0xd0
+Jun 19 09:34:36 database-05 kernel: [<ffffffff8168f238>] async_page_fault+0x28/0x30
+Jun 19 09:34:36 database-05 kernel: Mem-Info:
+Jun 19 09:34:36 database-05 kernel: active_anon:3944328 inactive_anon:133 isolated_anon:0#012 active_file:3741 inactive_file:4097 isolated_file:0#012 unevictable:0 dirty:0 writeback:0 unstable:0#012 slab_reclaimable:36030 slab_unreclaimable:4755#012 mapped:513 shmem:211 pagetables:9266 bounce:0#012 free:33773 free_pcp:374 free_cma:0
+Jun 19 09:34:36 database-05 kernel: Node 0 DMA free:15908kB min:64kB low:80kB high:96kB active_anon:0kB inactive_anon:0kB active_file:0kB inactive_file:0kB unevictable:0kB isolated(anon):0kB isolated(file):0kB present:15992kB managed:15908kB mlocked:0kB dirty:0kB writeback:0kB mapped:0kB shmem:0kB slab_reclaimable:0kB slab_unreclaimable:0kB kernel_stack:0kB pagetables:0kB unstable:0kB bounce:0kB free_pcp:0kB local_pcp:0kB free_cma:0kB writeback_tmp:0kB pages_scanned:0 all_unreclaimable? yes
+Jun 19 09:34:36 database-05 kernel: lowmem_reserve[]: 0 2815 15869 15869
+Jun 19 09:34:36 database-05 kernel: Node 0 DMA32 free:64112kB min:11976kB low:14968kB high:17964kB active_anon:2780960kB inactive_anon:68kB active_file:1048kB inactive_file:2680kB unevictable:0kB isolated(anon):0kB isolated(file):0kB present:3129216kB managed:2884460kB mlocked:0kB dirty:0kB writeback:0kB mapped:124kB shmem:104kB slab_reclaimable:21120kB slab_unreclaimable:1960kB kernel_stack:480kB pagetables:4376kB unstable:0kB bounce:0kB free_pcp:304kB local_pcp:64kB free_cma:0kB writeback_tmp:0kB pages_scanned:7135 all_unreclaimable? yes
+Jun 19 09:34:36 database-05 kernel: lowmem_reserve[]: 0 0 13054 13054
+Jun 19 09:34:36 database-05 kernel: Node 0 Normal free:55072kB min:55540kB low:69424kB high:83308kB active_anon:12996352kB inactive_anon:464kB active_file:13916kB inactive_file:13708kB unevictable:0kB isolated(anon):0kB isolated(file):0kB present:13631488kB managed:13367588kB mlocked:0kB dirty:0kB writeback:0kB mapped:1928kB shmem:740kB slab_reclaimable:123000kB slab_unreclaimable:17060kB kernel_stack:2768kB pagetables:32688kB unstable:0kB bounce:0kB free_pcp:1192kB local_pcp:300kB free_cma:0kB writeback_tmp:0kB pages_scanned:30777 all_unreclaimable? yes
+Jun 19 09:34:36 database-05 kernel: lowmem_reserve[]: 0 0 0 0
+Jun 19 09:34:36 database-05 kernel: Node 0 DMA: 1*4kB (U) 0*8kB 0*16kB 1*32kB (U) 2*64kB (U) 1*128kB (U) 1*256kB (U) 0*512kB 1*1024kB (U) 1*2048kB (M) 3*4096kB (M) = 15908kB
+Jun 19 09:34:36 database-05 kernel: Node 0 DMA32: 102*4kB (UEM) 66*8kB (UE) 613*16kB (UE) 314*32kB (UE) 287*64kB (UEM) 135*128kB (UE) 19*256kB (UE) 3*512kB (U) 1*1024kB (U) 0*2048kB 0*4096kB = 63864kB
+Jun 19 09:34:36 database-05 kernel: Node 0 Normal: 414*4kB (UEM) 314*8kB (UE) 1216*16kB (UEM) 625*32kB (UEM) 167*64kB (UEM) 4*128kB (UE) 0*256kB 0*512kB 0*1024kB 0*2048kB 0*4096kB = 54824kB
+Jun 19 09:34:36 database-05 kernel: Node 0 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=1048576kB
+Jun 19 09:34:36 database-05 kernel: Node 0 hugepages_total=0 hugepages_free=0 hugepages_surp=0 hugepages_size=2048kB
+Jun 19 09:34:36 database-05 kernel: 8261 total pagecache pages
+Jun 19 09:34:36 database-05 kernel: 0 pages in swap cache
+Jun 19 09:34:36 database-05 kernel: Swap cache stats: add 0, delete 0, find 0/0
+Jun 19 09:34:36 database-05 kernel: Free swap  = 0kB
+Jun 19 09:34:36 database-05 kernel: Total swap = 0kB
+Jun 19 09:34:36 database-05 kernel: 4194174 pages RAM
+Jun 19 09:34:36 database-05 kernel: 0 pages HighMem/MovableOnly
+Jun 19 09:34:36 database-05 kernel: 127185 pages reserved
+Jun 19 09:34:36 database-05 kernel: [ pid ]   uid  tgid total_vm      rss nr_ptes swapents oom_score_adj name
+Jun 19 09:34:36 database-05 kernel: [  351]     0   351    33835       89      71        0             0 systemd-journal
+Jun 19 09:34:36 database-05 kernel: [  378]     0   378    10881      138      21        0         -1000 systemd-udevd
+Jun 19 09:34:36 database-05 kernel: [  429]     0   429    13853      113      27        0         -1000 auditd
+Jun 19 09:34:36 database-05 kernel: [  475]     0   475   179714      235     218        0             0 rsyslogd
+Jun 19 09:34:36 database-05 kernel: [  476]     0   476     6080      107      15        0             0 systemd-logind
+Jun 19 09:34:36 database-05 kernel: [  482]     0   482    26369      252      53        0         -1000 sshd
+Jun 19 09:34:36 database-05 kernel: [  483]   998   483   133528     1883      56        0             0 polkitd
+Jun 19 09:34:36 database-05 kernel: [  484]     0   484   139940     2679      90        0             0 tuned
+Jun 19 09:34:36 database-05 kernel: [  486]     0   486     5398       74      14        0             0 irqbalance
+Jun 19 09:34:36 database-05 kernel: [  488]    81   488     6129      112      16        0          -900 dbus-daemon
+Jun 19 09:34:36 database-05 kernel: [  495]    38   495    11161      184      26        0             0 ntpd
+Jun 19 09:34:36 database-05 kernel: [  510]     0   510     6460       52      18        0             0 atd
+Jun 19 09:34:36 database-05 kernel: [  519]     0   519    31555      159      18        0             0 crond
+Jun 19 09:34:36 database-05 kernel: [  528]     0   528    27508       32      10        0             0 agetty
+Jun 19 09:34:36 database-05 kernel: [  529]     0   529    27508       33      11        0             0 agetty
+Jun 19 09:34:36 database-05 kernel: [ 5915]     0  5915    16143      571      15        0             0 aliyun-service
+Jun 19 09:34:36 database-05 kernel: [ 9565]     0  9565     8179      414      22        0             0 AliYunDunUpdate
+Jun 19 09:34:36 database-05 kernel: [ 9623]     0  9623    32320      880      60        0             0 AliYunDun
+Jun 19 09:34:36 database-05 kernel: [28036]   996 28036    20215      209      38        0             0 zabbix_agentd
+Jun 19 09:34:36 database-05 kernel: [28037]   996 28037    20215      311      38        0             0 zabbix_agentd
+Jun 19 09:34:36 database-05 kernel: [28038]   996 28038    20246      264      40        0             0 zabbix_agentd
+Jun 19 09:34:36 database-05 kernel: [28039]   996 28039    20246      265      40        0             0 zabbix_agentd
+Jun 19 09:34:36 database-05 kernel: [28040]   996 28040    20246      259      40        0             0 zabbix_agentd
+Jun 19 09:34:36 database-05 kernel: [28041]   996 28041    20248      241      40        0             0 zabbix_agentd
+Jun 19 09:34:36 database-05 kernel: [29927]     0 29927    28313       85      13        0             0 mysqld_safe
+Jun 19 09:34:36 database-05 kernel: [30634]   995 30634  3585030  2995756    5993        0             0 mysqld
+Jun 19 09:34:36 database-05 kernel: [31107]     0 31107    37277      439      72        0             0 sshd
+Jun 19 09:34:36 database-05 kernel: [31109]     0 31109    29111      354      14        0             0 bash
+Jun 19 09:34:36 database-05 kernel: [31143]     0 31143    37181      340      74        0             0 sshd
+Jun 19 09:34:36 database-05 kernel: [31145]     0 31145    29111      354      13        0             0 bash
+Jun 19 09:34:36 database-05 kernel: [31171]     0 31171    37181      340      75        0             0 sshd
+Jun 19 09:34:36 database-05 kernel: [31174]     0 31174    29111      355      14        0             0 bash
+Jun 19 09:34:36 database-05 kernel: [31205]     0 31205    33935      664      22        0             0 mysql
+Jun 19 09:34:36 database-05 kernel: [31208]     0 31208   968267   934866    1847        0             0 mysql
+Jun 19 09:34:36 database-05 kernel: [31209]     0 31209    34097      826      21        0             0 mysql
+Jun 19 09:34:36 database-05 kernel: [31256]     0 31256    37181      339      74        0             0 sshd
+Jun 19 09:34:36 database-05 kernel: [31258]     0 31258    29111      404      13        0             0 bash
+Jun 19 09:34:36 database-05 kernel: Out of memory: Kill process 30634 (mysqld) score 738 or sacrifice child
+Jun 19 09:34:36 database-05 kernel: Killed process 30634 (mysqld) total-vm:14340120kB, anon-rss:11983024kB, file-rss:0kB, shmem-rss:0kB
+Jun 19 09:40:02 database-05 systemd: Started Session 43214 of user root.
+Jun 19 09:40:02 database-05 systemd: Starting Session 43214 of user root.

@@ -1,0 +1,32 @@
+
+副本集:
+	http://www.cnblogs.com/chenmh/p/8484049.html       (MongoDB 搭建可复制群集)
+	https://www.cnblogs.com/myblog1314/p/3925387.html  （mongodb系列之---副本集配置与说明）
+	https://www.cnblogs.com/zhoujinyi/p/3554010.html   (MongoDB 副本集的原理、搭建、应用)
+
+
+	https://blog.csdn.net/guixuecheng/article/details/42171681  一、mongodb之单个实例、主从配置、多个节点
+	https://blog.csdn.net/guixuecheng/article/details/42172091  二、mongodb之副本集（读写分离）
+	https://blog.csdn.net/guixuecheng/article/details/42172149  三、mongodb之深入副本集（选举、同步、心跳）
+	https://blog.51cto.com/13746824/2175754                     MongoDB 复制集 第 二 部 之【选举原理】
+	http://www.mongoing.com/archives/295                     MongoDB的选举过程
+	https://www.cnblogs.com/xibuhaohao/p/11320209.html       MongoDB 副本集主从切换方法
+	
+
+Other:	
+	
+	https://blog.csdn.net/fdipzone/article/details/7442162   Mongodb启动命令mongod参数说明
+
+	http://www.0518zz.com/html/baike/2019/1104/113713.html   MongoDB一次节点宕机引发的思考
+	
+	http://www.sohu.com/a/285186474_411876                   MySQL PK MongoDB：多文档事务支持，谁更友好？
+
+	https://mp.weixin.qq.com/s/jUhXqrGuHBK32bSlWolu5w       『浅入浅出』MongoDB 和 WiredTiger  
+
+	http://www.mongoing.com/archives/28201                   MongoDB 4.2新特性:分布式事务、字段级加密、通配符索引、物化视图
+
+	https://mp.weixin.qq.com/s/1hSEgi4vYOCNEWJPO5jRjg        从MySQL和MongoDB的对比，看SQL与NoSQL的较量
+
+
+
+

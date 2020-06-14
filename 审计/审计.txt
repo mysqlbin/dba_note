@@ -1,0 +1,87 @@
+mysql审计 init-connect:
+
+一. 优点：
+日志信息比较小，对性能影响小
+
+二. 缺点:
+只对有低级权限的用户的操作有记录，权限高的则没有(比如拥有 all privileges 的用户产生的操作记录不能写入到审计)
+
+三. 注意点:
+1. 授予普通用户对accesslog表的insert权限
+该点很重要
+该参数只对普通用户生效，有 super 权限的都不会有作用
+2. accesslog表的记录不可删除, 因为同一个用户对数据库的操作日志记录的是同一个 thread_id 的值.
+
+
+用户授权:
+grant insert,delete,update,select,execute on *.* to 'init_user'@'%' identified by '123456abc';
+grant all privileges on *.* to 'operation_all_user'@'%' identified by '123456abc';
+
+一、创建审计的数据库：
+create database audit_db DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
+
+二、创建审计的数据表：
+DROP TABLE IF EXISTS `audit_db`.`accesslog`;
+CREATE TABLE `audit_db`.`accesslog` (
+ID INT (10) UNSIGNED NOT NULL auto_increment,
+ConnectionID INT (10) UNSIGNED,
+ConnUser VARCHAR (30) NOT NULL DEFAULT '',
+MatchUser VARCHAR (30) NOT NULL DEFAULT '',
+LoginTime datetime,
+PRIMARY KEY (`ID`)
+)ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='审计表';
+
+三、在MySQL数据库配置文件中添加:
+init-connect='Insert into audit_db.accesslog(ConnectionID ,ConnUser ,MatchUser ,LoginTime)values(connection_id(),user(),current_user(),now());'
+然后重启数据库。
+或者 通过 全局变量 设置:
+set global init_connect='SET NAMES utf8;Insert into audit_db.accesslog(ConnectionID ,ConnUser ,MatchUser ,LoginTime)values(connection_id(),user(),current_user(),now());';                 
+
+四、通过判断 accesslog 表 的 ConnectionID字段  是否等于  binlog 的 thread_id ,如果相等,说明是 
+
+1. 数据表的数据如下:
+ConnectionID=27
+ConnUser=operation_user@192.168.2.16
+
+2. binlog 的数据如下 
+# at 364282
+#180507 23:13:18 server id 123306  end_log_pos 364358 CRC32 0xd941e357 	Query	thread_id=27	exec_time=0	error_code=0
+SET TIMESTAMP=1525749198/*!*/;
+SET @@session.pseudo_thread_id=27/*!*/;
+BEGIN
+/*!*/;
+# at 364358
+#180507 23:13:18 server id 123306  end_log_pos 364423 CRC32 0xd78ecc18 	Table_map: `audit_db`.`accesslog` mapped to number 108
+# at 364423
+#180507 23:13:18 server id 123306  end_log_pos 364517 CRC32 0x3a46d16f 	Write_rows: table id 108 flags: STMT_END_F
+### INSERT INTO `audit_db`.`accesslog`
+### SET
+###   @1=13
+###   @2=27
+###   @3='operation_user@192.168.2.16'
+###   @4='operation_user@%'
+###   @5='2018-05-07 23:13:18'
+# at 364517
+#180507 23:13:18 server id 123306  end_log_pos 364548 CRC32 0x23740c7c 	Xid = 1762
+COMMIT/*!*/;
+
+说明  operation_user 用户做了某个删除操作
+
+
+
+测试:
+update accountinfo set AccountName='gs4188' where AccountId=7;
+delete from accountinfo where AccountId=11;
+delete from accountinfo where AccountId=13;
+
+
+
+DROP PROCEDURE IF EXISTS `audit`;
+DELIMITER ;;
+CREATE DEFINER=`operation_user`@`%` PROCEDURE `audit`(
+)
+begin
+	update accountinfo set AccountName='gs898' where AccountId=7;
+end
+;;
+DELIMITER ;

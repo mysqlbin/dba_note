@@ -1,0 +1,597 @@
+官网:
+https://docs.saltstack.com/en/latest/ref/cli/salt-api.html
+
+SaltStack系列（一）之环境部署、命令及配置文件详解:
+http://www.51niux.com/?id=115
+
+http://www.it165.net/os/html/201406/8509.html  SaltStack 入门到精通第三篇：Salt-Minion配置文件详解
+
+
+如何监控日志?  ***
+
+是什么？
+Saltstack是一个服务器基础架构集中化管理平台，具备配置管理、远程执行、监控等功能，
+一般可以理解成简化版的基于puppet和加强版的func。SaltStack基于Python语言实现，
+结合轻量级消息队列（ZeroMQ）与Python第三方模块（Pyzmq、PyCrypto、pyjinja2、python-msgpack和PyYAML等）构建。
+
+有什么作用？
+
+资产管理：采用SaltStack调用收集主机配置信息入库
+
+自动添加主机：输入ip、ssh用户名和密码，自动部署salt-minion，主机自动添加到salt-master
+
+
+主机批量管理：调用SaltStack实现批量执行命令，结果返回到前端页面，采用Prism高亮展示代码
+
+
+
+能做什么？
+通过部署SaltStack环境，我们可以在成千上万台服务器上做到批量执行命令，
+根据不同业务特性进行配置集中化管理、分发文件、采集服务器数据、操作系统基础及软件包管理等，
+SaltStack是运维人员提高工作效率、规范业务配置与操作的利器。
+
+
+
+应用场景？
+
+
+如何使用？
+https://blog.csdn.net/wanglei_storage/article/details/50574621
+http://www.mykurol.com/detail/38/#
+
+
+
+
+Saltstack运行模式：
+
+Local
+Master/Minion
+Salt SSH
+Saltstack三大功能：
+
+远程执行（执行远程命令）
+配置管理（状态管理）
+云管理
+
+
+
+
+
+
+
+
+Saltstack安装：
+
+主控端IP：192.168.1.24
+
+被控端IP：192.168.1.26
+
+
+一、主和控都 安装epel yum源
+yum -y install epel-release 
+yum clean all 
+yum makecache
+
+
+二. 主控端安装：
+
+yum -y install salt-master​
+开启服务和开机启动：
+
+service salt-master start
+chkconfig salt-master on​
+    
+
+三. 被控端：
+
+yum -y install salt-minion
+
+
+service salt-minion start
+
+
+master主控端配置【vim /etc/salt/master】：
+
+interface: 192.168.2.200 #绑定Mster通信IP（注意冒号后面必须加一空格）
+ 
+auto_accept: Ture   #自动认证，避免手动运行salt-key来确认证书信任（注意冒号后面必须加一空格）
+ 
+file_roots:     #指定Saltstack文件根目录位置
+    base:
+        - /srv/salt
+
+service salt-master restart​
+
+
+
+minion 被控端配置【vim /etc/salt/minion】：
+
+master: 192.168.2.200    #指定master主机IP地址（注意冒号后面必须加一空格）
+id: host12    #修改被控端主机识别id，建议使用操作系统主机名配置（注意冒号后面必须加一空格）
+
+service salt-minion restart
+
+salt-minion 启动失败:
+tail -f /var/log/messages
+salt-minion: ModuleNotFoundError: No module named 'salt'
+
+epel/x86_64/other_db           FAILED                                                      99% [===============================================================================-]   10 B/s |  50 MB  00:59:47 ETA 
+http://mirror.ehost.vn/epel/7/x86_64/repodata/ab488df663ec0289f190b8d77b348af918803bf3c0041e35d6d59dbab44a2eeb-other.sqlite.bz2: [Errno 12] Timeout on http://mirror.ehost.vn/epel/7/x86_64/repodata/ab488df663ec0289f190b8d77b348af918803bf3c0041e35d6d59dbab44a2eeb-other.sqlite.bz2: (28, 'Operation too slow. Less than 1000 bytes/sec transferred the last 30 seconds')
+
+Saltstack - Salt常用模块及API
+salt '*' sys.list_modules
+
+（1）
+salt远程执行命令详解
+salt '*' test.ping
+
+
+API实现 test.ping 示例：
+
+import salt.client
+client = salt.client.LocalClient()
+ret = client.cmd('*','test.ping')
+print ret
+{'781915e2': True}      #结果以一个标准的Python字典形式的字符串返回，可以通过eval()函数转换成Python的字典类型，方便后续的业务逻辑处理
+
+
+（2）cmd模块
+
+功能：实现远程的命令行调用执行（默认具备root操作权限，使用时需评估风险）
+
+示例：
+
+[root@server ~]# salt '*' cmd.run "free -m"
+781915e2:
+                 total       used       free     shared    buffers     cached
+    Mem:           996        834        162          0        121        252
+    -/+ buffers/cache:        460        536
+    Swap:            0          0          0
+	
+API调用：
+import salt.client
+client = salt.client.LocalClient()
+memory = client.cmd('*','cmd.run',['free -m'])
+print memory
+
+salt '*' cmd.run "cat /data/mysql/mysql3306/data/error.log"
+
+（3）grains 模块： 收集主机相关信息
+salt \* grains.items
+只获取主机信息：
+salt \* grains.item host
+
+salt \* grains.item ipv4
+
+ (4) disk 模块：显示目前磁盘空间使用情况
+salt \* disk.usage 
+disk.usage -> df -h
+
+
+
+（5）state.sls 模块：
+用户管理
+文件管理
+目录管理
+安装包管理
+计划任务
+
+
+
+Saltstack 之 Salt-api:
+https://blog.csdn.net/hnhuangyiyang/article/details/50667000
+https://docs.saltstack.com/en/latest/ref/clients/
+http://salt-api.readthedocs.io/en/latest/
+https://github.com/saltstack/salt
+https://www.cnblogs.com/xiewenming/p/7716660.html ***
+https://www.cnblogs.com/wang-yc/p/7904376.html   *********** Python3安装使用SaltStack以及salt-api详解
+http://ju.outofmemory.cn/entry/97116      *
+
+http://www.mamicode.com/info-detail-2091363.html saltapi 类  ***********
+https://docs.saltstack.com/en/latest/ref/modules/all/index.html saltapi的所有模块 英文版
+
+https://www.cnblogs.com/yexiaochong/p/6069079.html Saltstack 常用的模块及API 中文版
+
+http://www.xiaomastack.com/2014/10/13/release-3/
+
+一. 安装:
+yum install salt-api  -y
+
+
+二. 创建证书:
+cd /etc/pki/tls/certs/
+make testcert 
+
+cd ../private/
+openssl rsa -in localhost.key -out localhost_nopass.key 来确认证书信任（注意冒号后面必须加一空格）
+
+三. 创建用户（用于salt-api认证）, 并且设置密码为 saltapi
+useradd -M -s /sbin/nologin saltapi && echo "password"|/usr/bin/passwd saltapi --stdin
+echo "saltapi" | passwd saltapi --stdin
+
+四. salt-api 配置文件编写：
+mkdir -p /etc/salt/master.d/   
+
+vim /etc/salt/master.d/eauth.conf   
+(处于安全因素，一般只给特定模块的使用权限，这里给saltapi用户所有模块的使用权限)
+
+vim /etc/salt/master.d/api.conf 
+rest_cherrypy:
+  host: 192.168.1.24
+  port: 8888                       
+  ssl_crt: /etc/pki/tls/certs/localhost.crt          
+  ssl_key: /etc/pki/tls/private/localhost_nopass.key
+  
+  
+  port: 8888
+  host: 192.168.23.161  
+  ssl_crt: /etc/pki/tls/certs/localhost.crt         
+  ssl_key: /etc/pki/tls/private/localhost_nopass.key
+  
+五. 启动Salt-API
+service salt-api start
+
+
+六. Salt-Api使用
+
+先通过  pam 验证
+salt -a pam "*" test.ping
+
+登陆认证获取token:
+
+curl -sSk https://192.168.23.161:8888/login -H 'Accept: application/x-yaml' -d username=saltapi -d password=saltapi -d eauth=pam
+curl -sSk https://192.168.1.26:8888/login -H 'Accept: application/x-yaml' -d username=saltapi -d password=saltapi -d eauth=pam
+使用获取的token进行命令操作:
+curl -sSk https://192.168.1.26:8888 \
+-H 'Accept: application/x-yaml' -H \
+'X-Auth-Token: d18d85e89089e85e8fe90d37bab33d1515760f94' \
+curl -sSk https://192.168.23.161:8888/login \
+-H 'Accept: application/x-yaml' -d username=saltapi \
+-d password=saltapi -d eauth=pam
+
+return:
+- eauth: pam
+  expire: 1526053585.7073271
+  perms:
+  - .*
+  - '@wheel'
+  - '@runner'
+  start: 1526010385.7073264
+  token: d5481fe35fdedea2ef959d6206d8712f8ea884d4
+  user: saltapi
+
+  
+使用获取的token进行命令操作:
+curl -sSk https://192.168.1.26:8888 \
+-H 'Accept: application/x-yaml' -H \
+'X-Auth-Token: c9fe013d744f316a98c9342efd0361faa6631ed9' \
+-d client=local -d tgt='*' -d fun=test.ping 
+local 同步操作，返回结果:
+
+return:
+- 192.168.23.161: true
+
+
+curl -sSk https://192.168.23.161:8888 \
+-H 'Accept: application/x-yaml' -H \
+'X-Auth-Token: c9fe013d744f316a98c9342efd0361faa6631ed9' \
+-d client=local_async  -d tgt='*' -d fun=test.ping
+local_async 异步操作，返回结果:
+
+return:
+- jid: '20180508165542800225'
+  minions:
+  - node12
+
+
+参数解释：
+client ： 模块，python处理salt-api的主要模块，‘client interfaces <netapi-clients>’
+    local : 使用‘LocalClient <salt.client.LocalClient>’ 发送命令给受控主机，
+	等价于saltstack命令行中的'salt'命令
+    local_async : 和 local 不同之处在于，这个模块是用于异步操作的，
+	即在master端执行命令后返回的是一个jobid，任务放在后台运行，
+	通过产看jobid的结果来获取命令的执行结果。
+	
+    runner : 使用'RunnerClient<salt.runner.RunnerClient>' 调用salt-master上的runner模块，
+	等价于saltstack命令行中的'salt-run'命令
+	
+    runner_async : 异步执行runner模块
+    wheel : 使用'WheelClient<salt.wheel.WheelClient>', 调用salt-master上的wheel模块，
+	wheel模块没有在命令行端等价的模块，但它通常管理主机资源，比如文件状态，
+	pillar文件，salt配置文件，以及关键模块<salt.wheel.key>功能类似于命令行中的salt-key。
+    wheel_async : 异步执行wheel模块
+    备注：一般情况下local模块，需要tgt和arg(数组)，kwarg(字典)，
+	因为这些值将被发送到minions并用于执行所请求的函数。
+	而runner和wheel都是直接应用于master，不需要这些参数。
+	
+tgt : minions
+fun : 函数
+arg : 参数, 传入的命令或sls文件
+
+
+错误1.
+[root@centos7 ~]# vim /etc/salt/master.d/api.conf 
+rest_cherrypy:
+  port: 8000                       #  salt-api 监听端口
+  ssl_crt: /etc/pki/tls/certs/localhost.crt          # ssl认证的证书
+  ssl_key: /etc/pki/tls/private/localhost_nopass.key
+  
+rest_cherrypy 写为 restt_cherrypy 导致 salt-api 不能启动
+
+错误2.
+[root@node12 private]# curl -sSk https://192.168.2.200:8888/login -H 'Accept: application/x-yaml' -d username=saltapi -d password=123456abc -d eauth=pam
+<h2>401 Unauthorized</h2>
+<p>Could not authenticate using provided credentials</p>
+无法使用提供的凭据进行身份验证
+原因: 密码错误
+
+解决办法:
+修改密码
+echo "saltapi" | passwd saltapi --stdin
+
+20180508182806821014
+20180508183719835503
+
+zip 命令：
+zip -r test.zip test/
+
+
+saltstack（九）returner : 
+http://blog.51cto.com/lixcto/1430638
+
+module-salt.returners.mysql:
+https://docs.saltstack.com/en/latest/ref/returners/all/salt.returners.mysql.html#module-salt.returners.mysql
+https://github.com/saltstack/salt/blob/develop/salt/returners/mysql.py
+https://github.com/yueyongyue/saltshaker
+
+Returner 通过 https://github.com/yueyongyue/saltshaker/blob/master/install.txt 来配置
+
+
+Required python modules: MySQLdb  意思是不支持 Python 咯
+MySQLdb只支持Python2.*，还不支持3.*
+
+python 3.x 不再支持MySQLdb　模块：
+https://blog.csdn.net/zhanglh046/article/details/71056689
+
+
+mysql.host: '127.0.0.1'
+mysql.user: 'root'
+mysql.pass: '123456abc'
+mysql.db: 'salt'
+mysql.port: 3306
+
+master_job_cache: mysql
+
+#### Returner job cache to mysql #####
+master_job_cache: mysql
+
+错误3：
+描述：
+直接物理性移除minion或者更换minion原先连接的master，
+会导致先前的master始终无法ping通minion ：
+[root@node12 salt]# salt '*' test.ping
+192.168.2.202:
+    True
+192.168.2.201:
+    True
+192.168.2.200:
+    True
+node12:
+    Minion did not return. [No response]  没有响应
+	Minion did not return. [Not connected] 没有连接,说明没有启动服务
+
+解决办法 ：
+https://www.cnblogs.com/slqt/p/5390531.html
+https://www.cnblogs.com/phennry/p/5419451.html
+
+监听日志:
+tail -f /var/log/salt/minion
+
+2018-05-10 23:24:06,980 [salt.crypt       :1058][ERROR   ][5085] The master key has changed, the salt master could have been subverted, verify salt master's public key
+2018-05-10 23:24:06,981 [salt.crypt       :741 ][CRITICAL][5085] The Salt Master server's public key did not authenticate!
+The master may need to be updated if it is a version of Salt lower than 2018.3.0, or
+If you are confident that you are connecting to a valid Salt Master, then remove the master public key and restart the Salt Minion.
+The master public key can be found at:
+/etc/salt/pki/minion/minion_master.pub
+2018-05-10 23:24:06,982 [salt.minion      :998 ][ERROR   ][5085] Error while bringing up minion for multi-master. Is master at 192.168.23.161 responding?
+
+删除
+rm -rf /etc/salt/pki/minion/minion_master.pub
+
+
+错误:
+'Salt request timed out. The master is not responding. You '
+salt.exceptions.SaltReqTimeoutError: Salt request timed out. The master is not responding. You may need to run your command with `--async` in order to bypass the congested event bus. With `--async`, the CLI tool will print the job id (jid) and exit immediately without listening for responses. You can then use `salt-run jobs.lookup_jid` to look up the results of the job in the job cache later.
+
+tail -f /var/log/messages:
+
+May 11 05:54:24 node14 salt-master: [ERROR   ] Failed to allocate a jid. The requested returner 'mysql' could not be loaded.
+May 11 05:54:24 node14 salt-master: [ERROR   ] Some exception handling a payload from minion
+May 11 05:54:24 node14 salt-master: Traceback (most recent call last):
+May 11 05:54:24 node14 salt-master: File "/usr/lib/python3.4/site-packages/salt/transport/zeromq.py", line 683, in handle_message
+May 11 05:54:24 node14 salt-master: ret, req_opts = yield self.payload_handler(payload)
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/tornado/gen.py", line 1015, in run
+May 11 05:54:24 node14 salt-master: value = future.result()
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/tornado/concurrent.py", line 236, in result
+May 11 05:54:24 node14 salt-master: raise_exc_info(self._exc_info)
+May 11 05:54:24 node14 salt-master: File "<string>", line 3, in raise_exc_info
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/tornado/gen.py", line 270, in wrapper
+May 11 05:54:24 node14 salt-master: result = func(*args, **kwargs)
+May 11 05:54:24 node14 salt-master: File "/usr/lib/python3.4/site-packages/salt/master.py", line 1010, in _handle_payload
+May 11 05:54:24 node14 salt-master: 'clear': self._handle_clear}[key](load)
+May 11 05:54:24 node14 salt-master: File "/usr/lib/python3.4/site-packages/salt/master.py", line 1041, in _handle_clear
+May 11 05:54:24 node14 salt-master: ret = getattr(self.clear_funcs, cmd)(load), {'fun': 'send_clear'}
+May 11 05:54:24 node14 salt-master: File "/usr/lib/python3.4/site-packages/salt/master.py", line 2073, in publish
+May 11 05:54:24 node14 salt-master: payload = self._prep_pub(minions, jid, clear_load, extra, missing)
+May 11 05:54:24 node14 salt-master: File "/usr/lib/python3.4/site-packages/salt/master.py", line 2165, in _prep_pub
+May 11 05:54:24 node14 salt-master: self.event.fire_event({'minions': minions}, clear_load['jid'])
+May 11 05:54:24 node14 salt-master: File "/usr/lib/python3.4/site-packages/salt/utils/event.py", line 734, in fire_event
+May 11 05:54:24 node14 salt-master: salt.utils.stringutils.to_bytes(tag),
+May 11 05:54:24 node14 salt-master: File "/usr/lib/python3.4/site-packages/salt/utils/stringutils.py", line 48, in to_bytes
+May 11 05:54:24 node14 salt-master: raise TypeError('expected bytes, bytearray, or str')
+May 11 05:54:24 node14 salt-master: TypeError: expected bytes, bytearray, or str
+May 11 05:54:24 node14 salt-master: [ERROR   ] Uncaught exception, closing connection.
+May 11 05:54:24 node14 salt-master: Traceback (most recent call last):
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/zmq/sugar/socket.py", line 356, in send_multipart
+May 11 05:54:24 node14 salt-master: _buffer_type(msg)
+May 11 05:54:24 node14 salt-master: TypeError: memoryview: str object does not have the buffer interface
+May 11 05:54:24 node14 salt-master: During handling of the above exception, another exception occurred:
+May 11 05:54:24 node14 salt-master: Traceback (most recent call last):
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/zmq/eventloop/zmqstream.py", line 444, in _handle_events
+May 11 05:54:24 node14 salt-master: self._handle_send()
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/zmq/eventloop/zmqstream.py", line 487, in _handle_send
+May 11 05:54:24 node14 salt-master: status = self.socket.send_multipart(msg, **kwargs)
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/zmq/sugar/socket.py", line 363, in send_multipart
+May 11 05:54:24 node14 salt-master: i, rmsg,
+May 11 05:54:24 node14 salt-master: TypeError: Frame 0 ('Some exception handling minion ...) does not support the buffer interface.
+May 11 05:54:24 node14 salt-master: [ERROR   ] Exception in callback None
+May 11 05:54:24 node14 salt-master: Traceback (most recent call last):
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/zmq/sugar/socket.py", line 356, in send_multipart
+May 11 05:54:24 node14 salt-master: _buffer_type(msg)
+May 11 05:54:24 node14 salt-master: TypeError: memoryview: str object does not have the buffer interface
+May 11 05:54:24 node14 salt-master: During handling of the above exception, another exception occurred:
+May 11 05:54:24 node14 salt-master: Traceback (most recent call last):
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/tornado/ioloop.py", line 886, in start
+May 11 05:54:24 node14 salt-master: handler_func(fd_obj, events)
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/tornado/stack_context.py", line 274, in null_wrapper
+May 11 05:54:24 node14 salt-master: return fn(*args, **kwargs)
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/zmq/eventloop/zmqstream.py", line 444, in _handle_events
+May 11 05:54:24 node14 salt-master: self._handle_send()
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/zmq/eventloop/zmqstream.py", line 487, in _handle_send
+May 11 05:54:24 node14 salt-master: status = self.socket.send_multipart(msg, **kwargs)
+May 11 05:54:24 node14 salt-master: File "/usr/lib64/python3.4/site-packages/zmq/sugar/socket.py", line 363, in send_multipart
+May 11 05:54:24 node14 salt-master: i, rmsg,
+May 11 05:54:24 node14 salt-master: TypeError: Frame 0 ('Some exception handling minion ...) does not support the buffer interface.
+
+解决办法:
+1. python3.4版本安装 pyMySQL
+pip install -t /usr/lib64/python3.4/site-packages/  pyMySQL
+2. mysql.py
+import pymysql
+
+
+指定版本：
+pip install django-celery==3.1.17
+
+
+分组(配置完成后, 最好把 master, minion, api 重启一下)
+https://blog.csdn.net/hnhuangyiyang/article/details/50667000
+
+
+curl -sSk https://192.168.1.26:8888/login -H 'Accept: application/x-yaml' \
+-d username=saltapi -d password=saltapi -d tgt='group1' \
+ -d expr_form='nodegroup'  -d fun='test.ping'
+
+http://outofmemory.cn/saltstack/NodeGroups
+https://docs.saltstack.com/en/latest/topics/targeting/compound.html#module-salt
+
+
+测试minion端的联通性
+salt -N 'group1' test.ping
+salt -N 'group2' test.ping
+
+获取 token
+curl -sSk https://192.168.23.200:8888/login \
+-H "Accept: application/x-yaml" \
+-d username='saltapi' -d password='saltapi'  -d eauth='pam' 
+
+使用token通信
+/********** ok ***********/
+curl -sSk https://192.168.23.161:8888 \
+-H "Accept: application/x-yaml" -H \
+"X-Auth-Token: d96512ba5d959d659372649a0a5f82df27ab2a3e" \
+-d client='local' -d tgt='192.168.23.161'  -d expr_form='list'  -d fun='test.ping'
+
+  
+curl -sSk https://192.168.1.26:8888 \
+-H 'Accept: application/x-yaml' \
+-H 'X-Auth-Token: 2ea603d88b482b304790b7926dafaa3900c2b009' \
+-d client='local' -d tgt='group1' -d expr_form='nodegroup'  -d fun='test.ping'
+
+
+错误:
+salt.exceptions.SaltClientError: Node group group1 unavailable in /etc/salt/master
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/usr/lib/python3.4/site-packages/cherrypy/_cprequest.py", line 670, in respond
+    response.body = self.handler()
+  File "/usr/lib/python3.4/site-packages/cherrypy/lib/encoding.py", line 217, in __call__
+    self.body = self.oldhandler(*args, **kwargs)
+  File "/usr/lib/python3.4/site-packages/salt/netapi/rest_cherrypy/app.py", line 892, in hypermedia_handler
+    if cherrypy.config['debug']
+  File "/usr/lib64/python3.4/traceback.py", line 256, in format_exc
+    return "".join(format_exception(*sys.exc_info(), limit=limit, chain=chain))
+  File "/usr/lib64/python3.4/traceback.py", line 181, in format_exception
+    return list(_format_exception_iter(etype, value, tb, limit, chain))
+  File "/usr/lib64/python3.4/traceback.py", line 153, in _format_exception_iter
+    yield from _format_list_iter(_extract_tb_iter(tb, limit=limit))
+  File "/usr/lib64/python3.4/traceback.py", line 18, in _format_list_iter
+    for filename, lineno, name, line in extracted_list:
+  File "/usr/lib64/python3.4/traceback.py", line 58, in _extract_tb_or_stack_iter
+    while curr is not None and (limit is None or n &lt; limit):
+TypeError: unorderable types: int() &lt; SaltClientError()
+错误办法:
+把 把 master, minion, api 重启一下
+
+错误:
+<!DOCTYPE html PUBLIC
+"-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"></meta>
+    <title>401 Unauthorized</title>
+    <style type="text/css">
+    #powered_by {
+        margin-top: 20px;
+        border-top: 2px solid black;
+        font-style: italic;
+    }
+
+    #traceback {
+        color: red;
+    }
+    </style>
+</head>
+    <body>
+        <h2>401 Unauthorized</h2>
+        <p>No permission -- see authorization schemes</p>
+        <pre id="traceback">Traceback (most recent call last):
+  File "/usr/lib/python3.4/site-packages/cherrypy/_cprequest.py", line 661, in respond
+    self.hooks.run('before_request_body')
+  File "/usr/lib/python3.4/site-packages/cherrypy/_cprequest.py", line 114, in run
+    raise exc
+  File "/usr/lib/python3.4/site-packages/cherrypy/_cprequest.py", line 104, in run
+    hook()
+  File "/usr/lib/python3.4/site-packages/cherrypy/_cprequest.py", line 63, in __call__
+    return self.callback(**self.kwargs)
+  File "/usr/lib/python3.4/site-packages/salt/netapi/rest_cherrypy/app.py", line 783, in salt_auth_tool
+    raise cherrypy.HTTPError(401)
+cherrypy._cperror.HTTPError: (401, None)
+</pre>
+    <div id="powered_by">
+      <span>
+        Powered by <a href="http://www.cherrypy.org">CherryPy 5.6.0</a>
+      </span>
+    </div>
+    </body>
+</html>
+
+解决办法: api 重启后, 需要重新获取 token
+
+
+tgt_type --
+The type of tgt. Allowed values:
+glob - Bash glob completion - Default
+pcre - Perl style regular expression
+list - Python list of hosts
+grain - Match based on a grain comparison
+grain_pcre - Grain comparison with a regex
+pillar - Pillar data comparison
+pillar_pcre - Pillar data comparison with a regex
+nodegroup - Match on nodegroup
+range - Use a Range server for matching
+compound - Pass a compound match string
+ipcidr - Match based on Subnet (CIDR notation) or IPv4 address.

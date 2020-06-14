@@ -1,0 +1,27 @@
+
+
+redis-cli -h 192.168.0.112 -a 123456 shutdown
+
+Redis存活监控:
+	redis-cli -h 192.168.0.112 -a 123456 -c -p 6379 ping | grep -c PONG
+	redis-cli -h 192.168.0.111 -a 123456 -c -p 6379 ping | grep -c PONG
+
+连接个数 (connected_clients):	
+	redis-cli -h 192.168.0.112 -a 123456 -c -p 6379 info | grep -w "connected_clients" | awk -F":" '{print $2}'
+	redis-cli -h 192.168.0.111 -a 123456 -c -p 6379 info | grep -w 'connected_clients' | awk -F':' '{print $2}'
+	
+
+
+
+[root@redis02 ~]# redis-cli -h 192.168.0.112 -a 123456 -c -p 6379 ping | grep -c PONG
+Could not connect to Redis at 192.168.0.112:6379: Connection refused
+0
+
+
+
+[root@redis01 data]# redis-cli -h 192.168.0.111 -a 123456 -c -p 6379 ping | grep -c PONG
+1
+
+
+参考监控脚本
+

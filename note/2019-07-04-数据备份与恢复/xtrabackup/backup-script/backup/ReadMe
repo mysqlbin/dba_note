@@ -1,0 +1,7 @@
+1. 根据自已的机器ID去任务列表中找任务
+id,hostid, dbname, username, password,port, default-file, backup_path, level, flag
+
+2. 完成任务写入备分完成表
+id,hostid, dbname, dst_path, src_path, db_size, create_time, end_time
+
+3. 查看备份表例

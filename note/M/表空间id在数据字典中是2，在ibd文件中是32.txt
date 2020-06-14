@@ -1,0 +1,99 @@
+MGR新加入的节点：
+
+
+2018-06-19T08:35:59.068289Z 0 [Note] --secure-file-priv is set to NULL. Operations related to importing and exporting data are disabled
+2018-06-19T08:35:59.068354Z 0 [Note] /usr/local/mysql/bin/mysqld (mysqld 5.7.22-log) starting as process 17917 ...
+2018-06-19T08:35:59.073123Z 0 [Note] InnoDB: PUNCH HOLE support available
+2018-06-19T08:35:59.073150Z 0 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins
+2018-06-19T08:35:59.073155Z 0 [Note] InnoDB: Uses event mutexes
+2018-06-19T08:35:59.073158Z 0 [Note] InnoDB: GCC builtin __sync_synchronize() is used for memory barrier
+2018-06-19T08:35:59.073160Z 0 [Note] InnoDB: Compressed tables use zlib 1.2.3
+2018-06-19T08:35:59.073163Z 0 [Note] InnoDB: Using Linux native AIO
+2018-06-19T08:35:59.073293Z 0 [Note] InnoDB: Number of pools: 1
+2018-06-19T08:35:59.073350Z 0 [Note] InnoDB: Using CPU crc32 instructions
+2018-06-19T08:35:59.074615Z 0 [Note] InnoDB: Initializing buffer pool, total size = 100M, instances = 1, chunk size = 100M
+2018-06-19T08:35:59.078739Z 0 [Note] InnoDB: Completed initialization of buffer pool
+2018-06-19T08:35:59.079914Z 0 [Note] InnoDB: If the mysqld execution user is authorized, page cleaner thread priority can be changed. See the man page of setpriority().
+2018-06-19T08:35:59.144829Z 0 [Note] InnoDB: Highest supported file format is Barracuda.
+2018-06-19T08:35:59.260616Z 0 [Note] InnoDB: Removed temporary tablespace data file: "ibtmp1"
+2018-06-19T08:35:59.260642Z 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2018-06-19T08:35:59.260690Z 0 [Note] InnoDB: Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2018-06-19T08:35:59.295598Z 0 [Note] InnoDB: File './ibtmp1' size is now 12 MB.
+2018-06-19T08:35:59.296640Z 0 [Note] InnoDB: 96 redo rollback segment(s) found. 96 redo rollback segment(s) are active.
+2018-06-19T08:35:59.296661Z 0 [Note] InnoDB: 32 non-redo rollback segment(s) are active.
+2018-06-19T08:35:59.296941Z 0 [Note] InnoDB: Waiting for purge to start
+2018-06-19T08:35:59.347969Z 0 [Note] InnoDB: 5.7.22 started; log sequence number 2589175
+2018-06-19T08:35:59.348451Z 0 [Note] Plugin 'FEDERATED' is disabled.
+2018-06-19T08:35:59.351862Z 0 [ERROR] [FATAL] InnoDB: Tablespace id is 2 in the data dictionary but in file ./mysql/plugin.ibd it is 32!
+2018-06-19 16:35:59 0x7fc7d26ce740  InnoDB: Assertion failure in thread 140496205571904 in file ut0ut.cc line 942
+InnoDB: We intentionally generate a memory trap.
+InnoDB: Submit a detailed bug report to http://bugs.mysql.com.
+InnoDB: If you get repeated assertion failures or crashes, even
+InnoDB: immediately after the mysqld startup, there may be
+InnoDB: corruption in the InnoDB tablespace. Please refer to
+InnoDB: http://dev.mysql.com/doc/refman/5.7/en/forcing-innodb-recovery.html
+InnoDB: about forcing recovery.
+08:35:59 UTC - mysqld got signal 6 ;
+This could be because you hit a bug. It is also possible that this binary
+or one of the libraries it was linked against is corrupt, improperly built,
+or misconfigured. This error can also be caused by malfunctioning hardware.
+Attempting to collect some information that could help diagnose the problem.
+As this is a crash and something is definitely wrong, the information
+collection process might fail.
+
+key_buffer_size=8388608
+read_buffer_size=2097152
+max_used_connections=0
+max_threads=100
+thread_count=0
+connection_count=0
+It is possible that mysqld could use up to 
+key_buffer_size + (read_buffer_size + sort_buffer_size)*max_threads = 419129 K  bytes of memory
+Hope that's ok; if not, decrease some variables in the equation.
+
+Thread pointer: 0x7ffd76e9af50
+Attempting backtrace. You can use the following information to find out
+where mysqld died. If you see no messages after this, something went
+terribly wrong...
+stack_bottom = 7ffd76e9e4d0 thread_stack 0x30000
+/usr/local/mysql/bin/mysqld(my_print_stacktrace+0x35)[0xf4b6d5]
+/usr/local/mysql/bin/mysqld(handle_fatal_signal+0x4a4)[0x7d0d74]
+/lib64/libpthread.so.0(+0xf5e0)[0x7fc7d22ad5e0]
+/lib64/libc.so.6(gsignal+0x37)[0x7fc7d0c9f1f7]
+/lib64/libc.so.6(abort+0x148)[0x7fc7d0ca08e8]
+/usr/local/mysql/bin/mysqld(_Z18ut_print_timestampP8_IO_FILE+0x0)[0x7c016e]
+/usr/local/mysql/bin/mysqld(_ZN2ib5fatalD1Ev+0xb3)[0x10e50a3]
+/usr/local/mysql/bin/mysqld[0x11855e9]
+/usr/local/mysql/bin/mysqld[0x11860c8]
+/usr/local/mysql/bin/mysqld(_Z6fil_ioRK9IORequestbRK9page_id_tRK11page_size_tmmPvS8_+0x29e)[0x118e65e]
+/usr/local/mysql/bin/mysqld[0x1142a16]
+/usr/local/mysql/bin/mysqld(_Z13buf_read_pageRK9page_id_tRK11page_size_t+0x40)[0x1143490]
+/usr/local/mysql/bin/mysqld(_Z16buf_page_get_genRK9page_id_tRK11page_size_tmP11buf_block_tmPKcmP5mtr_tb+0xd21)[0x11255d1]
+/usr/local/mysql/bin/mysqld(_Z18btr_root_block_getPK12dict_index_tmP5mtr_t+0xd8)[0x10ed388]
+/usr/local/mysql/bin/mysqld(_Z12btr_root_getPK12dict_index_tP5mtr_t+0x11)[0x10ed4a1]
+/usr/local/mysql/bin/mysqld(_Z12btr_get_sizeP12dict_index_tmP5mtr_t+0x34)[0x10ed5b4]
+/usr/local/mysql/bin/mysqld[0x11762b9]
+/usr/local/mysql/bin/mysqld(_Z27dict_stats_update_transientP12dict_table_t+0x181)[0x1176731]
+/usr/local/mysql/bin/mysqld(_Z17dict_stats_updateP12dict_table_t23dict_stats_upd_option_t+0x69)[0x1179fc9]
+/usr/local/mysql/bin/mysqld(_ZN11ha_innobase4openEPKcij+0x3ac)[0xf81e9c]
+/usr/local/mysql/bin/mysqld(_ZN7handler7ha_openEP5TABLEPKcii+0x3e)[0x81b33e]
+/usr/local/mysql/bin/mysqld(_Z21open_table_from_shareP3THDP11TABLE_SHAREPKcjjjP5TABLEb+0x73a)[0xdc239a]
+/usr/local/mysql/bin/mysqld(_Z10open_tableP3THDP10TABLE_LISTP18Open_table_context+0xf9)[0xcc18b9]
+/usr/local/mysql/bin/mysqld(_Z11open_tablesP3THDPP10TABLE_LISTPjjP19Prelocking_strategy+0xd76)[0xcc52b6]
+/usr/local/mysql/bin/mysqld(_Z33open_trans_system_tables_for_readP3THDP10TABLE_LIST+0x41)[0xcc5411]
+/usr/local/mysql/bin/mysqld[0xd3a013]
+/usr/local/mysql/bin/mysqld(_Z36plugin_register_dynamic_and_init_allPiPPci+0xea)[0xd3b3da]
+2018-06-19T08:35:59.369890Z 0 [Note] InnoDB: Loading buffer pool(s) from /data/mysql/mysql3306/data/ib_buffer_pool
+/usr/local/mysql/bin/mysqld[0x7c729f]
+/usr/local/mysql/bin/mysqld(_Z11mysqld_mainiPPc+0x92f)[0x7ca85f]
+/lib64/libc.so.6(__libc_start_main+0xf5)[0x7fc7d0c8bc05]
+/usr/local/mysql/bin/mysqld[0x7c0ed9]
+
+Trying to get some variables.
+Some pointers may be invalid and cause the dump to abort.
+Query (0): is an invalid pointer
+Connection ID (thread ID): 0
+Status: NOT_KILLED
+
+The manual page at http://dev.mysql.com/doc/mysql/en/crashing.html contains
+information that should help you find out what is causing the crash.

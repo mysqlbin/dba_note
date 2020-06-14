@@ -1,0 +1,19 @@
+{
+  "services": [
+    {
+      "name": "mgr-3306-read",
+      "tags": [
+        "mgr-slave-read"
+      ],
+      "address": "192.168.0.58",
+      "port": 3306,
+      "checks": [
+        {
+          "Args": ["/data/consul/shell/check_mysql_mgr_slave.sh"],
+		  "Shell": "/bin/bash",
+          "interval": "15s"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+MySQL 各种show
+https://mp.weixin.qq.com/s?src=11&timestamp=1526379767&ver=878&signature=tdzAFbOuxT27vFA5AfKL9r8XYb3g6tA89IwvzzEzSOyPEgk9HQDObPS5bpo1HWrjQSZYfJtQnW-aFZJi2RqfvkRpG7BSPzHci3m*2Yj*vkjijwhpVJNgdu09odbBYW6-&new=1
+
+玩转processlist，高效追溯MySQL活跃连接数飙升根因:
+https://mp.weixin.qq.com/s?src=11&timestamp=1526453174&ver=879&signature=06KQhULnm2CFxrUACxk9gINRPiu7glTV8-nHOs05q86q8lYVTKllBm15UMsj*l1D*Ot1cOX*9cmAZ0asmU4xJJEOFDocI6Jjjru4OtQhxmZqt7sZj7bSONWD00rVDc2n&new=1
+
+MySQL SHOW PROCESSLIST协助故障诊断：
+http://www.ywnds.com/?p=9337
+
+show variables like : 用来查看参数的变量
+show global status : 用来查看状态

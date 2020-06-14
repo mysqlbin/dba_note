@@ -1,0 +1,18 @@
+使用mysqldumpslow进行慢查询日志分析
+
+
+输出查询耗时最多的Top5条SQL语句:
+sudo /usr/bin/mysqldumpslow -s t -t 100 slow.log > slow_2rm_slave.txt
+/usr/local/mysql/bin/mysqldumpslow -s t -t 100 slow_slave.log > slow_2rm_slave.txt
+
+/usr/local/mysql/bin/mysqldumpslow -s t -t 100 slow_slave.log > slow_2rm_slave.txt
+
+mysqldumpslow -s t -t 50 slow.log > slow_yq_master.txt
+
+
+-s：排序方法，t表示按时间 (此外，c为按次数，r为按返回记录数等)
+
+-t：去Top多少条，-t 5表示取前5条
+
+
+

@@ -1,0 +1,198 @@
+linux 命令可以来个分类。
+
+rm -f ibtmp*
+rm -r ibtmp* 删除文件夹
+rm -r test.txt 删除文件
+rm -rf filename
+
+#less show.log
+more show.log
+tail -f show.log
+taif show.log
+
+热备？冷备？
+
+不同字符集，效率有差别吗
+不同字符集影响key-len
+
+查找文件：find / -name slow.log
+
+root忘记密码后找回密码的指令：sudo passwd root 
+
+
+‘|’ ：管道
+‘<’、、‘>’号：表示 重定向
+
+yum -y install wget
+unzip .zip
+zip -r mysql-bin.000020_bak.zip mysql-bin.000020_bak
+tar czvf mysql-bin.000020_baks.tar mysql-bin.000020_bak
+
+
+zip -r yq_0608.zip yq_0608.sql
+
+tar czvf yq_0608.tar yq_0608.sql
+
+
+
+centos7 ping ip出现： network is unreachable
+解决办法： sudo ifup eth0 开启网卡
+http://blog.sina.com.cn/s/blog_bca5fd830102x0bz.html
+http://blog.csdn.net/ei__nino/article/details/7641183
+
+linux 安装python
+http://www.cnblogs.com/feng18/p/5854912.html
+
+python环境搭建-Linux系统下python2.6.6升级python3.5.2步骤
+http://www.cnblogs.com/nulige/archive/2016/11/01/6020271.html
+
+Ubuntu 查看磁盘空间及目录容量  df -hl
+http://blog.csdn.net/fieldoffier/article/details/50467618
+
+
+
+perf top 跟top 命令的区别
+top：查看系统负载
+perf top：性能分析，CPU使用率
+
+查看物理内存
+free 
+
+
+linux里如何查看文件大小：
+https://jingyan.baidu.com/article/86fae346b5f1623c49121ae9.html
+
+查看文件大小： ls -lht 
+查看文件夹大小： du -sh 2018-03-14_15-04-12/
+
+
+
+查看挂载点的容量：
+df -h
+
+目录下文件的总大小：
+du -h
+
+列出当前文件以及文件夹的大小：
+du -sh * OR ls -lht
+
+
+安装vim
+yum install vim-enhanced
+
+安装开发包gcc
+yum grouplist
+
+安装rz
+yum install lrzsz
+
+
+
+CentOS7 配置静态IP为何总会出现一个动态IP？
+关闭动态IP:
+systemctl disable NetworkManager.service
+chkconfig network on
+systemctl stop NetworkManager
+systemctl restart network
+
+
+确认文件是否存在
+ls /usr/local/mysql/lib/libgalera_smm.so
+
+
+which mysqld
+
+查看mysqld进程
+strace -p `pidof mysqld`
+查看mysqld的进程号为2222的内容
+strace -p 2222  
+
+Perf top 内核层面的调用， 分析瓶颈
+
+tail -f /var/log/messages
+
+vmstat -S m 1 50
+
+lscpu
+
+
+
+yum localinstall .rpm
+
+
+grep -c '`yldb`' yldb_20180417.dump            # 统计出现的次数
+ 
+grep -o '`yldb_test`'  yldb_test.sql|wc -l   *  # 统计出现的次数
+
+sed -i 's/`yldb`/`yldb_test`/g' yldb_20180417.dump  # 替换: 将 yldb 替换 成 yldb_test
+sed -i 's/`procedure`/`procedure_test`/g' procedure-2018-04-17-1346.sql  # 替换
+
+
+tree -a
+
+监听端口号
+netstat -an |grep 33061
+netstat -an |grep 26
+
+
+vim  输入 G , 可以快速 跳到最后一行
+
+ulimit -n:
+查看系统的最大打开文件数
+
+
+cd ~ : 回到用户家目录
+
+centos7 修改系统时间：
+https://blog.csdn.net/shine_journey/article/details/69718099
+ntpdate us.pool.ntp.org
+
+
+telnet命令用于登录远程主机，对远程主机进行管理
+
+
+
+linux 动态的添加，删除一个IP
+https://blog.csdn.net/wulantian/article/details/9083479
+
+
+
+linux 删除用户
+userdel mongodb
+
+
+
+
+sudo service crond restart
+
+
+
+https://www.cnblogs.com/manong--/p/8012324.html  (Linux下的tar压缩解压缩命令详解)
+
+
+
+
+
+
+telent ip port
+
+
+查看系统版本:
+[root@soft ~]# rpm -qa |grep centos-release
+centos-release-6-9.el6.12.3.x86_64
+
+
+Linux grep命令用于查找文件里符合条件的字符串:
+sudo cat mysql-error.log |grep error
+
+
+
+修改主机名:
+
+
+
+tail 命令，可以快速的看最后的多少行。
+
+	tail -n xxx.log > 1.log
+
+

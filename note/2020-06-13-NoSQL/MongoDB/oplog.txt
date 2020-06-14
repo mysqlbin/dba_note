@@ -1,0 +1,40 @@
+
+
+相关参考:
+	https://www.cnblogs.com/operationhome/p/10688798.html
+	
+	
+Oplog 常用命令	
+	查看 Oplog 的状态：rs.printReplicationInfo()	
+		repl_set:PRIMARY> rs.printReplicationInfo()
+		configured oplog size:   1444.500244140625MB
+		log length start to end: 1003998secs (278.89hrs)
+		oplog first event time:  Wed Nov 27 2019 11:51:41 GMT+0800 (CST)
+		oplog last event time:   Mon Dec 09 2019 02:44:59 GMT+0800 (CST)
+		now:                     Mon Dec 09 2019 02:45:04 GMT+0800 (CST)
+
+	如何查看当前的 Oplog 存储设置的大小：db.oplog.rs.stats().maxSize
+		repl_set:PRIMARY> use local
+		switched to db local
+		repl_set:PRIMARY> db.oplog.rs.stats().maxSize
+		NumberLong(1514668288)
+
+
+	查看 Oplog 最大大小和现在占用的大小，以及记录时长和时间 ：db.getReplicationInfo()
+
+		repl_set:PRIMARY> db.getReplicationInfo()
+		{
+			"logSizeMB" : 1444.500244140625,
+			"usedMB" : 421.44,
+			"timeDiff" : 1004058,
+			"timeDiffHours" : 278.91,
+			"tFirst" : "Wed Nov 27 2019 11:51:41 GMT+0800 (CST)",
+			"tLast" : "Mon Dec 09 2019 02:45:59 GMT+0800 (CST)",
+			"now" : "Mon Dec 09 2019 02:46:02 GMT+0800 (CST)"
+		}
+		
+		
+		
+
+
+	

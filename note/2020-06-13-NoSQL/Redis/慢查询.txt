@@ -1,0 +1,56 @@
+
+1. 把 slowlog-log-slower-than 设置为一个非常小的值:
+	config set slowlog-log-slower-than 5
+	
+2. 执行一些测试命令:
+	set foo bar
+	hgetall bighash
+	hmset new_hash aaa bbb ccc ddd eee fff
+	
+3. 使用 slowlog get 来读取所有的慢日志:
+	192.168.0.111:6379> slowlog get
+	1) 1) (integer) 2
+	   2) (integer) 1573671886
+	   3) (integer) 25
+	   4) 1) "hmset"
+		  2) "new_hash"
+		  3) "aaa"
+		  4) "bbb"
+		  5) "ccc"
+		  6) "ddd"
+		  7) "eee"
+		  8) "fff"
+	   5) "192.168.0.112:59000"
+	   6) ""
+	2) 1) (integer) 1
+	   2) (integer) 1573671868
+	   3) (integer) 11
+	   4) 1) "set"
+		  2) "foo"
+		  3) "bar"
+	   5) "192.168.0.112:59000"
+	   6) ""
+	3) 1) (integer) 0
+	   2) (integer) 1573671864
+	   3) (integer) 20
+	   4) 1) "config"
+		  2) "set"
+		  3) "slowlog-log-slower-than"
+		  4) "5"
+	   5) "192.168.0.112:59000"
+	   6) ""
+
+	
+4. 使用 slowlog len 来获取慢日志中记录的数量:
+	
+	192.168.0.111:6379> slowlog len 
+	(integer) 4
+
+5. 使用 slowlog reset 来清除所有的慢查询记录:
+	192.168.0.111:6379> slowlog reset 
+	OK
+	192.168.0.111:6379> slowlog len
+	(integer) 0
+
+	
+	

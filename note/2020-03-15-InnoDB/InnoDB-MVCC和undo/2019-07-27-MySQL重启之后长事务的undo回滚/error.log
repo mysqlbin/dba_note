@@ -1,0 +1,68 @@
+
+[root@env ~]# /etc/init.d/mysql restart
+ ERROR! MySQL server process #2555 is not running!
+Starting MySQL........................................................................................................................... SUCCESS! 
+
+
+2019-07-27T04:02:26.561415Z 0 [Warning] The syntax '--log_warnings/-W' is deprecated and will be removed in a future release. Please use '--log_error_verbosity' instead.
+2019-07-27T04:02:26.561578Z 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).
+2019-07-27T04:02:26.562660Z 0 [Warning] Insecure configuration for --secure-file-priv: Location is accessible to all OS users. Consider choosing a different directory.
+2019-07-27T04:02:26.562705Z 0 [Note] /usr/local/mysql/bin/mysqld (mysqld 5.7.19-log) starting as process 6256 ...
+2019-07-27T04:02:26.627505Z 0 [Note] InnoDB: PUNCH HOLE support available
+2019-07-27T04:02:26.627545Z 0 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins
+2019-07-27T04:02:26.627551Z 0 [Note] InnoDB: Uses event mutexes
+2019-07-27T04:02:26.627558Z 0 [Note] InnoDB: GCC builtin __sync_synchronize() is used for memory barrier
+2019-07-27T04:02:26.627563Z 0 [Note] InnoDB: Compressed tables use zlib 1.2.3
+2019-07-27T04:02:26.627567Z 0 [Note] InnoDB: Using Linux native AIO
+2019-07-27T04:02:26.627862Z 0 [Note] InnoDB: Number of pools: 1
+2019-07-27T04:02:26.627970Z 0 [Note] InnoDB: Using CPU crc32 instructions
+2019-07-27T04:02:26.629753Z 0 [Note] InnoDB: Initializing buffer pool, total size = 100M, instances = 1, chunk size = 100M
+2019-07-27T04:02:26.636263Z 0 [Note] InnoDB: Completed initialization of buffer pool
+2019-07-27T04:02:26.637800Z 0 [Note] InnoDB: If the mysqld execution user is authorized, page cleaner thread priority can be changed. See the man page of setpriority().
+2019-07-27T04:02:26.689122Z 0 [Note] InnoDB: Highest supported file format is Barracuda.
+2019-07-27T04:02:26.716525Z 0 [Note] InnoDB: Log scan progressed past the checkpoint lsn 10747502904
+2019-07-27T04:02:26.716563Z 0 [Note] InnoDB: Doing recovery: scanned up to log sequence number 10747503131
+2019-07-27T04:02:26.744148Z 0 [Note] InnoDB: Database was not shutdown normally!
+2019-07-27T04:02:26.744197Z 0 [Note] InnoDB: Starting crash recovery.
+2019-07-27T04:04:25.272563Z 0 [Note] InnoDB: 2 transaction(s) which must be rolled back or cleaned up in total 117582509 row operations to undo
+2019-07-27T04:04:25.272603Z 0 [Note] InnoDB: Trx id counter is 5708288
+2019-07-27T04:04:25.272701Z 0 [Note] InnoDB: Starting an apply batch of log records to the database...
+InnoDB: Progress in percent: 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 
+2019-07-27T04:04:25.780167Z 0 [Note] InnoDB: Apply batch completed
+2019-07-27T04:04:25.780701Z 0 [Note] InnoDB: Last MySQL binlog file position 0 1690, file name mysql-bin.000007
+2019-07-27T04:04:26.515421Z 0 [Note] InnoDB: Removed temporary tablespace data file: "ibtmp1"
+2019-07-27T04:04:26.515466Z 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2019-07-27T04:04:26.515554Z 0 [Note] InnoDB: Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2019-07-27T04:04:26.516056Z 0 [Note] InnoDB: Starting in background the rollback of uncommitted transactions
+2019-07-27T04:04:26.516114Z 0 [Note] InnoDB: Rolling back trx with id 5707559, 57094001 rows to undo
+
+InnoDB: Progress in percents: 12019-07-27T04:04:26.727538Z 0 [Note] InnoDB: File './ibtmp1' size is now 12 MB.
+2019-07-27T04:04:26.729332Z 0 [Note] InnoDB: 96 redo rollback segment(s) found. 96 redo rollback segment(s) are active.
+2019-07-27T04:04:26.729371Z 0 [Note] InnoDB: 32 non-redo rollback segment(s) are active.
+2019-07-27T04:04:26.730549Z 0 [Note] InnoDB: Waiting for purge to start
+2019-07-27T04:04:26.781084Z 0 [Note] InnoDB: page_cleaner: 1000ms intended loop took 120144ms. The settings might not be optimal. (flushed=0 and evicted=0, during the time.)
+2019-07-27T04:04:26.873094Z 0 [Note] InnoDB: 5.7.19 started; log sequence number 10747503131
+2019-07-27T04:04:26.874184Z 0 [Note] Plugin 'FEDERATED' is disabled.
+2019-07-27T04:04:26.874674Z 0 [Note] InnoDB: Loading buffer pool(s) from /data/mysql/mysql3306/data/ib_buffer_pool
+2019-07-27T04:04:27.104170Z 0 [Note] Recovering after a crash using /data/mysql/mysql3306/logs/mysql-bin
+2019-07-27T04:04:27.104296Z 0 [Note] Starting crash recovery...
+2019-07-27T04:04:27.104363Z 0 [Note] Crash recovery finished.
+2019-07-27T04:04:27.664513Z 0 [Warning] Failed to set up SSL because of the following SSL library error: SSL context is not usable without certificate and private key
+2019-07-27T04:04:27.664631Z 0 [Note] Server hostname (bind-address): '*'; port: 3306
+2019-07-27T04:04:27.664715Z 0 [Note] IPv6 is available.
+2019-07-27T04:04:27.664739Z 0 [Note]   - '::' resolves to '::';
+2019-07-27T04:04:27.664774Z 0 [Note] Server socket created on IP: '::'.
+2019-07-27T04:04:28.012259Z 0 [Note] InnoDB: Buffer pool(s) load completed at 190727 12:04:28
+2019-07-27T04:04:28.169798Z 0 [Warning] Recovery from master pos 166830097 and file mysql-bin.000003 for channel ''. Previous relay log pos and relay log file had been set to 4, ./relay-bin.000023 respectively.
+2019-07-27T04:04:28.288417Z 0 [Note] Event Scheduler: Loaded 0 events
+2019-07-27T04:04:28.288568Z 0 [Note] /usr/local/mysql/bin/mysqld: ready for connections.
+Version: '5.7.19-log'  socket: '/tmp/mysql3306.sock'  port: 3306  MySQL Community Server (GPL)
+2019-07-27T04:04:28.288577Z 0 [Note] Executing 'SELECT * FROM INFORMATION_SCHEMA.TABLES;' to get a list of tables using the deprecated partition engine. You may use the startup option '--disable-partition-engine-check' to skip this check. 
+2019-07-27T04:04:28.288579Z 0 [Note] Beginning of list of non-natively partitioned tables
+2019-07-27T04:04:28.897323Z 0 [Note] End of list of non-natively partitioned tables
+ 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 1002019-07-27T04:16:33.376631Z 0 [Note] InnoDB: Rollback of trx with id 5707559 completed
+2019-07-27T04:16:33.376657Z 0 [Note] InnoDB: Rolling back trx with id 5707537, 60488508 rows to undo
+
+InnoDB: Progress in percents: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 96 97 98 99 1002019-07-27T04:29:53.169590Z 0 [Note] InnoDB: Rollback of trx with id 5707537 completed
+2019-07-27T04:29:53.169658Z 0 [Note] InnoDB: Rollback of non-prepared transactions completed
+

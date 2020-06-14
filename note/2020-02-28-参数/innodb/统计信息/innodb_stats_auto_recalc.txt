@@ -1,0 +1,5 @@
+
+
+INNODB_STATS_AUTO_RECALC=ON 情况下，表中10%的数据被修改; 
+
+

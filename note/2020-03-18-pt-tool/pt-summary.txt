@@ -1,0 +1,125 @@
+shell>  pt-summary
+# Percona Toolkit System Summary Report ######################
+        Date | 2019-07-10 06:22:56 UTC (local TZ: CST +0800)
+    Hostname | .......
+      Uptime | 195 days,  3:14,  4 users,  load average: 0.08, 0.03, 0.05
+      System | Alibaba Cloud; Alibaba Cloud ECS; vpc-i440fx-2.1 (Other)
+ Service Tag | 39723198-b0b5-4d7b-b09f-04ad76250c58
+    Platform | Linux
+     Release | CentOS Linux release 7.3.1611 (Core) 
+      Kernel | 3.10.0-514.26.2.el7.x86_64
+Architecture | CPU = 64-bit, OS = 64-bit
+   Threading | NPTL 2.17
+     SELinux | Disabled
+ Virtualized | VMWare
+# Processor ##################################################
+  Processors | physical = 1, cores = 2, virtual = 4, hyperthreading = yes
+      Speeds | 4x2494.224
+      Models | 4xIntel(R) Xeon(R) CPU E5-2682 v4 @ 2.50GHz
+      Caches | 4x40960 KB
+# Memory #####################################################
+       Total | 15.5G
+        Free | 685.0M
+        Used | physical = 11.3G, swap allocated = 0.0, swap used = 0.0, virtual = 11.3G
+      Shared | 1.1M
+     Buffers | 3.6G
+      Caches | 3.9G
+       Dirty | 0 kB
+     UsedRSS | 11.2G
+  Swappiness | 0
+ DirtyPolicy | 30, 10
+ DirtyStatus | 0, 0
+  Locator   Size     Speed             Form Factor   Type          Type Detail
+  ========= ======== ================= ============= ============= ===========
+  DIMM 0    16384 MB Unknown           DIMM          RAM           Other   
+# Mounted Filesystems ########################################
+  Filesystem  Size Used Type     Opts                                               Mountpoint
+  devtmpfs    7.8G   0% devtmpfs rw,nosuid,size=8123636k,nr_inodes=2030909,mode=755 /dev
+  /dev/vda1    59G  36% ext4     rw,relatime,data=ordered                           /
+  /dev/vdb     99G  93% ext4     rw,relatime,data=ordered                           /mydata
+  tmpfs       1.6G   0% tmpfs    rw,nosuid,nodev                                    /run/user/0
+  tmpfs       1.6G   0% tmpfs    rw,nosuid,nodev,mode=755                           /run/user/0
+  tmpfs       1.6G   0% tmpfs    rw,nosuid,nodev,relatime,size=1626796k,mode=700    /run/user/0
+  tmpfs       1.6G   0% tmpfs    ro,nosuid,nodev,noexec,mode=755                    /run/user/0
+  tmpfs       7.8G   0% tmpfs    rw,nosuid,nodev                                    /dev/shm
+  tmpfs       7.8G   0% tmpfs    rw,nosuid,nodev,mode=755                           /dev/shm
+  tmpfs       7.8G   0% tmpfs    rw,nosuid,nodev,relatime,size=1626796k,mode=700    /dev/shm
+  tmpfs       7.8G   0% tmpfs    ro,nosuid,nodev,noexec,mode=755                    /dev/shm
+  tmpfs       7.8G   0% tmpfs    rw,nosuid,nodev                                    /sys/fs/cgroup
+  tmpfs       7.8G   0% tmpfs    rw,nosuid,nodev,mode=755                           /sys/fs/cgroup
+  tmpfs       7.8G   0% tmpfs    rw,nosuid,nodev,relatime,size=1626796k,mode=700    /sys/fs/cgroup
+  tmpfs       7.8G   0% tmpfs    ro,nosuid,nodev,noexec,mode=755                    /sys/fs/cgroup
+  tmpfs       7.8G   1% tmpfs    rw,nosuid,nodev                                    /run
+  tmpfs       7.8G   1% tmpfs    rw,nosuid,nodev,mode=755                           /run
+  tmpfs       7.8G   1% tmpfs    rw,nosuid,nodev,relatime,size=1626796k,mode=700    /run
+  tmpfs       7.8G   1% tmpfs    ro,nosuid,nodev,noexec,mode=755                    /run
+# Disk Schedulers And Queue Size #############################
+         vda | 128
+         vdb | 128
+# Disk Partioning ############################################
+Device       Type      Start        End               Size
+============ ==== ========== ========== ==================
+/dev/vda     Disk                              64424509440
+/dev/vda1    Part       2048  125827071        64422411776
+/dev/vdb     Disk                             107374182400
+# Kernel Inode State #########################################
+dentry-state | 19331	9806	45	0	0	0
+     file-nr | 1312	0	10485760
+    inode-nr | 16579	701
+# LVM Volumes ################################################
+Unable to collect information
+# LVM Volume Groups ##########################################
+Unable to collect information
+# RAID Controller ############################################
+  Controller | No RAID controller detected
+# Network Config #############################################
+  Controller | Red Hat, Inc Virtio network device
+  Controller | Red Hat, Inc Virtio network device
+ FIN Timeout | 60
+  Port Range | 65535
+# Interface Statistics #######################################
+  interface  rx_bytes rx_packets  rx_errors   tx_bytes tx_packets  tx_errors
+  ========= ========= ========== ========== ========== ========== ==========
+  lo       350000000000 1750000000          0 350000000000 1750000000          0
+  eth0     2250000000    6000000          0  900000000    6000000          0
+  eth1     15000000000   60000000          0 200000000000   50000000          0
+# Network Devices ############################################
+  Device    Speed     Duplex
+  ========= ========= =========
+  eth0                            
+  eth1                            
+# Network Connections ########################################
+  Connections from remote IP addresses
+    10.80.235.41        1
+    39.108.17.15        1
+    39.108.17.17        2
+    100.100.110.61      1
+    121.35.100.17      15
+  Connections to local IP addresses
+    10.31.76.253        2
+    39.108.17.17       15
+  Connections to top 10 local ports
+    21340               1
+    22                  4
+    3306               10
+    57010               1
+  States of connections
+    ESTABLISHED        20
+    LISTEN              3
+# Top Processes ##############################################
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND
+    1 root      20   0  190692   2768   1440 S   0.0  0.0   2:35.13 systemd
+    2 root      20   0       0      0      0 S   0.0  0.0   0:00.66 kthreadd
+    3 root      20   0       0      0      0 S   0.0  0.0   0:11.71 ksoftirqd/0
+    5 root       0 -20       0      0      0 S   0.0  0.0   0:00.00 kworker/0:+
+    7 root      rt   0       0      0      0 S   0.0  0.0   0:05.52 migration/0
+    8 root      20   0       0      0      0 S   0.0  0.0   0:00.00 rcu_bh
+    9 root      20   0       0      0      0 S   0.0  0.0  15:03.06 rcu_sched
+   10 root      rt   0       0      0      0 S   0.0  0.0   0:33.64 watchdog/0
+   11 root      rt   0       0      0      0 S   0.0  0.0   0:25.13 watchdog/1
+# Notable Processes ##########################################
+  PID    OOM    COMMAND
+  482    -17    sshd
+# Memory mamagement ##########################################
+Transparent huge pages are enabled.
+# The End ####################################################

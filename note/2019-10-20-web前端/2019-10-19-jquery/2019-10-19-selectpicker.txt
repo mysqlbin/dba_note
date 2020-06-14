@@ -1,0 +1,13 @@
+
+
+
+.selectpicker('render')
+	您可以强制使用该render方法重新渲染bootstrap-select ui 。如果当您编程时更改任何相关值而影响元素布局，这将非常有用。
+
+	$('.selectpicker').selectpicker('render'); 　
+
+.selectpicker('refresh')
+	为了使用JavaScript以编程方式更新select，首先操作select，然后使用该refresh方法更新UI以匹配新状态。
+	对于删除或添加选项时，或通过JavaScript禁用/启用选择时，这是必需的。
+
+原文链接：https://blog.csdn.net/yagami123551/article/details/79105224

@@ -1,0 +1,128 @@
+
+
+mysql> show processlist;
++-----+-----------------+--------------------+------------------+-------------+--------+---------------------------------------------------------------+-------------------------------------------------------------+
+| Id  | User            | Host               | db               | Command     | Time   | State                                                         | Info                                                        |
++-----+-----------------+--------------------+------------------+-------------+--------+---------------------------------------------------------------+-------------------------------------------------------------+
+|   1 | event_scheduler | localhost          | NULL             | Daemon      |  10365 | Waiting for next activation                                   | NULL                                                        |
+|  42 | repl_user       | 39.108.17.15:15958 | NULL             | Binlog Dump | 514438 | Master has sent all binlog to slave; waiting for more updates | NULL                                                        |
+| 211 | root            | 22.222.22.22:16850 | nnh5_recovery_db | Sleep       |   1275 |                                                               | NULL                                                        |
+| 212 | root            | 22.222.22.22:16852 | nnh5_recovery_db | Query       |    103 | Sending data                                                  | select * from table_clubgamescoredetail where nClubID=10001 |
+| 214 | root            | 121.35.101.4:5299  | NULL             | Sleep       |   1329 |                                                               | NULL                                                        |
+| 232 | root            | 121.35.101.4:6496  | nnh5_recovery_db | Query       |     92 | Sending to client                                             | select * from table_clubgamescoredetail where nClubID=10001 |
+| 233 | root            | 121.35.101.4:6570  | nnh5_recovery_db | Sleep       |     89 |                                                               | NULL                                                        |
+| 234 | root            | 121.35.101.4:6576  | nnh5_recovery_db | Query       |     88 | Sending to client                                             | select * from table_clubgamescoredetail where nClubID=10001 |
+| 235 | root            | 121.35.101.4:6731  | nnh5_recovery_db | Sleep       |     86 |                                                               | NULL                                                        |
+| 236 | root            | 121.35.101.4:6772  | nnh5_recovery_db | Query       |     85 | Sending to client                                             | select * from table_clubgamescoredetail where nClubID=10001 |
+| 237 | root            | 121.35.101.4:7619  | nnh5_recovery_db | Sleep       |     64 |                                                               | NULL                                                        |
+| 238 | root            | 121.35.101.4:7642  | nnh5_recovery_db | Query       |     63 | Sending to client                                             | select * from table_clubgamescoredetail where nClubID=10001 |
+| 239 | root            | 121.35.101.4:8423  | NULL             | Sleep       |     40 |                                                               | NULL                                                        |
++-----+-----------------+--------------------+------------------+-------------+--------+---------------------------------------------------------------+-------------------------------------------------------------+
+26 rows in set (0.00 sec)
+
+
+
+State 的值一直处于 “Sending to client”，就表示服务器端的网络栈写满了；
+	当前 有1个查询处于 Sending data 状态, 有4个查询处于 Sending to client;
+	如果这时候还有其它查询进来, 那么 其它查询也会处于 Sending to client状态.
+
+
+[root@soft ~]# curl icanhazip.com
+121.35.101.4   #外网出口IP
+
+
+mysql> show processlist;
++-----+-----------------+--------------------+------------------+-------------+--------+---------------------------------------------------------------+-------------------------------------------------------------+
+| Id  | User            | Host               | db               | Command     | Time   | State                                                         | Info                                                        |
++-----+-----------------+--------------------+------------------+-------------+--------+---------------------------------------------------------------+-------------------------------------------------------------+
+|   1 | event_scheduler | localhost          | NULL             | Daemon      |  10415 | Waiting for next activation                                   | NULL                                                        |
+|  42 | repl_user       | 39.108.17.15:15958 | NULL             | Binlog Dump | 514488 | Master has sent all binlog to slave; waiting for more updates | NULL                                                        |
+| 211 | root            | 22.222.22.22:16850 | nnh5_recovery_db | Sleep       |   1325 |                                                               | NULL                                                        |
+| 212 | root            | 22.222.22.22:16852 | nnh5_recovery_db | Query       |    153 | Sending data                                                  | select * from table_clubgamescoredetail where nClubID=10001 |
+| 214 | root            | 121.35.101.4:5299  | NULL             | Sleep       |   1379 |                                                               | NULL                                                        |
+| 232 | root            | 121.35.101.4:6496  | nnh5_recovery_db | Query       |    142 | Sending to client                                             | select * from table_clubgamescoredetail where nClubID=10001 |
+| 233 | root            | 121.35.101.4:6570  | nnh5_recovery_db | Sleep       |    139 |                                                               | NULL                                                        |
+| 234 | root            | 121.35.101.4:6576  | nnh5_recovery_db | Query       |    138 | Sending to client                                             | select * from table_clubgamescoredetail where nClubID=10001 |
+| 235 | root            | 121.35.101.4:6731  | nnh5_recovery_db | Sleep       |    136 |                                                               | NULL                                                        |
+| 236 | root            | 121.35.101.4:6772  | nnh5_recovery_db | Query       |    135 | Sending to client                                             | select * from table_clubgamescoredetail where nClubID=10001 |
+| 237 | root            | 121.35.101.4:7619  | nnh5_recovery_db | Sleep       |    114 |                                                               | NULL                                                        |
+| 238 | root            | 121.35.101.4:7642  | nnh5_recovery_db | Query       |    113 | Sending to client                                             | select * from table_clubgamescoredetail where nClubID=10001 |
+| 241 | root            | 121.35.101.4:7647  | nnh5_recovery_db | Sleep       |     10 |                                                               | NULL                                                        |
+| 242 | root            | 121.35.101.4:7673  | nnh5_recovery_db | Query       |      9 | Sending to client                                             | select * from table_clubgamescoredetail where nClubID=10001 |
+| 243 | root            | 121.35.101.4:7798  | nnh5_recovery_db | Query       |      7 | Sending to client                                             | select * from table_clubgamescoredetail where nClubID=10001 |
++-----+-----------------+--------------------+------------------+-------------+--------+---------------------------------------------------------------+-------------------------------------------------------------+
+30 rows in set (0.00 sec)
+
+
+
+
+
+innodb_buffer_poll_size=12G;
+
+[root@database-05 ~]# free -h
+              total        used        free      shared  buff/cache   available
+Mem:            15G         15G        159M        844K        175M         71M
+Swap:            0B          0B          0B
+
+
+2019-06-19T01:34:36.284664Z 0 [Warning] TIMESTAMP with implicit DEFAULT value is deprecated. Please use --explicit_defaults_for_timestamp server option (see documentation for more details).
+2019-06-19T01:34:36.284744Z 0 [Warning] 'NO_ZERO_DATE', 'NO_ZERO_IN_DATE' and 'ERROR_FOR_DIVISION_BY_ZERO' sql modes should be used with strict mode. They will be merged with strict mode in a future release.
+2019-06-19T01:34:36.284749Z 0 [Warning] 'NO_AUTO_CREATE_USER' sql mode was not set.
+2019-06-19T01:34:36.284776Z 0 [Note] --secure-file-priv is set to NULL. Operations related to importing and exporting data are disabled
+2019-06-19T01:34:36.284805Z 0 [Note] /usr/local/mysql/bin/mysqld (mysqld 5.7.24-log) starting as process 32621 ...
+2019-06-19T01:34:36.381648Z 0 [Warning] InnoDB: innodb_open_files should not be greater than the open_files_limit.
+
+2019-06-19T01:34:36.381721Z 0 [Note] InnoDB: PUNCH HOLE support available
+2019-06-19T01:34:36.381733Z 0 [Note] InnoDB: Mutexes and rw_locks use GCC atomic builtins
+2019-06-19T01:34:36.381740Z 0 [Note] InnoDB: Uses event mutexes
+2019-06-19T01:34:36.381745Z 0 [Note] InnoDB: GCC builtin __sync_synchronize() is used for memory barrier
+2019-06-19T01:34:36.381750Z 0 [Note] InnoDB: Compressed tables use zlib 1.2.11
+2019-06-19T01:34:36.381754Z 0 [Note] InnoDB: Using Linux native AIO
+2019-06-19T01:34:36.383437Z 0 [Note] InnoDB: Number of pools: 1
+2019-06-19T01:34:36.383564Z 0 [Note] InnoDB: Using CPU crc32 instructions
+2019-06-19T01:34:36.386461Z 0 [Note] InnoDB: Initializing buffer pool, total size = 10G, instances = 2, chunk size = 128M
+2019-06-19T01:34:37.266453Z 0 [Note] InnoDB: Completed initialization of buffer pool
+2019-06-19T01:34:37.346911Z 0 [Note] InnoDB: If the mysqld execution user is authorized, page cleaner thread priority can be changed. See the man page of setpriority().
+2019-06-19T01:34:37.380818Z 0 [Note] InnoDB: Highest supported file format is Barracuda.
+2019-06-19T01:34:37.438163Z 0 [Note] InnoDB: Log scan progressed past the checkpoint lsn 230127883110
+2019-06-19T01:34:37.438205Z 0 [Note] InnoDB: Doing recovery: scanned up to log sequence number 230127883119
+2019-06-19T01:34:37.438212Z 0 [Note] InnoDB: Database was not shutdown normally!
+2019-06-19T01:34:37.438217Z 0 [Note] InnoDB: Starting crash recovery.
+2019-06-19T01:34:37.705886Z 0 [Note] InnoDB: Last MySQL binlog file position 0 842766927, file name mysql-bin.000128
+2019-06-19T01:34:39.314936Z 0 [Note] InnoDB: Removed temporary tablespace data file: "ibtmp1"
+2019-06-19T01:34:39.314960Z 0 [Note] InnoDB: Creating shared tablespace for temporary tables
+2019-06-19T01:34:39.314994Z 0 [Note] InnoDB: Setting file './ibtmp1' size to 12 MB. Physically writing the file full; Please wait ...
+2019-06-19T01:34:39.459477Z 0 [Note] InnoDB: File './ibtmp1' size is now 12 MB.
+2019-06-19T01:34:39.460313Z 0 [Note] InnoDB: 96 redo rollback segment(s) found. 96 redo rollback segment(s) are active.
+2019-06-19T01:34:39.460327Z 0 [Note] InnoDB: 32 non-redo rollback segment(s) are active.
+2019-06-19T01:34:39.460800Z 0 [Note] InnoDB: Waiting for purge to start
+2019-06-19T01:34:39.510936Z 0 [Note] InnoDB: 5.7.24 started; log sequence number 230127883119
+2019-06-19T01:34:39.511632Z 0 [Note] InnoDB: Loading buffer pool(s) from /mydata/mysql/data/ib_buffer_pool
+2019-06-19T01:34:39.511885Z 0 [Note] Plugin 'FEDERATED' is disabled.
+mysqld: File '/usr/local/mysql/logs/slow.log' not found (Errcode: 2 - No such file or directory)
+2019-06-19T01:34:39.517114Z 0 [ERROR] Could not use /usr/local/mysql/logs/slow.log for logging (error 2 - No such file or directory). Turning logging off for the server process. To turn it on again: fix the cause, then either restart the query logging by using "SET GLOBAL SLOW_QUERY_LOG=ON" or restart the MySQL server.
+2019-06-19T01:34:39.520936Z 0 [Note] Recovering after a crash using /mydata/mysql/logs/mysql-bin
+2019-06-19T01:34:39.527349Z 0 [Note] InnoDB: Buffer pool(s) load completed at 190619  9:34:39
+2019-06-19T01:34:44.268609Z 0 [Note] Starting crash recovery...
+2019-06-19T01:34:44.268676Z 0 [Note] Crash recovery finished.
+2019-06-19T01:34:44.704024Z 0 [Warning] Failed to set up SSL because of the following SSL library error: SSL context is not usable without certificate and private key
+2019-06-19T01:34:44.704051Z 0 [Note] Server hostname (bind-address): '*'; port: 3306
+2019-06-19T01:34:44.704085Z 0 [Note] IPv6 is available.
+2019-06-19T01:34:44.704098Z 0 [Note]   - '::' resolves to '::';
+2019-06-19T01:34:44.704123Z 0 [Note] Server socket created on IP: '::'.
+2019-06-19T01:34:44.716078Z 0 [Warning] 'user' entry 'root@localhost' ignored in --skip-name-resolve mode.
+2019-06-19T01:34:44.716119Z 0 [Warning] 'user' entry 'mysql.session@localhost' ignored in --skip-name-resolve mode.
+2019-06-19T01:34:44.716129Z 0 [Warning] 'user' entry 'mysql.sys@localhost' ignored in --skip-name-resolve mode.
+2019-06-19T01:34:44.716801Z 0 [Warning] 'db' entry 'performance_schema mysql.session@localhost' ignored in --skip-name-resolve mode.
+2019-06-19T01:34:44.716810Z 0 [Warning] 'db' entry 'sys mysql.sys@localhost' ignored in --skip-name-resolve mode.
+2019-06-19T01:34:44.717532Z 0 [Warning] 'proxies_priv' entry '@ root@localhost' ignored in --skip-name-resolve mode.
+2019-06-19T01:34:44.728856Z 0 [Warning] 'tables_priv' entry 'user mysql.session@localhost' ignored in --skip-name-resolve mode.
+2019-06-19T01:34:44.728871Z 0 [Warning] 'tables_priv' entry 'sys_config mysql.sys@localhost' ignored in --skip-name-resolve mode.
+2019-06-19T01:34:44.734551Z 0 [Note] Failed to start slave threads for channel ''
+2019-06-19T01:34:44.865172Z 0 [Note] Event Scheduler: Loaded 17 events
+2019-06-19T01:34:44.865290Z 1 [Note] Event Scheduler: scheduler thread started with id 1
+2019-06-19T01:34:44.865413Z 0 [Note] /usr/local/mysql/bin/mysqld: ready for connections.
+Version: '5.7.24-log'  socket: '/mydata/mysql/data/mysql.sock'  port: 3306  MySQL Community Server (GPL)
+2019-06-19T01:35:35.473079Z 4 [Note] Start binlog_dump to master_thread_id(4) slave_server(6), pos(mysql-bin.000128, 842766927)
+
+

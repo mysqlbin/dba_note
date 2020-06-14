@@ -1,0 +1,34 @@
+1：shlex.split的用法
+command ="/usr/bin/innobackupex --user=backup --password=123456abc --host=127.0.0.1 --port=3306 --default-file=/etc/my.cnf  --no-timestamp /data/backup/db_repl_2017-12-02"
+
+cmd = shlex.split(command)
+
+解析如下：
+command ="/usr/bin/innobackupex --user=backup --password=123456abc --host=127.0.0.1 --port=3306 --default-file=/etc/my.cnf  --no-timestamp /data/backup/db_repl_2017-12-02"
+import shlex, subprocess
+cmd = shlex.split(command)
+print cmd
+['/usr/bin/innobackupex', '--user=backup', '--password=123456abc', '--host=127.0.0.1', '--port=3306', '--default-file=/etc/my.cnf', '--no-timestamp', '/data/backup/db_repl_2017-12-02']
+
+# 以上就是shelx.split的用法
+
+
+2：format的用法，格式化字符串，通过下标拿到值
+
+command = "{0} --defaults-file={4}  --user={1} --password={2} --host=127.0.0.1 --port={3}  --no-timestamp {5}".format(pt_xtrabackup, self.user, self.passwd, self.port, self.default_file, self.target_dir)
+		
+"{1}".format("hello", "world");
+
+
+思考 ：关于对错误和脚本执行状态进行处理和记录
+如何创建脚本执行的日志文件并写入执行脚本日志，同时用 tail -f 监控日志记录
+
+
+
+proc = Popen(cmd, stdout=PIPE, stderr=PIPE, shell=True)
+
+proc.wait()
+
+return proc.returncode
+
+insert into backup_task_list(`host_id`, `dbname`, `username`, `password`, `port`, `defaults_file`, `datadir`, `backup_path`) values('1921681112', 'db_repl', 'backup', 'df10ef8509dc176d733d59549e7dbfaf', 3306, '/etc/my.cnf', '/data/mysql/mysql3306/data/', '/data/backup/');
