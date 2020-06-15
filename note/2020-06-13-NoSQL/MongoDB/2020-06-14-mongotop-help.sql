@@ -1,5 +1,5 @@
 
-mongotop -h 192.168.0.31 -u admin -p admin
+mongotop -h 192.168.0.31 -u admin -p admin --authenticationDatabase=admin
 
 
 [root@env30 journal]# mongotop --help

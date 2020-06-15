@@ -14,3 +14,6 @@
 		
 	此内存用于缓存工作集数据（索引、namespace，未提交的write，query缓冲等）
 	
+	MongoDB 不宜与 MySQL 部署在同一个机器上。
+	
+	
