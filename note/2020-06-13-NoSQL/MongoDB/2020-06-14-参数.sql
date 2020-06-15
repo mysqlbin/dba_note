@@ -12,4 +12,5 @@
 		
 		wiredTigerCacheSizeGB=10
 		
+	此内存用于缓存工作集数据（索引、namespace，未提交的write，query缓冲等）
 	

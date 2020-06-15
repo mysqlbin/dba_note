@@ -38,7 +38,7 @@ community server 社会服务(社区版)
 	
 	vim /etc/passwd            #
 	
-	mongodb:x:1018:1018::/usr/local/mongodb:/bin/bash   #修改mongodb可登录
+	mongodb:x:1018:1018::/usr/local/mongodb:/bin/bash   #修改mongodb可登录系统,把/sbin/nologin改成/bin/bash即可登录
 	
 	su - mongodb										#切换mongodb用户
 		
