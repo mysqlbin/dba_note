@@ -28,10 +28,14 @@ https://docs.mongodb.com/manual/core/wiredtiger/#storage-wiredtiger-checkpoints
 
 	journal就是一个预写事务日志，来确保数据的持久性，wiredTiger每隔60秒（默认）， mongodb将对journal文件提交一个checkpoint
 	
-	checkpoint（检测点，将内存中的数据变更（脏页）flush到磁盘中的数据文件中，并做一个标记点，表示标记点之前的数据表示已经持久存储在了数据文件中，此时内存的数据与磁盘的数据一致；
+	checkpoint（检测点，将内存中的数据变更（脏页）flush到磁盘中的数据文件中，并做一个标记点，表示标记点之前的数据已经持久存储在了数据文件中，标记点之前的内存数据与磁盘的数据一致，同时释放了缓冲池空间；
+	
+	检测点创建后，此前的journal日志即可清除。
+	
 	标记点之后的数据变更存在于内存和journal日志中。
 	
-	崩溃恢复的起点就从这个checkpoint开始。
+	崩溃恢复的起点就从这个checkpoint开始，缩短了数据库的恢复时间。
+	
 	
 	
 
