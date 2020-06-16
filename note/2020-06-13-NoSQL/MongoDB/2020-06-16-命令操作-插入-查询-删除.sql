@@ -1,9 +1,22 @@
 
 
-查看和修改 系统参数 变量
+如何查看和修改 系统参数 变量
+
+1. 插入单个文档
+2. 批量插入多个文档
+3. 删除集合中的所有文档
+4. 清空整个集合	
+5. 修改/更新
+6. 查询
+7. OR 查询
+8. 查询数组
 
 
-插入单个文档
+1. 插入单个文档
+	repl_set:PRIMARY> use abc_db
+	switched to db abc_db
+
+
 	repl_set:PRIMARY> db.foo.insert({"bar" : "baz"})
 	WriteResult({ "nInserted" : 1 })
 	repl_set:PRIMARY> 
@@ -11,7 +24,7 @@
 	{ "_id" : ObjectId("5ddee9ccd514eb7772049dc3"), "bar" : "baz" }
 
 
-批量插入多个文档
+2. 批量插入多个文档
 	repl_set:PRIMARY> use test_db
 	switched to db test_db
 
@@ -37,19 +50,19 @@
 
 	
 
-删除集合中的所有文档
+3. 删除集合中的所有文档
 		
 	db.foo.remove()    # 不会删除集合本身，也不会删除集合的元信息。
 
-清空整个集合	
+4. 清空整个集合	
 
 	db.foo.drop()      # 删除集合本身 和 集合的元数据
 
 
-修改/更新
+5. 修改/更新
 	
 	
-查询
+6. 查询
 	db.foo.find()   # 查询返回所有文档
 
 	db.foo.find({"age" : 27})   # 查询 age=27 的所有文档
@@ -85,7 +98,7 @@
 			
 
 	
-OR 查询
+7. OR 查询
 	$in 查询
 		repl_set:PRIMARY> db.foo.insert({"username" : "lu", "age" : 35, "email" : "abc@163.com"})
 		WriteResult({ "nInserted" : 1 })
@@ -110,7 +123,7 @@ OR 查询
 		{ "_id" : ObjectId("5ddf12bcd514eb7772049dc9"), "username" : "bin", "age" : 27, "email" : "122405623@qq.com" }
 		{ "_id" : ObjectId("5ddf131ad514eb7772049dca"), "username" : "jian", "age" : 30, "email" : "122405623@163.com" }
 
-查询数组
+8. 查询数组
 1. $all
 	db.food.insert({"_id" : 1, "fruit" : ["apple", "banana", "peach"]})
 	db.food.insert({"_id" : 2, "fruit" : ["apple", "kumquat", "orange"]})

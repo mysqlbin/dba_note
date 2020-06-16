@@ -9,6 +9,8 @@ db.t1.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 db.t1.stats(); 
 db.t2.stats();
 
+db.serverStatus
+db.serverStatus().connections
 
 
 Collection聚集集合操作

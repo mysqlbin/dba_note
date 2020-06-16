@@ -19,3 +19,5 @@ Release Notes for MongoDB 1.2.x
 
 从3.0版本引入 WiredTiger 、到3.2版本支持 ReadConcern、3.6 支持 Causal Consistency 等很多工作都是在为事务功能做准备，
 最终在4.0版本将整个事务的API提供给用户，帮助用户更好的构建应用。
+3.2 版本 WiredTiger 成为默认的存储引擎。
+
