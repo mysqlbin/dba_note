@@ -1,12 +1,16 @@
 
 
 复制的原理：
-
+	
+	第一次是走全量数据复制。
+	
+	
 	复制是基于操作日志 oplog ，相当于 MySQL 中的二进制日志，只会记录发生改变的记录。
 	复制是将主节点的 oplog 日志同步并应用到其他的从节点的过程。
 	
 	副本集中数据同步过程：
 		Primary节点写入数据，Secondary通过读取Primary的oplog得到复制信息，开始复制数据并且将复制信息写入到自己的oplog。
+		
 	当Primary节点完成数据操作后，Secondary会做出一系列的动作保证数据的同步：
 		1：检查自己local库的oplog.rs集合找出最近的时间戳。
 		2：检查Primary节点local库oplog.rs集合，找出大于此时间戳的记录。
