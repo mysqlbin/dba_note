@@ -4,7 +4,8 @@
 db.t1.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 { "_id" : null, "num_tutorial" : 500003 }
 
-
+use niuniu_h5
+db.test.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 
 db.t1.stats(); 
 db.t2.stats();

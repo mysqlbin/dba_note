@@ -1,6 +1,20 @@
 
 
 
+目前官方MongoDB社区版是不支持Hot Backup热备份的，我们只能通过mongodump等逻辑备份工具导出bson文件，再mongorestore导入，类似MySQL的mysqldump工具。
+
+在备份副本集时，我们需指定--oplog选项记录备份间产生的增量数据，类似mysqldump --single-transaction --master-data=2（做一致性快照并记录当前的binlog点）。
+
+对副本集的成员恢复，需先切成单机版，mongorestore必须指定--oplogReplay选项，以恢复到某一时刻的快照，最后还需填充oplog（增量数据以哪个位置点开始断点续传），mongorestore -d local -c oplog.rs dump/oplog.bson，最后一步再切为副本集成员重新启动。
+
+中小型数据库备份起来简单快捷，如果过TB级的数据量，那将是痛苦的。
+
+
+
+如果你的oplog设置过小，很有可能在备份恢复这段时间，oplog被覆盖重写，那么你将永远无法加入副本集集群里。
+
+
+
 备份单机的指定数据库数据
 	mongodump  --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin"  -d sbtest_db   -o /data/`date +%Y%m%d` 
 	

@@ -3,7 +3,7 @@
 1. 查看副本集状态  --rs.status()
 2. db.isMaster()
 3. 查看oplog状态 --db.printReplicationInfo()
-4. rs.printSlaveReplicationInfo()
+4. 查看复制延迟 --rs.printSlaveReplicationInfo()
 5. 查看服务状态详情 --db.serverStatus() 
 
 
@@ -275,7 +275,7 @@
 	{ "errmsg" : "replication not detected" }   --未检测到复制
 
 
-4. rs.printSlaveReplicationInfo()
+4. 查看复制延迟 --rs.printSlaveReplicationInfo()
 
 	repl_set:PRIMARY> rs.printSlaveReplicationInfo()
 	source: 192.168.0.1:27017
