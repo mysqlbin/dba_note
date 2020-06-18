@@ -72,7 +72,7 @@ test123456
  
 import datetime
 from pymongo import MongoClient                 
-mongoserver_uri = "mongodb://test_user:test123456@10.31.76.249:27017,10.31.76.223:27017/admin?replicaSet=repl_set"   
+mongoserver_uri = "mongodb://test_user:test123456@192.168.0.1:27017,192.168.0.2:27017/admin?replicaSet=repl_set"   
 client = MongoClient(mongoserver_uri) 
 db = client['test']
 collection = db['abc']
@@ -101,7 +101,7 @@ mongo -host 192.168.0.2 -u admin -p admin123456
 当密码错误  
     import datetime
     from pymongo import MongoClient                 
-    mongoserver_uri = "mongodb://test_user:test123s456@10.31.76.249:27017,10.31.76.223:27017/admin?replicaSet=repl_set"   
+    mongoserver_uri = "mongodb://test_user:test123s456@192.168.0.1:27017,192.168.0.2:27017/admin?replicaSet=repl_set"   
     client = MongoClient(mongoserver_uri) 
     db = client['test']
     collection = db['abc']

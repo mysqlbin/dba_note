@@ -269,6 +269,10 @@
 	oplog first event time:  Tue Jun 16 2020 17:54:46 GMT+0800 (CST)
 	oplog last event time:   Wed Jun 17 2020 21:59:36 GMT+0800 (CST)
 	now:                     Wed Jun 17 2020 21:59:37 GMT+0800 (CST)
+	
+	--单机模式下查看  oplog 状态
+	> db.printReplicationInfo()
+	{ "errmsg" : "replication not detected" }   --未检测到复制
 
 
 4. rs.printSlaveReplicationInfo()
