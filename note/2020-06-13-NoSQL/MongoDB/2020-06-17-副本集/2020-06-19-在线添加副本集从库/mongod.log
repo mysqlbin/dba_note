@@ -1,0 +1,1095 @@
+2020-06-19T16:47:51.512+0800 I  CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+2020-06-19T16:47:51.514+0800 W  ASIO     [main] No TransportLayer configured during NetworkInterface startup
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten] MongoDB starting : pid=18151 port=27017 dbpath=/home/mongodb/data 64-bit host=test.localdomain
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten] db version v4.2.7
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten] git version: 51d9fe12b5d19720e72dcd7db0f2f17dd9a19212
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1e-fips 11 Feb 2013
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten] allocator: tcmalloc
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten] modules: none
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten] build environment:
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten]     distmod: rhel70
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten]     distarch: x86_64
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten]     target_arch: x86_64
+2020-06-19T16:47:51.515+0800 I  CONTROL  [initandlisten] options: { config: "/etc/mongodb.conf", net: { bindIp: "0.0.0.0", maxIncomingConnections: 20000 }, processManagement: { fork: true }, storage: { dbPath: "/home/mongodb/data" }, systemLog: { destination: "file", logAppend: true, path: "/home/mongodb/log/mongod.log" } }
+2020-06-19T16:47:51.516+0800 I  STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=7390M,cache_overflow=(file_max=0M),session_max=33000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000,close_scan_interval=10,close_handle_minimum=250),statistics_log=(wait=0),verbose=[recovery_progress,checkpoint_progress],
+2020-06-19T16:47:52.296+0800 I  STORAGE  [initandlisten] WiredTiger message [1592556472:296956][18151:0x7f639e315c40], txn-recover: Set global recovery timestamp: (0, 0)
+2020-06-19T16:47:52.456+0800 I  RECOVERY [initandlisten] WiredTiger recoveryTimestamp. Ts: Timestamp(0, 0)
+2020-06-19T16:47:52.617+0800 I  STORAGE  [initandlisten] Timestamp monitor starting
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] ** WARNING: soft rlimits too low. rlimits set to 4096 processes, 32768 files. Number of processes should be at least 16384 : 0.5 times number of files.
+2020-06-19T16:47:52.697+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:47:52.698+0800 I  STORAGE  [initandlisten] createCollection: admin.system.version with provided UUID: 0fefc54f-06ff-4787-b514-db0e3be06f8b and options: { uuid: UUID("0fefc54f-06ff-4787-b514-db0e3be06f8b") }
+2020-06-19T16:47:52.861+0800 I  INDEX    [initandlisten] index build: done building index _id_ on ns admin.system.version
+2020-06-19T16:47:52.861+0800 I  SHARDING [initandlisten] Marking collection admin.system.version as collection version: <unsharded>
+2020-06-19T16:47:52.862+0800 I  COMMAND  [initandlisten] setting featureCompatibilityVersion to 4.2
+2020-06-19T16:47:52.862+0800 I  SHARDING [initandlisten] Marking collection local.system.replset as collection version: <unsharded>
+2020-06-19T16:47:52.862+0800 I  STORAGE  [initandlisten] Flow Control is enabled on this deployment.
+2020-06-19T16:47:52.862+0800 I  SHARDING [initandlisten] Marking collection admin.system.roles as collection version: <unsharded>
+2020-06-19T16:47:52.862+0800 I  STORAGE  [initandlisten] createCollection: local.startup_log with generated UUID: a599c1b8-fab5-4648-82c8-71cd65e801ee and options: { capped: true, size: 10485760 }
+2020-06-19T16:47:53.011+0800 I  INDEX    [initandlisten] index build: done building index _id_ on ns local.startup_log
+2020-06-19T16:47:53.011+0800 I  SHARDING [initandlisten] Marking collection local.startup_log as collection version: <unsharded>
+2020-06-19T16:47:53.012+0800 I  FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/home/mongodb/data/diagnostic.data'
+2020-06-19T16:47:53.013+0800 I  SHARDING [LogicalSessionCacheRefresh] Marking collection config.system.sessions as collection version: <unsharded>
+2020-06-19T16:47:53.013+0800 I  NETWORK  [listener] Listening on /tmp/mongodb-27017.sock
+2020-06-19T16:47:53.013+0800 I  NETWORK  [listener] Listening on 0.0.0.0
+2020-06-19T16:47:53.013+0800 I  NETWORK  [listener] waiting for connections on port 27017
+2020-06-19T16:47:53.013+0800 I  CONTROL  [LogicalSessionCacheReap] Sessions collection is not set up; waiting until next sessions reap interval: config.system.sessions does not exist
+2020-06-19T16:47:53.013+0800 I  STORAGE  [LogicalSessionCacheRefresh] createCollection: config.system.sessions with provided UUID: 1e8f41d7-6a08-4096-9e59-02f95d0f25bc and options: { uuid: UUID("1e8f41d7-6a08-4096-9e59-02f95d0f25bc") }
+2020-06-19T16:47:53.170+0800 I  INDEX    [LogicalSessionCacheRefresh] index build: done building index _id_ on ns config.system.sessions
+2020-06-19T16:47:53.328+0800 I  INDEX    [LogicalSessionCacheRefresh] index build: starting on config.system.sessions properties: { v: 2, key: { lastUse: 1 }, name: "lsidTTLIndex", ns: "config.system.sessions", expireAfterSeconds: 1800 } using method: Hybrid
+2020-06-19T16:47:53.328+0800 I  INDEX    [LogicalSessionCacheRefresh] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T16:47:53.328+0800 I  INDEX    [LogicalSessionCacheRefresh] index build: collection scan done. scanned 0 total records in 0 seconds
+2020-06-19T16:47:53.329+0800 I  INDEX    [LogicalSessionCacheRefresh] index build: inserted 0 keys from external sorter into index in 0 seconds
+2020-06-19T16:47:53.373+0800 I  INDEX    [LogicalSessionCacheRefresh] index build: done building index lsidTTLIndex on ns config.system.sessions
+2020-06-19T16:47:53.398+0800 I  COMMAND  [LogicalSessionCacheRefresh] command config.system.sessions command: createIndexes { createIndexes: "system.sessions", indexes: [ { key: { lastUse: 1 }, name: "lsidTTLIndex", expireAfterSeconds: 1800 } ], $db: "config" } numYields:0 reslen:114 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 3 } }, Global: { acquireCount: { r: 1, w: 2 } }, Database: { acquireCount: { r: 1, w: 2, W: 1 } }, Collection: { acquireCount: { r: 4, w: 1, R: 1, W: 2 } }, Mutex: { acquireCount: { r: 3 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 385ms
+2020-06-19T16:47:54.000+0800 I  SHARDING [ftdc] Marking collection local.oplog.rs as collection version: <unsharded>
+2020-06-19T16:49:10.815+0800 I  CONTROL  [main] ***** SERVER RESTARTED *****
+2020-06-19T16:49:10.818+0800 I  CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+2020-06-19T16:49:10.819+0800 W  ASIO     [main] No TransportLayer configured during NetworkInterface startup
+2020-06-19T16:49:10.819+0800 I  CONTROL  [signalProcessingThread] got signal 15 (Terminated), will terminate after current cmd ends
+2020-06-19T16:49:10.820+0800 I  NETWORK  [signalProcessingThread] shutdown: going to close listening sockets...
+2020-06-19T16:49:10.820+0800 I  NETWORK  [listener] removing socket file: /tmp/mongodb-27017.sock
+2020-06-19T16:49:10.820+0800 I  -        [signalProcessingThread] Stopping further Flow Control ticket acquisitions.
+2020-06-19T16:49:10.820+0800 I  CONTROL  [signalProcessingThread] Shutting down free monitoring
+2020-06-19T16:49:10.821+0800 I  FTDC     [signalProcessingThread] Shutting down full-time diagnostic data capture
+2020-06-19T16:49:10.823+0800 I  STORAGE  [signalProcessingThread] Deregistering all the collections
+2020-06-19T16:49:10.823+0800 I  STORAGE  [signalProcessingThread] Timestamp monitor shutting down
+2020-06-19T16:49:10.823+0800 I  STORAGE  [signalProcessingThread] WiredTigerKVEngine shutting down
+2020-06-19T16:49:10.823+0800 I  STORAGE  [signalProcessingThread] Shutting down session sweeper thread
+2020-06-19T16:49:10.823+0800 I  STORAGE  [signalProcessingThread] Finished shutting down session sweeper thread
+2020-06-19T16:49:10.823+0800 I  STORAGE  [signalProcessingThread] Shutting down journal flusher thread
+2020-06-19T16:49:10.871+0800 I  STORAGE  [signalProcessingThread] Finished shutting down journal flusher thread
+2020-06-19T16:49:10.871+0800 I  STORAGE  [signalProcessingThread] Shutting down checkpoint thread
+2020-06-19T16:49:10.871+0800 I  STORAGE  [signalProcessingThread] Finished shutting down checkpoint thread
+2020-06-19T16:49:11.113+0800 I  STORAGE  [signalProcessingThread] shutdown: removing fs lock...
+2020-06-19T16:49:11.113+0800 I  CONTROL  [signalProcessingThread] now exiting
+2020-06-19T16:49:11.113+0800 I  CONTROL  [signalProcessingThread] shutting down with code:0
+2020-06-19T16:49:19.379+0800 I  CONTROL  [main] ***** SERVER RESTARTED *****
+2020-06-19T16:49:19.381+0800 I  CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+2020-06-19T16:49:19.386+0800 W  ASIO     [main] No TransportLayer configured during NetworkInterface startup
+2020-06-19T16:49:19.386+0800 I  NETWORK  [main]  --maxConns too high, can only handle 819
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten] MongoDB starting : pid=18231 port=27017 dbpath=/home/mongodb/data 64-bit host=test.localdomain
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten] db version v4.2.7
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten] git version: 51d9fe12b5d19720e72dcd7db0f2f17dd9a19212
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1e-fips 11 Feb 2013
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten] allocator: tcmalloc
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten] modules: none
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten] build environment:
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten]     distmod: rhel70
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten]     distarch: x86_64
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten]     target_arch: x86_64
+2020-06-19T16:49:19.386+0800 I  CONTROL  [initandlisten] options: { config: "/etc/mongodb.conf", net: { bindIp: "0.0.0.0", maxIncomingConnections: 20000 }, processManagement: { fork: true }, storage: { dbPath: "/home/mongodb/data" }, systemLog: { destination: "file", logAppend: true, path: "/home/mongodb/log/mongod.log" } }
+2020-06-19T16:49:19.386+0800 I  NETWORK  [initandlisten]  --maxConns too high, can only handle 819
+2020-06-19T16:49:19.388+0800 I  STORAGE  [initandlisten] Detected data files in /home/mongodb/data created by the 'wiredTiger' storage engine, so setting the active storage engine to 'wiredTiger'.
+2020-06-19T16:49:19.388+0800 I  STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=7390M,cache_overflow=(file_max=0M),session_max=33000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000,close_scan_interval=10,close_handle_minimum=250),statistics_log=(wait=0),verbose=[recovery_progress,checkpoint_progress],
+2020-06-19T16:49:20.058+0800 I  STORAGE  [initandlisten] WiredTiger message [1592556560:58938][18231:0x7fc5b1917c40], txn-recover: Recovering log 1 through 2
+2020-06-19T16:49:20.115+0800 I  STORAGE  [initandlisten] WiredTiger message [1592556560:115328][18231:0x7fc5b1917c40], txn-recover: Recovering log 2 through 2
+2020-06-19T16:49:20.168+0800 I  STORAGE  [initandlisten] WiredTiger message [1592556560:168393][18231:0x7fc5b1917c40], txn-recover: Main recovery loop: starting at 1/24576 to 2/256
+2020-06-19T16:49:20.240+0800 I  STORAGE  [initandlisten] WiredTiger message [1592556560:240273][18231:0x7fc5b1917c40], txn-recover: Recovering log 1 through 2
+2020-06-19T16:49:20.316+0800 I  STORAGE  [initandlisten] WiredTiger message [1592556560:316887][18231:0x7fc5b1917c40], txn-recover: Recovering log 2 through 2
+2020-06-19T16:49:20.355+0800 I  STORAGE  [initandlisten] WiredTiger message [1592556560:355688][18231:0x7fc5b1917c40], txn-recover: Set global recovery timestamp: (0, 0)
+2020-06-19T16:49:20.584+0800 I  RECOVERY [initandlisten] WiredTiger recoveryTimestamp. Ts: Timestamp(0, 0)
+2020-06-19T16:49:20.587+0800 I  STORAGE  [initandlisten] Timestamp monitor starting
+2020-06-19T16:49:20.650+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:49:20.650+0800 I  CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+2020-06-19T16:49:20.650+0800 I  CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+2020-06-19T16:49:20.650+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:49:20.651+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:49:20.651+0800 I  CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
+2020-06-19T16:49:20.651+0800 I  CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2020-06-19T16:49:20.651+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:49:20.651+0800 I  CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.
+2020-06-19T16:49:20.651+0800 I  CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2020-06-19T16:49:20.651+0800 I  CONTROL  [initandlisten] 
+2020-06-19T16:49:20.653+0800 I  SHARDING [initandlisten] Marking collection local.system.replset as collection version: <unsharded>
+2020-06-19T16:49:20.654+0800 I  STORAGE  [initandlisten] Flow Control is enabled on this deployment.
+2020-06-19T16:49:20.654+0800 I  SHARDING [initandlisten] Marking collection admin.system.roles as collection version: <unsharded>
+2020-06-19T16:49:20.654+0800 I  SHARDING [initandlisten] Marking collection admin.system.version as collection version: <unsharded>
+2020-06-19T16:49:20.656+0800 I  SHARDING [initandlisten] Marking collection local.startup_log as collection version: <unsharded>
+2020-06-19T16:49:20.656+0800 I  FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/home/mongodb/data/diagnostic.data'
+2020-06-19T16:49:20.657+0800 I  SHARDING [LogicalSessionCacheRefresh] Marking collection config.system.sessions as collection version: <unsharded>
+2020-06-19T16:49:20.657+0800 I  NETWORK  [listener] Listening on /tmp/mongodb-27017.sock
+2020-06-19T16:49:20.657+0800 I  NETWORK  [listener] Listening on 0.0.0.0
+2020-06-19T16:49:20.657+0800 I  NETWORK  [listener] waiting for connections on port 27017
+2020-06-19T16:49:20.657+0800 I  SHARDING [LogicalSessionCacheReap] Marking collection config.transactions as collection version: <unsharded>
+2020-06-19T16:49:21.000+0800 I  SHARDING [ftdc] Marking collection local.oplog.rs as collection version: <unsharded>
+2020-06-19T16:49:51.956+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57692 #1 (1 connection now open)
+2020-06-19T16:49:51.956+0800 I  NETWORK  [conn1] received client metadata from 127.0.0.1:57692 conn1: { application: { name: "MongoDB Shell" }, driver: { name: "MongoDB Internal Client", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.6.1810 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-957.12.1.el7.x86_64" } }
+2020-06-19T16:50:00.350+0800 I  SHARDING [conn1] Marking collection admin.system.users as collection version: <unsharded>
+2020-06-19T16:50:00.350+0800 I  STORAGE  [conn1] createCollection: admin.system.users with generated UUID: 20b63c14-0e4d-42fc-938e-18517076a750 and options: {}
+2020-06-19T16:50:00.488+0800 I  INDEX    [conn1] index build: done building index _id_ on ns admin.system.users
+2020-06-19T16:50:00.555+0800 I  INDEX    [conn1] index build: done building index user_1_db_1 on ns admin.system.users
+2020-06-19T16:50:00.555+0800 I  COMMAND  [conn1] command admin.system.users appName: "MongoDB Shell" command: insert { insert: "system.users", bypassDocumentValidation: false, ordered: true, $db: "admin" } ninserted:1 keysInserted:2 numYields:0 reslen:45 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 3 } }, ReplicationStateTransition: { acquireCount: { w: 3 } }, Global: { acquireCount: { w: 3 } }, Database: { acquireCount: { W: 3 } }, Collection: { acquireCount: { r: 2, w: 2, W: 1 } }, Mutex: { acquireCount: { r: 5 } } } flowControl:{ acquireCount: 4, timeAcquiringMicros: 2 } storage:{} protocol:op_msg 205ms
+2020-06-19T16:50:00.555+0800 I  COMMAND  [conn1] command admin.system.version appName: "MongoDB Shell" command: createUser { createUser: "admin", pwd: "xxx", roles: [ { role: "root", db: "admin" } ], digestPassword: true, writeConcern: { w: "majority", wtimeout: 600000.0 }, lsid: { id: UUID("c1a8cda6-488b-4e33-b891-7ce661709eda") }, $db: "admin" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 5 } }, ReplicationStateTransition: { acquireCount: { w: 6 } }, Global: { acquireCount: { r: 2, w: 4 } }, Database: { acquireCount: { r: 1, W: 4 } }, Collection: { acquireCount: { r: 3, w: 3, W: 1 } }, Mutex: { acquireCount: { r: 8 } } } flowControl:{ acquireCount: 4, timeAcquiringMicros: 2 } storage:{} protocol:op_msg 235ms
+2020-06-19T16:50:01.633+0800 I  NETWORK  [conn1] end connection 127.0.0.1:57692 (0 connections now open)
+2020-06-19T16:55:39.452+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57938 #2 (1 connection now open)
+2020-06-19T16:55:39.453+0800 I  NETWORK  [conn2] received client metadata from 127.0.0.1:57938 conn2: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T16:55:39.454+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57942 #3 (2 connections now open)
+2020-06-19T16:55:39.454+0800 I  NETWORK  [conn3] received client metadata from 127.0.0.1:57942 conn3: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T16:55:39.456+0800 I  NETWORK  [conn2] end connection 127.0.0.1:57938 (1 connection now open)
+2020-06-19T16:55:39.456+0800 I  NETWORK  [conn3] end connection 127.0.0.1:57942 (0 connections now open)
+2020-06-19T16:56:29.987+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57946 #4 (1 connection now open)
+2020-06-19T16:56:29.987+0800 I  NETWORK  [conn4] received client metadata from 127.0.0.1:57946 conn4: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T16:56:29.987+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57950 #5 (2 connections now open)
+2020-06-19T16:56:29.987+0800 I  NETWORK  [conn5] received client metadata from 127.0.0.1:57950 conn5: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T16:56:29.989+0800 I  NETWORK  [conn4] end connection 127.0.0.1:57946 (1 connection now open)
+2020-06-19T16:56:29.989+0800 I  NETWORK  [conn5] end connection 127.0.0.1:57950 (0 connections now open)
+2020-06-19T16:57:32.746+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57954 #6 (1 connection now open)
+2020-06-19T16:57:32.746+0800 I  NETWORK  [conn6] received client metadata from 127.0.0.1:57954 conn6: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T16:57:32.747+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57958 #7 (2 connections now open)
+2020-06-19T16:57:32.747+0800 I  NETWORK  [conn7] received client metadata from 127.0.0.1:57958 conn7: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T16:57:32.748+0800 I  NETWORK  [conn6] end connection 127.0.0.1:57954 (1 connection now open)
+2020-06-19T16:57:32.748+0800 I  NETWORK  [conn7] end connection 127.0.0.1:57958 (0 connections now open)
+2020-06-19T16:59:38.738+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57962 #8 (1 connection now open)
+2020-06-19T16:59:38.739+0800 I  NETWORK  [conn8] received client metadata from 127.0.0.1:57962 conn8: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T16:59:38.739+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57966 #9 (2 connections now open)
+2020-06-19T16:59:38.739+0800 I  NETWORK  [conn9] received client metadata from 127.0.0.1:57966 conn9: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T16:59:38.740+0800 I  NETWORK  [conn8] end connection 127.0.0.1:57962 (1 connection now open)
+2020-06-19T16:59:38.740+0800 I  NETWORK  [conn9] end connection 127.0.0.1:57966 (0 connections now open)
+2020-06-19T17:01:00.059+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57972 #10 (1 connection now open)
+2020-06-19T17:01:00.059+0800 I  NETWORK  [conn10] received client metadata from 127.0.0.1:57972 conn10: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:01:00.060+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57976 #11 (2 connections now open)
+2020-06-19T17:01:00.060+0800 I  NETWORK  [conn11] received client metadata from 127.0.0.1:57976 conn11: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:01:00.061+0800 I  NETWORK  [conn10] end connection 127.0.0.1:57972 (1 connection now open)
+2020-06-19T17:01:00.061+0800 I  NETWORK  [conn11] end connection 127.0.0.1:57976 (0 connections now open)
+2020-06-19T17:01:17.765+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57980 #12 (1 connection now open)
+2020-06-19T17:01:17.765+0800 I  NETWORK  [conn12] received client metadata from 127.0.0.1:57980 conn12: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:01:17.765+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57984 #13 (2 connections now open)
+2020-06-19T17:01:17.766+0800 I  NETWORK  [conn13] received client metadata from 127.0.0.1:57984 conn13: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:01:17.767+0800 I  NETWORK  [conn12] end connection 127.0.0.1:57980 (1 connection now open)
+2020-06-19T17:01:17.767+0800 I  NETWORK  [conn13] end connection 127.0.0.1:57984 (0 connections now open)
+2020-06-19T17:01:27.677+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57988 #14 (1 connection now open)
+2020-06-19T17:01:27.677+0800 I  NETWORK  [conn14] received client metadata from 127.0.0.1:57988 conn14: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:01:27.677+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57992 #15 (2 connections now open)
+2020-06-19T17:01:27.677+0800 I  NETWORK  [conn15] received client metadata from 127.0.0.1:57992 conn15: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:01:27.679+0800 I  NETWORK  [conn14] end connection 127.0.0.1:57988 (1 connection now open)
+2020-06-19T17:01:27.679+0800 I  NETWORK  [conn15] end connection 127.0.0.1:57992 (0 connections now open)
+2020-06-19T17:02:39.109+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:57996 #16 (1 connection now open)
+2020-06-19T17:02:39.109+0800 I  NETWORK  [conn16] received client metadata from 127.0.0.1:57996 conn16: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:02:39.110+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58000 #17 (2 connections now open)
+2020-06-19T17:02:39.110+0800 I  NETWORK  [conn17] received client metadata from 127.0.0.1:58000 conn17: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:02:39.111+0800 I  NETWORK  [conn17] end connection 127.0.0.1:58000 (1 connection now open)
+2020-06-19T17:02:39.111+0800 I  NETWORK  [conn16] end connection 127.0.0.1:57996 (0 connections now open)
+2020-06-19T17:03:35.643+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58004 #18 (1 connection now open)
+2020-06-19T17:03:35.643+0800 I  NETWORK  [conn18] received client metadata from 127.0.0.1:58004 conn18: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:03:35.644+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58008 #19 (2 connections now open)
+2020-06-19T17:03:35.644+0800 I  NETWORK  [conn19] received client metadata from 127.0.0.1:58008 conn19: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:03:35.646+0800 I  NETWORK  [conn18] end connection 127.0.0.1:58004 (1 connection now open)
+2020-06-19T17:03:35.646+0800 I  NETWORK  [conn19] end connection 127.0.0.1:58008 (0 connections now open)
+2020-06-19T17:03:38.812+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58012 #20 (1 connection now open)
+2020-06-19T17:03:38.812+0800 I  NETWORK  [conn20] received client metadata from 127.0.0.1:58012 conn20: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:03:38.812+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58016 #21 (2 connections now open)
+2020-06-19T17:03:38.812+0800 I  NETWORK  [conn21] received client metadata from 127.0.0.1:58016 conn21: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:03:38.815+0800 I  NETWORK  [conn20] end connection 127.0.0.1:58012 (1 connection now open)
+2020-06-19T17:03:38.815+0800 I  NETWORK  [conn21] end connection 127.0.0.1:58016 (0 connections now open)
+2020-06-19T17:03:44.429+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58020 #22 (1 connection now open)
+2020-06-19T17:03:44.429+0800 I  NETWORK  [conn22] received client metadata from 127.0.0.1:58020 conn22: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:03:44.429+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58024 #23 (2 connections now open)
+2020-06-19T17:03:44.429+0800 I  NETWORK  [conn23] received client metadata from 127.0.0.1:58024 conn23: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:03:44.430+0800 I  NETWORK  [conn22] end connection 127.0.0.1:58020 (1 connection now open)
+2020-06-19T17:03:44.430+0800 I  NETWORK  [conn23] end connection 127.0.0.1:58024 (0 connections now open)
+2020-06-19T17:04:05.619+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58028 #24 (1 connection now open)
+2020-06-19T17:04:05.619+0800 I  NETWORK  [conn24] received client metadata from 127.0.0.1:58028 conn24: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:04:05.619+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58032 #25 (2 connections now open)
+2020-06-19T17:04:05.619+0800 I  NETWORK  [conn25] received client metadata from 127.0.0.1:58032 conn25: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:04:05.620+0800 I  NETWORK  [conn24] end connection 127.0.0.1:58028 (1 connection now open)
+2020-06-19T17:04:05.620+0800 I  NETWORK  [conn25] end connection 127.0.0.1:58032 (0 connections now open)
+2020-06-19T17:07:54.971+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58038 #26 (1 connection now open)
+2020-06-19T17:07:54.971+0800 I  NETWORK  [conn26] received client metadata from 127.0.0.1:58038 conn26: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:07:54.972+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58042 #27 (2 connections now open)
+2020-06-19T17:07:54.972+0800 I  NETWORK  [conn27] received client metadata from 127.0.0.1:58042 conn27: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:07:54.974+0800 I  NETWORK  [conn26] end connection 127.0.0.1:58038 (1 connection now open)
+2020-06-19T17:07:54.974+0800 I  NETWORK  [conn27] end connection 127.0.0.1:58042 (0 connections now open)
+2020-06-19T17:25:50.459+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58070 #28 (1 connection now open)
+2020-06-19T17:25:50.459+0800 I  NETWORK  [conn28] received client metadata from 127.0.0.1:58070 conn28: { application: { name: "MongoDB Shell" }, driver: { name: "MongoDB Internal Client", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.6.1810 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-957.12.1.el7.x86_64" } }
+2020-06-19T17:26:39.807+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58074 #29 (2 connections now open)
+2020-06-19T17:26:39.807+0800 I  NETWORK  [conn29] received client metadata from 127.0.0.1:58074 conn29: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:26:39.808+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58078 #30 (3 connections now open)
+2020-06-19T17:26:39.808+0800 I  NETWORK  [conn30] received client metadata from 127.0.0.1:58078 conn30: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:26:39.810+0800 I  NETWORK  [conn29] end connection 127.0.0.1:58074 (2 connections now open)
+2020-06-19T17:26:39.810+0800 I  NETWORK  [conn30] end connection 127.0.0.1:58078 (1 connection now open)
+2020-06-19T17:27:37.611+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58082 #31 (2 connections now open)
+2020-06-19T17:27:37.612+0800 I  NETWORK  [conn31] received client metadata from 127.0.0.1:58082 conn31: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:27:37.612+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58086 #32 (3 connections now open)
+2020-06-19T17:27:37.612+0800 I  NETWORK  [conn32] received client metadata from 127.0.0.1:58086 conn32: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:27:37.614+0800 I  STORAGE  [conn32] createCollection: sbtest_db_02.foo with generated UUID: f199927e-117a-4e3c-9372-69eadd5770f4 and options: {}
+2020-06-19T17:27:37.767+0800 I  INDEX    [conn32] index build: done building index _id_ on ns sbtest_db_02.foo
+2020-06-19T17:27:37.768+0800 I  COMMAND  [conn32] command sbtest_db_02.foo appName: "mongorestore" command: create { create: "foo", idIndex: { key: { _id: 1 }, name: "_id_", ns: "sbtest_db_02.foo" }, lsid: { id: UUID("f221451e-fe74-4c0e-a9aa-ca092b836076") }, $db: "sbtest_db_02" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 154ms
+2020-06-19T17:27:37.769+0800 I  SHARDING [conn32] Marking collection sbtest_db_02.foo as collection version: <unsharded>
+2020-06-19T17:27:37.769+0800 I  NETWORK  [conn31] end connection 127.0.0.1:58082 (2 connections now open)
+2020-06-19T17:27:37.769+0800 I  NETWORK  [conn32] end connection 127.0.0.1:58086 (1 connection now open)
+2020-06-19T17:28:56.178+0800 I  COMMAND  [conn28] CMD: drop sbtest_db_02.sbtest_db_02
+2020-06-19T17:30:34.380+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58090 #33 (2 connections now open)
+2020-06-19T17:30:34.381+0800 I  NETWORK  [conn33] received client metadata from 127.0.0.1:58090 conn33: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:30:34.381+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58094 #34 (3 connections now open)
+2020-06-19T17:30:34.382+0800 I  NETWORK  [conn34] received client metadata from 127.0.0.1:58094 conn34: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:34.383+0800 I  STORAGE  [conn34] createCollection: abc_db.foo with generated UUID: 7b999fb9-4c0a-4f76-9042-b45d75d2f7ad and options: {}
+2020-06-19T17:30:34.524+0800 I  INDEX    [conn34] index build: done building index _id_ on ns abc_db.foo
+2020-06-19T17:30:34.524+0800 I  COMMAND  [conn34] command abc_db.foo appName: "mongorestore" command: create { create: "foo", idIndex: { key: { _id: 1 }, name: "_id_", ns: "abc_db.foo" }, lsid: { id: UUID("ce6de1fc-0f47-40c1-b2cf-7cc7ab68916f") }, $db: "abc_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2 } storage:{} protocol:op_msg 140ms
+2020-06-19T17:30:34.525+0800 I  SHARDING [conn34] Marking collection abc_db.foo as collection version: <unsharded>
+2020-06-19T17:30:34.526+0800 I  NETWORK  [conn33] end connection 127.0.0.1:58090 (2 connections now open)
+2020-06-19T17:30:34.526+0800 I  NETWORK  [conn34] end connection 127.0.0.1:58094 (1 connection now open)
+2020-06-19T17:30:34.531+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58098 #35 (2 connections now open)
+2020-06-19T17:30:34.531+0800 I  NETWORK  [conn35] received client metadata from 127.0.0.1:58098 conn35: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:30:34.532+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58102 #36 (3 connections now open)
+2020-06-19T17:30:34.532+0800 I  NETWORK  [conn36] received client metadata from 127.0.0.1:58102 conn36: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:34.534+0800 I  STORAGE  [conn36] createCollection: admin.yldb with generated UUID: 661d7404-2ffd-4c6d-8d6e-fe400626b459 and options: {}
+2020-06-19T17:30:34.679+0800 I  INDEX    [conn36] index build: done building index _id_ on ns admin.yldb
+2020-06-19T17:30:34.679+0800 I  COMMAND  [conn36] command admin.yldb appName: "mongorestore" command: create { create: "yldb", idIndex: { key: { _id: 1 }, ns: "admin.yldb", name: "_id_" }, lsid: { id: UUID("4e86c721-8cad-4291-adbf-a684cf06f834") }, $db: "admin" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { W: 1 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 145ms
+2020-06-19T17:30:34.680+0800 I  SHARDING [conn36] Marking collection admin.yldb as collection version: <unsharded>
+2020-06-19T17:30:34.686+0800 I  SHARDING [conn36] Marking collection admin.tempusers as collection version: <unsharded>
+2020-06-19T17:30:34.687+0800 I  STORAGE  [conn36] createCollection: admin.tempusers with generated UUID: 3486f508-cbf1-489c-8553-2db62e2ec291 and options: {}
+2020-06-19T17:30:34.854+0800 I  INDEX    [conn36] index build: done building index _id_ on ns admin.tempusers
+2020-06-19T17:30:34.855+0800 I  COMMAND  [conn36] command admin.tempusers appName: "mongorestore" command: insert { insert: "tempusers", ordered: false, writeConcern: { w: "majority" }, lsid: { id: UUID("4e86c721-8cad-4291-adbf-a684cf06f834") }, $db: "admin" } ninserted:5 keysInserted:5 numYields:0 reslen:45 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 3 } }, ReplicationStateTransition: { acquireCount: { w: 3 } }, Global: { acquireCount: { w: 3 } }, Database: { acquireCount: { W: 3 } }, Collection: { acquireCount: { r: 2, w: 2, W: 1 } }, Mutex: { acquireCount: { r: 9 } } } flowControl:{ acquireCount: 3, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 168ms
+2020-06-19T17:30:34.855+0800 W  ACCESS   [conn36] Could not insert user admin@admin in _mergeAuthzCollections command: Location51003: User "admin@admin" already exists
+2020-06-19T17:30:34.856+0800 I  COMMAND  [conn36] CMD: drop admin.tempusers
+2020-06-19T17:30:34.856+0800 I  STORAGE  [conn36] Finishing collection drop for admin.tempusers (3486f508-cbf1-489c-8553-2db62e2ec291).
+2020-06-19T17:30:34.901+0800 I  NETWORK  [conn35] end connection 127.0.0.1:58098 (1 connection now open)
+2020-06-19T17:30:34.901+0800 I  NETWORK  [conn36] end connection 127.0.0.1:58102 (2 connections now open)
+2020-06-19T17:30:34.906+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58106 #37 (2 connections now open)
+2020-06-19T17:30:34.907+0800 I  NETWORK  [conn37] received client metadata from 127.0.0.1:58106 conn37: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:30:34.907+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58110 #38 (3 connections now open)
+2020-06-19T17:30:34.907+0800 I  NETWORK  [conn38] received client metadata from 127.0.0.1:58110 conn38: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:34.908+0800 I  STORAGE  [conn38] createCollection: niuniuh5_modb.abc with generated UUID: 0606d342-e455-4b06-8e11-8ae8cd45361c and options: {}
+2020-06-19T17:30:35.047+0800 I  INDEX    [conn38] index build: done building index _id_ on ns niuniuh5_modb.abc
+2020-06-19T17:30:35.047+0800 I  COMMAND  [conn38] command niuniuh5_modb.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "niuniuh5_modb.abc" }, lsid: { id: UUID("131271ae-5107-4b54-bb93-a38847a08955") }, $db: "niuniuh5_modb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2, timeAcquiringMicros: 2 } storage:{} protocol:op_msg 138ms
+2020-06-19T17:30:35.048+0800 I  SHARDING [conn38] Marking collection niuniuh5_modb.abc as collection version: <unsharded>
+2020-06-19T17:30:35.048+0800 I  NETWORK  [conn37] end connection 127.0.0.1:58106 (2 connections now open)
+2020-06-19T17:30:35.048+0800 I  NETWORK  [conn38] end connection 127.0.0.1:58110 (1 connection now open)
+2020-06-19T17:30:35.053+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58114 #39 (2 connections now open)
+2020-06-19T17:30:35.053+0800 I  NETWORK  [conn39] received client metadata from 127.0.0.1:58114 conn39: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:30:35.054+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58118 #40 (3 connections now open)
+2020-06-19T17:30:35.054+0800 I  NETWORK  [conn40] received client metadata from 127.0.0.1:58118 conn40: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:35.055+0800 I  STORAGE  [conn40] createCollection: test.test with generated UUID: 221359f0-d518-4f4c-8c42-1dd7167740f0 and options: {}
+2020-06-19T17:30:35.213+0800 I  INDEX    [conn40] index build: done building index _id_ on ns test.test
+2020-06-19T17:30:35.213+0800 I  COMMAND  [conn40] command test.test appName: "mongorestore" command: create { create: "test", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test.test" }, lsid: { id: UUID("a83f9c09-ffa0-4f21-b383-daeba027ec0e") }, $db: "test" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2 } storage:{} protocol:op_msg 158ms
+2020-06-19T17:30:35.214+0800 I  SHARDING [conn40] Marking collection test.test as collection version: <unsharded>
+2020-06-19T17:30:35.215+0800 I  NETWORK  [conn39] end connection 127.0.0.1:58114 (2 connections now open)
+2020-06-19T17:30:35.215+0800 I  NETWORK  [conn40] end connection 127.0.0.1:58118 (1 connection now open)
+2020-06-19T17:30:35.220+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58122 #41 (2 connections now open)
+2020-06-19T17:30:35.220+0800 I  NETWORK  [conn41] received client metadata from 127.0.0.1:58122 conn41: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:30:35.221+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58126 #42 (3 connections now open)
+2020-06-19T17:30:35.221+0800 I  NETWORK  [conn42] received client metadata from 127.0.0.1:58126 conn42: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:35.222+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58130 #43 (4 connections now open)
+2020-06-19T17:30:35.223+0800 I  STORAGE  [conn42] createCollection: test02_db.abc with generated UUID: 1718b16e-beba-4ecf-abeb-793b48670f36 and options: {}
+2020-06-19T17:30:35.223+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58134 #44 (5 connections now open)
+2020-06-19T17:30:35.223+0800 I  NETWORK  [conn43] received client metadata from 127.0.0.1:58130 conn43: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:35.223+0800 I  NETWORK  [conn44] received client metadata from 127.0.0.1:58134 conn44: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:35.366+0800 I  INDEX    [conn42] index build: done building index _id_ on ns test02_db.abc
+2020-06-19T17:30:35.366+0800 I  STORAGE  [conn43] createCollection: test02_db.table_clubgamelog with generated UUID: 499ebbb0-a8ec-4643-9e40-5e45a33cf39c and options: {}
+2020-06-19T17:30:35.366+0800 I  STORAGE  [conn44] createCollection: test02_db.table_clubgamescorerobotdetail with generated UUID: eb70d6d1-8891-497b-bcf9-bd6810fb26a4 and options: {}
+2020-06-19T17:30:35.366+0800 I  COMMAND  [conn42] command test02_db.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test02_db.abc" }, lsid: { id: UUID("7744df99-53d2-426f-8fb4-8dc9eb280da6") }, $db: "test02_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 143ms
+2020-06-19T17:30:35.367+0800 I  SHARDING [conn42] Marking collection test02_db.abc as collection version: <unsharded>
+2020-06-19T17:30:35.597+0800 I  INDEX    [conn43] index build: done building index _id_ on ns test02_db.table_clubgamelog
+2020-06-19T17:30:35.597+0800 I  COMMAND  [conn43] command test02_db.table_clubgamelog appName: "mongorestore" command: create { create: "table_clubgamelog", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test02_db.table_clubgamelog" }, lsid: { id: UUID("ce9088e7-96d4-429d-8317-e3ed8ce52e50") }, $db: "test02_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 143343 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 374ms
+2020-06-19T17:30:35.606+0800 I  SHARDING [conn43] Marking collection test02_db.table_clubgamelog as collection version: <unsharded>
+2020-06-19T17:30:35.672+0800 I  INDEX    [conn44] index build: done building index _id_ on ns test02_db.table_clubgamescorerobotdetail
+2020-06-19T17:30:35.672+0800 I  COMMAND  [conn44] command test02_db.table_clubgamescorerobotdetail appName: "mongorestore" command: create { create: "table_clubgamescorerobotdetail", idIndex: { key: { _id: 1 }, ns: "test02_db.table_clubgamescorerobotdetail", name: "_id_" }, lsid: { id: UUID("6ed52ff4-d2c8-4f41-9c5a-40c62258f8bc") }, $db: "test02_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 143322 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 449ms
+2020-06-19T17:30:35.681+0800 I  SHARDING [conn44] Marking collection test02_db.table_clubgamescorerobotdetail as collection version: <unsharded>
+2020-06-19T17:30:35.695+0800 I  NETWORK  [conn41] end connection 127.0.0.1:58122 (4 connections now open)
+2020-06-19T17:30:35.695+0800 I  NETWORK  [conn42] end connection 127.0.0.1:58126 (3 connections now open)
+2020-06-19T17:30:35.695+0800 I  NETWORK  [conn43] end connection 127.0.0.1:58130 (2 connections now open)
+2020-06-19T17:30:35.696+0800 I  NETWORK  [conn44] end connection 127.0.0.1:58134 (1 connection now open)
+2020-06-19T17:30:35.700+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58138 #45 (2 connections now open)
+2020-06-19T17:30:35.700+0800 I  NETWORK  [conn45] received client metadata from 127.0.0.1:58138 conn45: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:30:35.701+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58142 #46 (3 connections now open)
+2020-06-19T17:30:35.701+0800 I  NETWORK  [conn46] received client metadata from 127.0.0.1:58142 conn46: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:35.702+0800 I  STORAGE  [conn46] createCollection: test_db.table_clubgamelog with generated UUID: 7b18b3f4-8566-4572-9c2a-fa992152c81d and options: {}
+2020-06-19T17:30:35.703+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58146 #47 (4 connections now open)
+2020-06-19T17:30:35.703+0800 I  NETWORK  [conn47] received client metadata from 127.0.0.1:58146 conn47: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:35.703+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58150 #48 (5 connections now open)
+2020-06-19T17:30:35.703+0800 I  NETWORK  [conn48] received client metadata from 127.0.0.1:58150 conn48: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:35.852+0800 I  INDEX    [conn46] index build: done building index _id_ on ns test_db.table_clubgamelog
+2020-06-19T17:30:35.852+0800 I  STORAGE  [conn48] createCollection: test_db.abc with generated UUID: 1e9bff95-72cd-4bec-9e19-5c71e52c42c9 and options: {}
+2020-06-19T17:30:35.852+0800 I  STORAGE  [conn47] createCollection: test_db.table_clubgamescorerobotdetail with generated UUID: f55d4f00-f6d9-4173-8536-9e133afa6670 and options: {}
+2020-06-19T17:30:35.852+0800 I  COMMAND  [conn46] command test_db.table_clubgamelog appName: "mongorestore" command: create { create: "table_clubgamelog", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test_db.table_clubgamelog" }, lsid: { id: UUID("7064371d-3dd2-4334-b0bc-969742a47aec") }, $db: "test_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2 } storage:{} protocol:op_msg 149ms
+2020-06-19T17:30:35.858+0800 I  SHARDING [conn46] Marking collection test_db.table_clubgamelog as collection version: <unsharded>
+2020-06-19T17:30:36.095+0800 I  INDEX    [conn48] index build: done building index _id_ on ns test_db.abc
+2020-06-19T17:30:36.095+0800 I  COMMAND  [conn48] command test_db.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test_db.abc" }, lsid: { id: UUID("605f0bd1-cf39-4c2e-9541-45ea461fcd28") }, $db: "test_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 148814 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 391ms
+2020-06-19T17:30:36.095+0800 I  SHARDING [conn48] Marking collection test_db.abc as collection version: <unsharded>
+2020-06-19T17:30:36.161+0800 I  INDEX    [conn47] index build: done building index _id_ on ns test_db.table_clubgamescorerobotdetail
+2020-06-19T17:30:36.161+0800 I  COMMAND  [conn47] command test_db.table_clubgamescorerobotdetail appName: "mongorestore" command: create { create: "table_clubgamescorerobotdetail", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test_db.table_clubgamescorerobotdetail" }, lsid: { id: UUID("870af4f2-173d-4c8f-993a-fadf369809c2") }, $db: "test_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 148908 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 458ms
+2020-06-19T17:30:36.175+0800 I  SHARDING [conn47] Marking collection test_db.table_clubgamescorerobotdetail as collection version: <unsharded>
+2020-06-19T17:30:36.181+0800 I  NETWORK  [conn45] end connection 127.0.0.1:58138 (4 connections now open)
+2020-06-19T17:30:36.181+0800 I  NETWORK  [conn46] end connection 127.0.0.1:58142 (3 connections now open)
+2020-06-19T17:30:36.181+0800 I  NETWORK  [conn47] end connection 127.0.0.1:58146 (2 connections now open)
+2020-06-19T17:30:36.181+0800 I  NETWORK  [conn48] end connection 127.0.0.1:58150 (1 connection now open)
+2020-06-19T17:30:40.700+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58154 #49 (2 connections now open)
+2020-06-19T17:30:40.700+0800 I  NETWORK  [conn49] received client metadata from 127.0.0.1:58154 conn49: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:30:40.700+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58158 #50 (3 connections now open)
+2020-06-19T17:30:40.701+0800 I  NETWORK  [conn50] received client metadata from 127.0.0.1:58158 conn50: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:40.702+0800 I  STORAGE  [conn50] createCollection: yldb.table_clubgamescorerobotdetail with generated UUID: 9f79ae70-30e2-4d8b-933d-eabeb594dcbd and options: {}
+2020-06-19T17:30:40.702+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58162 #51 (4 connections now open)
+2020-06-19T17:30:40.702+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58166 #52 (5 connections now open)
+2020-06-19T17:30:40.703+0800 I  NETWORK  [conn51] received client metadata from 127.0.0.1:58162 conn51: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:40.703+0800 I  NETWORK  [conn52] received client metadata from 127.0.0.1:58166 conn52: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:40.847+0800 I  INDEX    [conn50] index build: done building index _id_ on ns yldb.table_clubgamescorerobotdetail
+2020-06-19T17:30:40.847+0800 I  STORAGE  [conn51] createCollection: yldb.table_clubgamelog with generated UUID: bbc18941-345c-462b-8379-60bfef40324e and options: {}
+2020-06-19T17:30:40.847+0800 I  STORAGE  [conn52] createCollection: yldb.abc with generated UUID: 7cb05ffe-594d-4951-a384-24a8391b5f1c and options: {}
+2020-06-19T17:30:40.847+0800 I  COMMAND  [conn50] command yldb.table_clubgamescorerobotdetail appName: "mongorestore" command: create { create: "table_clubgamescorerobotdetail", idIndex: { key: { _id: 1 }, name: "_id_", ns: "yldb.table_clubgamescorerobotdetail" }, lsid: { id: UUID("45e877ac-3ddf-497a-9a56-3bec77feb2ff") }, $db: "yldb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 145ms
+2020-06-19T17:30:40.858+0800 I  SHARDING [conn50] Marking collection yldb.table_clubgamescorerobotdetail as collection version: <unsharded>
+2020-06-19T17:30:41.082+0800 I  INDEX    [conn51] index build: done building index _id_ on ns yldb.table_clubgamelog
+2020-06-19T17:30:41.083+0800 I  COMMAND  [conn51] command yldb.table_clubgamelog appName: "mongorestore" command: create { create: "table_clubgamelog", idIndex: { key: { _id: 1 }, ns: "yldb.table_clubgamelog", name: "_id_" }, lsid: { id: UUID("79e61559-c335-4c1d-9d08-8f287d23a814") }, $db: "yldb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 144501 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 379ms
+2020-06-19T17:30:41.092+0800 I  SHARDING [conn51] Marking collection yldb.table_clubgamelog as collection version: <unsharded>
+2020-06-19T17:30:41.184+0800 I  INDEX    [conn52] index build: done building index _id_ on ns yldb.abc
+2020-06-19T17:30:41.184+0800 I  COMMAND  [conn52] command yldb.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "yldb.abc" }, lsid: { id: UUID("17076f42-fa9a-44b0-a0aa-3c56a5c233b0") }, $db: "yldb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 144481 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 481ms
+2020-06-19T17:30:41.185+0800 I  SHARDING [conn52] Marking collection yldb.abc as collection version: <unsharded>
+2020-06-19T17:30:41.187+0800 I  NETWORK  [conn51] end connection 127.0.0.1:58162 (4 connections now open)
+2020-06-19T17:30:41.187+0800 I  NETWORK  [conn49] end connection 127.0.0.1:58154 (3 connections now open)
+2020-06-19T17:30:41.187+0800 I  NETWORK  [conn50] end connection 127.0.0.1:58158 (2 connections now open)
+2020-06-19T17:30:41.187+0800 I  NETWORK  [conn52] end connection 127.0.0.1:58166 (1 connection now open)
+2020-06-19T17:30:59.292+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58170 #53 (2 connections now open)
+2020-06-19T17:30:59.292+0800 I  NETWORK  [conn53] received client metadata from 127.0.0.1:58170 conn53: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:30:59.292+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58174 #54 (3 connections now open)
+2020-06-19T17:30:59.292+0800 I  NETWORK  [conn54] received client metadata from 127.0.0.1:58174 conn54: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:30:59.294+0800 I  NETWORK  [conn53] end connection 127.0.0.1:58170 (2 connections now open)
+2020-06-19T17:30:59.294+0800 I  NETWORK  [conn54] end connection 127.0.0.1:58174 (1 connection now open)
+2020-06-19T17:32:05.361+0800 I  STORAGE  [conn28] createCollection: local.oplog.rs with generated UUID: 0a6a5c39-0418-453f-bbd0-6cc2a7ea681a and options: { capped: true, size: 1073741824.0 }
+2020-06-19T17:32:05.416+0800 I  STORAGE  [conn28] Starting OplogTruncaterThread local.oplog.rs
+2020-06-19T17:32:05.417+0800 I  STORAGE  [conn28] The size storer reports that the oplog contains 0 records totaling to 0 bytes
+2020-06-19T17:32:05.417+0800 I  STORAGE  [conn28] Scanning the oplog to determine where to place markers for truncation
+2020-06-19T17:32:05.417+0800 I  STORAGE  [conn28] WiredTiger record store oplog processing took 0ms
+2020-06-19T17:32:59.123+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58178 #55 (2 connections now open)
+2020-06-19T17:32:59.123+0800 I  NETWORK  [conn55] received client metadata from 127.0.0.1:58178 conn55: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:32:59.123+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58182 #56 (3 connections now open)
+2020-06-19T17:32:59.123+0800 I  NETWORK  [conn56] received client metadata from 127.0.0.1:58182 conn56: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:32:59.186+0800 I  NETWORK  [conn55] end connection 127.0.0.1:58178 (2 connections now open)
+2020-06-19T17:32:59.186+0800 I  NETWORK  [conn56] end connection 127.0.0.1:58182 (1 connection now open)
+2020-06-19T17:47:06.877+0800 I  NETWORK  [conn28] end connection 127.0.0.1:58070 (0 connections now open)
+2020-06-19T17:47:29.950+0800 I  CONTROL  [main] ***** SERVER RESTARTED *****
+2020-06-19T17:47:29.953+0800 I  CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+2020-06-19T17:47:29.955+0800 W  ASIO     [main] No TransportLayer configured during NetworkInterface startup
+2020-06-19T17:47:29.955+0800 I  NETWORK  [main]  --maxConns too high, can only handle 819
+2020-06-19T17:47:29.955+0800 I  CONTROL  [signalProcessingThread] got signal 15 (Terminated), will terminate after current cmd ends
+2020-06-19T17:47:29.955+0800 I  NETWORK  [signalProcessingThread] shutdown: going to close listening sockets...
+2020-06-19T17:47:29.955+0800 I  NETWORK  [listener] removing socket file: /tmp/mongodb-27017.sock
+2020-06-19T17:47:29.956+0800 I  -        [signalProcessingThread] Stopping further Flow Control ticket acquisitions.
+2020-06-19T17:47:29.956+0800 I  CONTROL  [signalProcessingThread] Shutting down free monitoring
+2020-06-19T17:47:29.956+0800 I  FTDC     [signalProcessingThread] Shutting down full-time diagnostic data capture
+2020-06-19T17:47:29.958+0800 I  STORAGE  [signalProcessingThread] Deregistering all the collections
+2020-06-19T17:47:29.958+0800 I  STORAGE  [WTOplogJournalThread] Oplog journal thread loop shutting down
+2020-06-19T17:47:29.958+0800 I  STORAGE  [signalProcessingThread] Timestamp monitor shutting down
+2020-06-19T17:47:29.958+0800 I  STORAGE  [signalProcessingThread] WiredTigerKVEngine shutting down
+2020-06-19T17:47:29.958+0800 I  STORAGE  [signalProcessingThread] Shutting down session sweeper thread
+2020-06-19T17:47:29.958+0800 I  STORAGE  [signalProcessingThread] Finished shutting down session sweeper thread
+2020-06-19T17:47:29.958+0800 I  STORAGE  [signalProcessingThread] Shutting down journal flusher thread
+2020-06-19T17:47:29.979+0800 I  STORAGE  [signalProcessingThread] Finished shutting down journal flusher thread
+2020-06-19T17:47:29.979+0800 I  STORAGE  [signalProcessingThread] Shutting down checkpoint thread
+2020-06-19T17:47:29.979+0800 I  STORAGE  [signalProcessingThread] Finished shutting down checkpoint thread
+2020-06-19T17:47:30.039+0800 I  STORAGE  [signalProcessingThread] shutdown: removing fs lock...
+2020-06-19T17:47:30.039+0800 I  CONTROL  [signalProcessingThread] now exiting
+2020-06-19T17:47:30.039+0800 I  CONTROL  [signalProcessingThread] shutting down with code:0
+2020-06-19T17:47:30.977+0800 I  CONTROL  [main] ***** SERVER RESTARTED *****
+2020-06-19T17:47:30.981+0800 I  CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+2020-06-19T17:47:30.982+0800 W  ASIO     [main] No TransportLayer configured during NetworkInterface startup
+2020-06-19T17:47:30.982+0800 I  NETWORK  [main]  --maxConns too high, can only handle 819
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten] MongoDB starting : pid=18772 port=27017 dbpath=/home/mongodb/data 64-bit host=test.localdomain
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten] db version v4.2.7
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten] git version: 51d9fe12b5d19720e72dcd7db0f2f17dd9a19212
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1e-fips 11 Feb 2013
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten] allocator: tcmalloc
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten] modules: none
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten] build environment:
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten]     distmod: rhel70
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten]     distarch: x86_64
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten]     target_arch: x86_64
+2020-06-19T17:47:30.983+0800 I  CONTROL  [initandlisten] options: { config: "/etc/mongodb.conf", net: { bindIp: "0.0.0.0", maxIncomingConnections: 20000 }, processManagement: { fork: true }, storage: { dbPath: "/home/mongodb/data", wiredTiger: { engineConfig: { cacheSizeGB: 1.0 } } }, systemLog: { destination: "file", logAppend: true, path: "/home/mongodb/log/mongod.log" } }
+2020-06-19T17:47:30.983+0800 I  NETWORK  [initandlisten]  --maxConns too high, can only handle 819
+2020-06-19T17:47:30.984+0800 I  STORAGE  [initandlisten] Detected data files in /home/mongodb/data created by the 'wiredTiger' storage engine, so setting the active storage engine to 'wiredTiger'.
+2020-06-19T17:47:30.985+0800 I  STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=1024M,cache_overflow=(file_max=0M),session_max=33000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000,close_scan_interval=10,close_handle_minimum=250),statistics_log=(wait=0),verbose=[recovery_progress,checkpoint_progress],
+2020-06-19T17:47:31.642+0800 I  STORAGE  [initandlisten] WiredTiger message [1592560051:642794][18772:0x7efd19bb6c40], txn-recover: Recovering log 2 through 3
+2020-06-19T17:47:31.681+0800 I  STORAGE  [initandlisten] WiredTiger message [1592560051:681965][18772:0x7efd19bb6c40], txn-recover: Recovering log 3 through 3
+2020-06-19T17:47:31.736+0800 I  STORAGE  [initandlisten] WiredTiger message [1592560051:736921][18772:0x7efd19bb6c40], txn-recover: Main recovery loop: starting at 2/1289600 to 3/256
+2020-06-19T17:47:31.808+0800 I  STORAGE  [initandlisten] WiredTiger message [1592560051:808404][18772:0x7efd19bb6c40], txn-recover: Recovering log 2 through 3
+2020-06-19T17:47:31.900+0800 I  STORAGE  [initandlisten] WiredTiger message [1592560051:900942][18772:0x7efd19bb6c40], txn-recover: Recovering log 3 through 3
+2020-06-19T17:47:31.939+0800 I  STORAGE  [initandlisten] WiredTiger message [1592560051:939395][18772:0x7efd19bb6c40], txn-recover: Set global recovery timestamp: (0, 0)
+2020-06-19T17:47:32.194+0800 I  RECOVERY [initandlisten] WiredTiger recoveryTimestamp. Ts: Timestamp(0, 0)
+2020-06-19T17:47:32.198+0800 I  STORAGE  [initandlisten] Starting OplogTruncaterThread local.oplog.rs
+2020-06-19T17:47:32.198+0800 I  STORAGE  [initandlisten] The size storer reports that the oplog contains 0 records totaling to 0 bytes
+2020-06-19T17:47:32.198+0800 I  STORAGE  [initandlisten] Scanning the oplog to determine where to place markers for truncation
+2020-06-19T17:47:32.198+0800 I  STORAGE  [initandlisten] WiredTiger record store oplog processing took 0ms
+2020-06-19T17:47:32.202+0800 I  STORAGE  [initandlisten] Timestamp monitor starting
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] 
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] ** WARNING: Access control is not enabled for the database.
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] **          Read and write access to data and configuration is unrestricted.
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] 
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] 
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] 
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2020-06-19T17:47:32.260+0800 I  CONTROL  [initandlisten] 
+2020-06-19T17:47:32.267+0800 I  SHARDING [initandlisten] Marking collection local.system.replset as collection version: <unsharded>
+2020-06-19T17:47:32.269+0800 I  STORAGE  [initandlisten] Flow Control is enabled on this deployment.
+2020-06-19T17:47:32.269+0800 I  SHARDING [initandlisten] Marking collection admin.system.roles as collection version: <unsharded>
+2020-06-19T17:47:32.269+0800 I  SHARDING [initandlisten] Marking collection admin.system.version as collection version: <unsharded>
+2020-06-19T17:47:32.270+0800 I  SHARDING [initandlisten] Marking collection local.startup_log as collection version: <unsharded>
+2020-06-19T17:47:32.270+0800 I  FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/home/mongodb/data/diagnostic.data'
+2020-06-19T17:47:32.271+0800 I  SHARDING [LogicalSessionCacheRefresh] Marking collection config.system.sessions as collection version: <unsharded>
+2020-06-19T17:47:32.271+0800 I  NETWORK  [listener] Listening on /tmp/mongodb-27017.sock
+2020-06-19T17:47:32.272+0800 I  NETWORK  [listener] Listening on 0.0.0.0
+2020-06-19T17:47:32.272+0800 I  NETWORK  [listener] waiting for connections on port 27017
+2020-06-19T17:47:32.272+0800 I  SHARDING [LogicalSessionCacheReap] Marking collection config.transactions as collection version: <unsharded>
+2020-06-19T17:47:33.000+0800 I  SHARDING [ftdc] Marking collection local.oplog.rs as collection version: <unsharded>
+2020-06-19T17:47:49.565+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58212 #1 (1 connection now open)
+2020-06-19T17:47:49.565+0800 I  NETWORK  [conn1] received client metadata from 127.0.0.1:58212 conn1: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:47:49.566+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58216 #2 (2 connections now open)
+2020-06-19T17:47:49.566+0800 I  NETWORK  [conn2] received client metadata from 127.0.0.1:58216 conn2: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:47:49.628+0800 I  NETWORK  [conn1] end connection 127.0.0.1:58212 (1 connection now open)
+2020-06-19T17:47:49.628+0800 I  NETWORK  [conn2] end connection 127.0.0.1:58216 (0 connections now open)
+2020-06-19T17:51:36.909+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58220 #3 (1 connection now open)
+2020-06-19T17:51:36.909+0800 I  NETWORK  [conn3] received client metadata from 127.0.0.1:58220 conn3: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:51:36.909+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58224 #4 (2 connections now open)
+2020-06-19T17:51:36.910+0800 I  NETWORK  [conn4] received client metadata from 127.0.0.1:58224 conn4: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:51:36.972+0800 I  NETWORK  [conn3] end connection 127.0.0.1:58220 (1 connection now open)
+2020-06-19T17:51:36.972+0800 I  NETWORK  [conn4] end connection 127.0.0.1:58224 (0 connections now open)
+2020-06-19T17:52:47.404+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58240 #5 (1 connection now open)
+2020-06-19T17:52:47.404+0800 I  NETWORK  [conn5] received client metadata from 127.0.0.1:58240 conn5: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:52:47.405+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58244 #6 (2 connections now open)
+2020-06-19T17:52:47.405+0800 I  NETWORK  [conn6] received client metadata from 127.0.0.1:58244 conn6: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:52:47.467+0800 I  NETWORK  [conn6] end connection 127.0.0.1:58244 (0 connections now open)
+2020-06-19T17:52:47.467+0800 I  NETWORK  [conn5] end connection 127.0.0.1:58240 (1 connection now open)
+2020-06-19T17:52:50.676+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58248 #7 (1 connection now open)
+2020-06-19T17:52:50.677+0800 I  NETWORK  [conn7] received client metadata from 127.0.0.1:58248 conn7: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:52:50.677+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58252 #8 (2 connections now open)
+2020-06-19T17:52:50.677+0800 I  NETWORK  [conn8] received client metadata from 127.0.0.1:58252 conn8: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:52:50.739+0800 I  NETWORK  [conn8] end connection 127.0.0.1:58252 (0 connections now open)
+2020-06-19T17:52:50.739+0800 I  NETWORK  [conn7] end connection 127.0.0.1:58248 (1 connection now open)
+2020-06-19T17:54:42.260+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58256 #9 (1 connection now open)
+2020-06-19T17:54:42.260+0800 I  NETWORK  [conn9] received client metadata from 127.0.0.1:58256 conn9: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:54:42.261+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58260 #10 (2 connections now open)
+2020-06-19T17:54:42.261+0800 I  NETWORK  [conn10] received client metadata from 127.0.0.1:58260 conn10: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T17:54:42.324+0800 I  NETWORK  [conn9] end connection 127.0.0.1:58256 (1 connection now open)
+2020-06-19T17:54:42.324+0800 I  NETWORK  [conn10] end connection 127.0.0.1:58260 (0 connections now open)
+2020-06-19T17:56:32.238+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58264 #11 (1 connection now open)
+2020-06-19T17:56:32.239+0800 I  NETWORK  [conn11] received client metadata from 127.0.0.1:58264 conn11: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:56:32.239+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58268 #12 (2 connections now open)
+2020-06-19T17:56:32.239+0800 I  NETWORK  [conn12] received client metadata from 127.0.0.1:58268 conn12: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongoimport" } }
+2020-06-19T17:56:32.240+0800 I  NETWORK  [conn11] end connection 127.0.0.1:58264 (1 connection now open)
+2020-06-19T17:56:32.240+0800 I  NETWORK  [conn12] end connection 127.0.0.1:58268 (0 connections now open)
+2020-06-19T17:58:10.725+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58272 #13 (1 connection now open)
+2020-06-19T17:58:10.725+0800 I  NETWORK  [conn13] received client metadata from 127.0.0.1:58272 conn13: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:58:10.725+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58276 #14 (2 connections now open)
+2020-06-19T17:58:10.725+0800 I  NETWORK  [conn14] received client metadata from 127.0.0.1:58276 conn14: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongoimport" } }
+2020-06-19T17:58:10.726+0800 I  NETWORK  [conn13] end connection 127.0.0.1:58272 (1 connection now open)
+2020-06-19T17:58:10.726+0800 I  NETWORK  [conn14] end connection 127.0.0.1:58276 (0 connections now open)
+2020-06-19T17:59:25.109+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58282 #15 (1 connection now open)
+2020-06-19T17:59:25.109+0800 I  NETWORK  [conn15] received client metadata from 127.0.0.1:58282 conn15: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:59:25.110+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58286 #16 (2 connections now open)
+2020-06-19T17:59:25.110+0800 I  NETWORK  [conn16] received client metadata from 127.0.0.1:58286 conn16: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongoimport" } }
+2020-06-19T17:59:25.111+0800 I  NETWORK  [conn15] end connection 127.0.0.1:58282 (1 connection now open)
+2020-06-19T17:59:25.111+0800 I  NETWORK  [conn16] end connection 127.0.0.1:58286 (0 connections now open)
+2020-06-19T17:59:26.756+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58290 #17 (1 connection now open)
+2020-06-19T17:59:26.757+0800 I  NETWORK  [conn17] received client metadata from 127.0.0.1:58290 conn17: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:59:26.757+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58294 #18 (2 connections now open)
+2020-06-19T17:59:26.757+0800 I  NETWORK  [conn18] received client metadata from 127.0.0.1:58294 conn18: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongoimport" } }
+2020-06-19T17:59:26.758+0800 I  NETWORK  [conn17] end connection 127.0.0.1:58290 (1 connection now open)
+2020-06-19T17:59:26.758+0800 I  NETWORK  [conn18] end connection 127.0.0.1:58294 (0 connections now open)
+2020-06-19T17:59:31.140+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58298 #19 (1 connection now open)
+2020-06-19T17:59:31.141+0800 I  NETWORK  [conn19] received client metadata from 127.0.0.1:58298 conn19: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T17:59:31.141+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58302 #20 (2 connections now open)
+2020-06-19T17:59:31.142+0800 I  NETWORK  [conn20] received client metadata from 127.0.0.1:58302 conn20: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongoimport" } }
+2020-06-19T17:59:31.142+0800 I  NETWORK  [conn19] end connection 127.0.0.1:58298 (1 connection now open)
+2020-06-19T17:59:31.142+0800 I  NETWORK  [conn20] end connection 127.0.0.1:58302 (0 connections now open)
+2020-06-19T18:01:45.429+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58308 #21 (1 connection now open)
+2020-06-19T18:01:45.430+0800 I  NETWORK  [conn21] received client metadata from 127.0.0.1:58308 conn21: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:01:45.430+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58312 #22 (2 connections now open)
+2020-06-19T18:01:45.430+0800 I  NETWORK  [conn22] received client metadata from 127.0.0.1:58312 conn22: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:01:45.493+0800 I  NETWORK  [conn21] end connection 127.0.0.1:58308 (1 connection now open)
+2020-06-19T18:01:45.493+0800 I  NETWORK  [conn22] end connection 127.0.0.1:58312 (0 connections now open)
+2020-06-19T18:05:59.584+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58316 #23 (1 connection now open)
+2020-06-19T18:05:59.585+0800 I  NETWORK  [conn23] received client metadata from 127.0.0.1:58316 conn23: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:05:59.585+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58320 #24 (2 connections now open)
+2020-06-19T18:05:59.585+0800 I  NETWORK  [conn24] received client metadata from 127.0.0.1:58320 conn24: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:05:59.587+0800 I  SHARDING [conn24] Marking collection abc_db.foo as collection version: <unsharded>
+2020-06-19T18:05:59.589+0800 I  NETWORK  [conn23] end connection 127.0.0.1:58316 (1 connection now open)
+2020-06-19T18:05:59.589+0800 I  NETWORK  [conn24] end connection 127.0.0.1:58320 (0 connections now open)
+2020-06-19T18:07:39.438+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58324 #25 (1 connection now open)
+2020-06-19T18:07:39.438+0800 I  NETWORK  [conn25] received client metadata from 127.0.0.1:58324 conn25: { application: { name: "MongoDB Shell" }, driver: { name: "MongoDB Internal Client", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.6.1810 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-957.12.1.el7.x86_64" } }
+2020-06-19T18:07:41.209+0800 I  COMMAND  [conn25] dropDatabase abc_db - starting
+2020-06-19T18:07:41.209+0800 I  COMMAND  [conn25] dropDatabase abc_db - dropping collection: abc_db.foo
+2020-06-19T18:07:41.261+0800 I  COMMAND  [conn25] dropDatabase abc_db - dropped 1 collection(s)
+2020-06-19T18:07:41.261+0800 I  COMMAND  [conn25] dropDatabase abc_db - finished
+2020-06-19T18:07:41.263+0800 I  COMMAND  [conn25] dropDatabase niuniuh5_modb - starting
+2020-06-19T18:07:41.263+0800 I  COMMAND  [conn25] dropDatabase niuniuh5_modb - dropping collection: niuniuh5_modb.abc
+2020-06-19T18:07:41.278+0800 I  COMMAND  [conn25] dropDatabase niuniuh5_modb - dropped 1 collection(s)
+2020-06-19T18:07:41.278+0800 I  COMMAND  [conn25] dropDatabase niuniuh5_modb - finished
+2020-06-19T18:07:41.279+0800 I  COMMAND  [conn25] dropDatabase test02_db - starting
+2020-06-19T18:07:41.279+0800 I  COMMAND  [conn25] dropDatabase test02_db - dropping collection: test02_db.abc
+2020-06-19T18:07:41.279+0800 I  COMMAND  [conn25] dropDatabase test02_db - dropping collection: test02_db.table_clubgamelog
+2020-06-19T18:07:41.279+0800 I  COMMAND  [conn25] dropDatabase test02_db - dropping collection: test02_db.table_clubgamescorerobotdetail
+2020-06-19T18:07:41.353+0800 I  COMMAND  [conn25] dropDatabase test02_db - dropped 3 collection(s)
+2020-06-19T18:07:41.353+0800 I  COMMAND  [conn25] dropDatabase test02_db - finished
+2020-06-19T18:07:41.354+0800 I  COMMAND  [conn25] dropDatabase test_db - starting
+2020-06-19T18:07:41.354+0800 I  COMMAND  [conn25] dropDatabase test_db - dropping collection: test_db.abc
+2020-06-19T18:07:41.354+0800 I  COMMAND  [conn25] dropDatabase test_db - dropping collection: test_db.table_clubgamelog
+2020-06-19T18:07:41.354+0800 I  COMMAND  [conn25] dropDatabase test_db - dropping collection: test_db.table_clubgamescorerobotdetail
+2020-06-19T18:07:41.428+0800 I  COMMAND  [conn25] dropDatabase test_db - dropped 3 collection(s)
+2020-06-19T18:07:41.428+0800 I  COMMAND  [conn25] dropDatabase test_db - finished
+2020-06-19T18:07:42.466+0800 I  COMMAND  [conn25] dropDatabase yldb - starting
+2020-06-19T18:07:42.466+0800 I  COMMAND  [conn25] dropDatabase yldb - dropping collection: yldb.abc
+2020-06-19T18:07:42.466+0800 I  COMMAND  [conn25] dropDatabase yldb - dropping collection: yldb.table_clubgamescorerobotdetail
+2020-06-19T18:07:42.466+0800 I  COMMAND  [conn25] dropDatabase yldb - dropping collection: yldb.table_clubgamelog
+2020-06-19T18:07:42.536+0800 I  COMMAND  [conn25] dropDatabase yldb - dropped 3 collection(s)
+2020-06-19T18:07:42.536+0800 I  COMMAND  [conn25] dropDatabase yldb - finished
+2020-06-19T18:07:44.435+0800 I  NETWORK  [conn25] end connection 127.0.0.1:58324 (0 connections now open)
+2020-06-19T18:08:01.219+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58328 #26 (1 connection now open)
+2020-06-19T18:08:01.220+0800 I  NETWORK  [conn26] received client metadata from 127.0.0.1:58328 conn26: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:08:01.220+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58332 #27 (2 connections now open)
+2020-06-19T18:08:01.220+0800 I  NETWORK  [conn27] received client metadata from 127.0.0.1:58332 conn27: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:01.222+0800 I  STORAGE  [conn27] createCollection: abc_db.foo with generated UUID: af8c30f9-e555-489e-884a-2aafc94411d9 and options: {}
+2020-06-19T18:08:01.394+0800 I  INDEX    [conn27] index build: done building index _id_ on ns abc_db.foo
+2020-06-19T18:08:01.394+0800 I  COMMAND  [conn27] command abc_db.foo appName: "mongorestore" command: create { create: "foo", idIndex: { key: { _id: 1 }, name: "_id_", ns: "abc_db.foo" }, lsid: { id: UUID("7de87d3c-e558-4d73-bfdb-27a0236fc333") }, $db: "abc_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2 } storage:{} protocol:op_msg 172ms
+2020-06-19T18:08:01.396+0800 I  NETWORK  [conn26] end connection 127.0.0.1:58328 (1 connection now open)
+2020-06-19T18:08:01.396+0800 I  NETWORK  [conn27] end connection 127.0.0.1:58332 (0 connections now open)
+2020-06-19T18:08:01.401+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58336 #28 (1 connection now open)
+2020-06-19T18:08:01.401+0800 I  NETWORK  [conn28] received client metadata from 127.0.0.1:58336 conn28: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:08:01.401+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58340 #29 (2 connections now open)
+2020-06-19T18:08:01.402+0800 I  NETWORK  [conn29] received client metadata from 127.0.0.1:58340 conn29: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:01.404+0800 I  SHARDING [conn29] Marking collection admin.yldb as collection version: <unsharded>
+2020-06-19T18:08:01.411+0800 I  SHARDING [conn29] Marking collection admin.tempusers as collection version: <unsharded>
+2020-06-19T18:08:01.411+0800 I  STORAGE  [conn29] createCollection: admin.tempusers with generated UUID: bb7698a2-9c7f-4a97-9b4d-627feddb48ad and options: {}
+2020-06-19T18:08:01.569+0800 I  INDEX    [conn29] index build: done building index _id_ on ns admin.tempusers
+2020-06-19T18:08:01.569+0800 I  COMMAND  [conn29] command admin.tempusers appName: "mongorestore" command: insert { insert: "tempusers", ordered: false, writeConcern: { w: "majority" }, lsid: { id: UUID("2e506fd0-e49e-41a0-aee0-e834499e5e86") }, $db: "admin" } ninserted:5 keysInserted:5 numYields:0 reslen:45 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 3 } }, ReplicationStateTransition: { acquireCount: { w: 3 } }, Global: { acquireCount: { w: 3 } }, Database: { acquireCount: { W: 3 } }, Collection: { acquireCount: { r: 2, w: 2, W: 1 } }, Mutex: { acquireCount: { r: 9 } } } flowControl:{ acquireCount: 3, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 158ms
+2020-06-19T18:08:01.570+0800 I  SHARDING [conn29] Marking collection admin.system.users as collection version: <unsharded>
+2020-06-19T18:08:01.571+0800 W  ACCESS   [conn29] Could not insert user admin@admin in _mergeAuthzCollections command: Location51003: User "admin@admin" already exists
+2020-06-19T18:08:01.571+0800 W  ACCESS   [conn29] Could not insert user ldg_user@admin in _mergeAuthzCollections command: Location51003: User "ldg_user@admin" already exists
+2020-06-19T18:08:01.571+0800 W  ACCESS   [conn29] Could not insert user dpc_user@admin in _mergeAuthzCollections command: Location51003: User "dpc_user@admin" already exists
+2020-06-19T18:08:01.571+0800 W  ACCESS   [conn29] Could not insert user lxb_user@admin in _mergeAuthzCollections command: Location51003: User "lxb_user@admin" already exists
+2020-06-19T18:08:01.571+0800 W  ACCESS   [conn29] Could not insert user clusteradmin@admin in _mergeAuthzCollections command: Location51003: User "clusteradmin@admin" already exists
+2020-06-19T18:08:01.572+0800 I  COMMAND  [conn29] CMD: drop admin.tempusers
+2020-06-19T18:08:01.572+0800 I  STORAGE  [conn29] Finishing collection drop for admin.tempusers (bb7698a2-9c7f-4a97-9b4d-627feddb48ad).
+2020-06-19T18:08:01.612+0800 I  NETWORK  [conn28] end connection 127.0.0.1:58336 (1 connection now open)
+2020-06-19T18:08:01.612+0800 I  NETWORK  [conn29] end connection 127.0.0.1:58340 (0 connections now open)
+2020-06-19T18:08:01.617+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58344 #30 (1 connection now open)
+2020-06-19T18:08:01.618+0800 I  NETWORK  [conn30] received client metadata from 127.0.0.1:58344 conn30: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:08:01.618+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58348 #31 (2 connections now open)
+2020-06-19T18:08:01.618+0800 I  NETWORK  [conn31] received client metadata from 127.0.0.1:58348 conn31: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:01.620+0800 I  STORAGE  [conn31] createCollection: niuniuh5_modb.abc with generated UUID: 26f8d9ea-7225-44bb-8859-3df4d94cce9b and options: {}
+2020-06-19T18:08:01.786+0800 I  INDEX    [conn31] index build: done building index _id_ on ns niuniuh5_modb.abc
+2020-06-19T18:08:01.786+0800 I  COMMAND  [conn31] command niuniuh5_modb.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, ns: "niuniuh5_modb.abc", name: "_id_" }, lsid: { id: UUID("7b9889b1-b23b-4037-a4ab-5a3eec9aca16") }, $db: "niuniuh5_modb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 166ms
+2020-06-19T18:08:01.787+0800 I  SHARDING [conn31] Marking collection niuniuh5_modb.abc as collection version: <unsharded>
+2020-06-19T18:08:01.788+0800 I  NETWORK  [conn30] end connection 127.0.0.1:58344 (1 connection now open)
+2020-06-19T18:08:01.788+0800 I  NETWORK  [conn31] end connection 127.0.0.1:58348 (0 connections now open)
+2020-06-19T18:08:01.793+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58352 #32 (1 connection now open)
+2020-06-19T18:08:01.793+0800 I  NETWORK  [conn32] received client metadata from 127.0.0.1:58352 conn32: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:08:01.794+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58356 #33 (2 connections now open)
+2020-06-19T18:08:01.794+0800 I  NETWORK  [conn33] received client metadata from 127.0.0.1:58356 conn33: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:01.796+0800 I  SHARDING [conn33] Marking collection test.test as collection version: <unsharded>
+2020-06-19T18:08:01.798+0800 I  NETWORK  [conn32] end connection 127.0.0.1:58352 (1 connection now open)
+2020-06-19T18:08:01.798+0800 I  NETWORK  [conn33] end connection 127.0.0.1:58356 (0 connections now open)
+2020-06-19T18:08:01.803+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58360 #34 (1 connection now open)
+2020-06-19T18:08:01.804+0800 I  NETWORK  [conn34] received client metadata from 127.0.0.1:58360 conn34: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:08:01.804+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58364 #35 (2 connections now open)
+2020-06-19T18:08:01.804+0800 I  NETWORK  [conn35] received client metadata from 127.0.0.1:58364 conn35: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:01.806+0800 I  STORAGE  [conn35] createCollection: test02_db.table_clubgamescorerobotdetail with generated UUID: 9d9bf029-e9ad-4ef8-91f7-6bf60b89de43 and options: {}
+2020-06-19T18:08:01.812+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58370 #36 (3 connections now open)
+2020-06-19T18:08:01.812+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58372 #37 (4 connections now open)
+2020-06-19T18:08:01.812+0800 I  NETWORK  [conn36] received client metadata from 127.0.0.1:58370 conn36: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:01.812+0800 I  NETWORK  [conn37] received client metadata from 127.0.0.1:58372 conn37: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:01.970+0800 I  INDEX    [conn35] index build: done building index _id_ on ns test02_db.table_clubgamescorerobotdetail
+2020-06-19T18:08:01.970+0800 I  STORAGE  [conn37] createCollection: test02_db.table_clubgamelog with generated UUID: 53072feb-0262-45c9-8092-3a8f95191dfa and options: {}
+2020-06-19T18:08:01.970+0800 I  STORAGE  [conn36] createCollection: test02_db.abc with generated UUID: d91c4ac1-a2bb-4d78-9bd7-741f1eca1f44 and options: {}
+2020-06-19T18:08:01.970+0800 I  COMMAND  [conn35] command test02_db.table_clubgamescorerobotdetail appName: "mongorestore" command: create { create: "table_clubgamescorerobotdetail", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test02_db.table_clubgamescorerobotdetail" }, lsid: { id: UUID("72d35909-3124-4452-886e-09ea5a1f659a") }, $db: "test02_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 164ms
+2020-06-19T18:08:01.981+0800 I  SHARDING [conn35] Marking collection test02_db.table_clubgamescorerobotdetail as collection version: <unsharded>
+2020-06-19T18:08:02.179+0800 I  INDEX    [conn37] index build: done building index _id_ on ns test02_db.table_clubgamelog
+2020-06-19T18:08:02.179+0800 I  COMMAND  [conn37] command test02_db.table_clubgamelog appName: "mongorestore" command: create { create: "table_clubgamelog", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test02_db.table_clubgamelog" }, lsid: { id: UUID("90b9b7ac-78ad-4e10-8ff1-16740ced2ce9") }, $db: "test02_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 157851 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 366ms
+2020-06-19T18:08:02.186+0800 I  SHARDING [conn37] Marking collection test02_db.table_clubgamelog as collection version: <unsharded>
+2020-06-19T18:08:02.262+0800 I  INDEX    [conn36] index build: done building index _id_ on ns test02_db.abc
+2020-06-19T18:08:02.262+0800 I  COMMAND  [conn36] command test02_db.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test02_db.abc" }, lsid: { id: UUID("8eb2fafd-602e-4b12-9fca-a341662ac003") }, $db: "test02_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 157908 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 450ms
+2020-06-19T18:08:02.268+0800 I  SHARDING [conn36] Marking collection test02_db.abc as collection version: <unsharded>
+2020-06-19T18:08:02.270+0800 I  NETWORK  [conn34] end connection 127.0.0.1:58360 (3 connections now open)
+2020-06-19T18:08:02.271+0800 I  NETWORK  [conn36] end connection 127.0.0.1:58370 (2 connections now open)
+2020-06-19T18:08:02.271+0800 I  NETWORK  [conn35] end connection 127.0.0.1:58364 (1 connection now open)
+2020-06-19T18:08:02.271+0800 I  NETWORK  [conn37] end connection 127.0.0.1:58372 (0 connections now open)
+2020-06-19T18:08:02.276+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58376 #38 (1 connection now open)
+2020-06-19T18:08:02.276+0800 I  NETWORK  [conn38] received client metadata from 127.0.0.1:58376 conn38: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:08:02.277+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58380 #39 (2 connections now open)
+2020-06-19T18:08:02.277+0800 I  NETWORK  [conn39] received client metadata from 127.0.0.1:58380 conn39: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:02.278+0800 I  STORAGE  [conn39] createCollection: test_db.table_clubgamelog with generated UUID: 0acbc099-87fd-4eac-9eef-56d9596ce4b6 and options: {}
+2020-06-19T18:08:02.279+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58384 #40 (3 connections now open)
+2020-06-19T18:08:02.279+0800 I  NETWORK  [conn40] received client metadata from 127.0.0.1:58384 conn40: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:02.279+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58388 #41 (4 connections now open)
+2020-06-19T18:08:02.279+0800 I  NETWORK  [conn41] received client metadata from 127.0.0.1:58388 conn41: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:02.446+0800 I  INDEX    [conn39] index build: done building index _id_ on ns test_db.table_clubgamelog
+2020-06-19T18:08:02.446+0800 I  STORAGE  [conn41] createCollection: test_db.table_clubgamescorerobotdetail with generated UUID: daac67bb-412b-4d62-8780-fb478bf1de4b and options: {}
+2020-06-19T18:08:02.446+0800 I  COMMAND  [conn39] command test_db.table_clubgamelog appName: "mongorestore" command: create { create: "table_clubgamelog", idIndex: { key: { _id: 1 }, ns: "test_db.table_clubgamelog", name: "_id_" }, lsid: { id: UUID("5756288b-f172-4ee5-b773-7235e2247952") }, $db: "test_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 167ms
+2020-06-19T18:08:02.446+0800 I  COMMAND  [conn40] command test_db.$cmd appName: "mongorestore" command: listCollections { listCollections: 1, filter: {}, lsid: { id: UUID("35ee0b65-266e-4055-ab0b-f0eb2ad65b7b") }, $db: "test_db" } numYields:0 reslen:326 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { r: 1 } }, Database: { acquireCount: { r: 1 }, acquireWaitCount: { r: 1 }, timeAcquiringMicros: { r: 166951 } }, Collection: { acquireCount: { r: 2 } }, Mutex: { acquireCount: { r: 1 } } } storage:{} protocol:op_msg 167ms
+2020-06-19T18:08:02.447+0800 I  STORAGE  [conn40] createCollection: test_db.abc with generated UUID: c92bf27e-b0d8-404e-90d3-a404ed55e8fb and options: {}
+2020-06-19T18:08:02.452+0800 I  SHARDING [conn39] Marking collection test_db.table_clubgamelog as collection version: <unsharded>
+2020-06-19T18:08:02.681+0800 I  INDEX    [conn41] index build: done building index _id_ on ns test_db.table_clubgamescorerobotdetail
+2020-06-19T18:08:02.681+0800 I  COMMAND  [conn41] command test_db.table_clubgamescorerobotdetail appName: "mongorestore" command: create { create: "table_clubgamescorerobotdetail", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test_db.table_clubgamescorerobotdetail" }, lsid: { id: UUID("14bb8ba6-f7fc-4b77-b6e3-064fb8f43a53") }, $db: "test_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 166629 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 402ms
+2020-06-19T18:08:02.690+0800 I  SHARDING [conn41] Marking collection test_db.table_clubgamescorerobotdetail as collection version: <unsharded>
+2020-06-19T18:08:02.763+0800 I  INDEX    [conn40] index build: done building index _id_ on ns test_db.abc
+2020-06-19T18:08:02.763+0800 I  COMMAND  [conn40] command test_db.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test_db.abc" }, lsid: { id: UUID("35ee0b65-266e-4055-ab0b-f0eb2ad65b7b") }, $db: "test_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 316ms
+2020-06-19T18:08:02.764+0800 I  SHARDING [conn40] Marking collection test_db.abc as collection version: <unsharded>
+2020-06-19T18:08:02.765+0800 I  NETWORK  [conn38] end connection 127.0.0.1:58376 (3 connections now open)
+2020-06-19T18:08:02.765+0800 I  NETWORK  [conn41] end connection 127.0.0.1:58388 (0 connections now open)
+2020-06-19T18:08:02.765+0800 I  NETWORK  [conn40] end connection 127.0.0.1:58384 (1 connection now open)
+2020-06-19T18:08:02.765+0800 I  NETWORK  [conn39] end connection 127.0.0.1:58380 (2 connections now open)
+2020-06-19T18:08:02.770+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58392 #42 (1 connection now open)
+2020-06-19T18:08:02.770+0800 I  NETWORK  [conn42] received client metadata from 127.0.0.1:58392 conn42: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:08:02.771+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58396 #43 (2 connections now open)
+2020-06-19T18:08:02.771+0800 I  NETWORK  [conn43] received client metadata from 127.0.0.1:58396 conn43: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:02.772+0800 I  STORAGE  [conn43] createCollection: yldb.table_clubgamescorerobotdetail with generated UUID: 3c42e7fe-c42e-482b-ae8e-9f6ec2183225 and options: {}
+2020-06-19T18:08:02.773+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58402 #44 (3 connections now open)
+2020-06-19T18:08:02.773+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58404 #45 (4 connections now open)
+2020-06-19T18:08:02.773+0800 I  NETWORK  [conn44] received client metadata from 127.0.0.1:58402 conn44: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:02.773+0800 I  NETWORK  [conn45] received client metadata from 127.0.0.1:58404 conn45: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:02.941+0800 I  INDEX    [conn43] index build: done building index _id_ on ns yldb.table_clubgamescorerobotdetail
+2020-06-19T18:08:02.941+0800 I  STORAGE  [conn45] createCollection: yldb.table_clubgamelog with generated UUID: 96ba694a-275d-4058-b2d5-893d59b1d586 and options: {}
+2020-06-19T18:08:02.941+0800 I  COMMAND  [conn43] command yldb.table_clubgamescorerobotdetail appName: "mongorestore" command: create { create: "table_clubgamescorerobotdetail", idIndex: { key: { _id: 1 }, name: "_id_", ns: "yldb.table_clubgamescorerobotdetail" }, lsid: { id: UUID("fa7710e7-a28b-4595-8fb5-59f3976274e5") }, $db: "yldb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 168ms
+2020-06-19T18:08:02.941+0800 I  STORAGE  [conn44] createCollection: yldb.abc with generated UUID: df987bee-b939-4375-b73b-43cde9b6178e and options: {}
+2020-06-19T18:08:02.951+0800 I  SHARDING [conn43] Marking collection yldb.table_clubgamescorerobotdetail as collection version: <unsharded>
+2020-06-19T18:08:03.384+0800 I  INDEX    [conn45] index build: done building index _id_ on ns yldb.table_clubgamelog
+2020-06-19T18:08:03.384+0800 I  COMMAND  [conn45] command yldb.table_clubgamelog appName: "mongorestore" command: create { create: "table_clubgamelog", idIndex: { key: { _id: 1 }, name: "_id_", ns: "yldb.table_clubgamelog" }, lsid: { id: UUID("7bc658ef-bf94-4688-bac2-8ed72c0941fa") }, $db: "yldb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 167582 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 610ms
+2020-06-19T18:08:03.397+0800 I  SHARDING [conn45] Marking collection yldb.table_clubgamelog as collection version: <unsharded>
+2020-06-19T18:08:03.481+0800 I  INDEX    [conn44] index build: done building index _id_ on ns yldb.abc
+2020-06-19T18:08:03.481+0800 I  COMMAND  [conn44] command yldb.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "yldb.abc" }, lsid: { id: UUID("a6fb9220-9d62-4997-9d4a-3b133fcaf977") }, $db: "yldb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 }, acquireWaitCount: { w: 1 }, timeAcquiringMicros: { w: 167614 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 707ms
+2020-06-19T18:08:03.487+0800 I  SHARDING [conn44] Marking collection yldb.abc as collection version: <unsharded>
+2020-06-19T18:08:03.490+0800 I  NETWORK  [conn42] end connection 127.0.0.1:58392 (3 connections now open)
+2020-06-19T18:08:03.490+0800 I  NETWORK  [conn43] end connection 127.0.0.1:58396 (2 connections now open)
+2020-06-19T18:08:03.490+0800 I  NETWORK  [conn44] end connection 127.0.0.1:58402 (1 connection now open)
+2020-06-19T18:08:03.490+0800 I  NETWORK  [conn45] end connection 127.0.0.1:58404 (0 connections now open)
+2020-06-19T18:08:39.173+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58408 #46 (1 connection now open)
+2020-06-19T18:08:39.173+0800 I  NETWORK  [conn46] received client metadata from 127.0.0.1:58408 conn46: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:08:39.174+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58412 #47 (2 connections now open)
+2020-06-19T18:08:39.174+0800 I  NETWORK  [conn47] received client metadata from 127.0.0.1:58412 conn47: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:08:39.236+0800 I  NETWORK  [conn47] end connection 127.0.0.1:58412 (0 connections now open)
+2020-06-19T18:08:39.236+0800 I  NETWORK  [conn46] end connection 127.0.0.1:58408 (1 connection now open)
+2020-06-19T18:09:18.508+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58414 #48 (1 connection now open)
+2020-06-19T18:09:18.508+0800 I  NETWORK  [conn48] received client metadata from 127.0.0.1:58414 conn48: { application: { name: "MongoDB Shell" }, driver: { name: "MongoDB Internal Client", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.6.1810 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-957.12.1.el7.x86_64" } }
+2020-06-19T18:09:20.249+0800 I  COMMAND  [conn48] dropDatabase abc_db - starting
+2020-06-19T18:09:20.249+0800 I  COMMAND  [conn48] dropDatabase abc_db - dropping collection: abc_db.foo
+2020-06-19T18:09:20.287+0800 I  COMMAND  [conn48] dropDatabase abc_db - dropped 1 collection(s)
+2020-06-19T18:09:20.287+0800 I  COMMAND  [conn48] dropDatabase abc_db - finished
+2020-06-19T18:09:20.289+0800 I  COMMAND  [conn48] dropDatabase niuniuh5_modb - starting
+2020-06-19T18:09:20.289+0800 I  COMMAND  [conn48] dropDatabase niuniuh5_modb - dropping collection: niuniuh5_modb.abc
+2020-06-19T18:09:20.315+0800 I  COMMAND  [conn48] dropDatabase niuniuh5_modb - dropped 1 collection(s)
+2020-06-19T18:09:20.315+0800 I  COMMAND  [conn48] dropDatabase niuniuh5_modb - finished
+2020-06-19T18:09:20.316+0800 I  COMMAND  [conn48] dropDatabase test02_db - starting
+2020-06-19T18:09:20.316+0800 I  COMMAND  [conn48] dropDatabase test02_db - dropping collection: test02_db.table_clubgamelog
+2020-06-19T18:09:20.316+0800 I  COMMAND  [conn48] dropDatabase test02_db - dropping collection: test02_db.table_clubgamescorerobotdetail
+2020-06-19T18:09:20.316+0800 I  COMMAND  [conn48] dropDatabase test02_db - dropping collection: test02_db.abc
+2020-06-19T18:09:20.390+0800 I  COMMAND  [conn48] dropDatabase test02_db - dropped 3 collection(s)
+2020-06-19T18:09:20.390+0800 I  COMMAND  [conn48] dropDatabase test02_db - finished
+2020-06-19T18:09:20.391+0800 I  COMMAND  [conn48] dropDatabase test_db - starting
+2020-06-19T18:09:20.391+0800 I  COMMAND  [conn48] dropDatabase test_db - dropping collection: test_db.table_clubgamelog
+2020-06-19T18:09:20.391+0800 I  COMMAND  [conn48] dropDatabase test_db - dropping collection: test_db.abc
+2020-06-19T18:09:20.391+0800 I  COMMAND  [conn48] dropDatabase test_db - dropping collection: test_db.table_clubgamescorerobotdetail
+2020-06-19T18:09:20.454+0800 I  COMMAND  [conn48] dropDatabase test_db - dropped 3 collection(s)
+2020-06-19T18:09:20.454+0800 I  COMMAND  [conn48] dropDatabase test_db - finished
+2020-06-19T18:09:20.977+0800 I  COMMAND  [conn48] dropDatabase yldb - starting
+2020-06-19T18:09:20.977+0800 I  COMMAND  [conn48] dropDatabase yldb - dropping collection: yldb.table_clubgamescorerobotdetail
+2020-06-19T18:09:20.977+0800 I  COMMAND  [conn48] dropDatabase yldb - dropping collection: yldb.table_clubgamelog
+2020-06-19T18:09:20.977+0800 I  COMMAND  [conn48] dropDatabase yldb - dropping collection: yldb.abc
+2020-06-19T18:09:21.032+0800 I  COMMAND  [conn48] dropDatabase yldb - dropped 3 collection(s)
+2020-06-19T18:09:21.032+0800 I  COMMAND  [conn48] dropDatabase yldb - finished
+2020-06-19T18:11:05.832+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58418 #49 (2 connections now open)
+2020-06-19T18:11:05.833+0800 I  NETWORK  [conn49] received client metadata from 127.0.0.1:58418 conn49: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:11:05.833+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58422 #50 (3 connections now open)
+2020-06-19T18:11:05.833+0800 I  NETWORK  [conn50] received client metadata from 127.0.0.1:58422 conn50: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:11:05.836+0800 I  STORAGE  [conn50] createCollection: yldb.table_clubgamescorerobotdetail with generated UUID: 7535fcc4-fa9c-4764-a2f7-f6c8609d145d and options: {}
+2020-06-19T18:11:05.836+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58428 #51 (4 connections now open)
+2020-06-19T18:11:05.836+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58430 #52 (5 connections now open)
+2020-06-19T18:11:05.836+0800 I  NETWORK  [conn52] received client metadata from 127.0.0.1:58430 conn52: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:11:05.836+0800 I  NETWORK  [conn51] received client metadata from 127.0.0.1:58428 conn51: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:11:05.836+0800 I  STORAGE  [conn51] createCollection: test02_db.table_clubgamescorerobotdetail with generated UUID: d27d4ea2-83cc-4e00-afe0-ff75b8493135 and options: {}
+2020-06-19T18:11:05.837+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58434 #53 (6 connections now open)
+2020-06-19T18:11:05.837+0800 I  NETWORK  [conn53] received client metadata from 127.0.0.1:58434 conn53: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:11:05.837+0800 I  STORAGE  [conn53] createCollection: test_db.table_clubgamescorerobotdetail with generated UUID: 7ef2eebc-d4ed-451e-b688-de9a2d25a138 and options: {}
+2020-06-19T18:11:05.845+0800 I  STORAGE  [conn52] createCollection: abc_db.foo with generated UUID: 5ef1b7c1-6138-48db-a508-35bd7ab9151a and options: {}
+2020-06-19T18:11:06.239+0800 I  INDEX    [conn50] index build: done building index _id_ on ns yldb.table_clubgamescorerobotdetail
+2020-06-19T18:11:06.239+0800 I  COMMAND  [conn50] command yldb.table_clubgamescorerobotdetail appName: "mongorestore" command: create { create: "table_clubgamescorerobotdetail", idIndex: { key: { _id: 1 }, name: "_id_", ns: "yldb.table_clubgamescorerobotdetail" }, lsid: { id: UUID("23fc346d-3379-4c32-9041-6ffe265d99c7") }, $db: "yldb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2 } storage:{} protocol:op_msg 403ms
+2020-06-19T18:11:06.270+0800 I  STORAGE  [conn50] createCollection: yldb.table_clubgamelog with generated UUID: c764c5b9-df6c-4a52-9542-7baaa308f073 and options: {}
+2020-06-19T18:11:06.322+0800 I  INDEX    [conn51] index build: done building index _id_ on ns test02_db.table_clubgamescorerobotdetail
+2020-06-19T18:11:06.322+0800 I  COMMAND  [conn51] command test02_db.table_clubgamescorerobotdetail appName: "mongorestore" command: create { create: "table_clubgamescorerobotdetail", idIndex: { key: { _id: 1 }, ns: "test02_db.table_clubgamescorerobotdetail", name: "_id_" }, lsid: { id: UUID("790e05d4-6ca8-47a9-bd16-80787ed1e40f") }, $db: "test02_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2 } storage:{} protocol:op_msg 485ms
+2020-06-19T18:11:06.348+0800 I  STORAGE  [conn51] createCollection: test02_db.table_clubgamelog with generated UUID: f0be4be3-fee6-4597-ba01-52b89328ba7f and options: {}
+2020-06-19T18:11:06.397+0800 I  INDEX    [conn53] index build: done building index _id_ on ns test_db.table_clubgamescorerobotdetail
+2020-06-19T18:11:06.397+0800 I  COMMAND  [conn53] command test_db.table_clubgamescorerobotdetail appName: "mongorestore" command: create { create: "table_clubgamescorerobotdetail", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test_db.table_clubgamescorerobotdetail" }, lsid: { id: UUID("49a33558-d16f-4d2c-8931-cdb75c77002c") }, $db: "test_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2 } storage:{} protocol:op_msg 559ms
+2020-06-19T18:11:06.411+0800 I  STORAGE  [conn53] createCollection: test_db.table_clubgamelog with generated UUID: 090d1be7-d406-4aa9-a478-f2b8ca7e1d31 and options: {}
+2020-06-19T18:11:06.476+0800 I  INDEX    [conn52] index build: done building index _id_ on ns abc_db.foo
+2020-06-19T18:11:06.476+0800 I  COMMAND  [conn52] command abc_db.foo appName: "mongorestore" command: create { create: "foo", idIndex: { key: { _id: 1 }, name: "_id_", ns: "abc_db.foo" }, lsid: { id: UUID("a30df708-0e4a-4389-9bfc-797def57756a") }, $db: "abc_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 631ms
+2020-06-19T18:11:06.479+0800 I  STORAGE  [conn52] createCollection: niuniuh5_modb.abc with generated UUID: 9106a1bd-2b4d-4a6a-b2a4-91d4877f493b and options: {}
+2020-06-19T18:11:06.848+0800 I  INDEX    [conn50] index build: done building index _id_ on ns yldb.table_clubgamelog
+2020-06-19T18:11:06.848+0800 I  COMMAND  [conn50] command yldb.table_clubgamelog appName: "mongorestore" command: create { create: "table_clubgamelog", idIndex: { key: { _id: 1 }, ns: "yldb.table_clubgamelog", name: "_id_" }, lsid: { id: UUID("23fc346d-3379-4c32-9041-6ffe265d99c7") }, $db: "yldb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 577ms
+2020-06-19T18:11:06.862+0800 I  STORAGE  [conn50] createCollection: yldb.abc with generated UUID: 27f19d2a-70c6-4568-b438-32f8f6f1ce1e and options: {}
+2020-06-19T18:11:06.923+0800 I  INDEX    [conn51] index build: done building index _id_ on ns test02_db.table_clubgamelog
+2020-06-19T18:11:06.923+0800 I  COMMAND  [conn51] command test02_db.table_clubgamelog appName: "mongorestore" command: create { create: "table_clubgamelog", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test02_db.table_clubgamelog" }, lsid: { id: UUID("790e05d4-6ca8-47a9-bd16-80787ed1e40f") }, $db: "test02_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 575ms
+2020-06-19T18:11:06.934+0800 I  STORAGE  [conn51] createCollection: test02_db.abc with generated UUID: a2740eec-91ab-489a-977b-de69ff4aeb50 and options: {}
+2020-06-19T18:11:07.015+0800 I  INDEX    [conn53] index build: done building index _id_ on ns test_db.table_clubgamelog
+2020-06-19T18:11:07.015+0800 I  COMMAND  [conn53] command test_db.table_clubgamelog appName: "mongorestore" command: create { create: "table_clubgamelog", idIndex: { key: { _id: 1 }, ns: "test_db.table_clubgamelog", name: "_id_" }, lsid: { id: UUID("49a33558-d16f-4d2c-8931-cdb75c77002c") }, $db: "test_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1, timeAcquiringMicros: 1 } storage:{} protocol:op_msg 604ms
+2020-06-19T18:11:07.022+0800 I  STORAGE  [conn53] createCollection: test_db.abc with generated UUID: 91ad72fb-f61a-4d77-9422-5653f8b3c55b and options: {}
+2020-06-19T18:11:07.090+0800 I  INDEX    [conn52] index build: done building index _id_ on ns niuniuh5_modb.abc
+2020-06-19T18:11:07.090+0800 I  COMMAND  [conn52] command niuniuh5_modb.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "niuniuh5_modb.abc" }, lsid: { id: UUID("a30df708-0e4a-4389-9bfc-797def57756a") }, $db: "niuniuh5_modb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 2 } }, ReplicationStateTransition: { acquireCount: { w: 2 } }, Global: { acquireCount: { w: 2 } }, Database: { acquireCount: { w: 1, W: 1 } }, Collection: { acquireCount: { r: 2, W: 1 } }, Mutex: { acquireCount: { r: 1 } } } flowControl:{ acquireCount: 2 } storage:{} protocol:op_msg 611ms
+2020-06-19T18:11:07.380+0800 I  INDEX    [conn50] index build: done building index _id_ on ns yldb.abc
+2020-06-19T18:11:07.380+0800 I  COMMAND  [conn50] command yldb.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "yldb.abc" }, lsid: { id: UUID("23fc346d-3379-4c32-9041-6ffe265d99c7") }, $db: "yldb" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 518ms
+2020-06-19T18:11:07.465+0800 I  INDEX    [conn51] index build: done building index _id_ on ns test02_db.abc
+2020-06-19T18:11:07.466+0800 I  COMMAND  [conn51] command test02_db.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test02_db.abc" }, lsid: { id: UUID("790e05d4-6ca8-47a9-bd16-80787ed1e40f") }, $db: "test02_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 531ms
+2020-06-19T18:11:07.522+0800 I  INDEX    [conn53] index build: done building index _id_ on ns test_db.abc
+2020-06-19T18:11:07.522+0800 I  COMMAND  [conn53] command test_db.abc appName: "mongorestore" command: create { create: "abc", idIndex: { key: { _id: 1 }, name: "_id_", ns: "test_db.abc" }, lsid: { id: UUID("49a33558-d16f-4d2c-8931-cdb75c77002c") }, $db: "test_db" } numYields:0 reslen:38 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 1 } }, ReplicationStateTransition: { acquireCount: { w: 1 } }, Global: { acquireCount: { w: 1 } }, Database: { acquireCount: { w: 1 } }, Collection: { acquireCount: { r: 1, W: 1 } }, Mutex: { acquireCount: { r: 2 } } } flowControl:{ acquireCount: 1 } storage:{} protocol:op_msg 499ms
+2020-06-19T18:11:07.528+0800 I  STORAGE  [conn53] createCollection: admin.tempusers with generated UUID: 87663e0b-9167-408e-925b-f877fb7ecf28 and options: {}
+2020-06-19T18:11:07.697+0800 I  INDEX    [conn53] index build: done building index _id_ on ns admin.tempusers
+2020-06-19T18:11:07.697+0800 I  COMMAND  [conn53] command admin.tempusers appName: "mongorestore" command: insert { insert: "tempusers", ordered: false, writeConcern: { w: "majority" }, lsid: { id: UUID("49a33558-d16f-4d2c-8931-cdb75c77002c") }, $db: "admin" } ninserted:5 keysInserted:5 numYields:0 reslen:45 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 3 } }, ReplicationStateTransition: { acquireCount: { w: 3 } }, Global: { acquireCount: { w: 3 } }, Database: { acquireCount: { W: 3 } }, Collection: { acquireCount: { r: 2, w: 2, W: 1 } }, Mutex: { acquireCount: { r: 9 } } } flowControl:{ acquireCount: 3 } storage:{} protocol:op_msg 169ms
+2020-06-19T18:11:07.698+0800 W  ACCESS   [conn53] Could not insert user admin@admin in _mergeAuthzCollections command: Location51003: User "admin@admin" already exists
+2020-06-19T18:11:07.698+0800 W  ACCESS   [conn53] Could not insert user ldg_user@admin in _mergeAuthzCollections command: Location51003: User "ldg_user@admin" already exists
+2020-06-19T18:11:07.698+0800 W  ACCESS   [conn53] Could not insert user dpc_user@admin in _mergeAuthzCollections command: Location51003: User "dpc_user@admin" already exists
+2020-06-19T18:11:07.698+0800 W  ACCESS   [conn53] Could not insert user lxb_user@admin in _mergeAuthzCollections command: Location51003: User "lxb_user@admin" already exists
+2020-06-19T18:11:07.698+0800 W  ACCESS   [conn53] Could not insert user clusteradmin@admin in _mergeAuthzCollections command: Location51003: User "clusteradmin@admin" already exists
+2020-06-19T18:11:07.698+0800 I  COMMAND  [conn53] CMD: drop admin.tempusers
+2020-06-19T18:11:07.698+0800 I  STORAGE  [conn53] Finishing collection drop for admin.tempusers (87663e0b-9167-408e-925b-f877fb7ecf28).
+2020-06-19T18:11:07.742+0800 I  NETWORK  [conn49] end connection 127.0.0.1:58418 (5 connections now open)
+2020-06-19T18:11:07.742+0800 I  NETWORK  [conn52] end connection 127.0.0.1:58430 (4 connections now open)
+2020-06-19T18:11:07.742+0800 I  NETWORK  [conn51] end connection 127.0.0.1:58428 (3 connections now open)
+2020-06-19T18:11:07.743+0800 I  NETWORK  [conn53] end connection 127.0.0.1:58434 (2 connections now open)
+2020-06-19T18:11:07.743+0800 I  NETWORK  [conn50] end connection 127.0.0.1:58422 (1 connection now open)
+2020-06-19T18:14:54.678+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58468 #54 (2 connections now open)
+2020-06-19T18:14:54.679+0800 I  NETWORK  [conn54] received client metadata from 127.0.0.1:58468 conn54: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17" }
+2020-06-19T18:14:54.679+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58472 #55 (3 connections now open)
+2020-06-19T18:14:54.679+0800 I  NETWORK  [conn55] received client metadata from 127.0.0.1:58472 conn55: { driver: { name: "mongo-go-driver", version: "v1.2.1" }, os: { type: "linux", architecture: "amd64" }, platform: "go1.12.17", application: { name: "mongorestore" } }
+2020-06-19T18:14:54.741+0800 I  NETWORK  [conn54] end connection 127.0.0.1:58468 (2 connections now open)
+2020-06-19T18:14:54.741+0800 I  NETWORK  [conn55] end connection 127.0.0.1:58472 (1 connection now open)
+2020-06-19T18:16:46.363+0800 I  NETWORK  [conn48] end connection 127.0.0.1:58414 (0 connections now open)
+2020-06-19T18:19:30.081+0800 I  CONTROL  [main] ***** SERVER RESTARTED *****
+2020-06-19T18:19:30.084+0800 I  CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+2020-06-19T18:19:30.085+0800 W  ASIO     [main] No TransportLayer configured during NetworkInterface startup
+2020-06-19T18:19:30.085+0800 I  NETWORK  [main]  --maxConns too high, can only handle 819
+2020-06-19T18:19:30.085+0800 I  CONTROL  [signalProcessingThread] got signal 15 (Terminated), will terminate after current cmd ends
+2020-06-19T18:19:30.086+0800 I  NETWORK  [signalProcessingThread] shutdown: going to close listening sockets...
+2020-06-19T18:19:30.086+0800 I  NETWORK  [listener] removing socket file: /tmp/mongodb-27017.sock
+2020-06-19T18:19:30.086+0800 I  -        [signalProcessingThread] Stopping further Flow Control ticket acquisitions.
+2020-06-19T18:19:30.086+0800 I  CONTROL  [signalProcessingThread] Shutting down free monitoring
+2020-06-19T18:19:30.086+0800 I  FTDC     [signalProcessingThread] Shutting down full-time diagnostic data capture
+2020-06-19T18:19:30.090+0800 I  STORAGE  [signalProcessingThread] Deregistering all the collections
+2020-06-19T18:19:30.090+0800 I  STORAGE  [WTOplogJournalThread] Oplog journal thread loop shutting down
+2020-06-19T18:19:30.090+0800 I  STORAGE  [signalProcessingThread] Timestamp monitor shutting down
+2020-06-19T18:19:30.090+0800 I  STORAGE  [signalProcessingThread] WiredTigerKVEngine shutting down
+2020-06-19T18:19:30.090+0800 I  STORAGE  [signalProcessingThread] Shutting down session sweeper thread
+2020-06-19T18:19:30.090+0800 I  STORAGE  [signalProcessingThread] Finished shutting down session sweeper thread
+2020-06-19T18:19:30.090+0800 I  STORAGE  [signalProcessingThread] Shutting down journal flusher thread
+2020-06-19T18:19:30.129+0800 I  STORAGE  [signalProcessingThread] Finished shutting down journal flusher thread
+2020-06-19T18:19:30.129+0800 I  STORAGE  [signalProcessingThread] Shutting down checkpoint thread
+2020-06-19T18:19:30.129+0800 I  STORAGE  [signalProcessingThread] Finished shutting down checkpoint thread
+2020-06-19T18:19:30.357+0800 I  STORAGE  [signalProcessingThread] shutdown: removing fs lock...
+2020-06-19T18:19:30.357+0800 I  CONTROL  [signalProcessingThread] now exiting
+2020-06-19T18:19:30.357+0800 I  CONTROL  [signalProcessingThread] shutting down with code:0
+2020-06-19T18:19:31.105+0800 I  CONTROL  [main] ***** SERVER RESTARTED *****
+2020-06-19T18:19:31.109+0800 I  CONTROL  [main] Automatically disabling TLS 1.0, to force-enable TLS 1.0 specify --sslDisabledProtocols 'none'
+2020-06-19T18:19:31.111+0800 W  ASIO     [main] No TransportLayer configured during NetworkInterface startup
+2020-06-19T18:19:31.111+0800 I  NETWORK  [main]  --maxConns too high, can only handle 819
+2020-06-19T18:19:31.150+0800 I  CONTROL  [initandlisten] MongoDB starting : pid=19268 port=27017 dbpath=/home/mongodb/data 64-bit host=test.localdomain
+2020-06-19T18:19:31.151+0800 I  CONTROL  [initandlisten] db version v4.2.7
+2020-06-19T18:19:31.151+0800 I  CONTROL  [initandlisten] git version: 51d9fe12b5d19720e72dcd7db0f2f17dd9a19212
+2020-06-19T18:19:31.151+0800 I  CONTROL  [initandlisten] OpenSSL version: OpenSSL 1.0.1e-fips 11 Feb 2013
+2020-06-19T18:19:31.151+0800 I  CONTROL  [initandlisten] allocator: tcmalloc
+2020-06-19T18:19:31.151+0800 I  CONTROL  [initandlisten] modules: none
+2020-06-19T18:19:31.151+0800 I  CONTROL  [initandlisten] build environment:
+2020-06-19T18:19:31.151+0800 I  CONTROL  [initandlisten]     distmod: rhel70
+2020-06-19T18:19:31.151+0800 I  CONTROL  [initandlisten]     distarch: x86_64
+2020-06-19T18:19:31.151+0800 I  CONTROL  [initandlisten]     target_arch: x86_64
+2020-06-19T18:19:31.151+0800 I  CONTROL  [initandlisten] options: { config: "/etc/mongodb.conf", net: { bindIp: "0.0.0.0", maxIncomingConnections: 20000 }, processManagement: { fork: true }, replication: { replSet: "repl_set" }, security: { authorization: "enabled", keyFile: "/home/mongodb/keyfile/mongo.key" }, storage: { dbPath: "/home/mongodb/data", wiredTiger: { engineConfig: { cacheSizeGB: 1.0 } } }, systemLog: { destination: "file", logAppend: true, path: "/home/mongodb/log/mongod.log" } }
+2020-06-19T18:19:31.151+0800 I  NETWORK  [initandlisten]  --maxConns too high, can only handle 819
+2020-06-19T18:19:31.152+0800 I  STORAGE  [initandlisten] Detected data files in /home/mongodb/data created by the 'wiredTiger' storage engine, so setting the active storage engine to 'wiredTiger'.
+2020-06-19T18:19:31.152+0800 I  STORAGE  [initandlisten] wiredtiger_open config: create,cache_size=1024M,cache_overflow=(file_max=0M),session_max=33000,eviction=(threads_min=4,threads_max=4),config_base=false,statistics=(fast),log=(enabled=true,archive=true,path=journal,compressor=snappy),file_manager=(close_idle_time=100000,close_scan_interval=10,close_handle_minimum=250),statistics_log=(wait=0),verbose=[recovery_progress,checkpoint_progress],
+2020-06-19T18:19:31.784+0800 I  STORAGE  [initandlisten] WiredTiger message [1592561971:784113][19268:0x7f872cf7cc40], txn-recover: Recovering log 3 through 4
+2020-06-19T18:19:31.822+0800 I  STORAGE  [initandlisten] WiredTiger message [1592561971:822463][19268:0x7f872cf7cc40], txn-recover: Recovering log 4 through 4
+2020-06-19T18:19:31.878+0800 I  STORAGE  [initandlisten] WiredTiger message [1592561971:878105][19268:0x7f872cf7cc40], txn-recover: Main recovery loop: starting at 3/2511360 to 4/256
+2020-06-19T18:19:31.949+0800 I  STORAGE  [initandlisten] WiredTiger message [1592561971:949499][19268:0x7f872cf7cc40], txn-recover: Recovering log 3 through 4
+2020-06-19T18:19:32.025+0800 I  STORAGE  [initandlisten] WiredTiger message [1592561972:25285][19268:0x7f872cf7cc40], txn-recover: Recovering log 4 through 4
+2020-06-19T18:19:32.064+0800 I  STORAGE  [initandlisten] WiredTiger message [1592561972:64578][19268:0x7f872cf7cc40], txn-recover: Set global recovery timestamp: (0, 0)
+2020-06-19T18:19:32.284+0800 I  RECOVERY [initandlisten] WiredTiger recoveryTimestamp. Ts: Timestamp(0, 0)
+2020-06-19T18:19:32.394+0800 I  STORAGE  [initandlisten] Starting OplogTruncaterThread local.oplog.rs
+2020-06-19T18:19:32.394+0800 I  STORAGE  [initandlisten] The size storer reports that the oplog contains 1 records totaling to 127 bytes
+2020-06-19T18:19:32.394+0800 I  STORAGE  [initandlisten] Scanning the oplog to determine where to place markers for truncation
+2020-06-19T18:19:32.394+0800 I  STORAGE  [initandlisten] WiredTiger record store oplog processing took 0ms
+2020-06-19T18:19:32.843+0800 I  STORAGE  [initandlisten] Timestamp monitor starting
+2020-06-19T18:19:32.885+0800 I  CONTROL  [initandlisten] 
+2020-06-19T18:19:32.885+0800 I  CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/enabled is 'always'.
+2020-06-19T18:19:32.885+0800 I  CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2020-06-19T18:19:32.885+0800 I  CONTROL  [initandlisten] 
+2020-06-19T18:19:32.885+0800 I  CONTROL  [initandlisten] ** WARNING: /sys/kernel/mm/transparent_hugepage/defrag is 'always'.
+2020-06-19T18:19:32.885+0800 I  CONTROL  [initandlisten] **        We suggest setting it to 'never'
+2020-06-19T18:19:32.885+0800 I  CONTROL  [initandlisten] 
+2020-06-19T18:19:33.177+0800 I  SHARDING [initandlisten] Marking collection local.system.replset as collection version: <unsharded>
+2020-06-19T18:19:33.178+0800 I  STORAGE  [initandlisten] Flow Control is enabled on this deployment.
+2020-06-19T18:19:33.178+0800 I  SHARDING [initandlisten] Marking collection admin.system.roles as collection version: <unsharded>
+2020-06-19T18:19:33.178+0800 I  SHARDING [initandlisten] Marking collection admin.system.version as collection version: <unsharded>
+2020-06-19T18:19:33.180+0800 I  SHARDING [initandlisten] Marking collection local.startup_log as collection version: <unsharded>
+2020-06-19T18:19:33.180+0800 I  FTDC     [initandlisten] Initializing full-time diagnostic data capture with directory '/home/mongodb/data/diagnostic.data'
+2020-06-19T18:19:33.181+0800 I  STORAGE  [initandlisten] createCollection: local.replset.oplogTruncateAfterPoint with generated UUID: 48a66b9a-4358-4756-9e68-a36c5684a938 and options: {}
+2020-06-19T18:19:33.344+0800 I  INDEX    [initandlisten] index build: done building index _id_ on ns local.replset.oplogTruncateAfterPoint
+2020-06-19T18:19:33.344+0800 I  STORAGE  [initandlisten] createCollection: local.replset.minvalid with generated UUID: 62f65ddf-07b2-4b2e-85b8-9f4c556e8eb0 and options: {}
+2020-06-19T18:19:33.502+0800 I  INDEX    [initandlisten] index build: done building index _id_ on ns local.replset.minvalid
+2020-06-19T18:19:33.503+0800 I  SHARDING [initandlisten] Marking collection local.replset.minvalid as collection version: <unsharded>
+2020-06-19T18:19:33.503+0800 I  STORAGE  [initandlisten] createCollection: local.replset.election with generated UUID: 9f70d87e-bcb2-46b4-b83d-45953ef304c6 and options: {}
+2020-06-19T18:19:33.661+0800 I  INDEX    [initandlisten] index build: done building index _id_ on ns local.replset.election
+2020-06-19T18:19:33.661+0800 I  SHARDING [initandlisten] Marking collection local.replset.election as collection version: <unsharded>
+2020-06-19T18:19:33.661+0800 I  REPL     [initandlisten] Did not find local initialized voted for document at startup.
+2020-06-19T18:19:33.661+0800 I  REPL     [initandlisten] Did not find local Rollback ID document at startup. Creating one.
+2020-06-19T18:19:33.661+0800 I  STORAGE  [initandlisten] createCollection: local.system.rollback.id with generated UUID: d046c0d9-f5a8-48af-89e7-f8c766ab8311 and options: {}
+2020-06-19T18:19:33.794+0800 I  INDEX    [initandlisten] index build: done building index _id_ on ns local.system.rollback.id
+2020-06-19T18:19:33.794+0800 I  SHARDING [initandlisten] Marking collection local.system.rollback.id as collection version: <unsharded>
+2020-06-19T18:19:33.794+0800 I  REPL     [initandlisten] Initialized the rollback ID to 1
+2020-06-19T18:19:33.794+0800 I  REPL     [initandlisten] Did not find local replica set configuration document at startup;  NoMatchingDocument: Did not find replica set configuration document in local.system.replset
+2020-06-19T18:19:33.795+0800 I  CONTROL  [LogicalSessionCacheRefresh] Sessions collection is not set up; waiting until next sessions refresh interval: Replication has not yet been configured
+2020-06-19T18:19:33.795+0800 I  SHARDING [LogicalSessionCacheReap] Marking collection config.system.sessions as collection version: <unsharded>
+2020-06-19T18:19:33.795+0800 I  NETWORK  [listener] Listening on /tmp/mongodb-27017.sock
+2020-06-19T18:19:33.795+0800 I  NETWORK  [listener] Listening on 0.0.0.0
+2020-06-19T18:19:33.795+0800 I  NETWORK  [listener] waiting for connections on port 27017
+2020-06-19T18:19:33.795+0800 I  CONTROL  [LogicalSessionCacheReap] Failed to reap transaction table: NotYetInitialized: Replication has not yet been configured
+2020-06-19T18:19:34.000+0800 I  SHARDING [ftdc] Marking collection local.oplog.rs as collection version: <unsharded>
+2020-06-19T18:20:06.167+0800 I  NETWORK  [listener] connection accepted from 192.168.0.242:47414 #1 (1 connection now open)
+2020-06-19T18:20:06.204+0800 I  ACCESS   [conn1] Successfully authenticated as principal __system on local from client 192.168.0.242:47414
+2020-06-19T18:20:06.205+0800 I  NETWORK  [conn1] end connection 192.168.0.242:47414 (0 connections now open)
+2020-06-19T18:20:06.205+0800 I  NETWORK  [listener] connection accepted from 192.168.0.242:47416 #2 (1 connection now open)
+2020-06-19T18:20:06.205+0800 I  NETWORK  [conn2] received client metadata from 192.168.0.242:47416 conn2: { driver: { name: "NetworkInterfaceTL", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.3.1611 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-514.el7.x86_64" } }
+2020-06-19T18:20:06.207+0800 I  NETWORK  [listener] connection accepted from 192.168.0.242:47418 #3 (2 connections now open)
+2020-06-19T18:20:06.207+0800 I  NETWORK  [conn3] received client metadata from 192.168.0.242:47418 conn3: { driver: { name: "NetworkInterfaceTL", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.3.1611 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-514.el7.x86_64" } }
+2020-06-19T18:20:06.217+0800 I  ACCESS   [conn2] Successfully authenticated as principal __system on local from client 192.168.0.242:47416
+2020-06-19T18:20:06.227+0800 I  ACCESS   [conn3] Successfully authenticated as principal __system on local from client 192.168.0.242:47418
+2020-06-19T18:20:06.227+0800 I  CONNPOOL [Replication] Connecting to 192.168.0.242:27017
+2020-06-19T18:20:06.267+0800 I  NETWORK  [listener] connection accepted from 192.168.0.241:45608 #6 (3 connections now open)
+2020-06-19T18:20:06.294+0800 I  ACCESS   [conn6] Successfully authenticated as principal __system on local from client 192.168.0.241:45608
+2020-06-19T18:20:06.295+0800 I  NETWORK  [conn6] end connection 192.168.0.241:45608 (2 connections now open)
+2020-06-19T18:20:06.296+0800 I  NETWORK  [listener] connection accepted from 192.168.0.241:45610 #8 (3 connections now open)
+2020-06-19T18:20:06.296+0800 I  NETWORK  [conn8] received client metadata from 192.168.0.241:45610 conn8: { driver: { name: "NetworkInterfaceTL", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.3.1611 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-514.el7.x86_64" } }
+2020-06-19T18:20:06.300+0800 I  NETWORK  [listener] connection accepted from 192.168.0.252:45204 #9 (4 connections now open)
+2020-06-19T18:20:06.306+0800 I  ACCESS   [conn8] Successfully authenticated as principal __system on local from client 192.168.0.241:45610
+2020-06-19T18:20:06.307+0800 I  CONNPOOL [Replication] Connecting to 192.168.0.241:27017
+2020-06-19T18:20:06.342+0800 I  ACCESS   [conn9] Successfully authenticated as principal __system on local from client 192.168.0.252:45204
+2020-06-19T18:20:06.342+0800 I  NETWORK  [conn9] end connection 192.168.0.252:45204 (3 connections now open)
+2020-06-19T18:20:06.343+0800 I  NETWORK  [listener] connection accepted from 192.168.0.252:45206 #12 (4 connections now open)
+2020-06-19T18:20:06.343+0800 I  NETWORK  [conn12] received client metadata from 192.168.0.252:45206 conn12: { driver: { name: "NetworkInterfaceTL", version: "4.2.7" }, os: { type: "Linux", name: "CentOS release 6.9 (Final)", architecture: "x86_64", version: "Kernel 2.6.32-754.2.1.el6.x86_64" } }
+2020-06-19T18:20:06.347+0800 I  STORAGE  [replexec-0] createCollection: local.system.replset with generated UUID: a87715d1-218e-4037-b16a-35a5da1e0af7 and options: {}
+2020-06-19T18:20:06.356+0800 I  ACCESS   [conn12] Successfully authenticated as principal __system on local from client 192.168.0.252:45206
+2020-06-19T18:20:06.356+0800 I  CONNPOOL [Replication] Connecting to 192.168.0.252:27017
+2020-06-19T18:20:06.490+0800 I  INDEX    [replexec-0] index build: done building index _id_ on ns local.system.replset
+2020-06-19T18:20:06.491+0800 I  REPL     [replexec-0] New replica set config in use: { _id: "repl_set", version: 2, protocolVersion: 1, writeConcernMajorityJournalDefault: true, members: [ { _id: 0, host: "192.168.0.242:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 90.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 1, host: "192.168.0.252:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 90.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 2, host: "192.168.0.241:27017", arbiterOnly: true, buildIndexes: true, hidden: false, priority: 0.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 3, host: "192.168.0.251:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 1.0, tags: {}, slaveDelay: 0, votes: 1 } ], settings: { chainingAllowed: true, heartbeatIntervalMillis: 2000, heartbeatTimeoutSecs: 10, electionTimeoutMillis: 10000, catchUpTimeoutMillis: -1, catchUpTakeoverDelayMillis: 30000, getLastErrorModes: {}, getLastErrorDefaults: { w: 1, wtimeout: 0 }, replicaSetId: ObjectId('5eeb3d0b25a16e8fa60aba50') } }
+2020-06-19T18:20:06.491+0800 I  REPL     [replexec-0] This node is 192.168.0.251:27017 in the config
+2020-06-19T18:20:06.491+0800 I  REPL     [replexec-0] transition to STARTUP2 from STARTUP
+
+2020-06-19T18:20:06.491+0800 I  REPL     [replexec-0] Starting replication storage threads
+2020-06-19T18:20:06.491+0800 I  REPL     [replexec-1] Member 192.168.0.252:27017 is now in state SECONDARY
+2020-06-19T18:20:06.491+0800 I  REPL     [replexec-2] Member 192.168.0.242:27017 is now in state PRIMARY
+2020-06-19T18:20:06.491+0800 I  REPL     [replexec-3] Member 192.168.0.241:27017 is now in state ARBITER
+
+2020-06-19T18:20:06.498+0800 I  STORAGE  [replexec-0] createCollection: local.temp_oplog_buffer with generated UUID: b5430a4e-43ae-4fe5-bc64-a3710670c825 and options: { temp: true }
+2020-06-19T18:20:06.649+0800 I  INDEX    [replexec-0] index build: done building index _id_ on ns local.temp_oplog_buffer
+2020-06-19T18:20:06.649+0800 I  INITSYNC [replication-0] Starting initial sync (attempt 1 of 10)
+2020-06-19T18:20:06.649+0800 I  STORAGE  [replication-0] Finishing collection drop for local.temp_oplog_buffer (b5430a4e-43ae-4fe5-bc64-a3710670c825).
+2020-06-19T18:20:06.665+0800 I  STORAGE  [replication-0] createCollection: local.temp_oplog_buffer with generated UUID: e43854e3-c0c8-414c-9890-06a373606be9 and options: { temp: true }
+2020-06-19T18:20:06.815+0800 I  INDEX    [replication-0] index build: done building index _id_ on ns local.temp_oplog_buffer
+2020-06-19T18:20:06.815+0800 I  REPL     [replication-0] waiting for 3 pings from other members before syncing
+2020-06-19T18:20:07.815+0800 I  REPL     [replication-1] sync source candidate: 192.168.0.252:27017
+2020-06-19T18:20:07.815+0800 I  INITSYNC [replication-1] Initial syncer oplog truncation finished in: 0ms
+2020-06-19T18:20:07.815+0800 I  REPL     [replication-1] dropReplicatedDatabases - dropping 10 databases
+2020-06-19T18:20:08.216+0800 I  REPL     [replication-1] dropReplicatedDatabases - dropped 10 databases
+2020-06-19T18:20:08.216+0800 I  CONNPOOL [RS] Connecting to 192.168.0.252:27017
+2020-06-19T18:20:08.233+0800 I  SHARDING [replication-0] Marking collection local.temp_oplog_buffer as collection version: <unsharded>
+2020-06-19T18:20:08.234+0800 I  INITSYNC [replication-1] CollectionCloner::start called, on ns:admin.system.version
+2020-06-19T18:20:08.246+0800 I  STORAGE  [repl-writer-worker-0] createCollection: admin.system.version with provided UUID: 1585ad39-ceee-4372-b318-6964554657d6 and options: { uuid: UUID("1585ad39-ceee-4372-b318-6964554657d6") }
+2020-06-19T18:20:08.399+0800 I  INDEX    [repl-writer-worker-0] index build: starting on admin.system.version properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "admin.system.version" } using method: Foreground
+2020-06-19T18:20:08.399+0800 I  INDEX    [repl-writer-worker-0] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:08.434+0800 I  COMMAND  [repl-writer-worker-15] setting featureCompatibilityVersion to 4.2
+2020-06-19T18:20:08.434+0800 I  NETWORK  [repl-writer-worker-15] Skip closing connection for connection # 12
+2020-06-19T18:20:08.434+0800 I  NETWORK  [repl-writer-worker-15] Skip closing connection for connection # 8
+2020-06-19T18:20:08.434+0800 I  NETWORK  [repl-writer-worker-15] Skip closing connection for connection # 3
+2020-06-19T18:20:08.434+0800 I  NETWORK  [repl-writer-worker-15] Skip closing connection for connection # 2
+2020-06-19T18:20:08.434+0800 I  INITSYNC [replication-0] CollectionCloner ns:admin.system.version finished cloning with status: OK
+2020-06-19T18:20:08.434+0800 I  INDEX    [replication-0] index build: inserted 2 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:08.483+0800 I  INDEX    [replication-0] index build: done building index _id_ on ns admin.system.version
+2020-06-19T18:20:08.483+0800 I  INITSYNC [replication-0] CollectionCloner::start called, on ns:admin.system.keys
+2020-06-19T18:20:08.484+0800 I  STORAGE  [repl-writer-worker-1] createCollection: admin.system.keys with provided UUID: 7be4b60e-90e8-49f7-9234-7614f24c7934 and options: { uuid: UUID("7be4b60e-90e8-49f7-9234-7614f24c7934") }
+2020-06-19T18:20:08.800+0800 I  INDEX    [repl-writer-worker-1] index build: starting on admin.system.keys properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "admin.system.keys" } using method: Hybrid
+2020-06-19T18:20:08.800+0800 I  INDEX    [repl-writer-worker-1] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:08.834+0800 I  SHARDING [repl-writer-worker-3] Marking collection admin.system.keys as collection version: <unsharded>
+2020-06-19T18:20:08.834+0800 I  INITSYNC [replication-1] CollectionCloner ns:admin.system.keys finished cloning with status: OK
+2020-06-19T18:20:08.835+0800 I  INDEX    [replication-1] index build: inserted 2 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:08.876+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns admin.system.keys
+2020-06-19T18:20:08.899+0800 I  INITSYNC [replication-1] CollectionCloner::start called, on ns:admin.system.users
+2020-06-19T18:20:08.901+0800 I  STORAGE  [repl-writer-worker-4] createCollection: admin.system.users with provided UUID: 9cef5b1d-c854-4344-bd51-9e9955a64e1b and options: { uuid: UUID("9cef5b1d-c854-4344-bd51-9e9955a64e1b") }
+2020-06-19T18:20:09.235+0800 I  INDEX    [repl-writer-worker-4] index build: starting on admin.system.users properties: { v: 2, unique: true, key: { user: 1, db: 1 }, name: "user_1_db_1", ns: "admin.system.users" } using method: Hybrid
+2020-06-19T18:20:09.235+0800 I  INDEX    [repl-writer-worker-4] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:09.486+0800 I  INDEX    [repl-writer-worker-4] index build: starting on admin.system.users properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "admin.system.users" } using method: Hybrid
+2020-06-19T18:20:09.486+0800 I  INDEX    [repl-writer-worker-4] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:09.520+0800 I  SHARDING [repl-writer-worker-5] Marking collection admin.system.users as collection version: <unsharded>
+2020-06-19T18:20:09.520+0800 I  INITSYNC [replication-0] CollectionCloner ns:admin.system.users finished cloning with status: OK
+2020-06-19T18:20:09.521+0800 I  INDEX    [replication-0] index build: inserted 5 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:09.569+0800 I  INDEX    [replication-0] index build: done building index user_1_db_1 on ns admin.system.users
+2020-06-19T18:20:09.569+0800 I  INDEX    [replication-0] index build: inserted 5 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:09.602+0800 I  INDEX    [replication-0] index build: done building index _id_ on ns admin.system.users
+2020-06-19T18:20:09.667+0800 I  INITSYNC [replication-0] CollectionCloner::start called, on ns:admin.yldb
+2020-06-19T18:20:09.668+0800 I  STORAGE  [repl-writer-worker-6] createCollection: admin.yldb with provided UUID: ab6de2ce-7acc-42f4-b5f6-10482dfb1e5d and options: { uuid: UUID("ab6de2ce-7acc-42f4-b5f6-10482dfb1e5d") }
+2020-06-19T18:20:10.009+0800 I  INDEX    [repl-writer-worker-6] index build: starting on admin.yldb properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "admin.yldb" } using method: Hybrid
+2020-06-19T18:20:10.009+0800 I  INDEX    [repl-writer-worker-6] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:10.043+0800 I  SHARDING [repl-writer-worker-7] Marking collection admin.yldb as collection version: <unsharded>
+2020-06-19T18:20:10.043+0800 I  INITSYNC [replication-1] CollectionCloner ns:admin.yldb finished cloning with status: OK
+2020-06-19T18:20:10.043+0800 I  INDEX    [replication-1] index build: inserted 2 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:10.086+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns admin.yldb
+2020-06-19T18:20:10.143+0800 I  INITSYNC [replication-0] CollectionCloner::start called, on ns:abc_db.foo
+2020-06-19T18:20:10.144+0800 I  STORAGE  [repl-writer-worker-8] createCollection: abc_db.foo with provided UUID: c804a5e5-2918-4ff3-b1a1-4998226992b4 and options: { uuid: UUID("c804a5e5-2918-4ff3-b1a1-4998226992b4") }
+2020-06-19T18:20:10.434+0800 I  INDEX    [repl-writer-worker-8] index build: starting on abc_db.foo properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "abc_db.foo" } using method: Hybrid
+2020-06-19T18:20:10.434+0800 I  INDEX    [repl-writer-worker-8] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:10.469+0800 I  SHARDING [repl-writer-worker-9] Marking collection abc_db.foo as collection version: <unsharded>
+2020-06-19T18:20:10.469+0800 I  INITSYNC [replication-1] CollectionCloner ns:abc_db.foo finished cloning with status: OK
+2020-06-19T18:20:10.469+0800 I  INDEX    [replication-1] index build: inserted 1 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:10.503+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns abc_db.foo
+2020-06-19T18:20:10.543+0800 I  INITSYNC [replication-0] CollectionCloner::start called, on ns:config.system.sessions
+2020-06-19T18:20:10.544+0800 I  STORAGE  [repl-writer-worker-10] createCollection: config.system.sessions with provided UUID: ca8391a3-e627-4ec6-ae3e-70f21456b655 and options: { uuid: UUID("ca8391a3-e627-4ec6-ae3e-70f21456b655") }
+2020-06-19T18:20:10.779+0800 I  INDEX    [repl-writer-worker-10] index build: starting on config.system.sessions properties: { v: 2, key: { lastUse: 1 }, name: "lsidTTLIndex", ns: "config.system.sessions", expireAfterSeconds: 1800 } using method: Hybrid
+2020-06-19T18:20:10.779+0800 I  INDEX    [repl-writer-worker-10] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:10.988+0800 I  INDEX    [repl-writer-worker-10] index build: starting on config.system.sessions properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "config.system.sessions" } using method: Hybrid
+2020-06-19T18:20:10.988+0800 I  INDEX    [repl-writer-worker-10] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:11.023+0800 I  INITSYNC [replication-1] CollectionCloner ns:config.system.sessions finished cloning with status: OK
+2020-06-19T18:20:11.023+0800 I  INDEX    [replication-1] index build: inserted 0 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:11.054+0800 I  INDEX    [replication-1] index build: done building index lsidTTLIndex on ns config.system.sessions
+2020-06-19T18:20:11.055+0800 I  INDEX    [replication-1] index build: inserted 0 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:11.088+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns config.system.sessions
+2020-06-19T18:20:11.142+0800 I  INITSYNC [replication-1] CollectionCloner::start called, on ns:config.transactions
+2020-06-19T18:20:11.143+0800 I  STORAGE  [repl-writer-worker-11] createCollection: config.transactions with provided UUID: f76f95a2-6980-42a9-8420-97ec4c4c3743 and options: { uuid: UUID("f76f95a2-6980-42a9-8420-97ec4c4c3743") }
+2020-06-19T18:20:11.418+0800 I  INDEX    [repl-writer-worker-11] index build: starting on config.transactions properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "config.transactions" } using method: Hybrid
+2020-06-19T18:20:11.418+0800 I  INDEX    [repl-writer-worker-11] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:11.451+0800 I  INITSYNC [replication-0] CollectionCloner ns:config.transactions finished cloning with status: OK
+2020-06-19T18:20:11.452+0800 I  INDEX    [replication-0] index build: inserted 0 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:11.497+0800 I  INDEX    [replication-0] index build: done building index _id_ on ns config.transactions
+2020-06-19T18:20:11.531+0800 I  INITSYNC [replication-1] CollectionCloner::start called, on ns:niuniuh5_modb.abc
+2020-06-19T18:20:11.532+0800 I  STORAGE  [repl-writer-worker-12] createCollection: niuniuh5_modb.abc with provided UUID: 0e0af404-cad2-484e-a583-52e4f86c9da5 and options: { uuid: UUID("0e0af404-cad2-484e-a583-52e4f86c9da5") }
+2020-06-19T18:20:11.793+0800 I  INDEX    [repl-writer-worker-12] index build: starting on niuniuh5_modb.abc properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "niuniuh5_modb.abc" } using method: Hybrid
+2020-06-19T18:20:11.793+0800 I  INDEX    [repl-writer-worker-12] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:11.828+0800 I  SHARDING [repl-writer-worker-13] Marking collection niuniuh5_modb.abc as collection version: <unsharded>
+2020-06-19T18:20:11.828+0800 I  INITSYNC [replication-0] CollectionCloner ns:niuniuh5_modb.abc finished cloning with status: OK
+2020-06-19T18:20:11.828+0800 I  INDEX    [replication-0] index build: inserted 1 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:11.873+0800 I  INDEX    [replication-0] index build: done building index _id_ on ns niuniuh5_modb.abc
+2020-06-19T18:20:11.893+0800 I  INITSYNC [replication-1] CollectionCloner::start called, on ns:test.test
+2020-06-19T18:20:11.894+0800 I  STORAGE  [repl-writer-worker-14] createCollection: test.test with provided UUID: e85ca15c-ac04-41b5-b5cf-5db60c310174 and options: { uuid: UUID("e85ca15c-ac04-41b5-b5cf-5db60c310174") }
+2020-06-19T18:20:12.176+0800 I  INDEX    [repl-writer-worker-14] index build: starting on test.test properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "test.test" } using method: Hybrid
+2020-06-19T18:20:12.176+0800 I  INDEX    [repl-writer-worker-14] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:12.210+0800 I  SHARDING [repl-writer-worker-2] Marking collection test.test as collection version: <unsharded>
+2020-06-19T18:20:12.211+0800 I  INITSYNC [replication-0] CollectionCloner ns:test.test finished cloning with status: OK
+2020-06-19T18:20:12.211+0800 I  INDEX    [replication-0] index build: inserted 3 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:12.248+0800 I  INDEX    [replication-0] index build: done building index _id_ on ns test.test
+2020-06-19T18:20:12.268+0800 I  INITSYNC [replication-1] CollectionCloner::start called, on ns:test02_db.table_clubgamelog
+2020-06-19T18:20:12.270+0800 I  STORAGE  [repl-writer-worker-0] createCollection: test02_db.table_clubgamelog with provided UUID: 57335d67-6cf6-4e6d-98ff-91c15dbf0a31 and options: { uuid: UUID("57335d67-6cf6-4e6d-98ff-91c15dbf0a31") }
+2020-06-19T18:20:12.558+0800 I  INDEX    [repl-writer-worker-0] index build: starting on test02_db.table_clubgamelog properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "test02_db.table_clubgamelog" } using method: Hybrid
+2020-06-19T18:20:12.558+0800 I  INDEX    [repl-writer-worker-0] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:12.597+0800 I  SHARDING [repl-writer-worker-15] Marking collection test02_db.table_clubgamelog as collection version: <unsharded>
+2020-06-19T18:20:12.617+0800 I  INITSYNC [replication-0] CollectionCloner ns:test02_db.table_clubgamelog finished cloning with status: OK
+2020-06-19T18:20:12.618+0800 I  INDEX    [replication-0] index build: inserted 595 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:12.649+0800 I  INDEX    [replication-0] index build: done building index _id_ on ns test02_db.table_clubgamelog
+2020-06-19T18:20:12.685+0800 I  INITSYNC [replication-0] CollectionCloner::start called, on ns:test02_db.table_clubgamescorerobotdetail
+2020-06-19T18:20:12.686+0800 I  STORAGE  [repl-writer-worker-3] createCollection: test02_db.table_clubgamescorerobotdetail with provided UUID: e0ec3bc4-9d35-42ce-b52d-16ff020f385d and options: { uuid: UUID("e0ec3bc4-9d35-42ce-b52d-16ff020f385d") }
+2020-06-19T18:20:12.992+0800 I  INDEX    [repl-writer-worker-3] index build: starting on test02_db.table_clubgamescorerobotdetail properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "test02_db.table_clubgamescorerobotdetail" } using method: Hybrid
+2020-06-19T18:20:12.992+0800 I  INDEX    [repl-writer-worker-3] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:13.027+0800 I  SHARDING [repl-writer-worker-4] Marking collection test02_db.table_clubgamescorerobotdetail as collection version: <unsharded>
+2020-06-19T18:20:13.051+0800 I  INITSYNC [replication-1] CollectionCloner ns:test02_db.table_clubgamescorerobotdetail finished cloning with status: OK
+2020-06-19T18:20:13.052+0800 I  INDEX    [replication-1] index build: inserted 1640 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:13.084+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns test02_db.table_clubgamescorerobotdetail
+2020-06-19T18:20:13.110+0800 I  INITSYNC [replication-1] CollectionCloner::start called, on ns:test02_db.abc
+2020-06-19T18:20:13.111+0800 I  STORAGE  [repl-writer-worker-6] createCollection: test02_db.abc with provided UUID: f37872b6-c685-4620-a025-9cbe5de26d50 and options: { uuid: UUID("f37872b6-c685-4620-a025-9cbe5de26d50") }
+2020-06-19T18:20:13.401+0800 I  INDEX    [repl-writer-worker-6] index build: starting on test02_db.abc properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "test02_db.abc" } using method: Hybrid
+2020-06-19T18:20:13.401+0800 I  INDEX    [repl-writer-worker-6] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:13.437+0800 I  SHARDING [repl-writer-worker-7] Marking collection test02_db.abc as collection version: <unsharded>
+2020-06-19T18:20:13.437+0800 I  INITSYNC [replication-1] CollectionCloner ns:test02_db.abc finished cloning with status: OK
+2020-06-19T18:20:13.437+0800 I  INDEX    [replication-1] index build: inserted 3 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:13.476+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns test02_db.abc
+2020-06-19T18:20:13.502+0800 I  INITSYNC [replication-0] CollectionCloner::start called, on ns:test_db.table_clubgamescorerobotdetail
+2020-06-19T18:20:13.504+0800 I  STORAGE  [repl-writer-worker-8] createCollection: test_db.table_clubgamescorerobotdetail with provided UUID: 118597b2-2700-4472-b7b7-6608b78878f0 and options: { uuid: UUID("118597b2-2700-4472-b7b7-6608b78878f0") }
+2020-06-19T18:20:13.785+0800 I  INDEX    [repl-writer-worker-8] index build: starting on test_db.table_clubgamescorerobotdetail properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "test_db.table_clubgamescorerobotdetail" } using method: Hybrid
+2020-06-19T18:20:13.785+0800 I  INDEX    [repl-writer-worker-8] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:13.821+0800 I  SHARDING [repl-writer-worker-9] Marking collection test_db.table_clubgamescorerobotdetail as collection version: <unsharded>
+2020-06-19T18:20:13.834+0800 I  INITSYNC [replication-1] CollectionCloner ns:test_db.table_clubgamescorerobotdetail finished cloning with status: OK
+2020-06-19T18:20:13.835+0800 I  INDEX    [replication-1] index build: inserted 984 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:13.877+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns test_db.table_clubgamescorerobotdetail
+2020-06-19T18:20:13.927+0800 I  INITSYNC [replication-1] CollectionCloner::start called, on ns:test_db.abc
+2020-06-19T18:20:13.928+0800 I  STORAGE  [repl-writer-worker-11] createCollection: test_db.abc with provided UUID: 2b33e990-8517-4866-a7c9-8d82ee579513 and options: { uuid: UUID("2b33e990-8517-4866-a7c9-8d82ee579513") }
+2020-06-19T18:20:14.219+0800 I  INDEX    [repl-writer-worker-11] index build: starting on test_db.abc properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "test_db.abc" } using method: Hybrid
+2020-06-19T18:20:14.219+0800 I  INDEX    [repl-writer-worker-11] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:14.254+0800 I  SHARDING [repl-writer-worker-12] Marking collection test_db.abc as collection version: <unsharded>
+2020-06-19T18:20:14.254+0800 I  INITSYNC [replication-0] CollectionCloner ns:test_db.abc finished cloning with status: OK
+2020-06-19T18:20:14.255+0800 I  INDEX    [replication-0] index build: inserted 3 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:14.294+0800 I  INDEX    [replication-0] index build: done building index _id_ on ns test_db.abc
+2020-06-19T18:20:14.344+0800 I  INITSYNC [replication-0] CollectionCloner::start called, on ns:test_db.table_clubgamelog
+2020-06-19T18:20:14.345+0800 I  STORAGE  [repl-writer-worker-13] createCollection: test_db.table_clubgamelog with provided UUID: a05755e6-8fbf-466d-bc97-74646f0016df and options: { uuid: UUID("a05755e6-8fbf-466d-bc97-74646f0016df") }
+2020-06-19T18:20:14.686+0800 I  INDEX    [repl-writer-worker-13] index build: starting on test_db.table_clubgamelog properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "test_db.table_clubgamelog" } using method: Hybrid
+2020-06-19T18:20:14.686+0800 I  INDEX    [repl-writer-worker-13] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:14.724+0800 I  SHARDING [repl-writer-worker-14] Marking collection test_db.table_clubgamelog as collection version: <unsharded>
+2020-06-19T18:20:14.734+0800 I  INITSYNC [replication-1] CollectionCloner ns:test_db.table_clubgamelog finished cloning with status: OK
+2020-06-19T18:20:14.735+0800 I  INDEX    [replication-1] index build: inserted 327 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:14.778+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns test_db.table_clubgamelog
+2020-06-19T18:20:14.836+0800 I  INITSYNC [replication-0] CollectionCloner::start called, on ns:yldb.table_clubgamelog
+2020-06-19T18:20:14.838+0800 I  STORAGE  [repl-writer-worker-0] createCollection: yldb.table_clubgamelog with provided UUID: 28ff1a00-ec40-4d20-ba1e-68a56a76c5bb and options: { uuid: UUID("28ff1a00-ec40-4d20-ba1e-68a56a76c5bb") }
+2020-06-19T18:20:15.161+0800 I  INDEX    [repl-writer-worker-0] index build: starting on yldb.table_clubgamelog properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "yldb.table_clubgamelog" } using method: Hybrid
+2020-06-19T18:20:15.161+0800 I  INDEX    [repl-writer-worker-0] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:15.206+0800 I  SHARDING [repl-writer-worker-15] Marking collection yldb.table_clubgamelog as collection version: <unsharded>
+2020-06-19T18:20:15.231+0800 I  INITSYNC [replication-1] CollectionCloner ns:yldb.table_clubgamelog finished cloning with status: OK
+2020-06-19T18:20:15.232+0800 I  INDEX    [replication-1] index build: inserted 766 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:15.270+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns yldb.table_clubgamelog
+2020-06-19T18:20:15.328+0800 I  INITSYNC [replication-1] CollectionCloner::start called, on ns:yldb.table_clubgamescorerobotdetail
+2020-06-19T18:20:15.329+0800 I  STORAGE  [repl-writer-worker-3] createCollection: yldb.table_clubgamescorerobotdetail with provided UUID: b3b22301-497a-43aa-bb3d-fd20b8b9f04b and options: { uuid: UUID("b3b22301-497a-43aa-bb3d-fd20b8b9f04b") }
+2020-06-19T18:20:15.670+0800 I  INDEX    [repl-writer-worker-3] index build: starting on yldb.table_clubgamescorerobotdetail properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "yldb.table_clubgamescorerobotdetail" } using method: Hybrid
+2020-06-19T18:20:15.670+0800 I  INDEX    [repl-writer-worker-3] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:15.705+0800 I  SHARDING [repl-writer-worker-4] Marking collection yldb.table_clubgamescorerobotdetail as collection version: <unsharded>
+2020-06-19T18:20:15.733+0800 I  INITSYNC [replication-0] CollectionCloner ns:yldb.table_clubgamescorerobotdetail finished cloning with status: OK
+2020-06-19T18:20:15.735+0800 I  INDEX    [replication-0] index build: inserted 2060 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:15.779+0800 I  INDEX    [replication-0] index build: done building index _id_ on ns yldb.table_clubgamescorerobotdetail
+2020-06-19T18:20:15.830+0800 I  INITSYNC [replication-0] CollectionCloner::start called, on ns:yldb.abc
+2020-06-19T18:20:15.831+0800 I  STORAGE  [repl-writer-worker-6] createCollection: yldb.abc with provided UUID: fbab789b-1762-4071-af8e-51d68cc64608 and options: { uuid: UUID("fbab789b-1762-4071-af8e-51d68cc64608") }
+2020-06-19T18:20:16.145+0800 I  INDEX    [repl-writer-worker-6] index build: starting on yldb.abc properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "yldb.abc" } using method: Hybrid
+2020-06-19T18:20:16.145+0800 I  INDEX    [repl-writer-worker-6] build may temporarily use up to 200 megabytes of RAM
+2020-06-19T18:20:16.178+0800 I  SHARDING [repl-writer-worker-7] Marking collection yldb.abc as collection version: <unsharded>
+2020-06-19T18:20:16.178+0800 I  INITSYNC [replication-1] CollectionCloner ns:yldb.abc finished cloning with status: OK
+2020-06-19T18:20:16.179+0800 I  INDEX    [replication-1] index build: inserted 3 keys from external sorter into index in 0 seconds
+2020-06-19T18:20:16.213+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns yldb.abc
+2020-06-19T18:20:16.255+0800 I  INITSYNC [replication-1] Finished cloning data: OK. Beginning oplog replay.
+2020-06-19T18:20:16.256+0800 I  INITSYNC [replication-0] No need to apply operations. (currently at { : Timestamp(1592562006, 1) })
+2020-06-19T18:20:16.256+0800 I  SHARDING [replication-1] Marking collection local.replset.oplogTruncateAfterPoint as collection version: <unsharded>
+2020-06-19T18:20:16.257+0800 I  INITSYNC [replication-0] Finished fetching oplog during initial sync: CallbackCanceled: error in fetcher batch callback: oplog fetcher is shutting down. Last fetched optime: { ts: Timestamp(0, 0), t: -1 }
+2020-06-19T18:20:16.257+0800 I  INITSYNC [replication-0] Initial sync attempt finishing up.
+2020-06-19T18:20:16.257+0800 I  CONNPOOL [RS] Ending connection to host 192.168.0.252:27017 due to bad connection status: CallbackCanceled: Callback was canceled; 1 connections to that host remain open
+2020-06-19T18:20:16.257+0800 I  INITSYNC [replication-0] Initial Sync Attempt Statistics: { failedInitialSyncAttempts: 0, maxFailedInitialSyncAttempts: 10, initialSyncStart: new Date(1592562006649), initialSyncAttempts: [], fetchedMissingDocs: 0, appliedOps: 0, initialSyncOplogStart: Timestamp(1592562006, 1), initialSyncOplogEnd: Timestamp(1592562006, 1), databases: { databasesCloned: 8, admin: { collections: 4, clonedCollections: 4, start: new Date(1592562008232), end: new Date(1592562010143), elapsedMillis: 1911, admin.system.version: { documentsToCopy: 2, documentsCopied: 2, indexes: 1, fetchedBatches: 1, start: new Date(1592562008234), end: new Date(1592562008483), elapsedMillis: 249, receivedBatches: 1 }, admin.system.keys: { documentsToCopy: 2, documentsCopied: 2, indexes: 1, fetchedBatches: 1, start: new Date(1592562008483), end: new Date(1592562008900), elapsedMillis: 417, receivedBatches: 1 }, admin.system.users: { documentsToCopy: 5, documentsCopied: 5, indexes: 2, fetchedBatches: 1, start: new Date(1592562008899), end: new Date(1592562009667), elapsedMillis: 768, receivedBatches: 1 }, admin.yldb: { documentsToCopy: 2, documentsCopied: 2, indexes: 1, fetchedBatches: 1, start: new Date(1592562009667), end: new Date(1592562010143), elapsedMillis: 476, receivedBatches: 1 } }, abc_db: { collections: 1, clonedCollections: 1, start: new Date(1592562010143), end: new Date(1592562010542), elapsedMillis: 399, abc_db.foo: { documentsToCopy: 1, documentsCopied: 1, indexes: 1, fetchedBatches: 1, start: new Date(1592562010143), end: new Date(1592562010542), elapsedMillis: 399, receivedBatches: 1 } }, config: { collections: 2, clonedCollections: 2, start: new Date(1592562010542), end: new Date(1592562011530), elapsedMillis: 988, config.system.sessions: { documentsToCopy: 0, documentsCopied: 0, indexes: 2, fetchedBatches: 0, start: new Date(1592562010543), end: new Date(1592562011142), elapsedMillis: 599, receivedBatches: 0 }, config.transactions: { documentsToCopy: 0, documentsCopied: 0, indexes: 1, fetchedBatches: 0, start: new Date(1592562011142), end: new Date(1592562011530), elapsedMillis: 388, receivedBatches: 0 } }, niuniuh5_modb: { collections: 1, clonedCollections: 1, start: new Date(1592562011530), end: new Date(1592562011893), elapsedMillis: 363, niuniuh5_modb.abc: { documentsToCopy: 1, documentsCopied: 1, indexes: 1, fetchedBatches: 1, start: new Date(1592562011531), end: new Date(1592562011893), elapsedMillis: 362, receivedBatches: 1 } }, test: { collections: 1, clonedCollections: 1, start: new Date(1592562011893), end: new Date(1592562012268), elapsedMillis: 375, test.test: { documentsToCopy: 3, documentsCopied: 3, indexes: 1, fetchedBatches: 1, start: new Date(1592562011893), end: new Date(1592562012268), elapsedMillis: 375, receivedBatches: 1 } }, test02_db: { collections: 3, clonedCollections: 3, start: new Date(1592562012268), end: new Date(1592562013502), elapsedMillis: 1234, test02_db.table_clubgamelog: { documentsToCopy: 595, documentsCopied: 595, indexes: 1, fetchedBatches: 2, start: new Date(1592562012268), end: new Date(1592562012685), elapsedMillis: 417, receivedBatches: 2 }, test02_db.table_clubgamescorerobotdetail: { documentsToCopy: 1640, documentsCopied: 1640, indexes: 1, fetchedBatches: 2, start: new Date(1592562012685), end: new Date(1592562013110), elapsedMillis: 425, receivedBatches: 2 }, test02_db.abc: { documentsToCopy: 3, documentsCopied: 3, indexes: 1, fetchedBatches: 1, start: new Date(1592562013110), end: new Date(1592562013502), elapsedMillis: 392, receivedBatches: 1 } }, test_db: { collections: 3, clonedCollections: 3, start: new Date(1592562013502), end: new Date(1592562014836), elapsedMillis: 1334, test_db.table_clubgamescorerobotdetail: { documentsToCopy: 984, documentsCopied: 984, indexes: 1, fetchedBatches: 2, start: new Date(1592562013502), end: new Date(1592562013927), elapsedMillis: 425, receivedBatches: 2 }, test_db.abc: { documentsToCopy: 3, documentsCopied: 3, indexes: 1, fetchedBatches: 1, start: new Date(1592562013927), end: new Date(1592562014344), elapsedMillis: 417, receivedBatches: 1 }, test_db.table_clubgamelog: { documentsToCopy: 327, documentsCopied: 327, indexes: 1, fetchedBatches: 2, start: new Date(1592562014344), end: new Date(1592562014836), elapsedMillis: 492, receivedBatches: 2 } }, yldb: { collections: 3, clonedCollections: 3, start: new Date(1592562014836), end: new Date(1592562016255), elapsedMillis: 1419, yldb.table_clubgamelog: { documentsToCopy: 766, documentsCopied: 766, indexes: 1, fetchedBatches: 2, start: new Date(1592562014836), end: new Date(1592562015328), elapsedMillis: 492, receivedBatches: 2 }, yldb.table_clubgamescorerobotdetail: { documentsToCopy: 2060, documentsCopied: 2060, indexes: 1, fetchedBatches: 2, start: new Date(1592562015328), end: new Date(1592562015830), elapsedMillis: 502, receivedBatches: 2 }, yldb.abc: { documentsToCopy: 3, documentsCopied: 3, indexes: 1, fetchedBatches: 1, start: new Date(1592562015830), end: new Date(1592562016255), elapsedMillis: 425, receivedBatches: 1 } } } }
+2020-06-19T18:20:16.257+0800 I  STORAGE  [replication-0] Finishing collection drop for local.temp_oplog_buffer (e43854e3-c0c8-414c-9890-06a373606be9).
+2020-06-19T18:20:16.278+0800 I  SHARDING [replication-0] Marking collection config.transactions as collection version: <unsharded>
+2020-06-19T18:20:16.286+0800 I  INITSYNC [replication-0] initial sync done; took 9s.
+2020-06-19T18:20:16.286+0800 I  REPL     [replication-0] transition to RECOVERING from STARTUP2
+2020-06-19T18:20:16.286+0800 I  REPL     [replication-0] Starting replication fetcher thread
+2020-06-19T18:20:16.286+0800 I  REPL     [replication-0] Starting replication applier thread
+2020-06-19T18:20:16.286+0800 I  REPL     [replication-0] Starting replication reporter thread
+2020-06-19T18:20:16.286+0800 I  REPL     [rsSync-0] Starting oplog application
+2020-06-19T18:20:16.287+0800 I  REPL     [rsBackgroundSync] could not find member to sync from
+2020-06-19T18:20:16.287+0800 I  REPL     [rsSync-0] transition to SECONDARY from RECOVERING
+2020-06-19T18:20:16.287+0800 I  REPL     [rsSync-0] Resetting sync source to empty, which was :27017
+2020-06-19T18:20:18.287+0800 I  STORAGE  [replexec-5] Triggering the first stable checkpoint. Initial Data: Timestamp(1592562006, 1) PrevStable: Timestamp(0, 0) CurrStable: Timestamp(1592562006, 1)
+2020-06-19T18:20:24.288+0800 I  REPL     [rsBackgroundSync] sync source candidate: 192.168.0.242:27017
+2020-06-19T18:20:24.288+0800 I  CONNPOOL [RS] Connecting to 192.168.0.242:27017
+2020-06-19T18:20:24.305+0800 I  REPL     [rsBackgroundSync] Changed sync source from empty to 192.168.0.242:27017
+2020-06-19T18:20:25.230+0800 I  NETWORK  [listener] connection accepted from 192.168.0.252:45208 #36 (5 connections now open)
+2020-06-19T18:20:25.230+0800 I  NETWORK  [conn36] received client metadata from 192.168.0.252:45208 conn36: { driver: { name: "NetworkInterfaceTL", version: "4.2.7" }, os: { type: "Linux", name: "CentOS release 6.9 (Final)", architecture: "x86_64", version: "Kernel 2.6.32-754.2.1.el6.x86_64" } }
+2020-06-19T18:20:25.243+0800 I  ACCESS   [conn36] Successfully authenticated as principal __system on local from client 192.168.0.252:45208
+2020-06-19T18:20:25.244+0800 I  NETWORK  [listener] connection accepted from 192.168.0.252:45210 #37 (6 connections now open)
+2020-06-19T18:20:25.245+0800 I  NETWORK  [conn37] received client metadata from 192.168.0.252:45210 conn37: { driver: { name: "NetworkInterfaceTL", version: "4.2.7" }, os: { type: "Linux", name: "CentOS release 6.9 (Final)", architecture: "x86_64", version: "Kernel 2.6.32-754.2.1.el6.x86_64" } }
+2020-06-19T18:20:25.258+0800 I  ACCESS   [conn37] Successfully authenticated as principal __system on local from client 192.168.0.252:45210
+2020-06-19T18:20:25.271+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58530 #38 (7 connections now open)
+2020-06-19T18:20:25.271+0800 I  NETWORK  [conn38] received client metadata from 127.0.0.1:58530 conn38: { application: { name: "MongoDB Shell" }, driver: { name: "MongoDB Internal Client", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.6.1810 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-957.12.1.el7.x86_64" } }
+2020-06-19T18:21:06.226+0800 I  NETWORK  [conn2] end connection 192.168.0.242:47416 (6 connections now open)
+2020-06-19T18:21:17.101+0800 I  NETWORK  [listener] connection accepted from 192.168.0.252:45212 #39 (7 connections now open)
+2020-06-19T18:21:17.102+0800 I  NETWORK  [conn39] received client metadata from 192.168.0.252:45212 conn39: { driver: { name: "NetworkInterfaceTL", version: "4.2.7" }, os: { type: "Linux", name: "CentOS release 6.9 (Final)", architecture: "x86_64", version: "Kernel 2.6.32-754.2.1.el6.x86_64" } }
+2020-06-19T18:21:17.121+0800 I  ACCESS   [conn39] Successfully authenticated as principal __system on local from client 192.168.0.252:45212
+2020-06-19T18:21:34.436+0800 I  NETWORK  [conn38] end connection 127.0.0.1:58530 (6 connections now open)
+2020-06-19T18:21:42.420+0800 I  NETWORK  [listener] connection accepted from 127.0.0.1:58534 #40 (7 connections now open)
+2020-06-19T18:21:42.420+0800 I  NETWORK  [conn40] received client metadata from 127.0.0.1:58534 conn40: { application: { name: "MongoDB Shell" }, driver: { name: "MongoDB Internal Client", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.6.1810 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-957.12.1.el7.x86_64" } }
+2020-06-19T18:21:42.443+0800 I  ACCESS   [conn40] Successfully authenticated as principal admin on admin from client 127.0.0.1:58534
+2020-06-19T18:23:30.656+0800 I  NETWORK  [listener] connection accepted from 192.168.0.241:45612 #41 (8 connections now open)
+2020-06-19T18:23:30.657+0800 I  NETWORK  [conn41] received client metadata from 192.168.0.241:45612 conn41: { driver: { name: "NetworkInterfaceTL", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.3.1611 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-514.el7.x86_64" } }
+2020-06-19T18:23:30.689+0800 I  ACCESS   [conn41] Successfully authenticated as principal __system on local from client 192.168.0.241:45612
+2020-06-19T18:23:32.971+0800 I  NETWORK  [conn40] end connection 127.0.0.1:58534 (7 connections now open)

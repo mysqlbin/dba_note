@@ -178,10 +178,6 @@
 	3. 备份是否会加锁
 	
 	
-相关参考
-	https://mp.weixin.qq.com/s/rWIuVLCiVf7QvUaAL0EhdQ  MongoDB的数据库备份和恢复手段
-	
-	
 
 备份方式
 	文件系统快照
@@ -195,6 +191,8 @@
 
 folder=`date +%Y%m%d`
 mongodump -h 'repl_set/192.168.0.121:27017'  --oplog --gzip -o /data/mongodb/dump/`date +%Y%m%d` 
+
+
 
 [root@mongodb01 mongodb]# mongodump -h 'repl_set/192.168.0.121:27017'  --oplog --gzip -o /data/mongodb/dump/`date +%Y%m%d` 
 2019-11-29T06:52:29.503+0800	writing admin.system.version to 
