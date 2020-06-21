@@ -28,15 +28,16 @@
 	
 
 影响选举的因素和条件
-	1. 复制选择协议 --Replication Election Protocol
+	1. 复制选举协议 --Replication Election Protocol
 
 		在版本4.0中进行了更改：MongoDB 4.0删除了不赞成使用的复制协议版本0。
 		复制协议版本：1减少了副本集故障转移时间，并加快了多个同时存在的主数据库的检测。
-		使用protocolVersion 1，您可以使用catchUpTimeoutMillis在更快的故障转移和保留w：1写入之间确定优先级。
+		使用 protocolVersion(协议版本) 1，您可以使用catchUpTimeoutMillis在更快的故障转移和保留w：1写入之间确定优先级。
 		
 	2. 心跳 --Heartbeats
 		副本集成员每两秒钟发送一次彼此的心跳（ping）。 如果心跳在10秒钟内未恢复，则其他成员会将无法访问的成员标记为无法访问。  --##################
 		主节点与副本集的其它成员的连接断开超过10秒,  则认为主节点不可用, 这时候触发选举.
+		
 		
 	3. 成员的优先级 --Member Priority
 
@@ -74,6 +75,7 @@
 			RECOVERING
 			ARBITER
 			ROLLBACK
+			
 	7. 非投票成员 --Non-Voting Members
 
 		尽管无投票权的成员不会在选举中投票，但这些成员拥有副本集数据的副本，并且可以接受来自客户端应用程序的读取操作。

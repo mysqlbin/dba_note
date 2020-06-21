@@ -1,6 +1,9 @@
 
 
 
+
+
+
 目前官方MongoDB社区版是不支持Hot Backup热备份的，我们只能通过mongodump等逻辑备份工具导出bson文件，再mongorestore导入，类似MySQL的mysqldump工具。
 
 在备份副本集时，我们需指定--oplog选项记录备份间产生的增量数据，类似mysqldump --single-transaction --master-data=2（做一致性快照并记录当前的binlog点）。
@@ -176,7 +179,7 @@
 	2. 是否支持远程备份
 	
 	3. 备份是否会加锁
-	
+		不加锁。
 	
 
 备份方式
@@ -230,7 +233,7 @@ mongodb 指令说明：
 	--gzip:    可选项。启用备份文件的内联压缩。
 	-o:        指定备份的路径
 	--authenticationDatabase:    认证数据库
-	--oplogReplay:               用于备份恢复，重放oplog。
+	--oplogReplay:              
 
 
 	

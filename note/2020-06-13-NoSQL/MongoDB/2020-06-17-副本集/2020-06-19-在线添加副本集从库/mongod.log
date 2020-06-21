@@ -875,17 +875,26 @@
 2020-06-19T18:20:06.356+0800 I  ACCESS   [conn12] Successfully authenticated as principal __system on local from client 192.168.0.252:45206
 2020-06-19T18:20:06.356+0800 I  CONNPOOL [Replication] Connecting to 192.168.0.252:27017
 2020-06-19T18:20:06.490+0800 I  INDEX    [replexec-0] index build: done building index _id_ on ns local.system.replset
+
+-- New replica set config in use：
+	表示  0.251 这个节点已经加入到副本集中了。
+
 2020-06-19T18:20:06.491+0800 I  REPL     [replexec-0] New replica set config in use: { _id: "repl_set", version: 2, protocolVersion: 1, writeConcernMajorityJournalDefault: true, members: [ { _id: 0, host: "192.168.0.242:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 90.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 1, host: "192.168.0.252:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 90.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 2, host: "192.168.0.241:27017", arbiterOnly: true, buildIndexes: true, hidden: false, priority: 0.0, tags: {}, slaveDelay: 0, votes: 1 }, { _id: 3, host: "192.168.0.251:27017", arbiterOnly: false, buildIndexes: true, hidden: false, priority: 1.0, tags: {}, slaveDelay: 0, votes: 1 } ], settings: { chainingAllowed: true, heartbeatIntervalMillis: 2000, heartbeatTimeoutSecs: 10, electionTimeoutMillis: 10000, catchUpTimeoutMillis: -1, catchUpTakeoverDelayMillis: 30000, getLastErrorModes: {}, getLastErrorDefaults: { w: 1, wtimeout: 0 }, replicaSetId: ObjectId('5eeb3d0b25a16e8fa60aba50') } }
+
 2020-06-19T18:20:06.491+0800 I  REPL     [replexec-0] This node is 192.168.0.251:27017 in the config
+
 2020-06-19T18:20:06.491+0800 I  REPL     [replexec-0] transition to STARTUP2 from STARTUP
 
 2020-06-19T18:20:06.491+0800 I  REPL     [replexec-0] Starting replication storage threads
+
 2020-06-19T18:20:06.491+0800 I  REPL     [replexec-1] Member 192.168.0.252:27017 is now in state SECONDARY
 2020-06-19T18:20:06.491+0800 I  REPL     [replexec-2] Member 192.168.0.242:27017 is now in state PRIMARY
 2020-06-19T18:20:06.491+0800 I  REPL     [replexec-3] Member 192.168.0.241:27017 is now in state ARBITER
 
 2020-06-19T18:20:06.498+0800 I  STORAGE  [replexec-0] createCollection: local.temp_oplog_buffer with generated UUID: b5430a4e-43ae-4fe5-bc64-a3710670c825 and options: { temp: true }
 2020-06-19T18:20:06.649+0800 I  INDEX    [replexec-0] index build: done building index _id_ on ns local.temp_oplog_buffer
+
+开始初始化同步
 2020-06-19T18:20:06.649+0800 I  INITSYNC [replication-0] Starting initial sync (attempt 1 of 10)
 2020-06-19T18:20:06.649+0800 I  STORAGE  [replication-0] Finishing collection drop for local.temp_oplog_buffer (b5430a4e-43ae-4fe5-bc64-a3710670c825).
 2020-06-19T18:20:06.665+0800 I  STORAGE  [replication-0] createCollection: local.temp_oplog_buffer with generated UUID: e43854e3-c0c8-414c-9890-06a373606be9 and options: { temp: true }
@@ -1027,6 +1036,9 @@
 2020-06-19T18:20:14.734+0800 I  INITSYNC [replication-1] CollectionCloner ns:test_db.table_clubgamelog finished cloning with status: OK
 2020-06-19T18:20:14.735+0800 I  INDEX    [replication-1] index build: inserted 327 keys from external sorter into index in 0 seconds
 2020-06-19T18:20:14.778+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns test_db.table_clubgamelog
+
+-- yldb.table_clubgamelog 开始
+
 2020-06-19T18:20:14.836+0800 I  INITSYNC [replication-0] CollectionCloner::start called, on ns:yldb.table_clubgamelog
 2020-06-19T18:20:14.838+0800 I  STORAGE  [repl-writer-worker-0] createCollection: yldb.table_clubgamelog with provided UUID: 28ff1a00-ec40-4d20-ba1e-68a56a76c5bb and options: { uuid: UUID("28ff1a00-ec40-4d20-ba1e-68a56a76c5bb") }
 2020-06-19T18:20:15.161+0800 I  INDEX    [repl-writer-worker-0] index build: starting on yldb.table_clubgamelog properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "yldb.table_clubgamelog" } using method: Hybrid
@@ -1035,6 +1047,11 @@
 2020-06-19T18:20:15.231+0800 I  INITSYNC [replication-1] CollectionCloner ns:yldb.table_clubgamelog finished cloning with status: OK
 2020-06-19T18:20:15.232+0800 I  INDEX    [replication-1] index build: inserted 766 keys from external sorter into index in 0 seconds
 2020-06-19T18:20:15.270+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns yldb.table_clubgamelog
+
+-- yldb.table_clubgamelog 结束
+
+
+
 2020-06-19T18:20:15.328+0800 I  INITSYNC [replication-1] CollectionCloner::start called, on ns:yldb.table_clubgamescorerobotdetail
 2020-06-19T18:20:15.329+0800 I  STORAGE  [repl-writer-worker-3] createCollection: yldb.table_clubgamescorerobotdetail with provided UUID: b3b22301-497a-43aa-bb3d-fd20b8b9f04b and options: { uuid: UUID("b3b22301-497a-43aa-bb3d-fd20b8b9f04b") }
 2020-06-19T18:20:15.670+0800 I  INDEX    [repl-writer-worker-3] index build: starting on yldb.table_clubgamescorerobotdetail properties: { v: 2, key: { _id: 1 }, name: "_id_", ns: "yldb.table_clubgamescorerobotdetail" } using method: Hybrid
@@ -1060,7 +1077,9 @@
 2020-06-19T18:20:16.257+0800 I  INITSYNC [replication-0] Initial Sync Attempt Statistics: { failedInitialSyncAttempts: 0, maxFailedInitialSyncAttempts: 10, initialSyncStart: new Date(1592562006649), initialSyncAttempts: [], fetchedMissingDocs: 0, appliedOps: 0, initialSyncOplogStart: Timestamp(1592562006, 1), initialSyncOplogEnd: Timestamp(1592562006, 1), databases: { databasesCloned: 8, admin: { collections: 4, clonedCollections: 4, start: new Date(1592562008232), end: new Date(1592562010143), elapsedMillis: 1911, admin.system.version: { documentsToCopy: 2, documentsCopied: 2, indexes: 1, fetchedBatches: 1, start: new Date(1592562008234), end: new Date(1592562008483), elapsedMillis: 249, receivedBatches: 1 }, admin.system.keys: { documentsToCopy: 2, documentsCopied: 2, indexes: 1, fetchedBatches: 1, start: new Date(1592562008483), end: new Date(1592562008900), elapsedMillis: 417, receivedBatches: 1 }, admin.system.users: { documentsToCopy: 5, documentsCopied: 5, indexes: 2, fetchedBatches: 1, start: new Date(1592562008899), end: new Date(1592562009667), elapsedMillis: 768, receivedBatches: 1 }, admin.yldb: { documentsToCopy: 2, documentsCopied: 2, indexes: 1, fetchedBatches: 1, start: new Date(1592562009667), end: new Date(1592562010143), elapsedMillis: 476, receivedBatches: 1 } }, abc_db: { collections: 1, clonedCollections: 1, start: new Date(1592562010143), end: new Date(1592562010542), elapsedMillis: 399, abc_db.foo: { documentsToCopy: 1, documentsCopied: 1, indexes: 1, fetchedBatches: 1, start: new Date(1592562010143), end: new Date(1592562010542), elapsedMillis: 399, receivedBatches: 1 } }, config: { collections: 2, clonedCollections: 2, start: new Date(1592562010542), end: new Date(1592562011530), elapsedMillis: 988, config.system.sessions: { documentsToCopy: 0, documentsCopied: 0, indexes: 2, fetchedBatches: 0, start: new Date(1592562010543), end: new Date(1592562011142), elapsedMillis: 599, receivedBatches: 0 }, config.transactions: { documentsToCopy: 0, documentsCopied: 0, indexes: 1, fetchedBatches: 0, start: new Date(1592562011142), end: new Date(1592562011530), elapsedMillis: 388, receivedBatches: 0 } }, niuniuh5_modb: { collections: 1, clonedCollections: 1, start: new Date(1592562011530), end: new Date(1592562011893), elapsedMillis: 363, niuniuh5_modb.abc: { documentsToCopy: 1, documentsCopied: 1, indexes: 1, fetchedBatches: 1, start: new Date(1592562011531), end: new Date(1592562011893), elapsedMillis: 362, receivedBatches: 1 } }, test: { collections: 1, clonedCollections: 1, start: new Date(1592562011893), end: new Date(1592562012268), elapsedMillis: 375, test.test: { documentsToCopy: 3, documentsCopied: 3, indexes: 1, fetchedBatches: 1, start: new Date(1592562011893), end: new Date(1592562012268), elapsedMillis: 375, receivedBatches: 1 } }, test02_db: { collections: 3, clonedCollections: 3, start: new Date(1592562012268), end: new Date(1592562013502), elapsedMillis: 1234, test02_db.table_clubgamelog: { documentsToCopy: 595, documentsCopied: 595, indexes: 1, fetchedBatches: 2, start: new Date(1592562012268), end: new Date(1592562012685), elapsedMillis: 417, receivedBatches: 2 }, test02_db.table_clubgamescorerobotdetail: { documentsToCopy: 1640, documentsCopied: 1640, indexes: 1, fetchedBatches: 2, start: new Date(1592562012685), end: new Date(1592562013110), elapsedMillis: 425, receivedBatches: 2 }, test02_db.abc: { documentsToCopy: 3, documentsCopied: 3, indexes: 1, fetchedBatches: 1, start: new Date(1592562013110), end: new Date(1592562013502), elapsedMillis: 392, receivedBatches: 1 } }, test_db: { collections: 3, clonedCollections: 3, start: new Date(1592562013502), end: new Date(1592562014836), elapsedMillis: 1334, test_db.table_clubgamescorerobotdetail: { documentsToCopy: 984, documentsCopied: 984, indexes: 1, fetchedBatches: 2, start: new Date(1592562013502), end: new Date(1592562013927), elapsedMillis: 425, receivedBatches: 2 }, test_db.abc: { documentsToCopy: 3, documentsCopied: 3, indexes: 1, fetchedBatches: 1, start: new Date(1592562013927), end: new Date(1592562014344), elapsedMillis: 417, receivedBatches: 1 }, test_db.table_clubgamelog: { documentsToCopy: 327, documentsCopied: 327, indexes: 1, fetchedBatches: 2, start: new Date(1592562014344), end: new Date(1592562014836), elapsedMillis: 492, receivedBatches: 2 } }, yldb: { collections: 3, clonedCollections: 3, start: new Date(1592562014836), end: new Date(1592562016255), elapsedMillis: 1419, yldb.table_clubgamelog: { documentsToCopy: 766, documentsCopied: 766, indexes: 1, fetchedBatches: 2, start: new Date(1592562014836), end: new Date(1592562015328), elapsedMillis: 492, receivedBatches: 2 }, yldb.table_clubgamescorerobotdetail: { documentsToCopy: 2060, documentsCopied: 2060, indexes: 1, fetchedBatches: 2, start: new Date(1592562015328), end: new Date(1592562015830), elapsedMillis: 502, receivedBatches: 2 }, yldb.abc: { documentsToCopy: 3, documentsCopied: 3, indexes: 1, fetchedBatches: 1, start: new Date(1592562015830), end: new Date(1592562016255), elapsedMillis: 425, receivedBatches: 1 } } } }
 2020-06-19T18:20:16.257+0800 I  STORAGE  [replication-0] Finishing collection drop for local.temp_oplog_buffer (e43854e3-c0c8-414c-9890-06a373606be9).
 2020-06-19T18:20:16.278+0800 I  SHARDING [replication-0] Marking collection config.transactions as collection version: <unsharded>
+
 2020-06-19T18:20:16.286+0800 I  INITSYNC [replication-0] initial sync done; took 9s.
+
 2020-06-19T18:20:16.286+0800 I  REPL     [replication-0] transition to RECOVERING from STARTUP2
 2020-06-19T18:20:16.286+0800 I  REPL     [replication-0] Starting replication fetcher thread
 2020-06-19T18:20:16.286+0800 I  REPL     [replication-0] Starting replication applier thread

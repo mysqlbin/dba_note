@@ -1,4 +1,7 @@
-> help
+
+
+
+repl_set:PRIMARY> help
 	db.help()                    help on db methods
 	db.mycoll.help()             help on collection methods
 	sh.help()                    sharding helpers
@@ -21,4 +24,5 @@
 	it                           result of the last line evaluated; use to further iterate
 	DBQuery.shellBatchSize = x   set default number of items to display on shell
 	exit                         quit the mongo shell
-> 
+repl_set:PRIMARY> 
+

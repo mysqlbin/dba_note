@@ -1,10 +1,17 @@
 
 
-1. 查看副本集状态  --rs.status()
-2. db.isMaster()
-3. 查看oplog状态 --db.printReplicationInfo()
-4. 查看复制延迟 --rs.printSlaveReplicationInfo()
+1. 查看副本集状态   --rs.status()
+2. db.isMaster() 
+3. 查看oplog状态    --db.printReplicationInfo()
+4. 查看 oplog 的状态，输出信息包括 oplog 日志大小，操作日志记录的起始时间 --db.getReplicationInfo()
+5. 查看复制延迟 
+	5.1 master --db.printReplicationInfo()
+	5.2 slave --db.printSlaveReplicationInfo()
 5. 查看服务状态详情 --db.serverStatus() 
+6. 把主节点变为备份节点 --rs.stepDown
+
+
+
 
 
 1. 查看副本集状态  --rs.status() 
@@ -256,37 +263,71 @@
 
 3. 查看oplog状态 --db.printReplicationInfo()
 	repl_set:PRIMARY> db.printReplicationInfo()
-	configured oplog size:   1578.782958984375MB   -- 配置的oplog文件大小。 select 197*0.05 = 9.85GB.
+	configured oplog size:   1578.782958984375MB   -- 当前oplog的大小。 根据当前磁盘空间计算可以分配的oplog的大小: select 197*0.05 = 9.85GB.
 	log length start to end: 101090secs (28.08hrs) -- oplog日志的启用时间段。
 	oplog first event time:  Tue Jun 16 2020 17:54:46 GMT+0800 (CST) -- 第一个oplog日志的产生时间。
 	oplog last event time:   Wed Jun 17 2020 21:59:36 GMT+0800 (CST) -- 最后一个oplog日志的产生时间。
 	now:                     Wed Jun 17 2020 21:59:45 GMT+0800 (CST) -- 当前时间。
 
 
-	repl_set:SECONDARY> db.printReplicationInfo()
+	repl_set:PRIMARY> db.printReplicationInfo()
 	configured oplog size:   6312.335205078125MB
-	log length start to end: 101090secs (28.08hrs)
+	log length start to end: 405927secs (112.76hrs)
 	oplog first event time:  Tue Jun 16 2020 17:54:46 GMT+0800 (CST)
-	oplog last event time:   Wed Jun 17 2020 21:59:36 GMT+0800 (CST)
-	now:                     Wed Jun 17 2020 21:59:37 GMT+0800 (CST)
+	oplog last event time:   Sun Jun 21 2020 10:40:13 GMT+0800 (CST)
+	now:                     Sun Jun 21 2020 10:40:19 GMT+0800 (CST)
+	
+	
+	repl_set:SECONDARY> db.printReplicationInfo()
+	configured oplog size:   1578.782958984375MB
+	log length start to end: 405957secs (112.77hrs)
+	oplog first event time:  Tue Jun 16 2020 17:54:46 GMT+0800 (CST)
+	oplog last event time:   Sun Jun 21 2020 10:40:43 GMT+0800 (CST)
+	now:                     Sun Jun 21 2020 10:40:49 GMT+0800 (CST)
+
 	
 	--单机模式下查看  oplog 状态
 	> db.printReplicationInfo()
 	{ "errmsg" : "replication not detected" }   --未检测到复制
 
+	
+4. 查看 oplog 的状态，输出信息包括 oplog 日志大小，操作日志记录的起始时间 --db.getReplicationInfo()
 
-4. 查看复制延迟 --rs.printSlaveReplicationInfo()
+	repl_set:PRIMARY> db.getReplicationInfo()
+	{
+		"logSizeMB" : 6312.335205078125,
+		"usedMB" : 112.29,
+		"timeDiff" : 405818,
+		"timeDiffHours" : 112.73,
+		"tFirst" : "Tue Jun 16 2020 17:54:46 GMT+0800 (CST)",
+		"tLast" : "Sun Jun 21 2020 10:38:24 GMT+0800 (CST)",
+		"now" : "Sun Jun 21 2020 10:38:40 GMT+0800 (CST)"
+	}
 
-	repl_set:PRIMARY> rs.printSlaveReplicationInfo()
-	source: 192.168.0.1:27017
-		syncedTo: Wed Jun 17 2020 22:00:56 GMT+0800 (CST)
-		0 secs (0 hrs) behind the primary 
+
+5. 查看复制延迟 
+	
+	5.1 master --db.printReplicationInfo()
+		repl_set:PRIMARY> db.printReplicationInfo()
+		configured oplog size:   6312.335205078125MB
+		log length start to end: 406477secs (112.91hrs)
+		oplog first event time:  Tue Jun 16 2020 17:54:46 GMT+0800 (CST)
+		oplog last event time:   Sun Jun 21 2020 10:49:23 GMT+0800 (CST)
+		now:                     Sun Jun 21 2020 10:49:32 GMT+0800 (CST)
 
 		
-	repl_set:SECONDARY> rs.printSlaveReplicationInfo()
-	source: 192.168.0.1:27017
-		syncedTo: Wed Jun 17 2020 22:00:46 GMT+0800 (CST)
-		0 secs (0 hrs) behind the primary 
+	5.2 slave --db.printSlaveReplicationInfo()
+		
+		repl_set:SECONDARY> db.printSlaveReplicationInfo()
+		source: 10.31.76.227:27017
+			syncedTo: Sun Jun 21 2020 10:50:23 GMT+0800 (CST)
+			0 secs (0 hrs) behind the primary       -- 落后主节点0秒.
+			
+		repl_set:SECONDARY> rs.printSlaveReplicationInfo()
+		source: 10.31.76.227:27017
+			syncedTo: Sun Jun 21 2020 10:50:33 GMT+0800 (CST)
+			0 secs (0 hrs) behind the primary 
+		
 		
 5. 查看服务状态详情 --db.serverStatus() 
 	.................
@@ -1366,3 +1407,9 @@
 }
 repl_set:PRIMARY> 
 
+
+6. 把主节点变为备份节点 --rs.stepDown
+	参考笔记 <2020-06-18-修改成员状态.sql>
+	
+	
+		

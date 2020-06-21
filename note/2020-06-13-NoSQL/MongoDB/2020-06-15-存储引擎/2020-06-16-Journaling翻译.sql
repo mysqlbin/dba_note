@@ -6,12 +6,15 @@
 4. 日志文件中的记录 --Journal Records
 5. 压缩 --Compression
 6. 日志文件的大小限制 --Journal File Size Limit
-
+7. 相关参考
 
 1. 日志的介绍
 
 本节中提到的日志是指WiredTiger预写日志（即日志），而不是MongoDB日志文件。
 WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB从最后一个检查点恢复。 但是，如果MongoDB在检查点之间意外退出，则需要日志记录来恢复在最后一个检查点之后发生的信息。
+
+从MongoDB 4.0开始，您不能指定--nojournal选项或storage.journal.enabled：使用WiredTiger存储引擎的副本集成员为false。
+
 
 使用日记的恢复过程：
 
@@ -89,6 +92,7 @@ WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB
 	WiredTiger自动删除旧的日记文件，仅维护从上一个检查点恢复所需的文件。
 	
 
+7. 相关参考
 	
 	
 
