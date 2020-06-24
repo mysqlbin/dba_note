@@ -1,5 +1,5 @@
 
-
+https://docs.mongodb.com/manual/reference/program/mongostat/
 	
 mongostat -h 192.168.1.31 -u admin -p admin --authenticationDatabase=admin
 insert query update delete getmore command dirty used flushes vsize   res qrw arw net_in net_out conn                time
@@ -29,6 +29,11 @@ delete 每秒删除操作数量
 getmore 每秒get more操作的数量
 
 command 每秒执行数据库命令操作的数量（比如插入、查找、更新、删除等等）
+
+dirty   仅仅针对WiredTiger引擎，官网解释是脏数据字节的缓存百分比
+
+used    仅仅针对WiredTiger引擎，官网解释是正在使用中的WiredTiger缓存百分比
+
 
 flushes 每秒执行fsync操作的数量（将数据刷新到磁盘的次数）
 

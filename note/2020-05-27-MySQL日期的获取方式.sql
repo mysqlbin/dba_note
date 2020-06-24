@@ -29,3 +29,4 @@ select last_day(date_add(curdate(),interval 1 month)); --获取下个月最后�
  SELECT DATE_FORMAT(DATE_ADD(NOW(),INTERVAL 1 DAY),'%Y-%m-%d');
 
  
+ SELECT (DATEDIFF('2021-06-23','1970-01-01'));

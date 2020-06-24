@@ -1,5 +1,17 @@
 
 
+CREATE TABLE t2 (
+id int(11) DEFAULT NULL,
+name char(10) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8
+
+ insert delayed into t2(id,name) values(2,'c');
+ 
+在MySQL 5.6中不推荐使用DELAYED插入和替换。 
+在MySQL 5.7中，不支持DELAYED。 服务器识别但忽略DELAYED关键字，将插入作为非延迟插入进行处理。
+
+
+
 1、delayed:
 
 	  如果您使用DELAYED关键字，则服务器会把待插入的行放到一个缓冲器中，而发送INSERT DELAYED语句的客户端会继续运行。
