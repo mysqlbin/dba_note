@@ -24,20 +24,6 @@ undo的回滚跟 binlog2sql 一样:
 	Update = Delete Mark + Insert；
 
 
-相关参考:
-	https://www.colabug.com/1439181.html      InnoDB—UNDO日志与回滚
-	https://blog.csdn.net/fly2nn/article/details/61924836   InnoDB---UNDO日志与回滚
-	https://blog.csdn.net/yanzongshuai/article/details/71339336  innodb 回滚段内存结构
-	https://mp.weixin.qq.com/s/R3yuitWpHHGWxsUcE0qIRQ         InnoDB并发如此高，原因竟然在这？
-	https://mp.weixin.qq.com/s/7eTloNFM5AUZEfJlIpbWaA         一文快速搞懂MySQL InnoDB事务ACID实现原理
-	https://www.cnblogs.com/xinysu/p/6555082.html#_lab2_0_0  （说说MySQL中的Redo log Undo log都在干啥）
-    http://hedengcheng.com/?p=191 （InnoDB Rollback Segment & Undo Page Deallocation实现源码分析）
-    http://mysql.taobao.org/monthly/2015/04/01/ （MySQL · 引擎特性 · InnoDB undo log 漫游）
-    http://mysql.taobao.org/monthly/2016/07/01/            （undo空间管理，重点介绍truncate功能）
-    https://www.jianshu.com/p/173eeebbabf0?utm_campaign=hugo&utm_medium=reader_share&utm_content=note&utm_source=weixin-friends  （Innodb undo之 undo物理结构的初始化）
-	https://mp.weixin.qq.com/s/5ka2czU1dhwAWwH6Nm0bmg      MySQL 5.7新特性之在线收缩undo表空间
-	https://yq.aliyun.com/articles/341036      MySQL8.0 · 引擎特性 · 关于undo表空间的一些新变化
-	https://yq.aliyun.com/articles/689955?spm=a2c4e.11153940.0.0.50245440euT998       MySQL8.0 - 新特性 - 通过SQL管理UNDO TABLESPACE
 	
 	
 回滚的原理:	
