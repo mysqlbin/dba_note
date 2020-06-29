@@ -112,7 +112,10 @@
 	https://www.cnblogs.com/mengyu/p/7718311.html   Mongo导出mongoexport和导入mongoimport介绍
 	https://www.cnblogs.com/zpdbkshangshanluoshuo/p/10065311.html  mysql数据导入mongodb中
 
+	https://www.xttblog.com/?p=4203   MySQL迁移到MongoDB的简单教程
 
+	
+	
 
 
 
