@@ -145,7 +145,7 @@ root@mysqldb 23:03:  [bak_niuniuh5_db]> SELECT * FROM `information_schema`.`OPTI
                       ]
                     }
                   ],
-                  "best_covering_index_scan": {      -- 最好的覆盖索引扫描，
+                  "best_covering_index_scan": {      -- 最优的办法是使用覆盖索引扫描
                     "index": "idx_loginIp_szTime_nPlayerId",  -- idx_loginIp_szTime_nPlayerId 被使用
                     "cost": 1.55e6,
                     "chosen": false,
