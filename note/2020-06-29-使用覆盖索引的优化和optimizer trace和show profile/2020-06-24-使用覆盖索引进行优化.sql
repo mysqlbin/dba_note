@@ -51,7 +51,6 @@
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-
 制造数据
 	drop procedure idata;
 	delimiter ;;
@@ -85,10 +84,20 @@
 	|   100000 |
 	+----------+
 	1 row in set (0.12 sec)
+	
+	
+	root@mysqldb 10:28:  [bak_niuniuh5_db]> SELECT count(*) FROM `table_web_loginlog` WHERE loginIp = '192.168.0.71'  AND sztime  > '2020-06-25 16:08:36' and nPlayerId = 1000;
+	+----------+
+	| count(*) |
+	+----------+
+	|   100000 |
+	+----------+
+	1 row in set (0.18 sec)
+
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-
+执行计划
 desc select sum(case when nPlayerId != 1000 then 1 else 0 end)  from table_web_loginlog where loginIp='192.168.0.71' and szTime > '2020-06-25 16:08:36';
 desc SELECT count(*) FROM `table_web_loginlog` WHERE loginIp = '192.168.0.71'  AND sztime  > '2020-06-25 16:08:36' and nPlayerId != 1000;
 
@@ -177,5 +186,18 @@ root@mysqldb 17:39:  [bak_niuniuh5_db]> SELECT count(*) FROM `table_web_loginlog
 |        0 |
 +----------+
 1 row in set (0.09 sec)
+	
 
-
+索引基数
+	root@mysqldb 10:26:  [bak_niuniuh5_db]> show index from table_web_loginlog;
+	+--------------------+------------+------------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| Table              | Non_unique | Key_name                     | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
+	+--------------------+------------+------------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| table_web_loginlog |          0 | PRIMARY                      |            1 | Idx         | A         |     6534338 |     NULL | NULL   |      | BTREE      |         |               |
+	| table_web_loginlog |          1 | idx_loginIp_szTime_nPlayerId |            1 | loginIp     | A         |      832761 |     NULL | NULL   | YES  | BTREE      |         |               |
+	| table_web_loginlog |          1 | idx_loginIp_szTime_nPlayerId |            2 | szTime      | A         |     6634611 |     NULL | NULL   | YES  | BTREE      |         |               |
+	| table_web_loginlog |          1 | idx_loginIp_szTime_nPlayerId |            3 | nPlayerId   | A         |     6634611 |     NULL | NULL   |      | BTREE      |         |               |
+	| table_web_loginlog |          1 | idx_loginIp_szTime           |            1 | loginIp     | A         |      830219 |     NULL | NULL   | YES  | BTREE      |         |               |
+	| table_web_loginlog |          1 | idx_loginIp_szTime           |            2 | szTime      | A         |     6634611 |     NULL | NULL   | YES  | BTREE      |         |               |
+	+--------------------+------------+------------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	6 rows in set (0.00 sec)

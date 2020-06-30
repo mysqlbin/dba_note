@@ -49,6 +49,34 @@
 
 
 2. State列
+
+	set profiling = 1;
+	SELECT count(*) FROM `table_web_loginlog` force index(idx_loginIp_szTime) WHERE loginIp = '192.168.0.71'  AND sztime  > '2020-06-25 16:08:36' and nPlayerId != 1000;
+	show profiles;
+	show profile for query 1;
+	    Status 类似于 show processlist.State 的值
+		+----------------------+----------+
+		| Status               | Duration |
+		+----------------------+----------+
+		| starting             | 0.000068 |
+		| checking permissions | 0.000009 |
+		| checking permissions | 0.000004 |
+		| Opening tables       | 0.000013 |
+		| init                 | 0.000038 |
+		| System lock          | 0.000007 |
+		| optimizing           | 0.000028 |
+		| statistics           | 0.000112 |
+		| preparing            | 0.000033 |
+		| executing            | 0.000003 |
+		| Sending data         | 0.192259 |
+		| end                  | 0.000012 |
+		| query end            | 0.000010 |
+		| closing tables       | 0.000008 |
+		| freeing items        | 0.000019 |
+		| cleaning up          | 0.000010 |
+		+----------------------+----------+
+		16 rows in set, 1 warning (0.00 sec)
+		
 	表示用于显示当前sql语句的状态
 
 	1. Sending data：

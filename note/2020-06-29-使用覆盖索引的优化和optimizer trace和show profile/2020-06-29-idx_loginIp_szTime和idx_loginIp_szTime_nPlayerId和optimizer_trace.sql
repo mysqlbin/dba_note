@@ -1,6 +1,4 @@
 
-
-
 SET optimizer_trace='enabled=on'; 
 SELECT count(*) FROM `table_web_loginlog` WHERE loginIp = '192.168.0.71'  AND sztime  > '2020-06-25 16:08:36' and nPlayerId != 1000;
 SELECT * FROM `information_schema`.`OPTIMIZER_TRACE`\G; 
@@ -36,6 +34,15 @@ root@mysqldb 23:03:  [bak_niuniuh5_db]> SELECT count(*) FROM `table_web_loginlog
 |        0 |
 +----------+
 1 row in set (0.13 sec)
+
+root@mysqldb 10:29:  [bak_niuniuh5_db]> desc SELECT count(*) FROM `table_web_loginlog` WHERE loginIp = '192.168.0.71'  AND sztime  > '2020-06-25 16:08:36' and nPlayerId != 1000;
++----+-------------+--------------------+------------+-------+-------------------------------------------------+------------------------------+---------+------+--------+----------+--------------------------+
+| id | select_type | table              | partitions | type  | possible_keys                                   | key                          | key_len | ref  | rows   | filtered | Extra                    |
++----+-------------+--------------------+------------+-------+-------------------------------------------------+------------------------------+---------+------+--------+----------+--------------------------+
+|  1 | SIMPLE      | table_web_loginlog | NULL       | range | idx_loginIp_szTime_nPlayerId,idx_loginIp_szTime | idx_loginIp_szTime_nPlayerId | 264     | NULL | 195588 |    90.00 | Using where; Using index |
++----+-------------+--------------------+------------+-------+-------------------------------------------------+------------------------------+---------+------+--------+----------+--------------------------+
+1 row in set, 1 warning (0.00 sec)
+
 
 root@mysqldb 23:03:  [bak_niuniuh5_db]> SELECT * FROM `information_schema`.`OPTIMIZER_TRACE`\G; 
 *************************** 1. row ***************************
