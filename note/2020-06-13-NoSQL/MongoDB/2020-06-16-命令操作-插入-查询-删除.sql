@@ -1,5 +1,9 @@
 
 
+db.table_clubgamelog.find().sort({"_id":-1}).limit(1)
+db.table_clubgamescorerobotdetail.find().sort({"_id":-1}).limit(1)
+
+
 如何查看和修改 系统参数 变量
 
 1. 插入单个文档
