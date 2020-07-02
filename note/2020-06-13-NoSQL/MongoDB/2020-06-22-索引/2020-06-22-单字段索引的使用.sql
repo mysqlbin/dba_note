@@ -133,13 +133,13 @@
 
 
 	executionStats.executionSuccess   # 是否执行成功
-	executionStats.nReturned          # 查询的返回条数
+	executionStats.nReturned          -- 查询返回的文档数
 		"nReturned" : 1
-	executionStats.executionTimeMillis  # 整体执行时间
+	executionStats.executionTimeMillis   -- 整体执行时间
 		"executionTimeMillis" : 1
-	executionStats.totalKeysExamined   # 索引扫描次数
+	executionStats.totalKeysExamined   -- 根据索引扫描的文档数
 		"totalKeysExamined" : 0
-	executionStats.totalDocsExamined   # document扫描次数
+	executionStats.totalDocsExamined   -- 总共扫描的文档数
 		"totalDocsExamined" : 1000
 		
 

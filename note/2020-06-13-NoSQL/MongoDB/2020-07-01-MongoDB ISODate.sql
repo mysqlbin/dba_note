@@ -54,3 +54,28 @@ db.table_clubgamescorerobotdetail.find().sort({"_id":-1}).limit(1)
 db.table_clubgamelog.find().sort({"_id":-1}).limit(1)
 db.table_report_log.find().sort({"_id":-1}).limit(1)
 
+
+
+
+
+db.test.find({'$or': 
+		[
+			{'num': {'$gt': 70}}, 
+			{'num': {'$lt': 40}}
+		]
+	})
+	
+	
+	
+db.table_clubgamelog.find({'$and': 
+		[
+			{'CreateTime': {'$lt': ISODate('2020-07-02 04:00:00')}}, 
+			{'tEndTime': {'$lt': '2020-07-02 04:00:00'}}
+		]
+	})
+	
+db.table_clubgamelog.find({'$and': [ {'CreateTime': {'$lt': ISODate('2020-07-02 04:00:00')}},  {'tEndTime': {'$lt': '2020-07-01 15:11:30'}} ] })
+
+db.table_clubgamelog.find({'$and': [ {'CreateTime': {'$lt': ISODate('2020-07-02 04:00:00')}},  {'tEndTime': {'$lt': '2020-07-01 15:11:30'}} ] }).explain()
+
+
