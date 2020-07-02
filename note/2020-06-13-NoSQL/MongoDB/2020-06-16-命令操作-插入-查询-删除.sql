@@ -1,5 +1,7 @@
 
 
+
+
 db.table_clubgamelog.find().sort({"_id":-1}).limit(1)
 db.table_clubgamescorerobotdetail.find().sort({"_id":-1}).limit(1)
 
@@ -14,7 +16,7 @@ db.table_clubgamescorerobotdetail.find().sort({"_id":-1}).limit(1)
 6. 查询
 7. OR 查询
 8. 查询数组
-
+9. 在不同字段中使用 and
 
 1. 插入单个文档
 	repl_set:PRIMARY> use abc_db
@@ -169,5 +171,11 @@ db.table_clubgamescorerobotdetail.find().sort({"_id":-1}).limit(1)
 
 	
 
+9. 在不同字段中使用 and
 		
+	CreateTime <  ISODate('2020-07-02 04:00:00') and tEndTime < '2020-07-01 15:12:33'
+
+	db.table_clubgamelog.find({'$and': [ {'CreateTime': {'$lt': ISODate('2020-07-02 04:00:00')}},  {'tEndTime': {'$lt': '2020-07-01 15:12:33'}} ] })
+
+	
 	

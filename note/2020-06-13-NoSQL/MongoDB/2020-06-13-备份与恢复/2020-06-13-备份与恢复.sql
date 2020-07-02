@@ -17,28 +17,30 @@
 如果你的oplog设置过小，很有可能在备份恢复这段时间，oplog被覆盖重写，那么你将永远无法加入副本集集群里。
 
 
+压缩备份与恢复：
 
-备份单机的指定数据库数据
-	mongodump  --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin"  -d sbtest_db   -o /data/`date +%Y%m%d` 
-	
-	mongodump  --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin"  -d sbtest_db --gzip  --out /data/`date +%Y%m%d` 
+	备份单机的指定数据库数据
+		mongodump  --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin"  -d sbtest_db   -o /data/`date +%Y%m%d` 
+		
+		mongodump  --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin"  -d sbtest_db --gzip  --out /data/`date +%Y%m%d` 
 
-	
-恢复数据
-	
-	mongorestore --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin" -d sbtest_db_recovery --dir='/data/20200613/sbtest_db'  
-		[root@env30 data]# mongorestore --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin" -d sbtest_db_recovery --dir='/data/20200613/sbtest_db'  
-		2020-06-13T13:44:12.657+0800	the --db and --collection args should only be used when restoring from a BSON file. Other uses are deprecated and will not exist in the future; use --nsInclude instead
-		2020-06-13T13:44:12.657+0800	building a list of collections to restore from /data/20200613/sbtest_db dir
-		2020-06-13T13:44:12.658+0800	reading metadata for sbtest_db_recovery.t1 from /data/20200613/sbtest_db/t1.metadata.json
-		2020-06-13T13:44:12.963+0800	restoring sbtest_db_recovery.t1 from /data/20200613/sbtest_db/t1.bson
-		2020-06-13T13:44:12.967+0800	no indexes to restore
-		2020-06-13T13:44:12.967+0800	finished restoring sbtest_db_recovery.t1 (5 documents, 0 failures)
-		2020-06-13T13:44:12.967+0800	5 document(s) restored successfully. 0 document(s) failed to restore.
-			
-	
-	mongorestore --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin" -d sbtest_db_02 --gzip --dir='/data/20200613/sbtest_db'  
+		
+	恢复数据
+		
+		mongorestore --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin" -d sbtest_db_recovery --dir='/data/20200613/sbtest_db'  
+			[root@env30 data]# mongorestore --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin" -d sbtest_db_recovery --dir='/data/20200613/sbtest_db'  
+			2020-06-13T13:44:12.657+0800	the --db and --collection args should only be used when restoring from a BSON file. Other uses are deprecated and will not exist in the future; use --nsInclude instead
+			2020-06-13T13:44:12.657+0800	building a list of collections to restore from /data/20200613/sbtest_db dir
+			2020-06-13T13:44:12.658+0800	reading metadata for sbtest_db_recovery.t1 from /data/20200613/sbtest_db/t1.metadata.json
+			2020-06-13T13:44:12.963+0800	restoring sbtest_db_recovery.t1 from /data/20200613/sbtest_db/t1.bson
+			2020-06-13T13:44:12.967+0800	no indexes to restore
+			2020-06-13T13:44:12.967+0800	finished restoring sbtest_db_recovery.t1 (5 documents, 0 failures)
+			2020-06-13T13:44:12.967+0800	5 document(s) restored successfully. 0 document(s) failed to restore.
+				
+		
+		mongorestore --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin" -d sbtest_db_02 --gzip --dir='/data/20200613/sbtest_db'  
 
+		mongorestore --host "1"  -u "admin" -p "admin123456" --authenticationDatabase "admin" -d niuniuh5_modb --gzip --dir='/home/dba2/20200615/niuniuh5_modb' 	
 		
 
 生产实践		
