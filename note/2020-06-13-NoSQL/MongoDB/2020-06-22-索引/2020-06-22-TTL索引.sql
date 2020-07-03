@@ -8,6 +8,7 @@ https://docs.mongodb.com/manual/core/index-ttl/
 
 for (i=0; i<1000; i++) {db.t11.insert({"i" : i, "username" : "user"+i, "age" : Math.floor(Math.random()*120), "CreateTime" : new Date()})}
 
+for (i=0; i<2; i++) {db.t11.insert({"i" : i, "username" : "user"+i, "age" : Math.floor(Math.random()*120), "CreateTime" : new Date()})}
 
 for (i=0; i<1000; i++) {db.t3.insert({"i" : i, "username" : "user"+i, "age" : Math.floor(Math.random()*120), "created" : '2020-06-05 00:00:00'})}
 

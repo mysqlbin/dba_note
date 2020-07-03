@@ -1,10 +1,8 @@
 
 
-https://docs.mongodb.com/manual/reference/method/Date/
-	
-	在内部，Date对象存储为带符号的64位整数，表示自Unix纪元（1970年1月1日）以来的毫秒数。
-
-
+-- 制造数据
+for (i=0; i<2; i++) {db.t0701.insert({"i" : i, "username" : "user"+i, "age" : Math.floor(Math.random()*120), "created" : new Date()})}
+for (i=0; i<2; i++) {db.t0701.insert({"i" : i, "username" : "user"+i, "age" : Math.floor(Math.random()*120), "created" : new Date()})}
 
 
 --当前一共有4条记录， 其中两条为：ISODate("2020-07-01T06:30:11Z")，另外2条为： ISODate("2020-07-01T06:56:22Z")
@@ -30,52 +28,13 @@ https://docs.mongodb.com/manual/reference/method/Date/
 	
 	
 	
-db.table_clubgamelog.remove({"tEndTime" : {"$lt" :  '2020-07-02 04:00:00'}})
-db.table_clubgamescorerobotdetail.remove({"tEndTime" : {"$lt" :  '2020-07-02 04:00:00'}})
 
-db.table_clubgamelog.remove({"tEndTime" : {"$lt" :  ISODate('2020-07-02 04:00:00')}})
-db.table_clubgamescorerobotdetail.remove({"tEndTime" : {"$lt" :  ISODate('2020-07-02 04:00:00')}})
+db.t0701.remove({"created" : {"$lt" :  ISODate('2020-07-02 04:00:00')}})
 
 
-db.table_clubgamelog.getIndexes()
-db.table_clubgamescorerobotdetail.getIndexes()
-
-db.table_clubgamelog.dropIndex("tEndTime_1")
-db.table_clubgamescorerobotdetail.dropIndex("tEndTime_1")
-
-
-db.table_clubgamelog.ensureIndex({"CreateTime" : 1})
-db.table_clubgamescorerobotdetail.ensureIndex({"CreateTime" : 1})
-
-
-
-db.table_clubgamelog.find({"CreateTime" : {"$lt" :  ISODate('2020-07-02 04:00:00')}}).explain()
-db.table_clubgamescorerobotdetail.find().sort({"_id":-1}).limit(1)
-db.table_clubgamelog.find().sort({"_id":-1}).limit(1)
-db.table_report_log.find().sort({"_id":-1}).limit(1)
-
-
-
-
-
-db.test.find({'$or': 
-		[
-			{'num': {'$gt': 70}}, 
-			{'num': {'$lt': 40}}
-		]
-	})
+相关参考
 	
-	
-	
-db.table_clubgamelog.find({'$and': 
-		[
-			{'CreateTime': {'$lt': ISODate('2020-07-02 04:00:00')}}, 
-			{'tEndTime': {'$lt': '2020-07-02 04:00:00'}}
-		]
-	})
-	
-db.table_clubgamelog.find({'$and': [ {'CreateTime': {'$lt': ISODate('2020-07-02 04:00:00')}},  {'tEndTime': {'$lt': '2020-07-01 15:11:30'}} ] })
-
-db.table_clubgamelog.find({'$and': [ {'CreateTime': {'$lt': ISODate('2020-07-02 04:00:00')}},  {'tEndTime': {'$lt': '2020-07-01 15:11:30'}} ] }).explain()
-
+	https://docs.mongodb.com/manual/reference/method/Date/
+		
+		其中，在内部，Date对象存储为带符号的64位整数，表示自Unix纪元（1970年1月1日）以来的毫秒数。
 

@@ -19,6 +19,137 @@
 			{ role: "read", db: "sbtest_db" }
 		]
 	} )
+	
+	
+	use admin
+	db.createUser( {
+		user: "chh_user",
+		pwd: "chh123456",
+		roles: [ 
+			{ role: "readWrite", db: "yldb" },
+			{ role: "readWrite", db: "niuniuh5_modb" }
+		]
+	} )
+
+	repl_set:PRIMARY> show users;
+	{
+		"_id" : "admin.admin",
+		"userId" : UUID("14e331b5-883f-46e5-9e3d-159eb6bb9461"),
+		"user" : "admin",
+		"db" : "admin",
+		"roles" : [
+			{
+				"role" : "root",
+				"db" : "admin"
+			}
+		],
+		"mechanisms" : [
+			"SCRAM-SHA-1",
+			"SCRAM-SHA-256"
+		]
+	}
+	{
+		"_id" : "admin.chh_user",
+		"userId" : UUID("c2456e74-db79-4ae8-a420-124bd349c65e"),
+		"user" : "chh_user",
+		"db" : "admin",
+		"roles" : [
+			{
+				"role" : "readWrite",
+				"db" : "yldb"
+			},
+			{
+				"role" : "readWrite",
+				"db" : "niuniuh5_modb"
+			}
+		],
+		"mechanisms" : [
+			"SCRAM-SHA-1",
+			"SCRAM-SHA-256"
+		]
+	}
+	{
+		"_id" : "admin.clusteradmin",
+		"userId" : UUID("cc2db5ee-2b84-409a-a9e5-1deb9f1f101e"),
+		"user" : "clusteradmin",
+		"db" : "admin",
+		"roles" : [
+			{
+				"role" : "clusterAdmin",
+				"db" : "admin"
+			},
+			{
+				"role" : "clusterManager",
+				"db" : "admin"
+			},
+			{
+				"role" : "clusterMonitor",
+				"db" : "admin"
+			}
+		],
+		"mechanisms" : [
+			"SCRAM-SHA-1",
+			"SCRAM-SHA-256"
+		]
+	}
+	{
+		"_id" : "admin.dpc_user",
+		"userId" : UUID("234e2763-8307-4df5-9047-97f41245ab5c"),
+		"user" : "dpc_user",
+		"db" : "admin",
+		"roles" : [
+			{
+				"role" : "readWrite",
+				"db" : "niuniuh5_modb"
+			}
+		],
+		"mechanisms" : [
+			"SCRAM-SHA-1",
+			"SCRAM-SHA-256"
+		]
+	}
+	{
+		"_id" : "admin.ldg_user",
+		"userId" : UUID("0add0f91-cad6-4cda-8e98-d5095bf9c512"),
+		"user" : "ldg_user",
+		"db" : "admin",
+		"roles" : [
+			{
+				"role" : "readWrite",
+				"db" : "niuniuh5_modb"
+			},
+			{
+				"role" : "readWrite",
+				"db" : "yldb"
+			}
+		],
+		"mechanisms" : [
+			"SCRAM-SHA-1",
+			"SCRAM-SHA-256"
+		]
+	}
+	{
+		"_id" : "admin.lxb_user",
+		"userId" : UUID("101f90eb-d9a1-48d6-a53e-6f00af21cb1c"),
+		"user" : "lxb_user",
+		"db" : "admin",
+		"roles" : [
+			{
+				"role" : "read",
+				"db" : "niuniuh5_modb"
+			},
+			{
+				"role" : "read",
+				"db" : "yldb"
+			}
+		],
+		"mechanisms" : [
+			"SCRAM-SHA-1",
+			"SCRAM-SHA-256"
+		]
+	}
+	repl_set:PRIMARY> 
+
 
 
 	
