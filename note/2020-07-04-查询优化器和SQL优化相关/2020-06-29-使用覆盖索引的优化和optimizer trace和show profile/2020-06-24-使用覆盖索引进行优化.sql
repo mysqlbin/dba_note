@@ -42,7 +42,11 @@
 	+----+-------------+--------------------+------------+-------+-----------------------------------------------------------------------+--------------------+---------+------+--------+----------+------------------------------------+
 	1 row in set, 1 warning (0.00 sec)
 
-
+	
+	key_len = select 64*4+3 + 4+1 = 264
+		`loginIp` varchar(64) DEFAULT NULL = 64*4+3 = 259
+		`szTime` timestamp NULL DEFAULT NULL = 4+1
+		
 	alter table table_web_loginlog add index idx_loginIp_szTime_nPlayerId(`loginIp`,`szTime`,`nPlayerId`);
 	
 	
