@@ -67,14 +67,14 @@ root@mysqldb 05:41:  [test_db]> show global variables like '%join_buffer%';
 
 	
 2.1 查看SQL的执行计划
-mysql> explain  select * from t1 join t2 on (t1.b=t2.b) where t2.b>=1 and t2.b<=2000;
-+----+-------------+-------+------------+------+---------------+------+---------+------+--------+----------+----------------------------------------------------+
-| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows   | filtered | Extra                                              |
-+----+-------------+-------+------------+------+---------------+------+---------+------+--------+----------+----------------------------------------------------+
-|  1 | SIMPLE      | t1    | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   1000 |   100.00 | Using where                                        |
-|  1 | SIMPLE      | t2    | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 998222 |     1.11 | Using where; Using join buffer (Block Nested Loop) |
-+----+-------------+-------+------------+------+---------------+------+---------+------+--------+----------+----------------------------------------------------+
-2 rows in set, 1 warning (0.01 sec)
+	mysql> explain  select * from t1 join t2 on (t1.b=t2.b) where t2.b>=1 and t2.b<=2000;
+	+----+-------------+-------+------------+------+---------------+------+---------+------+--------+----------+----------------------------------------------------+
+	| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows   | filtered | Extra                                              |
+	+----+-------------+-------+------------+------+---------------+------+---------+------+--------+----------+----------------------------------------------------+
+	|  1 | SIMPLE      | t1    | NULL       | ALL  | NULL          | NULL | NULL    | NULL |   1000 |   100.00 | Using where                                        |
+	|  1 | SIMPLE      | t2    | NULL       | ALL  | NULL          | NULL | NULL    | NULL | 998222 |     1.11 | Using where; Using join buffer (Block Nested Loop) |
+	+----+-------------+-------+------------+------+---------------+------+---------+------+--------+----------+----------------------------------------------------+
+	2 rows in set, 1 warning (0.01 sec)
 
 	
 2.2 SQL的执行时间(MySQL 5.7.24不支持Hash Join):
