@@ -54,7 +54,7 @@
 1.2 const
 	根据主键或者唯一二级索引列与常数进行等值匹配时，对应的单表访问方法就是 const
 	基于主键或唯一索引唯一值查询，最多返回一条结果，比eq_ref略好
-	
+	-- 针对单表的情况
 	CREATE TABLE `t_const` (
 	  `id` int(11) NOT NULL AUTO_INCREMENT,
 	  `key1` varchar(100) DEFAULT NULL,
@@ -88,6 +88,7 @@
 
 	表连接时基于主键或非NULL的唯一索引完成扫描， 比ref略好
 	在连接查询时，如果被驱动表是通过主键或者唯一二级索引列等值匹配的方式进行访问的（如果该主键或者唯一二级索引是联合索引的话，所有的索引列都必须进行等值比较），则对该被驱动表的访问方法就是eq_ref
+	-- 针对表连接的情况
 	
 	mysql> EXPLAIN SELECT * FROM s1 INNER JOIN s2 ON s1.id = s2.id;
 	+----+-------------+-------+------------+--------+---------------+---------+---------+-----------------+------+----------+-------+
@@ -258,7 +259,7 @@
 			
 1.8 unique_subquery
 	
-	unique subquery : 唯一子查询
+	unique subquery : 唯一索引子查询
 	类似于两表连接中被驱动表的 eq_ref 访问方法
 	unique_subquery是针对在一些包含IN子查询的查询语句中，如果查询优化器决定将IN子查询转换为EXISTS子查询，而且子查询可以使用到主键进行等值匹配的话，那么该子查询执行计划的type列的值就是unique_subquery，比如下边的这个查询语句：
 		root@localhost [db1]> EXPLAIN SELECT * FROM t1 WHERE key1 IN (SELECT id FROM t2 WHERE t1.key2 = t2.key2) OR key3 = '3';
@@ -303,7 +304,7 @@
 				)
 
 1.9 index_subquery
-
+	index_subquery ： 普通索引子查询
 	index_subquery与unique_subquery类似，只不过访问子查询中的表时使用的是普通的索引，比如这样：
 	
 		EXPLAIN SELECT * FROM t1 WHERE common_field IN (SELECT key3 FROM t2 where t1.key1 = t2.key1) OR key3 = 'a';
