@@ -2,7 +2,8 @@
 1. 表结构
 2. innodb_index_stats 和 innodb_table_stats 和 show index from 
 3. 慢SQL语句
-4. from子查询的执行计划和查询统计 
+4. from子查询的执行计划和查询统计 、
+5. from子查询有覆盖索引和没有覆盖索引的耗时对比	
 5. from子查询的 show profiles
 6. 慢SQL语句的执行计划、show profiles和优化器追踪
 	6.1 慢SQL语句的执行计划
@@ -11,6 +12,8 @@
 	6.4 优化器追踪(optimizer_trace)
 	
 7. 优化方向
+8. 验证下使用覆盖索引带来的查询性能上的提升
+9. 小结
 
 1. 表结构
 	CREATE TABLE `table_clubmember` (
@@ -300,14 +303,23 @@ FROM
 	+----------+
 	1 row in set (0.00 sec)
 
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 
+5. from子查询有覆盖索引和没有覆盖索引的耗时对比	
+	
+	SELECT nClubId,nPlayerId,nExLevel,nExtenID,tJoinTime FROM table_clubmember WHERE nClubId = 10017 AND nExtenID = 132806;	
+		-- 0.5S
+	SELECT nClubId,nPlayerId,nExtenID FROM table_clubmember WHERE nClubId = 10017 AND nExtenID = 132806;	
+		-- 0.24S
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 5. from子查询的 show profiles
 	SELECT nClubId,nPlayerId,nExLevel,nExtenID,tJoinTime FROM table_clubmember WHERE nClubId = 10017 AND nExtenID = 132806;	
+		-- 0.5S
 	SELECT nClubId,nPlayerId,nExtenID FROM table_clubmember WHERE nClubId = 10017 AND nExtenID = 132806;	
-		
+		-- 0.24S
 		
 	set profiling = 1;
 	SELECT nClubId,nPlayerId,nExLevel,nExtenID,tJoinTime FROM table_clubmember WHERE nClubId = 10017 AND nExtenID = 132806;	
@@ -731,8 +743,21 @@ AND temp.nClubID = temp2.nClubId
 
 6.2 SQL语句的性能问题 
 	从table_clubmember 扫描 18284 行记录， 最终返回 10664 行记录，还需要遍历 10664 行记录去查询 取出 nScore，directlyVipCount，addDirectlyVipCount，teamVipCount，addTeamCount，weekMyRebate，teamRebate
-
-
+	
+	整个SQL语句执行耗时约 1.6S, 而 from 子查询这里就耗时了1.2S:
+		SELECT
+			nClubId,
+			nPlayerId,
+			nExLevel,
+			nExtenID,
+			tJoinTime
+		FROM
+			table_clubmember
+		WHERE
+			nClubId = 10017
+		AND nExtenID = 132806
+	
+	
 6.3 show profiles
 	mysql>  show profile cpu,block io for query 1;
 	+---------------------+----------+----------+------------+--------------+---------------+
@@ -1148,6 +1173,7 @@ AND temp.nClubID = temp2.nClubId
 7. 优化方向
 使用覆盖索引
 	KEY `idx_nClubID_nExtenID` (`nClubID`,`nExtenID`) 改为  KEY `idx_nClubID_nExtenID_nPlayerID` (`nClubID`,`nExtenID`,`nPlayerID`)
+	
 子查询
 	SELECT
 		nClubId,
@@ -1161,7 +1187,7 @@ AND temp.nClubID = temp2.nClubId
 		nClubId = 10017
 	AND nExtenID = 132806	
 	
-	改为 
+改写为 
 	
 	SELECT
 		nClubId,
@@ -1176,7 +1202,16 @@ AND temp.nClubID = temp2.nClubId
 	-- 实际上 nExLevel 和 tJoinTime 字段是不需要查询出来的。
 	
 	
+
+8. 验证下使用覆盖索引带来的查询性能上的提升
+
+
+9. 小结
+	SQL语句很长，不用慌，分段来看，分段执行，找出SQL语句的瓶颈点。
 	
+	
+---------------------------------------------------------------------------------
+
 SELECT
 count(1) totalCount,
 SUM(recharge) recharge,
