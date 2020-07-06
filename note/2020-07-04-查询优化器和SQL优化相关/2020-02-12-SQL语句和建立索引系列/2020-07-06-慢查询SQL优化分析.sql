@@ -2,7 +2,7 @@
 1. 表结构
 2. innodb_index_stats 和 innodb_table_stats 和 show index from 
 3. 慢SQL语句
-4. from子查询的执行计划和查询统计 、
+4. from子查询的执行计划和查询统计
 5. from子查询有覆盖索引和没有覆盖索引的耗时对比	
 5. from子查询的 show profiles
 6. 慢SQL语句的执行计划、show profiles和优化器追踪
@@ -311,6 +311,7 @@ FROM
 		-- 0.5S
 	SELECT nClubId,nPlayerId,nExtenID FROM table_clubmember WHERE nClubId = 10017 AND nExtenID = 132806;	
 		-- 0.24S
+		
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
