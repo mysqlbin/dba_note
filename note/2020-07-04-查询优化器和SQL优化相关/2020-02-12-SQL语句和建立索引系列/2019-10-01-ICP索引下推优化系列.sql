@@ -25,7 +25,13 @@ mysql> desc select * from tuser where name='123';
 |  1 | SIMPLE      | tuser | ref  | idx_name_age,idx_name | idx_name_age | 131     | const |    1 | Using index condition |
 +----+-------------+-------+------+-----------------------+--------------+---------+-------+------+-----------------------+
 1 row in set (0.01 sec)
-# 可以下推，实际上是 可以，但没有使用索引下推优化
+验证了可以下推，实际上是 可以，但没有使用索引下推优化：
+
+	`name` varchar(32) DEFAULT NULL :  32*4 + 1 + 2 = 131
+	`age` int(11) DEFAULT NULL      : 4+1 = 5
+
+	key_len = 131, 说明了只用到了 name 索引。
+
 
 mysql> desc select * from tuser force index(`idx_name`) where name='123';
 +----+-------------+-------+------+---------------+----------+---------+-------+------+-----------------------+
