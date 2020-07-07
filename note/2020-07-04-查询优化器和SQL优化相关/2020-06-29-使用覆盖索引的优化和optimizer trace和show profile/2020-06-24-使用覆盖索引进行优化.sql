@@ -205,3 +205,6 @@ root@mysqldb 17:39:  [bak_niuniuh5_db]> SELECT count(*) FROM `table_web_loginlog
 	| table_web_loginlog |          1 | idx_loginIp_szTime           |            2 | szTime      | A         |     6634611 |     NULL | NULL   | YES  | BTREE      |         |               |
 	+--------------------+------------+------------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 	6 rows in set (0.00 sec)
+
+	
+对应的 show profile, 可以查看笔记: <2020-06-30-show profile.sql>

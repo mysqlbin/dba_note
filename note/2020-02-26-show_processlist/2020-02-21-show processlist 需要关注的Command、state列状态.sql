@@ -40,7 +40,6 @@
 		增大sort buffer和tmp_table_size
 
 	  
-
 	7. Sorting Result：
 
 		线程正在对结果集进行排序；
@@ -103,7 +102,7 @@
 	
 	3. Creating sort index，当前的SELECT需要用到临时表进行order by，建议加索引
 		
-		Creating sort index表示需要用到临时表进行order by
+		Creating sort index 表示需要用到临时表进行order by
 
 	4. Creating tmp table，建议创建适当的索引，少用UNION,VIEW,SUBQUERY
 
@@ -180,7 +179,7 @@
 		
 	
 4. 相关参考
-
+	https://www.cnblogs.com/zping/p/11002275.html    MySQL线程状态详解
 	高性能MySQL 第3版 第207页
     https://dev.mysql.com/doc/refman/5.7/en/general-thread-states.html
 	https://www.jb51.net/article/156313.htm  MySQL SHOW PROCESSLIST协助故障诊断全过程
@@ -189,6 +188,8 @@
 	https://www.jianshu.com/p/56d268983822    MySQL：简单记录一下Waiting for commit lock
 	06 | 全局锁和表级锁
 	19：分析只查询一行记录，为什么执行慢
+	
+	http://www.bubuko.com/infodetail-3089022.html   MySQL线程状态详解
 	
 	
 	

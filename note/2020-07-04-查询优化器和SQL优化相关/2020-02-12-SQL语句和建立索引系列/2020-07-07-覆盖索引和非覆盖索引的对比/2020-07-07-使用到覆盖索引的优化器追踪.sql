@@ -70,6 +70,8 @@ mysql> SELECT * FROM `information_schema`.`OPTIMIZER_TRACE`\G;
             ]
           },
           {
+		  
+			-- 预估不同单表访问方法的访问成本
             "rows_estimation": [
               {
                 "table": "`table_cm`",
@@ -78,6 +80,8 @@ mysql> SELECT * FROM `information_schema`.`OPTIMIZER_TRACE`\G;
                     "rows": 94214,
                     "cost": 19518
                   },
+				  
+				  -- 分析可能使用的索引
                   "potential_range_indexes": [
                     {
                       "index": "PRIMARY",

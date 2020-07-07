@@ -9,6 +9,7 @@
 	6.1 慢SQL语句的执行计划
 	6.2 SQL语句的性能问题
 	6.3 show profiles
+	
 	6.4 优化器追踪(optimizer_trace)
 	
 7. 优化方向
@@ -745,7 +746,7 @@ AND temp.nClubID = temp2.nClubId
 6.2 SQL语句的性能问题 
 	从table_clubmember 扫描 18284 行记录， 最终返回 10664 行记录，还需要遍历 10664 行记录去查询 取出 nScore，directlyVipCount，addDirectlyVipCount，teamVipCount，addTeamCount，weekMyRebate，teamRebate
 	
-	整个SQL语句执行耗时约 1.6S, 而 from 子查询这里就耗时了1.2S:
+	整个SQL语句执行在慢查询日志中记录的耗时约 1.6S(通过navicat查询耗时也是1.6S), 而 from 子查询这里就耗时了1.2S:
 		SELECT
 			nClubId,
 			nPlayerId,
@@ -758,13 +759,16 @@ AND temp.nClubID = temp2.nClubId
 			nClubId = 10017
 		AND nExtenID = 132806
 	
+	整个SQL语句通过本地客户端(命令行)执行耗时约0.45 秒.
+	
+	
 	
 6.3 show profiles
 	mysql>  show profile cpu,block io for query 1;
 	+---------------------+----------+----------+------------+--------------+---------------+
 	| Status              | Duration | CPU_user | CPU_system | Block_ops_in | Block_ops_out |
 	+---------------------+----------+----------+------------+--------------+---------------+
-	| Creating sort index | 0.000018 | 0.000000 |   0.000018 |            0 |             0 |
+	| Creating sort index | 0.000018 | 0.000000 |   0.000018 |            0 |             0 |    表示需要用到临时表进行order by, 添加上  order by null 呢？
 	| executing           | 0.000007 | 0.000000 |   0.000007 |            0 |             0 |
 	| Sending data        | 0.000011 | 0.000000 |   0.000011 |            0 |             0 |
 	| executing           | 0.000007 | 0.000000 |   0.000006 |            0 |             0 |
@@ -851,7 +855,7 @@ AND temp.nClubID = temp2.nClubId
 	| executing           | 0.000007 | 0.000000 |   0.000007 |            0 |             0 |
 	| Sending data        | 0.000015 | 0.000000 |   0.000015 |            0 |             0 |
 	| executing           | 0.000008 | 0.000000 |   0.000007 |            0 |             0 |
-	| Sending data        | 0.020093 | 0.000000 |   0.023377 |            0 |            88 |
+	| Sending data        | 0.020093 | 0.000000 |   0.023377 |            0 |            88 |          -- 这里慢, 说明查询返回的数据相关较多.
 	| end                 | 0.000047 | 0.000000 |   0.000081 |            0 |             8 |
 	| query end           | 0.000027 | 0.000000 |   0.000031 |            0 |             0 |
 	| removing tmp table  | 0.000015 | 0.000000 |   0.000015 |            0 |             0 |
@@ -866,6 +870,8 @@ AND temp.nClubID = temp2.nClubId
 	| cleaning up         | 0.000044 | 0.000000 |   0.000042 |            0 |             0 |
 	+---------------------+----------+----------+------------+--------------+---------------+
 	100 rows in set, 1 warning (0.00 sec)
+
+
 
 6.4 优化器追踪(optimizer_trace)
 	SET optimizer_trace='enabled=on'; 

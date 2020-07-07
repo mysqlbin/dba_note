@@ -1,21 +1,27 @@
 
 
+1. 环境
+2. 表的DDL和对应的执行计划
+3. 云服务器生产环境下并且query_cache_type = 0
+4. 物理机测试环境下并且query_cache_type = 0
+5. 小结
 
-云服务器环境
-	磁盘顺序读IOPS：7000 
-	磁盘顺序读IOPS：1100 
-	磁盘随机读写IOPS：750/700 
-
-0. 表的DDL和对应的执行计划
-1. 云服务器生产环境下并且query_cache_type = 0
-2. 物理机测试环境下并且query_cache_type = 0
-
-0. 表的DDL和对应的执行计划
-
-在本地客户端执行：
- SELECT nClubId, nExtenID, nPlayerID FROM table_cm WHERE nClubId = 10017 AND nExtenID = 132806;  -- 使用到覆盖索引耗时：0.01秒
- SELECT nClubId, nExtenID, nPlayerID FROM table_dm WHERE nClubId = 10017 AND nExtenID = 132806;  -- 没有使用到覆盖索引耗时：0.02秒
- 
+1. 环境
+	云服务器环境
+		磁盘顺序读IOPS：7000 
+		磁盘顺序读IOPS：1100 
+		磁盘随机读写IOPS：750/700
+		物理内存：16GB
+		bp缓冲池：8GB
+		
+	物理机环境	
+		磁盘顺序读IOPS：350
+		磁盘顺序读IOPS：120
+		磁盘随机读写IOPS：50/50
+		物理内存：16GB
+		bp缓冲池：4GB
+	
+2. 表的DDL和对应的执行计划
  
 	table_cm 表对应的SQL有使用到覆盖索引，table_dm 表对应的SQL 没有使用到覆盖索引。
 	
@@ -48,18 +54,56 @@
 		  KEY `idx_nClubID_nExtenID_nPlayerID` (`nClubID`,`nExtenID`,`nPlayerID`)
 		) ENGINE=InnoDB AUTO_INCREMENT=93798 DEFAULT CHARSET=utf8mb4 COMMENT='使用到覆盖索引对应的表';
 
-
-
+		CREATE TABLE `table_cm` (
+		  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT '索引',
+		  `nClubID` int(11) NOT NULL COMMENT '俱乐部ID',
+		  `nPlayerID` int(11) NOT NULL COMMENT '玩家ID',
+		  `szNickName` varchar(64) DEFAULT NULL COMMENT '玩家昵称',
+		  `nLevel` tinyint(4) DEFAULT '3' COMMENT '',
+		  `nStatus` tinyint(4) NOT NULL DEFAULT '1' COMMENT '',
+		  `tJoinTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		  `tEixtTime` timestamp NULL DEFAULT NULL COMMENT '',
+		  `nScore` bigint(20) NOT NULL DEFAULT '0' COMMENT '',
+		  `nFreeScore` bigint(20) NOT NULL DEFAULT '0' COMMENT '',
+		  `nExtenRate` int(11) NOT NULL DEFAULT '0' COMMENT '',
+		  `LineCode` varchar(64) DEFAULT NULL COMMENT '',
+		  `nExtenID` int(11) DEFAULT '0' COMMENT '',
+		  `tExtenBindingTime` timestamp NULL DEFAULT NULL COMMENT '',
+		  `nExtenDivision` tinyint(4) DEFAULT '1' COMMENT '',
+		  `nFreeServiceFee` tinyint(4) DEFAULT '0' COMMENT '',
+		  `nSafeScore` bigint(20) unsigned DEFAULT '0' COMMENT '',
+		  `updateScore` bigint(20) NOT NULL DEFAULT '0' COMMENT '',
+		  `bRobot` tinyint(4) NOT NULL DEFAULT '0' COMMENT '',
+		  `nExLevel` int(10) NOT NULL DEFAULT '1' COMMENT '',
+		  PRIMARY KEY (`ID`),
+		  KEY `idx_nClubID_nExtenID_nPlayerID` (`nClubID`,`nExtenID`,`nPlayerID`)
+		) ENGINE=InnoDB AUTO_INCREMENT=93817 DEFAULT CHARSET=utf8mb4 COMMENT='使用到覆盖索引对应的表';
+	
+	
 		CREATE TABLE `table_dm` (
 		  `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT '索引',
 		  `nClubID` int(11) NOT NULL COMMENT '俱乐部ID',
 		  `nPlayerID` int(11) NOT NULL COMMENT '玩家ID',
+		  `szNickName` varchar(64) DEFAULT NULL COMMENT '玩家昵称',
+		  `nLevel` tinyint(4) DEFAULT '3' COMMENT '',
+		  `nStatus` tinyint(4) NOT NULL DEFAULT '1' COMMENT '',
 		  `tJoinTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		  `nExtenID` int(11) DEFAULT '0' COMMENT '上线用户ID',
+		  `tEixtTime` timestamp NULL DEFAULT NULL COMMENT '',
+		  `nScore` bigint(20) NOT NULL DEFAULT '0' COMMENT '',
+		  `nFreeScore` bigint(20) NOT NULL DEFAULT '0' COMMENT '',
+		  `nExtenRate` int(11) NOT NULL DEFAULT '0' COMMENT '',
+		  `LineCode` varchar(64) DEFAULT NULL COMMENT '',
+		  `nExtenID` int(11) DEFAULT '0' COMMENT '',
+		  `tExtenBindingTime` timestamp NULL DEFAULT NULL COMMENT '',
+		  `nExtenDivision` tinyint(4) DEFAULT '1' COMMENT '',
+		  `nFreeServiceFee` tinyint(4) DEFAULT '0' COMMENT '',
+		  `nSafeScore` bigint(20) unsigned DEFAULT '0' COMMENT '',
+		  `updateScore` bigint(20) NOT NULL DEFAULT '0' COMMENT '',
+		  `bRobot` tinyint(4) NOT NULL DEFAULT '0' COMMENT '',
+		  `nExLevel` int(10) NOT NULL DEFAULT '1' COMMENT '',
 		  PRIMARY KEY (`ID`),
 		  KEY `idx_nClubID_nExtenID` (`nClubID`,`nExtenID`)
-		) ENGINE=InnoDB AUTO_INCREMENT=93798 DEFAULT CHARSET=utf8mb4 COMMENT='没有使用到覆盖索引对应的表';
-
+		) ENGINE=InnoDB AUTO_INCREMENT=93817 DEFAULT CHARSET=utf8mb4 COMMENT='没有使用到覆盖索引对应的表';
 				
 
 	使用到覆盖索引的执行计划和对应表的索引基数和实际的记录数
@@ -122,7 +166,7 @@
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-1. 云服务器生产环境下并且query_cache_type = 0
+3. 云服务器生产环境下并且query_cache_type = 0
 
 	mysql> show global variables like '%query_cache_type%';
 	+------------------+-------+
@@ -204,9 +248,11 @@
 
 
 		从 sending data 看，大概有一倍的性能提升：
-			using index：     Sending data: 0.007518
-			not using index： Sending data: 0.016610
-		
+			using index：     Sending data 的持续时间: 0.007518
+			not using index： Sending data 的持续时间: 0.016610
+			
+			同时, 这里通过 Sending data 的差别, 可以发现覆盖索引需要扫描的数据和非覆盖索引需要扫描的数据是有差别的.
+			
 		正确情况下，使用到了 using index 估计会有一倍以上的查询性能提升。
 		
 		但是从实际的 navicat 连接数据库查询做对比：两者的查询耗时一样，如下所示
@@ -219,12 +265,33 @@
 				--有使用到覆盖索引的平均耗时约： 0.15秒
 					
 		这个就是我疑惑的地方。
+		
+			[root@localhost data]#  innodb_space -s ibdata1 -T base_db/table_cm space-indexes
+			id          name                            root        fseg        fseg_id     used        allocated   fill_factor 
+			5791        PRIMARY                         3           internal    1           1           1           100.00%     
+			5791        PRIMARY                         3           leaf        2           603         736         81.93%      
+			5792        idx_nClubID_nExtenID_nPlayerID  4           internal    3           1           1           100.00%     
+			5792        idx_nClubID_nExtenID_nPlayerID  4           leaf        4           125         160         78.12%  
 
 
+			主键索引一共使用了603个page
+			表一共有93708行记录，主键索引每个page能存储多少行： select 93708/603=155
+			查询到的记录数一共有10066行， 预估扫描了多少个主键索引page: select 10066/155=64
+
+			估计在 SSD云盘下，回表需要访问64个page, 也不会有多大的性能影响。
+			
+			因为经过了多次查询, 这些主键索引的Page也可能在内存中.
+			
+		
+		在本地客户端执行：
+			SELECT nClubId, nExtenID, nPlayerID FROM table_cm WHERE nClubId = 10017 AND nExtenID = 132806;  -- 使用到覆盖索引耗时：0.01秒
+			SELECT nClubId, nExtenID, nPlayerID FROM table_dm WHERE nClubId = 10017 AND nExtenID = 132806;  -- 没有使用到覆盖索引耗时：0.02秒
+		
+		
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-2. 物理机测试环境下并且query_cache_type = 0
+4. 物理机测试环境下并且query_cache_type = 0
 
 	查看执行计划
 
@@ -310,28 +377,17 @@
 				
 			SELECT nClubId, nExtenID, nPlayerID  FROM table_cm WHERE nClubId = 10017 AND nExtenID = 132806;
 				--有使用到覆盖索引的平均耗时约 0.24S
-
+		
+		在本地客户端执行：
+			SELECT nClubId, nExtenID, nPlayerID FROM table_cm WHERE nClubId = 10017 AND nExtenID = 132806;  -- 使用到覆盖索引耗时：0.01秒
+			SELECT nClubId, nExtenID, nPlayerID FROM table_dm WHERE nClubId = 10017 AND nExtenID = 132806;  -- 没有使用到覆盖索引耗时：0.03秒
+			
+5. 小结
 	
-4. 小结
-	磁盘的性能好坏可以决定数据库跑得多快
+	高并发场景下, 数据库瓶颈是在IO上, 所以 磁盘的性能好坏可以决定数据库跑得多快
 	
 	
-5. 未完成， 可以看看当前表的数据占用的数据页
-
-
-
-[root@localhost data]#  innodb_space -s ibdata1 -T base_db/table_cm space-indexes
-id          name                            root        fseg        fseg_id     used        allocated   fill_factor 
-5791        PRIMARY                         3           internal    1           1           1           100.00%     
-5791        PRIMARY                         3           leaf        2           603         736         81.93%      
-5792        idx_nClubID_nExtenID_nPlayerID  4           internal    3           1           1           100.00%     
-5792        idx_nClubID_nExtenID_nPlayerID  4           leaf        4           125         160         78.12%  
-
-
-主键索引一共使用了603个page
-表一共有93708行记录，主键索引每个page能存储多少行： select 93708/603=155
-查询到的记录数一共有10066行， 预估扫描了多少个主键索引page: select 10066/155=64
-
+	
 
 
 

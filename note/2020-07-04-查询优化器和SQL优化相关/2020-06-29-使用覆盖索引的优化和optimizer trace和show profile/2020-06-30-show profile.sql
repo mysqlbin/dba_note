@@ -16,7 +16,7 @@
 	SELECT count(*) FROM `table_web_loginlog` force index(idx_loginIp_szTime) WHERE loginIp = '192.168.0.71'  AND sztime  > '2020-06-25 16:08:36' and nPlayerId != 1000;
 	show profiles;
 	show profile for query 1;
-	    Status 类似于 show processlist.State 的值
+	    Status 就是平常我们执行 show processlist 命令看到的 State 的值
 		+----------------------+----------+
 		| Status               | Duration |
 		+----------------------+----------+
@@ -62,7 +62,7 @@
 	+----------------------+----------+----------+------------+--------------+---------------+
 	16 rows in set, 1 warning (0.00 sec)
 
-	Duration：持续时间
+	Duration：持续时间，即每个步骤的耗时。
 
 	这里只列出了cpu和 block io 当然 诊断类型不止这些：
 
@@ -76,7 +76,16 @@
 	SOURCE  显示和Source_function,Source_file,Source_line相关的开销信息
 	SWAPS   显示交换次数相关开销的信息
 	象用什么类型只需往后加就行，常用的cpu和block io
-		
+
+
+	表中遇到Status 需要注意执行时间
+
+	converting HEAP to MySIAM             数据过大MyISAM内存装不下，向磁盘上搬运
+	Creating tmp table                   临时表创建
+	Copying to tmp table on disk         复制临时表到磁盘
+	locked                                锁。阻塞
+
+	
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 4. 使用 idx_loginIp_szTime_nPlayerId索引
