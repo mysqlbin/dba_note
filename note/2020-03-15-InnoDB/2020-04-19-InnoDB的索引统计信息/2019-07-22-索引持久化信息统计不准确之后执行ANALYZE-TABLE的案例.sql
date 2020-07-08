@@ -72,4 +72,8 @@ mysql> select * from mysql.innodb_table_stats  where database_name='test_db' and
 
 
 
+本案例的索引统计信息落后了10天。
+
+
+
 

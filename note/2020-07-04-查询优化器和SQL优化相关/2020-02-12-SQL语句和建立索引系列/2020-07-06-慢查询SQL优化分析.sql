@@ -610,7 +610,7 @@ clubID = 10017
 AND nPlayerID = temp.nPlayerID
 AND CreateTime <= '2020-07-02 23:59:59'
 ORDER BY
-CreateTime DESC
+ID DESC
 LIMIT 0,
 1
 ) nScore,
@@ -744,25 +744,29 @@ AND temp.nClubID = temp2.nClubId
 12 rows in set, 8 warnings (0.01 sec)
 
 6.2 SQL语句的性能问题 
-	从table_clubmember 扫描 18284 行记录， 最终返回 10664 行记录，还需要遍历 10664 行记录去查询 取出 nScore，directlyVipCount，addDirectlyVipCount，teamVipCount，addTeamCount，weekMyRebate，teamRebate
+	1. 从table_clubmember 扫描 18284 行记录， 最终返回 10664 行记录，还需要遍历 10664 行记录去查询 取出 nScore，directlyVipCount，addDirectlyVipCount，teamVipCount，addTeamCount，weekMyRebate，teamRebate
+		
+		整个SQL语句执行在慢查询日志中记录的耗时约 1.6S(通过navicat查询耗时也是1.6S), 而 from 子查询这里就耗时了1.2S:
+			SELECT
+				nClubId,
+				nPlayerId,
+				nExLevel,
+				nExtenID,
+				tJoinTime
+			FROM
+				table_clubmember
+			WHERE
+				nClubId = 10017
+			AND nExtenID = 132806
+		
+		整个SQL语句通过本地客户端(命令行)执行耗时约0.45 秒.
+		
+	2. Using temporary; Using filesort |	
+		GROUP BY nClubId, nPlayerId 改为  GROUP BY nClubId, nPlayerId order by null  就可以消除 Using filesort
 	
-	整个SQL语句执行在慢查询日志中记录的耗时约 1.6S(通过navicat查询耗时也是1.6S), 而 from 子查询这里就耗时了1.2S:
-		SELECT
-			nClubId,
-			nPlayerId,
-			nExLevel,
-			nExtenID,
-			tJoinTime
-		FROM
-			table_clubmember
-		WHERE
-			nClubId = 10017
-		AND nExtenID = 132806
-	
-	整个SQL语句通过本地客户端(命令行)执行耗时约0.45 秒.
-	
-	
-	
+	3. Using index condition; Using filesort
+		ORDER BY ID DESC LIMIT 0,1 改为 ORDER BY CreateTime DESC LIMIT 0,1  就可以消除 Using filesort
+ 	
 6.3 show profiles
 	mysql>  show profile cpu,block io for query 1;
 	+---------------------+----------+----------+------------+--------------+---------------+
@@ -1178,40 +1182,49 @@ AND temp.nClubID = temp2.nClubId
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 7. 优化方向
-使用覆盖索引
-	KEY `idx_nClubID_nExtenID` (`nClubID`,`nExtenID`) 改为  KEY `idx_nClubID_nExtenID_nPlayerID` (`nClubID`,`nExtenID`,`nPlayerID`)
-	
-子查询
-	SELECT
-		nClubId,
-		nPlayerId,
-		nExLevel,
-		nExtenID,
-		tJoinTime
-	FROM
-		table_clubmember
-	WHERE
-		nClubId = 10017
-	AND nExtenID = 132806	
-	
-改写为 
-	
-	SELECT
-		nClubId,
-		nPlayerId,
-		nExtenID
-	FROM
-		table_clubmember
-	WHERE
-		nClubId = 10017
-	AND nExtenID = 132806
-	
-	-- 实际上 nExLevel 和 tJoinTime 字段是不需要查询出来的。
-	
-	
+	1. 使用覆盖索引
+		KEY `idx_nClubID_nExtenID` (`nClubID`,`nExtenID`) 改为  KEY `idx_nClubID_nExtenID_nPlayerID` (`nClubID`,`nExtenID`,`nPlayerID`)
+			
+		子查询
+			SELECT
+				nClubId,
+				nPlayerId,
+				nExLevel,
+				nExtenID,
+				tJoinTime
+			FROM
+				table_clubmember
+			WHERE
+				nClubId = 10017
+			AND nExtenID = 132806	
+			
+		改写为 
+			
+			SELECT
+				nClubId,
+				nPlayerId,
+				nExtenID
+			FROM
+				table_clubmember
+			WHERE
+				nClubId = 10017
+			AND nExtenID = 132806
+			
+			-- 实际上 nExLevel 和 tJoinTime 字段是不需要查询出来的。
+			
+	2. Using temporary; Using filesort |	
+		GROUP BY nClubId, nPlayerId 改为  GROUP BY nClubId, nPlayerId order by null  就可以消除 Using filesort
+
+	3. Using index condition; Using filesort
+		ORDER BY ID DESC LIMIT 0,1 改为 ORDER BY CreateTime DESC LIMIT 0,1  就可以消除 Using filesort
+			
 
 8. 验证下使用覆盖索引带来的查询性能上的提升
-
+	
+	优化前1.8S VS 优化后 1.35S
+	
+	如果在数据量更大的情况下，优化效果可能会更明显。
+	
 
 9. 小结
 	SQL语句很长，不用慌，分段来看，分段执行，找出SQL语句的瓶颈点。

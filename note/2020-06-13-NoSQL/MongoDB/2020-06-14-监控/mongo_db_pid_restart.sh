@@ -3,7 +3,7 @@
 
 pid_ori=$(ps -ef | grep "mongodb" | grep -v grep | awk '{print $2}')
 
-hostname="192.168.0.241"
+hostname="192.168.1.10"
 
 if [ -z $pid_ori ]
 then	

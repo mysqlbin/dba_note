@@ -1,12 +1,28 @@
 
+0. MySQL获取索引基数的方式
+1. 需要运行的SQL语句列表
+2. 添加记录之前
+3. 添加记录之后
+4. 执行 analyze table 之后
 
-需要运行的SQL语句列表
+0. MySQL获取索引基数的方式
+	1. 采用采样统计的方法； 通过采样统计得到索引的基数。
+	2. 采样统计的时候，InnoDB 默认会选择 N 个数据页，统计这些页面上的不同值，得到一个平均值，然后乘以这个索引的页面数，就得到了这个索引的基数。
+	
+	默认对20个数据页进行采用，采样的过程如下：
+		1. 取得 B+ 树索引叶子节点的数量，记为 A
+		2. 随机取得 B+ 树索引中的 20个叶子节点即20个数据页， 统计每个页不同记录的个数，即为 P1, P2, .... P20
+		3. 根据采样信息给出 Cardinality 的预估值： Cardinality = (P1+P2+......+P20)/20 * A
+		
+	要更新 Cardinality 值，请运行 ANALYZE TABLE 或（对于MyISAM表）运行myisamchk -a。	
+
+2. 需要运行的SQL语句列表
 	select * from test1;
 	select * from information_schema.statistics where TABLE_SCHEMA='db1' and table_name='test1';
 	select * from mysql.innodb_index_stats  where table_name = 'test1' and index_name = 'idx_name';
 	show index from test1;
 
-1. 添加记录之前
+3. 添加记录之前
 	root@mysqldb 14:39:  [db1]> select * from test1;
 	+----+------+---------------------+
 	| id | name | CreateTime          |
@@ -51,9 +67,7 @@
 	2 rows in set (0.00 sec)
 
 
-	
-
-2. 添加记录之后
+4. 添加记录之后
 
 	root@mysqldb 14:40:  [db1]> INSERT INTO `db1`.`test1` (`name`, `CreateTime`) VALUES ('8', now());
 	Query OK, 1 row affected (0.02 sec)
@@ -95,9 +109,10 @@
 	4 rows in set (0.00 sec)
 
 	
-	这里是立即生效了。
+	-- 这里是立即生效了。
 	
-3. 执行analyze table之后
+5. 执行 analyze table 之后
+	
 	root@mysqldb 19:49:  [db1]>  analyze table db1.test1;
 	+-----------+---------+----------+----------+
 	| Table     | Op      | Msg_type | Msg_text |
@@ -126,7 +141,8 @@
 	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
 	4 rows in set (0.00 sec)
 	
-
+	-- 这里明显不对。
+	
 	root@mysqldb 20:16:  [db1]>  show index from test1;
 	+-------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 	| Table | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
@@ -145,6 +161,13 @@
 	+---------------+------------+------------+----+------+----------+
 	2 rows in set (0.01 sec)
 
+	说明了 执行 analyze table 命令之后索引的统计信息会立即生效。
+	但是这里执行 analyze table 之后索引的统计信息反而不准确了。
+	
+
+-- 这个实验再验证一次。
+
+	
 		
 
 

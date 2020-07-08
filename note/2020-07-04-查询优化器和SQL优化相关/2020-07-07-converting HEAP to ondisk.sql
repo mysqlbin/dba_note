@@ -226,7 +226,7 @@ root@localhost [db1]>show profile cpu,block io for query 1;
 | Sorting result            | 0.000024 | 0.000020 |   0.000000 |            0 |             0 |
 | executing                 | 0.000007 | 0.000007 |   0.000000 |            0 |             0 |
 | Sending data              | 0.000121 | 0.000122 |   0.000000 |            0 |             0 |
-| converting HEAP to ondisk | 0.000328 | 0.000327 |   0.000000 |            0 |             0 |    -- 该线程正在将内部临时表从 MEMORY 表转换为磁盘表。
+| converting HEAP to ondisk | 0.000328 | 0.000327 |   0.000000 |            0 |             0 |    -- 该线程正在将内部临时表从 MEMORY 表转换为磁盘表, 考虑优化SQL或者增加tmp_table_size参数的大小
 | Sending data              | 0.019617 | 0.019609 |   0.000000 |            0 |             0 |
 | Creating sort index       | 0.005121 | 0.005121 |   0.000000 |            0 |             0 |
 | end                       | 0.000053 | 0.000047 |   0.000000 |            0 |             0 |

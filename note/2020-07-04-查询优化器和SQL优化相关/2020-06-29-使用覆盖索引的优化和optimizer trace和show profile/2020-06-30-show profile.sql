@@ -8,6 +8,7 @@
 2. 相关参考
 	https://www.cnblogs.com/xujunkai/p/12496634.html   show profile查看SQL执行生命周期
 	https://dev.mysql.com/doc/refman/5.7/en/show-profile.html
+	https://blog.csdn.net/sj349781478/article/details/78224713  Mysql show profile 详解
 
 
 3. 使用 idx_loginIp_szTime索引

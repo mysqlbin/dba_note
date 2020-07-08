@@ -54,7 +54,8 @@
 	|  5 |        1 |
 	+----+----------+
 	4 rows in set (0.00 sec)
-
+		-- t1列不同值的个数: 4
+		
 	root@localhost [zst]>select t1,t2, count(*) from t_20200418 group by t1,t2;
 	+----+------+----------+
 	| t1 | t2   | count(*) |
@@ -66,7 +67,8 @@
 	|  5 |    5 |        1 |
 	+----+------+----------+
 	5 rows in set (0.00 sec)
-
+		-- t1和t2列不同值的个数: 5
+		
 	root@localhost [zst]>select t2,count(*) from t_20200418 group by t2;
 	+------+----------+
 	| t2   | count(*) |
@@ -77,6 +79,8 @@
 	|    5 |        1 |
 	+------+----------+
 	4 rows in set (0.00 sec)
+		-- t2列不同值的个数: 4
+
 		
 	root@localhost [zst]>select * from t_20200418;
 	+----+----+------+---------------------+
@@ -90,9 +94,6 @@
 	+----+----+------+---------------------+
 	5 rows in set (0.00 sec)
 
-	select * from mysql.innodb_index_stats  where database_name='zst' and table_name = 't_20200418';
-	show index from t_20200418;
-	select * from information_schema.statistics where TABLE_SCHEMA='zst' and table_name='t_20200418';
 
 	root@localhost [zst]>select * from mysql.innodb_index_stats  where database_name='zst' and table_name = 't_20200418';
 	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
@@ -139,6 +140,8 @@
 3. 新增记录之后的索引统计信息
 	
 	INSERT INTO `zst`.`t_20200418` (`ID`, `t1`, `t2`, `t3`) VALUES ('7', '5', '5', now());
+	其中 t1=5 和 t2=5 的这一行记录是存在的。
+	
 	root@localhost [zst]>select t1,count(*) from t_20200418 group by t1;
 	+----+----------+
 	| t1 | count(*) |
@@ -149,7 +152,9 @@
 	|  5 |        2 |
 	+----+----------+
 	4 rows in set (0.00 sec)
-
+	
+		-- t1列不同值的个数: 4
+	
 	root@localhost [zst]>select t1,t2, count(*) from t_20200418 group by t1,t2;
 	+----+------+----------+
 	| t1 | t2   | count(*) |
@@ -161,7 +166,9 @@
 	|  5 |    5 |        2 |
 	+----+------+----------+
 	5 rows in set (0.00 sec)
-
+	
+		-- t1和t2列不同值的个数: 5
+	
 	root@localhost [zst]>select t2,count(*) from t_20200418 group by t2;
 	+------+----------+
 	| t2   | count(*) |
@@ -172,7 +179,9 @@
 	|    5 |        2 |
 	+------+----------+
 	4 rows in set (0.00 sec)
-
+		
+		-- t2列不同值的个数: 4
+	
 	root@localhost [zst]>select * from t_20200418;
 	+----+----+------+---------------------+
 	| ID | t1 | t2   | t3                  |
@@ -212,7 +221,12 @@
 	| zst           | t_20200418 | idx_t3     | 2020-04-19 09:41:06 | size         |          1 |        NULL | Number of pages in the index      |
 	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
 	12 rows in set (0.00 sec)
-
+	
+	实际数据
+		-- t1列不同值的个数: 4
+		-- t1和t2列不同值的个数: 5
+		-- 可以看到，索引的统计信息并没有发生改变，在从库也经常遇到这样的案例，参考笔记 《2019-07-01-主从架构下同一个表的物理大小相差一倍的分析.sql》
+	
 	root@localhost [zst]>show index from t_20200418;
 	+------------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 	| Table      | Non_unique | Key_name  | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
@@ -276,7 +290,16 @@
 	| zst           | t_20200418 | idx_t3     | 2020-04-19 09:45:32 | size         |          1 |        NULL | Number of pages in the index      |
 	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
 	12 rows in set (0.00 sec)
-
+	
+	实际数据
+		-- t1列不同值的个数: 4
+		-- t1和t2列不同值的个数: 5
+		-- t1.stat_value=4
+		-- t1,t2.stat_value=5
+		
+		-- 说明索引统计信息已经发生了改变, 并且索引统计信息是准确的。
+		
+		
 	root@localhost [zst]>show index from t_20200418;
 	+------------+------------+-----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 	| Table      | Non_unique | Key_name  | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
@@ -322,5 +345,9 @@
 	例如某个索引 n_diff_pfxNN 的 stat_value 远小于实际值，查询优化器认为该索引选择度较差，就有可能导致使用错误的索引。
 	通过 innodb_index_stats表信息获取联合索引的distinct之后的数量, 跟主键的distinct之后的数量做对比, 获取判断这个联合索引的区分度
 	
-	新增一行记录之后的20秒内，本案例的统计信息都没有自动更新。
+	新增一行记录之后的20秒内，本案例的统计信息都没有自动更新，说明没有触发索引的统计信息。
+	
+	
+	
+	
 	
