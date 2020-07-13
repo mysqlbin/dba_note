@@ -1,6 +1,13 @@
 
+1. MySQL获取索引基数
+2. 验证 show index from 中的 Cardinality 是否是从 innodb_index_stats 中取得		
+	2.1 添加记录之前
+	2.2 添加记录之后
+	2.3 执行analyze table之后
 
-MySQL获取索引基数：
+4. 相关参考	
+
+1. MySQL获取索引基数
 	1. 采用采样统计的方法； 通过采样统计得到索引的基数。
 	2. 采样统计的时候，InnoDB 默认会选择 N 个数据页，统计这些页面上的不同值，得到一个平均值，然后乘以这个索引的页面数，就得到了这个索引的基数。
 	
@@ -11,8 +18,8 @@ MySQL获取索引基数：
 		
 	要更新 Cardinality 值，请运行 ANALYZE TABLE 或（对于MyISAM表）运行myisamchk -a。
 	
-验证 show index from 中的 Cardinality 是否是从 innodb_index_stats 中取得		
-	添加记录之前
+2. 验证 show index from 中的 Cardinality 是否是从 innodb_index_stats 中取得		
+	2.1 添加记录之前
 		root@mysqldb 20:12:  [db1]> select * from test1;
 		+----+------+---------------------+
 		| id | name | CreateTime          |
@@ -59,7 +66,7 @@ MySQL获取索引基数：
 
 
 	
-	添加记录之后
+	2.2 添加记录之后
 		root@mysqldb 20:13:  [db1]> INSERT INTO `db1`.`test1` (`name`, `CreateTime`) VALUES ('6', '2020-04-15 18:57:51');
 		Query OK, 1 row affected (0.01 sec)
 
@@ -117,7 +124,7 @@ MySQL获取索引基数：
 
 		
 		
-	执行analyze table之后
+	2.3 执行analyze table之后
 		root@mysqldb 19:49:  [db1]>  analyze table db1.test1;
 		+-----------+---------+----------+----------+
 		| Table     | Op      | Msg_type | Msg_text |
@@ -165,13 +172,16 @@ MySQL获取索引基数：
 		+---------------+------------+------------+----+------+----------+
 		2 rows in set (0.01 sec)
 
-小结			
+3. 小结			
 	
 	验证了 show index from 中的 Cardinality 并不是从 innodb_index_stats 中获得， 而是从   information_schema.statistics 获得。
 
-	innodb_index_stats 和 show index from 中的 Cardinality  并不是实时同步的。
+	innodb_index_stats 和 show index from 中的 Cardinality  并不是实时同步的，而是触发了索引统计信息之后innodb_index_stats.Cardinality值才会改变。
 	
 	据说 innodb_index_stats 的字段统计值会有几秒的延迟。
 	
-		
-https://dev.mysql.com/doc/refman/8.0/en/show-index.html
+4. 相关参考	
+	
+	https://dev.mysql.com/doc/refman/8.0/en/show-index.html
+
+
