@@ -72,6 +72,25 @@
 	
 	
 
+	另一个实例：
+		repl_set:PRIMARY> show dbs
+		abc_db     0.000GB
+		admin      0.000GB
+		config     0.000GB
+		local      3.532GB
+		doudou_b5  6.938GB
+
+		压缩备份的耗时
+
+		real	11m40.511s
+		user	22m15.517s
+		sys	2m19.773s
+		
+		压缩之后的大小：
+			[...... doudou_b5]$ ls -lht
+			total 3.0G
+
+
 
 恢复数据
 	time mongorestore  -d niuniuh5_modb_02 --dir='/mydata/20200613/niuniuh5_modb'  

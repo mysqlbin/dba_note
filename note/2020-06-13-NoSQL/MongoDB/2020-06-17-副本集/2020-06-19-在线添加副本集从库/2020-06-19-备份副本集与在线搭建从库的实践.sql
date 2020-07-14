@@ -83,7 +83,7 @@ http://blog.itpub.net/15498/viewspace-2656983/  mongodb副本集用一致性快�
 				2020-06-19T17:56:32.239+0800	Failed: error processing document #1: invalid character '\x1f' looking for beginning of value
 				2020-06-19T17:56:32.239+0800	0 document(s) imported successfully. 0 document(s) failed to import.
 
-		恢复的oplog的报错，如果是压缩备份，每次只能恢复单个库的数据
+		--恢复的oplog的报错，如果是压缩备份，每次只能恢复单个库的数据
 			
 
 2. 在主库压缩备份与恢复
