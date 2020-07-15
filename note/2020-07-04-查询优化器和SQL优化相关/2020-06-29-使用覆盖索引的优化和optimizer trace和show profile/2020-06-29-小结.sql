@@ -4,7 +4,7 @@
 explain/desc    ：查看SQL语句的执行计划
 show warnings   ：查看优化器处理后的语句, 比如 in子句改写 semi join。如果与原始语句有出入，仔细对比研究能够发现实际问题。 
 				  帮助我们理解MySQL将如何执行查询语句的一个参考依据
-show profiles   ：查看SQL语句的性能消耗分布情况
+show profiles   ：查看SQL语句在每个执行步骤的性能消耗分布情况
 				  在哪一个步骤执行慢, 注意观察下面的状态:
 					Creating tmp table                   临时表创建, 可以了解SQL语句是否需要创建内存临时表
 					Copying to tmp table on disk         复制临时表到磁盘, 可以了解SQL语句是否需要创建磁盘临时表

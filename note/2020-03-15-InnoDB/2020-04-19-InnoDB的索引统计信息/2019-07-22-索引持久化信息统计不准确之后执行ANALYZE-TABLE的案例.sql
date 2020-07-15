@@ -72,7 +72,10 @@ mysql> select * from mysql.innodb_table_stats  where database_name='test_db' and
 
 
 
-本案例的索引统计信息落后了10天。
+本案例的索引统计信息落后了10天，意味着最近10天的page都没有加入到计算索引的区分度中，导致索引的统计信息不够新，对SQL语句找到执行代价最小的索引有一定的影响。
+
+
+
 
 
 

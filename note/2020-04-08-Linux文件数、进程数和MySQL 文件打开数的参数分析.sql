@@ -45,3 +45,24 @@ Linux
 		Max nice priority         0                    0                    
 		Max realtime priority     0                    0                    
 		Max realtime timeout      unlimited            unlimited            us 
+
+
+
+
+
+查看MySQL打开的文件：
+[root@soft ~]# lsof -p `pidof mysqld` | wc -l
+1978
+
+
+[root@soft ~]# ulimit -a|grep 'open files'
+open files                      (-n) 1048576
+
+
+
+
+
+
+相关参考： 
+	https://www.cnblogs.com/zhoujinyi/archive/2013/01/31/2883433.html  MySQL open_files_limit相关设置
+

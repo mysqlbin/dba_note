@@ -146,7 +146,6 @@ analyze
 	analyze table 命令是否会更新 mysql.innodb_table_stats 信息
 	会。
 	
-为什么 analyze table 命令执行速度很快：
-	只是做了一些索引统计信息的操作：
+为什么 analyze table 命令执行速度很快：它只是做了一些索引统计信息的操作：
 
 	

@@ -82,9 +82,9 @@
 
 		压缩备份的耗时
 
-		real	11m40.511s
-		user	22m15.517s
-		sys	2m19.773s
+			real	11m40.511s
+			user	22m15.517s
+			sys	2m19.773s
 		
 		压缩之后的大小：
 			[...... doudou_b5]$ ls -lht
