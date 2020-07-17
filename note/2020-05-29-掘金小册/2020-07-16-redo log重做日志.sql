@@ -6,6 +6,7 @@
 5. flush链表中的LSN
 6. checkpoint 检查点
 7. 小结
+8. 问题
 
 1. redo log是什么/它记录的日志内容是什么
 	
@@ -231,11 +232,14 @@
 		
 
 7. 小结
-	redo日志用来保留数据的持久性/一致性，只要事务执行成功，就可以保证数据不会丢失；
-	它在MySQL崩溃恢复的才会用来做数据的恢复。
 	
-	脏页刷盘，对应的redo日志才能做checkpoint，日志做checkpoint之后才能被覆盖写。
+	redo日志用来保证数据的持久性/一致性，只要事务执行成功，就可以保证数据不会丢失；
+
+	它在MySQL崩溃恢复的才会用来做数据的恢复，其它的时间它并没有什么用；
 	
+	脏页刷盘，对应的redo日志才能做checkpoint，日志做checkpoint之后的空间才能被覆盖写。
+	
+
 8. 问题
 	1. 为什么 Pages flushed up to 不能作为崩溃恢复的起点？
 		首先要理解 Pages flushed up to 和 Last checkpoint at 的含义
