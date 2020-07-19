@@ -1,9 +1,12 @@
 
 
-隔离性与隔离级别:
 
-SQL 标准的事务隔离级别包括：
-	读未提交（read uncommitted）、读提交（read committed）、可重复读（repeatable read）和串行化（serializable ）。
+
+SQL 标准的事务隔离级别包括
+	读未提交（read uncommitted）
+	读提交（read committed）
+	可重复读（repeatable read）
+	串行化（serializable ）。
 
 	
 举例说明事务隔离级别:
@@ -34,6 +37,7 @@ SQL 标准的事务隔离级别包括：
 	begin;                 begin;
 
 	select * from t;
+						   select * from t;
 						   update t set c=2;
 						   
 	select * from t;			
