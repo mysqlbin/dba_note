@@ -3,7 +3,7 @@
 1. RR隔离级别的实现
 2. RC隔离级别的实现
 3. 小结
-4. 一个"数据无法修改"的场景
+4. 一个数据无法修改的场景
 
 
 1. RR隔离级别的实现
@@ -42,17 +42,17 @@
 
 	insert into t(id, k) values(1,1),(2,2);
 
+	事务的执行次序
+		session A										session B										session C
+		start transaction with consistent snapshot; 
+						
+														start transaction with consistent snapshot; 	
+																										update t set k=k+1 where id=1; 
+														update t set k=k+1 where id=1;
+														select k from t where id=1;
 
-	session A										session B										session C
-	start transaction with consistent snapshot; 
-					
-													start transaction with consistent snapshot; 	
-																									update t set k=k+1 where id=1; 
-													update t set k=k+1 where id=1;
-													select k from t where id=1;
-
-	select k from t where id=1;
-	commit;
+		select k from t where id=1;
+		commit;
 
 	
 	假设：
@@ -63,23 +63,25 @@
 			事务 A ： [99,100]
 			事务 B ： [99,100,101]
 			事务 C ： [99,100,101,102]
+			
 			说明了视图数组包含了当前事务的版本号;
 			
 		画出跟事务A查询逻辑有着的操作:
-		事务A(version=100)	 
-		[99, 100]		
-							事务B(version=101)     
-							[99,100,101]		
-												事务C(version=102)
-												[99,100,101,102]
-																		 历史版本2: row trx_id = 90,  k = 1  
-																		 
-												set k=k+1                历史版本1: row trx_id = 102, k = 2
-												
-							update t set k=k+1 where id=1;               当前版本:  row trx_id = 101, k = 3						
-							
-		get k
-		[99, 100]
+																							备注
+			事务A(version=100)	 
+			[99, 100]		
+								事务B(version=101)     
+								[99,100,101]		
+														事务C(version=102)
+														[99,100,101,102]
+																							历史版本2: row trx_id = 90,  k = 1  
+																			 
+														update t set k=k+1 where id=1;      历史版本1: row trx_id = 102, k = 2
+													
+								update t set k=k+1 where id=1;              				当前版本:  row trx_id = 101, k = 3						
+								
+			get k
+			[99, 100]
 
 
 		1. 第一个有效更新是事务 C，把数据从 (1,1) 改成了 (1,2)
@@ -94,19 +96,23 @@
 		4. 事务 A 的查询结果为1的分析：
 			
 			事务 A 的视图数组是 [99,100], 读数据都是从当前版本读起的
+			
 			找到 (1,3) 的时候，判断出 row trx_id=101，比高水位（100）大，处于红色区域，不可见；
+			
 			接着，找到上一个历史版本，一看 row trx_id=102，比高水位（100）大，处于红色区域，不可见；
+			
 			再往前找，终于找到了（1,1)，它的 row trx_id=90，比低水位（99）小，处于绿色区域，可见。
+			
 			所以事务A的查询结果为1
 			
 			验证了一个理论: 数据版本的可见性判断是根据行记录版本的事务ID跟 read view 中的活跃事务列表做比较.
-			
-			# 理解了. 开心.
-			
+							一行记录如果有多个版本，那么可能就需要比较多次
+										
 			
 		归纳：一个事务只承认自身更新的数据版本以及视图创建之前已经提交的数据版本     # 总结得可以.
 		
 2. RC隔离级别的实现		
+	
 	mysql> show global variables like 'tx_isolation';
 	+---------------+----------------+
 	| Variable_name | Value          |
@@ -127,6 +133,7 @@
 
 	session A										session B										session C
 	start transaction with consistent snapshot; 
+	
 					
 													start transaction with consistent snapshot; 
 																		
@@ -137,7 +144,10 @@
 	select k from t where id=1;
 	commit;
 		
-
+	
+	在 RC 隔离级别下， start transaction with consistent snapshot;  相当是  begin; 或者 start transaction;
+		--如果是这样的话，那么这个案例就有问题了，正常的情况下是： session C 的事务ID是最小的。
+		
 	假设：
 		1. 事务 A 开始前，系统里面只有一个活跃事务 ID 是 99；
 		2. 事务 A、B、C 的版本号分别是 100、101、102，且当前系统里只有这四个事务；
@@ -164,15 +174,16 @@
 							update t set k=k+1 where id=1;               		 当前版本:  row trx_id = 101, k = 3						
 							get k
 							视图数组: [99, 101]
-							create read view: [99, 101, 103]
-							
+								
 		get k
+		
 		视图数组：[99, 100, 101]
-		create read view: [99, 100, 101, 103]
+		
 		
 							commit;
 							
 		事务 A 的查询结果为2的分析
+			
 			1. 第一个有效更新是事务 C，把数据从 (1,1) 改成了 (1,2)
 				这个数据的最新版本的 row trx_id 是 102，而 90 这个版本已经成为了历史版本
 			   
@@ -184,19 +195,29 @@
 				
 			4. 事务 A 的查询结果为2的分析：
 				
-				事务 A 的 read view 是 [99, 100, 101, 103], 读数据都是从当前版本读起的
+				事务 A 的 read view 是 [99, 100, 101] 读数据都是从当前版本读起的
 				
 				找到 (1,3) 的时候，判断出 row trx_id=101，比高水位（103）小，在 read view中, 但是这个版本是由还没提交的事务生成的, 处于黄色区域即3(a), 不可见;
 				
+				-- 找到 (1,3) 的时候，判断出 row trx_id=101，等于 高水位（101），在 read view中, 但是这个版本是由还没提交的事务生成的, 处于黄色区域即3(a), 不可见;
+
+
 				接着，找到上一个历史版本，一看 row trx_id=102，发现 在 read view(m_ids) 的范围内, 不在 read view 中: 
 				
 					[比高水位(m_low_limit_id=103)小, 比低水位(m_up_limit_id=99)大] , 说明不是活跃事务, 表示这个版本是已经提交了的事务生成的，处于黄色区域即3(b)，可见；
+					
+					-- [比高水位(m_low_limit_id=101)大, 比低水位(m_up_limit_id=99)大] , 比高水位大，不可见。
+					
+					因此，高水位的定义是当前系统已经创建过的最大事务ID加1.
+					
 					
 				所以事务A的查询结果为 k = 2;
 				
 				验证了一个理论: 数据版本的可见性判断是根据行记录版本的事务ID跟 read view 中的活跃事务列表做比较.
 								而数据版本的可见性规则，就是基于数据的 row trx_id 和这个一致性视图的对比结果得到的。
-			
+				
+				-- 这个案例很有借鉴意义。
+				
 		事务 B 的查询结果为3的分析:
 			
 			1. 第一个有效更新是事务 C，把数据从 (1,1) 改成了 (1,2)
@@ -208,19 +229,25 @@
 			3. 事务 B 还没有提交，但是它生成的 (1,3) 这个版本已经变成当前版本了
 				
 			4. 事务 B 的查询结果为3的分析：
-				事务 B 的 read view 是 [99, 101, 103], 读数据都是从当前版本读起的
+			
+				事务 B 的 read view 是 [99, 101], 读数据都是从当前版本读起的
+				
 				从当前版本找到 (1,3) 的时候，判断出 row trx_id=101，比高水位（103）小，虽然 这个版本是由还没提交的事务生成的, 但是 事务内的更新对自己可见
-				(当记录的 DATA_TRX_ID 和 事务创建者的 TRX_ID 一样，记录可见；)
+				
+				(当记录的 DATA_TRX_ID（数据版本ID） 和 事务创建者的 TRX_ID 一样，记录可见；)
+				
 				所以 事务 B 的查询结果为3.
+				
 				
 		
 3. 小结	
 	多分析几个例子, 就熟悉了.
 	明白了如何基于MVCC实现可重复读和读已提交事务隔离。
-	数据版本的可见性规则，就是基于行数据的 row trx_id 和这个一致性视图的对比结果得到的。
+	数据版本的可见性规则，就是基于行数据的 row trx_id (可能有多个)和这个一致性视图的对比结果得到的。
 	如果当前最新的数据版本不可见, 会根据 DB_ROLL_PTR 构建并回溯查询历史版本,  直到找到对应可见的版本; 
 	
-4. 一个"数据无法修改"的场景
+	
+4. 一个数据无法修改的场景
 
 	mysql> select @@tx_isolation;
 	+-----------------+

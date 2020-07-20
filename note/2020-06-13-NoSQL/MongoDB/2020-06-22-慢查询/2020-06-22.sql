@@ -6,8 +6,9 @@
 
 
 1. db profiling
-	MongoDB支持对DB的请求进行profiling，目前支持3种级别的profiling。
 
+	MongoDB支持对DB的请求进行profiling，目前支持3种级别的profiling。
+	
 	0： 不开启profiling
 	1： 将处理时间超过某个阈值(默认100ms)的请求都记录到DB下的system.profile集合 （类似于mysql、redis的slowlog）
 	2： 将所有的请求都记录到DB下的system.profile集合（生产环境慎用）
