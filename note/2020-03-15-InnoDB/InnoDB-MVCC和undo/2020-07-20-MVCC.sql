@@ -33,7 +33,7 @@
 		对应高水位，即为当前系统已经创建过的最大事务ID加1
 		对应 m_low_limit_id/max_trx_id；
 				
-	4. creator_trx_id：表示生成该ReadView的事务id。
+	4. creator_trx_id：表示生成该 read view 的事务id。
 
 	-- 这部分的内容理解了。
 	

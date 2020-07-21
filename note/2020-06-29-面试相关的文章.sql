@@ -14,4 +14,4 @@ https://www.jianshu.com/p/a59fe4fcddfb  史上最详细的一线大厂Mysql面�
 若是没有索引的条件下，就获取所有行，都加上行锁，然后Mysql会再次过滤符合条件的的行并释放锁，只有符合条件的行才会继续持有锁。
 	只有符合条件的行才会继续持有锁，这个是在RC隔离级别的优化。
 		
-		
+https://imysql.com/tag/mysql-dba%E6%88%90%E9%95%BF%E4%B9%8B%E8%B7%AF   MySQL DBA面试全揭秘

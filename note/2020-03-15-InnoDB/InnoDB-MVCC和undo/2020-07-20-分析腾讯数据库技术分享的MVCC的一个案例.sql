@@ -174,8 +174,8 @@
 			InnoDB多版本数据是通过delete mark（删除标记）的行数据和回滚段中的undo信息组成的。
 			
 		
-		MVCC 由 read view + 行的历史版本构成, 行的历史版本包括 delete mark(打了删除标记)的行记录和回滚段中的undo信息, 由此带来的并发控制, 被称为多版本并发控制.
-	
+		MVCC 由 read view + 行记录的多版本构成, 行记录的多版本包括 delete mark(打了删除标记)的行记录和回滚段中的undo信息, 由此带来的并发控制, 被称为多版本并发控制.
+		
 		cluster index的历史版本在 undo日志 中或为 delete mark 的记录(没毛病, 理解了)，secondary index的历史版本是delete mark的记录。
 	
 		Undo记录中存储的是老版本数据，当一个旧的事务需要读取数据时，为了能读取到老版本的数据，需要顺着undo链找到满足其可见性的记录。
