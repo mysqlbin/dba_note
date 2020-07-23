@@ -4,8 +4,9 @@
 """
 https://www.pythonheidong.com/blog/article/142585/  如何在pymongo中使用isodate进行查询
 https://www.v2ex.com/amp/t/407072   pymongo 查询日期的困惑
+    datetime.datetime(2017,10,21,11,0,0)不会自动减 8 小时，而是直接存入 mongodb 中变成了 utc 时间。在网上查询了很多资料，在查询时，datetime 会自动转化为 utc 时间进行查询，所以我做了一个测试
 
-python mongodb_old_data_delete_many.py -soD=abc_db -soT=t1 -beforeDay=-45
+python mongodb_old_data_delete_many.py -soD=niuniu_h5 -soT=t1 -beforeDay=-45
 
 """
 
@@ -52,7 +53,7 @@ def send_mail(body, sourceTable, format = 'plain'):
     host = 'smtp.163.com'
     port = 465
     sender = '13202095158@163.com'
-    pwd = '20190809Go'
+    pwd = ''
     receiver = ['13202095158@163.com', '1224056230@qq.com']
     body = body
     msg = MIMEText(body, format, 'utf-8')
@@ -76,7 +77,7 @@ if __name__ == '__main__':
     source_table = args.source_table
     before_day = args.before_day
 
-    if before_day > -45:
+    if before_day > -10:
         logger.error('The date format does not match . exit')
         exit()
 
@@ -90,14 +91,16 @@ if __name__ == '__main__':
 
         # 连接副本集
         #client = MongoClient(['192.168.0.1:27017', '192.168.0.2:27017'], replicaSet='repl_set')
-        mongoserver_uri = "mongodb://admin:123456abc@192.168.1.1:27017,192.168.1.2:27017/admin?replicaSet=repl_set"
+        mongoserver_uri = "mongodb://admin:admin123456@192.168.0.1:192.168.0.2.227:27017/admin?replicaSet=repl_set"
         client = MongoClient(mongoserver_uri)
         db = client['abc_db']
-
-        collection = db['{}'.format(source_table)]
+        collection = db['t1']
 
         myquery = {'CreateTime': {'$lt': datetime.datetime(utcDatetime.year,utcDatetime.month,utcDatetime.day,utcDatetime.hour,utcDatetime.minute,utcDatetime.second)}}
 
+        # myquery = {'tEndTime': {'$lt': before_datetime}}  因为这里是字符串类型，所以在MongoDB比较不了。
+
+        #myquery = {'$and': [{'CreateTime': {'$lt': datetime.datetime(utcDatetime.year, utcDatetime.month, utcDatetime.day, utcDatetime.hour,utcDatetime.minute, utcDatetime.second)}}, {'tEndTime': {'$lt': before_datetime}} ] })
 
         try:
 
