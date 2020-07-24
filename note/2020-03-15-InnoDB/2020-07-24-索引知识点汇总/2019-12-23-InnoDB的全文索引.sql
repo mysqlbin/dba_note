@@ -133,4 +133,10 @@
 相关参考
 	https://blog.csdn.net/mrzhouxiaofei/article/details/79940958   MySQL 之全文索引
 		
+	https://mp.weixin.qq.com/s/qnWW0-zXmza1Fe1X_z8LqQ      MySQL 8.0 InnoDB全文索引可用于生产环境吗
 	
+	https://mp.weixin.qq.com/s/BHEbE6StZartleRZbgrFXQ      MySQL 8.0 InnoDB全文索引可用于生产环境吗（续）
+
+
+
+
