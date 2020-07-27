@@ -4,7 +4,7 @@
 
 	use admin
 	db.createUser( {
-		user: "app_user",
+		user: "abc_user",
 		pwd: "app123456",
 		roles: [ 
 			{ role: "readWrite", db: "sbtest_db" }
@@ -23,11 +23,11 @@
 	
 	use admin
 	db.createUser( {
-		user: "chh_user",
+		user: "yhn_user",
 		pwd: "chh123456",
 		roles: [ 
-			{ role: "readWrite", db: "yldb" },
-			{ role: "readWrite", db: "niuniuh5_modb" }
+			{ role: "readWrite", db: "okdb" },
+			{ role: "readWrite", db: "abcabcu5_modb" }
 		]
 	} )
 
@@ -49,18 +49,18 @@
 		]
 	}
 	{
-		"_id" : "admin.chh_user",
+		"_id" : "admin.yhn_user",
 		"userId" : UUID("c2456e74-db79-4ae8-a420-124bd349c65e"),
-		"user" : "chh_user",
+		"user" : "yhn_user",
 		"db" : "admin",
 		"roles" : [
 			{
 				"role" : "readWrite",
-				"db" : "yldb"
+				"db" : "okdb"
 			},
 			{
 				"role" : "readWrite",
-				"db" : "niuniuh5_modb"
+				"db" : "abcabcu5_modb"
 			}
 		],
 		"mechanisms" : [
@@ -100,7 +100,7 @@
 		"roles" : [
 			{
 				"role" : "readWrite",
-				"db" : "niuniuh5_modb"
+				"db" : "abcabcu5_modb"
 			}
 		],
 		"mechanisms" : [
@@ -116,11 +116,11 @@
 		"roles" : [
 			{
 				"role" : "readWrite",
-				"db" : "niuniuh5_modb"
+				"db" : "abcabcu5_modb"
 			},
 			{
 				"role" : "readWrite",
-				"db" : "yldb"
+				"db" : "okdb"
 			}
 		],
 		"mechanisms" : [
@@ -136,11 +136,11 @@
 		"roles" : [
 			{
 				"role" : "read",
-				"db" : "niuniuh5_modb"
+				"db" : "abcabcu5_modb"
 			},
 			{
 				"role" : "read",
-				"db" : "yldb"
+				"db" : "okdb"
 			}
 		],
 		"mechanisms" : [
@@ -155,12 +155,12 @@
 	
 删除账号
 	use admin
-	db.dropUser('app_user')
+	db.dropUser('abc_user')
 	db.dropUser('web_user')
 	
 登录
 
-	mongo -host 192.168.1.31 -u app_user -p app123456
+	mongo -host 192.168.1.31 -u abc_user -p app123456
 	
 	use sbtest_db
 	db.t1.insert({'age': "111"})
@@ -184,4 +184,4 @@
 
 	
 	
-	mongo -host 192.168.1.31 -u app_user -p app123456 --authenticationDatabase sbtest_db
+	mongo -host 192.168.1.31 -u abc_user -p app123456 --authenticationDatabase sbtest_db
