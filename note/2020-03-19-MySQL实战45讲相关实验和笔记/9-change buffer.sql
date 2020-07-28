@@ -115,12 +115,27 @@ mysql> SELECT (SELECT COUNT(*) FROM INFORMATION_SCHEMA.INNODB_BUFFER_PAGE WHERE 
 
 
 
-size:     The number of pages used within the change buffer.   --在更改缓冲区内使用的页数;
-		  Change buffer size is equal to seg size - (1 + free list len). The 1 + value represents the change buffer header page.
+size:     The number of pages used within the change buffer.   --已经使用更改缓冲区的页数;
+		  Change buffer size is equal to seg size - (1 + free list len). 
+		  The 1 + value represents the change buffer header page.
 		  
 seg size: The size of the change buffer, in pages.
 		    --更改缓冲区的大小，以页为单位
 			
+更改缓冲区中经常有大量数据，如下所示
+
+	-------------------------------------
+	INSERT BUFFER AND ADAPTIVE HASH INDEX
+	-------------------------------------
+	Ibuf: size 1229, free list len 263690, seg size 263692, 40050265 merges
+	merged operations:
+	insert 98911787, delete mark 40026593, delete 4624943
+	discarded operations:
+	insert 11, delete mark 0, delete 0
+
+
+	有1229个未应用的更改，可以考虑提高innodb_io_capacity。
+
 
 root@mysqldb 16:18:  [(none)]> show global status like '%page%';
 +----------------------------------+----------+
