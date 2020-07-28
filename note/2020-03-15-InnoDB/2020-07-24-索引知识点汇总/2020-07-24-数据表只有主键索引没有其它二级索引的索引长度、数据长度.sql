@@ -22,3 +22,4 @@ CREATE TABLE `table_clubaaaabbbbbdetail_history` (
 
 
 
+索引组织表：InnoDB存储引擎表根据主键顺序以索引的形式进行存储，称为索引组织表。
