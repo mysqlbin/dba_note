@@ -44,6 +44,7 @@ root@mysqldb 15:52:  [audit_db]> select * from person_info;
 
 
 idx_name_birthday_phone_number联合索引的索引组织顺序
+	
 	root@mysqldb 17:42:  [audit_db]> select name,birthday,phone_number,id from person_info order by name asc,birthday asc, phone_number asc,id asc;
 	+---------+------------+--------------+----+
 	| name    | birthday   | phone_number | id |
@@ -60,15 +61,140 @@ idx_name_birthday_phone_number联合索引的索引组织顺序
 	+---------+------------+--------------+----+
 	9 rows in set (0.00 sec)
 
-	
 
 	这个idx_name_birthday_phone_number索引对应的B+树中页面和记录的排序方式就是这样的：
 
 		先按照name列的值进行排序。
 		如果name列的值相同，则按照birthday列的值进行排序。
 		如果birthday列的值也相同，则按照phone_number的值进行排序。
-	
+		
+		-- 这里要理解，不然后面的笔记很难理解。
+		
+		
+全值匹配
 
+	如果我们的搜索条件中的列和索引列一致的话，这种情况就称为全值匹配
+	
+	SELECT * FROM person_info WHERE name = 'Ashburn' AND birthday = '1990-09-27' AND phone_number = '15123983239';
+
+	建立的idx_name_birthday_phone_number索引包含的3个列在这个查询语句中都展现出来了
+	
+	查询过程：
+	
+		1. 因为B+树的数据页和记录先是按照name列的值进行排序的，所以先可以很快定位name列的值是 Ashburn 的记录位置。
+
+		2. 在name列相同的记录里又是按照birthday列的值进行排序的，所以在name列的值是Ashburn的记录里又可以快速定位birthday列的值是'1990-09-27'的记录。
+
+		3. 如果很不幸，name和birthday列的值都是相同的，那记录是按照phone_number列的值排序的，所以联合索引中的三个列都可能被用到。
+
+
+	WHERE子句中的几个搜索条件的顺序对查询结果没有影响
+	
+		也就是说如果我们调换name、birthday、phone_number这几个搜索列的顺序对查询的执行过程是没有影响的。
+
+		SELECT * FROM person_info WHERE birthday = '1990-09-27' AND phone_number = '15123983239' AND name = 'Ashburn';
+
+		原因: MySQL有一个叫查询优化器的东东，会分析这些搜索条件并且按照可以使用的索引中列的顺序来决定先使用哪个搜索条件，后使用哪个搜索条件。
+			
+		
+匹配左边的列
+
+	搜索语句中也可以不用包含全部联合索引中的列，只包含左边的就行，比方说下边的查询语句：
+	
+		SELECT * FROM person_info WHERE name = 'Ashburn';
+
+	或者包含多个左边的列也行：
+	
+		SELECT * FROM person_info WHERE name = 'Ashburn' AND birthday = '1990-09-27';
+
+	搜索语句没有匹配左边的列：
+	
+		SELECT * FROM person_info WHERE birthday = '1990-09-27';
+		
+		B+树的数据页和记录先是按照name列的值排序的，在name列的值相同的情况下才使用birthday列进行排序，也就是说name列的值不同的记录中birthday的值可能是无序的。
+		
+		现在你跳过name列直接根据birthday的值去查找，肯定是不用到索引的。
+		
+	如果我们想使用联合索引中尽可能多的列，搜索条件中的各个列必须是联合索引中从最左边连续的列。	
+		
+		联合索引idx_name_birthday_phone_number中列的定义顺序是name、birthday、phone_number，如果我们的搜索条件中只有name和phone_number，而没有中间的birthday，比方说这样：	
+			
+			SELECT * FROM person_info WHERE name = 'Ashburn' AND phone_number = '15123983239';
+
+			这样只能用到name列的索引，birthday和phone_number的索引就用不上了，因为name值相同的记录先按照birthday的值进行排序，birthday值相同的记录才按照phone_number值进行排序。
+		
+		
+匹配列前缀
+
+
+	为某个列建立索引的意思其实就是在对应的B+树的记录中使用该列的值进行排序    --理解。
+	比方说person_info表上建立的联合索引idx_name_birthday_phone_number会先用name列的值进行排序，所以这个联合索引对应的B+树中的记录的name列的排列就是这样的：
+
+		Aaron
+		Aaron
+		...
+		Aaron
+		Asa
+		Ashburn
+		...
+		Ashburn
+		Baird
+		Barlow
+		...
+		Barlow
+		
+	所以一个排好序的字符串列其实有这样的特点：
+
+		先按照字符串的第一个字符进行排序。
+
+		如果第一个字符相同再按照第二个字符进行排序。
+
+		如果第二个字符相同再按照第三个字符进行排序，依此类推。
+		
+	也就是说这些字符串的前n个字符，也就是前缀都是排好序的，所以对于字符串类型的索引列来说，我们只匹配它的前缀也是可以快速定位记录的	
+	
+	
+	查询名字以'As'开头的记录：
+	
+		SELECT * FROM person_info WHERE name LIKE 'As%';
+		
+	如果只给出后缀或者中间的某个字符串是无法使用到索引的：
+		
+		SELECT * FROM person_info WHERE name LIKE '%As%';
+		
+		因为字符串中间有'As'的字符串并没有排好序，所以只能全表扫描了。
+	
+	倒序存储字长串
+		有时候我们有一些匹配某些字符串后缀的需求，比方说某个表有一个url列，该列中存储了许多url：
+			+----------------+
+			| url            |
+			+----------------+
+			| www.baidu.com  |
+			| www.google.com |
+			| www.gov.cn     |
+			| ...            |
+			| www.wto.org    |
+			+----------------+
+				
+		假设已经对该url列创建了索引，如果我们想查询以com为后缀的网址的话可以这样写查询条件：
+		
+			WHERE url LIKE '%com' 
+			但是这样的话无法使用该url列的索引。
+		
+		可以把后缀查询改写成前缀查询
+		把表中的数据全部逆序存储一下，也就是说我们可以这样保存url列中的数据：
+			+----------------+
+			| url            |
+			+----------------+
+			| moc.udiab.www  |
+			| moc.elgoog.www |
+			| nc.vog.www     |
+			| ...            |
+			| gro.otw.www    |
+			+----------------+
+		
+		这样再查找以 com 为后缀的网址时搜索条件便可以这么写：WHERE url LIKE 'moc%'，这样就可以用到索引了。
+		
 匹配范围值
 	
 	
@@ -92,8 +218,12 @@ idx_name_birthday_phone_number联合索引的索引组织顺序
 		找到这些记录的主键值，再到聚簇索引中回表查找完整的记录。
 
 		--这里的查询过程要更正。
+	
 		
 样例2	
+
+	使用联合进行范围查找，如果对多个列同时进行范围查找的话，只有对索引最左边的那个列进行范围查找的时候才能用到B+树索引
+	
 	root@mysqldb 17:42:  [audit_db]> desc SELECT * FROM person_info WHERE name > 'Asa' AND name < 'Barlow' AND birthday > '1980-01-01';
 	+----+-------------+-------------+------------+-------+--------------------------------+--------------------------------+---------+------+------+----------+-----------------------+
 	| id | select_type | table       | partitions | type  | possible_keys                  | key                            | key_len | ref  | rows | filtered | Extra                 |
