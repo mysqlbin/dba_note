@@ -1,4 +1,35 @@
 
+drop table explains_utf8mb4;
+CREATE TABLE explains_utf8mb4(
+    id INT NOT NULL auto_increment,
+    date_not_null DATE NOT NULL,
+    date_null DATE default NULL,
+    PRIMARY KEY (id),
+    KEY date_not_null (date_not_null),
+    KEY idx_date_null (date_null)
+);
+
+explain select ID from explains_utf8mb4 where date_not_null='2020-07-29';
+explain select ID from explains_utf8mb4 where date_null='2020-07-29';
+
+root@mysqldb 18:33:  [audit_db]> explain select ID from explains_utf8mb4 where date_not_null='2020-07-29';
++----+-------------+------------------+------------+------+---------------+---------------+---------+-------+------+----------+-------------+
+| id | select_type | table            | partitions | type | possible_keys | key           | key_len | ref   | rows | filtered | Extra       |
++----+-------------+------------------+------------+------+---------------+---------------+---------+-------+------+----------+-------------+
+|  1 | SIMPLE      | explains_utf8mb4 | NULL       | ref  | date_not_null | date_not_null | 3       | const |    1 |   100.00 | Using index |
++----+-------------+------------------+------------+------+---------------+---------------+---------+-------+------+----------+-------------+
+1 row in set, 1 warning (0.00 sec)
+
+root@mysqldb 18:33:  [audit_db]> explain select ID from explains_utf8mb4 where date_null='2020-07-29';
++----+-------------+------------------+------------+------+---------------+---------------+---------+-------+------+----------+-------------+
+| id | select_type | table            | partitions | type | possible_keys | key           | key_len | ref   | rows | filtered | Extra       |
++----+-------------+------------------+------------+------+---------------+---------------+---------+-------+------+----------+-------------+
+|  1 | SIMPLE      | explains_utf8mb4 | NULL       | ref  | idx_date_null | idx_date_null | 4       | const |    1 |   100.00 | Using index |
++----+-------------+------------------+------------+------+---------------+---------------+---------+-------+------+----------+-------------+
+1 row in set, 1 warning (0.00 sec)
+
+
+
 1. 目的
 2. 初始化表结构
 3. 执行的SQL语句

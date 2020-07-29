@@ -66,6 +66,11 @@
   
 	索引 idx_name_age 的组织顺序相当于 order by name asc,age asc,id asc; 即先按 name 排序，然后再按 age 排序, 最后按 id 排序。 
 	
+	先按照name列的值进行排序。
+	如果name列的值相同，则按照age列的值进行排序。
+	如果age列的值也相同，则按照id的值进行排序。
+	
+	
 	
 3. 验证联合索引的有序性
 	

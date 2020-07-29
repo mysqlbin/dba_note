@@ -69,7 +69,14 @@
             从而构建回滚段，用于回滚数据和实现MVCC的多版本
             完成Undo log写入后，构建新的回滚段指针并返回（trx_undo_build_roll_ptr），回滚段指针包括undo log所在的回滚段id、日志所在的page no、以及page内的偏移量，需要记录到聚集索引记录中。
 			http://mysql.taobao.org/monthly/2015/04/01/
-			
+		
+
+        写change buffer:
+            之后把这条sql, 需要在二级索引上做的修改，写入到change buffer page，等到下次有其他sql需要读取该二级索引时，再去与二级索引做merge
+            (随机I/O变为顺序I/O,但是由于现在的磁盘都是SSD,所以对于寻址来说,随机I/O和顺序I/O差距不大)
+
+            在事务提交的时候，把 change buffer 的操作也记录到 redo log 里了，所以崩溃恢复的时候，change buffer 也能找回来。
+		
         写redo log buffer：
 
             先判断redo log buffer是否够用，redo log buffer不够用就等待，体现在状态值 Innodb_log_waits 上;
@@ -92,10 +99,7 @@
 			那么会报错：Multi-statement transaction required more than 'max_binlog_cache_size' bytes of storage;
 			
 
-        写change buffer:
-            之后把这条sql, 需要在二级索引上做的修改，写入到change buffer page，等到下次有其他sql需要读取该二级索引时，再去与二级索引做merge
-            (随机I/O变为顺序I/O,但是由于现在的磁盘都是SSD,所以对于寻址来说,随机I/O和顺序I/O差距不大)
-            
+
         事务commit or rollback: 
             此时update语句已经完成，需要commit或者rollback。这里讨论双1即sync_binlog=1 和 innodb_flush_log_at_trx_commit=1；
         
