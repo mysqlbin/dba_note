@@ -62,8 +62,10 @@
 			
 	
 			
-2.MySQL 8.0下支持利用倒序索引消除排序
+2. MySQL 8.0下支持利用倒序索引消除排序
+
 	2.1 初始化表结构和数据
+	
 	CREATE TABLE `t3` (
 	  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 	  `a` int(11) NOT NULL DEFAULT '0',

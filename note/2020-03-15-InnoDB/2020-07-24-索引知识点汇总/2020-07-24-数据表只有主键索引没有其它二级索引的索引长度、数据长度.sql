@@ -20,6 +20,6 @@ CREATE TABLE `table_clubaaaabbbbbdetail_history` (
 索引长度： 0 bytes (0)
 数据长度： 1.86 GB (1,993,342,976)
 
-
+主键索引的叶子节点存储的是整行记录。
 
 索引组织表：InnoDB存储引擎表根据主键顺序以索引的形式进行存储，称为索引组织表。

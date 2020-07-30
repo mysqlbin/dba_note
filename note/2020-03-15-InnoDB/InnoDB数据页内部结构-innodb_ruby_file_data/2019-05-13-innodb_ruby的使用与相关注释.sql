@@ -91,6 +91,8 @@ CREATE TABLE `page_info` (
 		16560       idx_num                         38          internal    1           1           100.00%     
 		16560       idx_num                         38          leaf        832         992         83.87%  
 		
+		-- 非叶子节点统称为 internal内节点
+		
 		name:索引的名称；PRIMARY代表的就是聚集索引，因为InnoDB表是聚集索引组织表，行记录就是聚集索引；idx_num 就是辅助索引的名称.
 
 		root: 索引中根节点的 page number ；可以看出聚集索引的根节点是第3个page
