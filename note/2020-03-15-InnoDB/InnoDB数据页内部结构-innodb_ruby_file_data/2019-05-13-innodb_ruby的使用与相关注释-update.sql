@@ -45,6 +45,8 @@ END;
 call insertbatch();
 
 
+update page_info set num=5 where id=3;
+update page_info set num=2 where id=4;
 
 大纲:
 0. innodb_space
@@ -87,12 +89,12 @@ call insertbatch();
 	1.1 space-indexes
 		查看索引信息--name为索引名称，fseg为leaf表示属于叶子页的segment：
 		使用 innodb_space 来查看page_info表的索引结构、数据分配情况
-		[root@mgr9 data]# innodb_space -s ibdata1 -T test_db/page_info space-indexes
-		id          name                            root        fseg        used        allocated   fill_factor 
-		16559       PRIMARY                         3           internal    3           3           100.00%     
-		16559       PRIMARY                         3           leaf        1743        1760        99.03%      
-		16560       idx_num                         38          internal    1           1           100.00%     
-		16560       idx_num                         38          leaf        832         992         83.87%  
+		[root@localhost data]# innodb_space -s ibdata1 -T base_db/page_info space-indexes
+		id          name                            root        fseg        fseg_id     used        allocated   fill_factor 
+		5825        PRIMARY                         3           internal    1           3           3           100.00%     
+		5825        PRIMARY                         3           leaf        2           1743        2016        86.46%      
+		5826        idx_num                         4           internal    3           1           1           100.00%     
+		5826        idx_num                         4           leaf        4           832         991         83.96%  
 		
 		-- 非叶子节点统称为 internal内节点
 		
@@ -127,14 +129,15 @@ call insertbatch();
 		*/
 
 		可以查看数据字典确认: 
-		mysql> select b.name, a.name, index_id, type, a.SPACE, a.PAGE_NO, FILE_FORMAT, ROW_FORMAT from information_schema.INNODB_SYS_INDEXES a, information_schema.INNODB_SYS_TABLES b where a.table_id = b.table_id and a.space <> 0 and b.name = 'test_db/page_info';
-		+-------------------+---------+----------+------+-------+---------+-------------+------------+
-		| name              | name    | index_id | type | SPACE | PAGE_NO | FILE_FORMAT | ROW_FORMAT |
-		+-------------------+---------+----------+------+-------+---------+-------------+------------+
-		| test_db/page_info | PRIMARY |    16561 |    3 |  3994 |       3 | Barracuda   | Dynamic    |
-		| test_db/page_info | idx_num |    16562 |    0 |  3994 |       4 | Barracuda   | Dynamic    |
-		+-------------------+---------+----------+------+-------+---------+-------------+------------+
-		2 rows in set (0.00 sec)
+			root@mysqldb 10:57:  [base_db]> select b.name, a.name, index_id, type, a.SPACE, a.PAGE_NO, FILE_FORMAT, ROW_FORMAT from information_schema.INNODB_SYS_INDEXES a, information_schema.INNODB_SYS_TABLES b where a.table_id = b.table_id and a.space <> 0 and b.name = 'base_db/page_info';
+			+-------------------+---------+----------+------+-------+---------+-------------+------------+
+			| name              | name    | index_id | type | SPACE | PAGE_NO | FILE_FORMAT | ROW_FORMAT |
+			+-------------------+---------+----------+------+-------+---------+-------------+------------+
+			| base_db/page_info | PRIMARY |     5825 |    3 |  1586 |       3 | Barracuda   | Dynamic    |
+			| base_db/page_info | idx_num |     5826 |    0 |  1586 |       4 | Barracuda   | Dynamic    |
+			+-------------------+---------+----------+------+-------+---------+-------------+------------+
+			2 rows in set (0.12 sec)
+
 
 
 

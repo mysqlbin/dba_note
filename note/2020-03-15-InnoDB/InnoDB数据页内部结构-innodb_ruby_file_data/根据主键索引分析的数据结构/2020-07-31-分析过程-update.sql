@@ -1,17 +1,27 @@
 
-目的:
-	根据分析出来的 索引结构和数据页结构，画出B+Tree索引示意图
+1. 目的
+2. 先分析根节点: 根节点只有一个root页
+3. 再分析internal节点(内节点)
+4. 分析叶子节点
+5. 使用 innodb_space 来查看page_info表的索引结构、数据分配情况
+6. 主键索引的叶子节点存储的所有行记录的计算公式	
+7. 查看索引的统计信息
+	
 
+1. 目的
 
-基本信息
-
-	提取关键信息来做分析。
-
-	ROOT NODE #3: 2 records, 26 bytes
+	根据分析出来的主键索引结构和数据页结构，画出B+Tree索引示意图
+	了解数据在B+树中怎么分布的
 	
 	
-1. 先分析根节点: 根节点只能有一个root页。
+2. 先分析根节点: 根节点只有一个root页
 
+	基本信息
+
+		提取关键信息来做分析。
+
+		ROOT NODE #3: 2 records, 26 bytes
+		
 	[root@mgr9 data]# innodb_space -s ibdata1 -T test_db/page_info -p 3 page-records > root_3.log
 
 	[root@mgr9 data]# cat root_3.log 
@@ -19,8 +29,8 @@
 	Record 138: (id=647473) → #38
 
 	根节点所在的数据页编号为3，有两条记录即两个分支。 就是说根节点扇出两个分支。
-	第一个id=1的记录 指向编号为7的数据页
-	第一个id=647473的记录 指向编号为38的数据页
+	id=1的记录 指向编号为7的数据页
+	id=647473的记录 指向编号为38的数据页
 
 	根据信息得到如下 B+Tree图:
 	root(level2)     
@@ -31,7 +41,7 @@
 			   page7          page38
 				 
 	
-2. 再分析internal节点(内节点):
+3. 再分析internal节点(内节点)
 
 	-- 统计/分析 数据页编号为7的数据			
 		[root@mgr9 data]# innodb_space -s ibdata1 -T test_db/page_info -p 7 page-records > internal_7.log
@@ -98,7 +108,7 @@
 	
 	
 	
-3. 分析叶子节点:
+4. 分析叶子节点
 
 	#分析 叶子节点编号为5的数据页	
 	
@@ -172,18 +182,8 @@
 	叶子节点最后一个数据页有 92行记录, 说明这个数据页没有填满.
 
 
-	查看索引信息--name为索引名称，fseg为leaf表示属于叶子页的segment：
-	使用 innodb_space 来查看page_info表的索引结构、数据分配情况
+5. 使用 innodb_space 来查看page_info表的索引结构、数据分配情况
 
-	#old:
-	[root@mgr9 data]# innodb_space -s ibdata1 -T test_db/page_info space-indexes
-	id          name                            root        fseg        used        allocated   fill_factor 
-	16559       PRIMARY                         3           internal    3           3           100.00%     
-	16559       PRIMARY                         3           leaf        1743        1760        99.03%      
-	16560       idx_num                         38          internal    1           1           100.00%     
-	16560       idx_num                         38          leaf        832         992         83.87%  
-
-	#new: 
 	[root@mgr9 data]# innodb_space -s ibdata1 -T test_db/page_info space-indexes
 	id          name                            root        fseg        used        allocated   fill_factor 
 	16561       PRIMARY                         3           internal    3           3           100.00%     
@@ -192,6 +192,8 @@
 	16562       idx_num                         4           leaf        832         992         83.87% 
 
 
+6. 主键索引的叶子节点存储的所有行记录的计算公式
+
 	叶子节点存储的所有行记录的计算公式:
 	叶子节点使用了 1743个page;
 	一个叶子节点页有 574条记录;
@@ -199,21 +201,24 @@
 		1743*574=1000482
 		574-92  = 482
 		1000482-482=1000000条记录.
-
 		
-	root@mysqldb 23:36:  [(none)]> select * from mysql.innodb_index_stats  where table_name = 'page_info';
+		
+7. 查看索引的统计信息
+	
+	root@mysqldb 11:35:  [base_db]> select * from mysql.innodb_index_stats  where table_name = 'page_info';
 	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
 	| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
 	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
-	| test_db       | page_info  | PRIMARY    | 2019-05-12 01:17:36 | n_diff_pfx01 |     998739 |          20 | id                                |
-	| test_db       | page_info  | PRIMARY    | 2019-05-12 01:17:36 | n_leaf_pages |       1743 |        NULL | Number of leaf pages in the index |
-	| test_db       | page_info  | PRIMARY    | 2019-05-12 01:17:36 | size         |       2019 |        NULL | Number of pages in the index      |
-	| test_db       | page_info  | idx_num    | 2019-05-12 01:17:36 | n_diff_pfx01 |    1000064 |          20 | num                               |
-	| test_db       | page_info  | idx_num    | 2019-05-12 01:17:36 | n_diff_pfx02 |    1000064 |          20 | num,id                            |
-	| test_db       | page_info  | idx_num    | 2019-05-12 01:17:36 | n_leaf_pages |        832 |        NULL | Number of leaf pages in the index |
-	| test_db       | page_info  | idx_num    | 2019-05-12 01:17:36 | size         |        993 |        NULL | Number of pages in the index      |
+	| base_db       | page_info  | PRIMARY    | 2020-07-31 10:51:26 | n_diff_pfx01 |     998739 |          20 | id                                |
+	| base_db       | page_info  | PRIMARY    | 2020-07-31 10:51:26 | n_leaf_pages |       1743 |        NULL | Number of leaf pages in the index |
+	| base_db       | page_info  | PRIMARY    | 2020-07-31 10:51:26 | size         |       2019 |        NULL | Number of pages in the index      |
+	| base_db       | page_info  | idx_num    | 2020-07-31 10:51:26 | n_diff_pfx01 |    1000064 |          20 | num                               |
+	| base_db       | page_info  | idx_num    | 2020-07-31 10:51:26 | n_diff_pfx02 |    1000064 |          20 | num,id                            |
+	| base_db       | page_info  | idx_num    | 2020-07-31 10:51:26 | n_leaf_pages |        832 |        NULL | Number of leaf pages in the index |
+	| base_db       | page_info  | idx_num    | 2020-07-31 10:51:26 | size         |        993 |        NULL | Number of pages in the index      |
 	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
-	7 rows in set (0.07 sec)
+	7 rows in set (0.06 sec)
+
 
 	主键索引: 
 		stat_name=n_leaf_pages时：stat_value 表示叶子节点使用的数据页的数量为 1743个Page; 

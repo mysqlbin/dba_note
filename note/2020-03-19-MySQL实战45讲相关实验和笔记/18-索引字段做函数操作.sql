@@ -5,9 +5,9 @@
 
  mysql> CREATE TABLE `tradelog` (
    `id` int(11) NOT NULL,
-   `tradeid` varchar(32) DEFAULT NULL,
-   `operator` int(11) DEFAULT NULL,
-   `t_modified` datetime DEFAULT NULL,
+   `tradeid` varchar(32) DEFAULT NULL comment '交易流水号',
+   `operator` int(11) DEFAULT NULL comment '交易员id',
+   `t_modified` datetime DEFAULT NULL comment '交易时间',
    PRIMARY KEY (`id`),
    KEY `tradeid` (`tradeid`),
    KEY `t_modified` (`t_modified`)
@@ -40,13 +40,39 @@
 		|  1 | SIMPLE      | tradelog | NULL       | ALL  | tradeid       | NULL | NULL    | NULL |    3 |    33.33 | Using where |
 		+----+-------------+----------+------------+------+---------------+------+---------+------+------+----------+-------------+
 		1 row in set, 3 warnings (0.00 sec)
+		
 		交易编号 tradeid 这个字段上，本来就有索引，但是 explain 的结果却显示，这条语句需要走全表扫描。
 		tradeid 的字段类型是 varchar(32)，而输入的参数却是整型，所以需要做类型转换。
 		
 		mysql> select * from tradelog where  CAST(tradid AS signed int) = 110717;
 		
 		这条语句触发了上面说到的规则：对索引字段做函数操作，优化器会放弃走树搜索功能。
-		
+	
+
+root@mysqldb 16:46:  [test_db]> desc select * from tradelog where id="1";
++----+-------------+----------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+| id | select_type | table    | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
++----+-------------+----------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+|  1 | SIMPLE      | tradelog | NULL       | const | PRIMARY       | PRIMARY | 4       | const |    1 |   100.00 | NULL  |
++----+-------------+----------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+1 row in set, 1 warning (0.00 sec)
+
+root@mysqldb 16:47:  [test_db]> show warnings\G;
+*************************** 1. row ***************************
+  Level: Note
+   Code: 1003
+Message: /* select#1 */ select '1' AS `id`,'aaaaaaaa' AS `tradeid`,'1000' AS `operator`,'2020-07-31 16:47:37' AS `t_modified` from `test_db`.`tradelog` where ('1' = '1')
+1 row in set (0.00 sec)
+
+root@mysqldb 16:49:  [test_db]> SELECT 1 > "1";
++---------+
+| 1 > "1" |
++---------+
+|       0 |
++---------+
+1 row in set (0.00 sec)
+
+	
 
 案例三：隐式字符编码转换
 
@@ -79,12 +105,14 @@ insert into trade_detail values(10, 'aaaaaaac', 3, 'update again');
 insert into trade_detail values(11, 'aaaaaaac', 4, 'commit');
 
 样例一:  被驱动表的索引字段上加函数操作
+
 	驱动表的关联字段的字符编码 utf8mb4
 	被驱动表的字符编码 utf8
 	
 要查询 id=2 的交易的所有操作步骤信息:
 	
 	查看执行计划:
+	
 	mysql> desc select d.* from tradelog l, trade_detail d where d.tradeid=l.tradeid and l.id=2;
 	+----+-------------+-------+------------+-------+-----------------+---------+---------+-------+------+----------+-------------+
 	| id | select_type | table | partitions | type  | possible_keys   | key     | key_len | ref   | rows | filtered | Extra       |
@@ -94,15 +122,89 @@ insert into trade_detail values(11, 'aaaaaaac', 4, 'commit');
 	+----+-------------+-------+------------+-------+-----------------+---------+---------+-------+------+----------+-------------+
 	2 rows in set, 1 warning (0.00 sec)
 	
+	
+	
+	select * from trade_detail where tradeid=$L2.tradeid.value; 
 
-	优化:
-	mysql> desc select d.* from tradelog l , trade_detail d where d.tradeid=CONVERT(l.tradeid USING utf8) and l.id=2; 
-	+----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
-	| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
-	+----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
-	|  1 | SIMPLE      | l     | NULL       | const | PRIMARY       | PRIMARY | 4       | const |    1 |   100.00 | NULL  |
-	|  1 | SIMPLE      | d     | NULL       | ref   | tradeid       | tradeid | 99      | const |    4 |   100.00 | NULL  |
-	+----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
-	2 rows in set, 1 warning (0.00 sec)
+	select * from trade_detail  where CONVERT(traideid USING utf8mb4)=$L2.tradeid.value; 
 
+	--连接过程中要求在被驱动表的索引字段上加函数操作，是直接导致对被驱动表做全表扫描的原因。
+	
+	
+	在不修改表字符编码情况下的优化:
+		mysql> desc select d.* from tradelog l , trade_detail d where d.tradeid=CONVERT(l.tradeid USING utf8) and l.id=2; 
+		+----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+		| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
+		+----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+		|  1 | SIMPLE      | l     | NULL       | const | PRIMARY       | PRIMARY | 4       | const |    1 |   100.00 | NULL  |
+		|  1 | SIMPLE      | d     | NULL       | ref   | tradeid       | tradeid | 99      | const |    4 |   100.00 | NULL  |
+		+----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
+		2 rows in set, 1 warning (0.00 sec)
+	
+
+
+样例二
+
+	desc select l.operator from tradelog l , trade_detail d where d.tradeid=l.tradeid and d.id=4;
+
+	root@mysqldb 17:40:  [test_db]> desc select l.operator from tradelog l , trade_detail d where d.tradeid=l.tradeid and d.id=4;
+	+----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-----------------------+
+	| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra                 |
+	+----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-----------------------+
+	|  1 | SIMPLE      | d     | NULL       | const | PRIMARY       | PRIMARY | 4       | const |    1 |   100.00 | NULL                  |
+	|  1 | SIMPLE      | l     | NULL       | range | tradeid       | tradeid | 131     | NULL  |    1 |   100.00 | Using index condition |
+	+----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-----------------------+
+	2 rows in set, 1 warning (0.04 sec)
+	
+	d.tradeid 的编码是 utf8
+	l.tradeid 的编码是 utf8mb4
+	
+	语句的执行流程：
+	
+	1. 
+		select d.tradeid from trade_detail d where d.id=4;
+		mysql> select d.tradeid from trade_detail d where d.id=4;
+		+----------+
+		| tradeid  |
+		+----------+
+		| aaaaaaab |
+		+----------+
+		1 row in set (0.00 sec)
+	
+	2. 
+		select * from tradelog l where l.tradeid='aaaaaaab';
+		mysql> select * from tradelog l where l.tradeid='aaaaaaab';
+		+----+----------+----------+---------------------+
+		| id | tradeid  | operator | t_modified          |
+		+----+----------+----------+---------------------+
+		|  2 | aaaaaaab |     1000 | 2020-07-31 16:47:37 |
+		+----+----------+----------+---------------------+
+		1 row in set (0.00 sec)
+		
+		mysql> desc select * from tradelog l where l.tradeid='aaaaaaab';
+		+----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------+
+		| id | select_type | table | partitions | type | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
+		+----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------+
+		|  1 | SIMPLE      | l     | NULL       | ref  | tradeid       | tradeid | 131     | const |    1 |   100.00 | NULL  |
+		+----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------+
+		1 row in set, 1 warning (0.00 sec)
+
+
+		会转换为：select * from tradelog l where l.tradeid=CONVERT('aaaaaaab' USING utf8mb4);
+
+			mysql> desc select * from tradelog l where l.tradeid=CONVERT('aaaaaaab' USING utf8mb4);
+			+----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------+
+			| id | select_type | table | partitions | type | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
+			+----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------+
+			|  1 | SIMPLE      | l     | NULL       | ref  | tradeid       | tradeid | 131     | const |    1 |   100.00 | NULL  |
+			+----+-------------+-------+------------+------+---------------+---------+---------+-------+------+----------+-------+
+			1 row in set, 1 warning (0.00 sec)
+			
+		
+字符编码加入巡检中。
+	
+CAST函数
+CONVERT函数
+
+utf8 和 utf8mb4 做关联，会把 utf8 转换为  utf8mb4 。
 
