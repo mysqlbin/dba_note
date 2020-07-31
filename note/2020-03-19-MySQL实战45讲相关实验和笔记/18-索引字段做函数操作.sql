@@ -76,8 +76,8 @@ root@mysqldb 16:49:  [test_db]> SELECT 1 > "1";
 
 案例三：隐式字符编码转换
 
-tradelog表的字符编码为 utf8mb4; 
-trade_detail表的字符编码为 utf8; 
+tradelog表的字符编码为 utf8mb4;  -- tradelog.utf8mb4
+trade_detail表的字符编码为 utf8; -- trade_detail.utf8
 		
 mysql> CREATE TABLE `trade_detail` (
   `id` int(11) NOT NULL,
@@ -103,6 +103,7 @@ insert into trade_detail values(8, 'aaaaaaac', 1, 'add');
 insert into trade_detail values(9, 'aaaaaaac', 2, 'update');
 insert into trade_detail values(10, 'aaaaaaac', 3, 'update again');
 insert into trade_detail values(11, 'aaaaaaac', 4, 'commit');
+
 
 样例一:  被驱动表的索引字段上加函数操作
 
@@ -132,6 +133,7 @@ insert into trade_detail values(11, 'aaaaaaac', 4, 'commit');
 	
 	
 	在不修改表字符编码情况下的优化:
+		
 		mysql> desc select d.* from tradelog l , trade_detail d where d.tradeid=CONVERT(l.tradeid USING utf8) and l.id=2; 
 		+----+-------------+-------+------------+-------+---------------+---------+---------+-------+------+----------+-------+
 		| id | select_type | table | partitions | type  | possible_keys | key     | key_len | ref   | rows | filtered | Extra |
@@ -203,8 +205,8 @@ insert into trade_detail values(11, 'aaaaaaac', 4, 'commit');
 		
 字符编码加入巡检中。
 	
-CAST函数
-CONVERT函数
+CAST 函数：    CAST(tradid AS signed int)   -- 转数据类型
+CONVERT 函数： CONVERT('aaaaaaab' USING utf8mb4)  -- 转字符编码
 
 utf8 和 utf8mb4 做关联，会把 utf8 转换为  utf8mb4 。
 
