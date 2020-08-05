@@ -30,11 +30,12 @@
 
 
 从上图可以看到，页面的修改并不是在原有的空间进行，而是将改变的页面在新的页面生成，在通过指针从新的生成的页面，指向未改变的页面。将新的根地址写入到 metadata 中。这样的处理的速度要比加锁，然后改变数据的方式要快的多。并且大部分MONGODB 处理的方式多是写，和读，大量的UPDATE 的并不多见。
+	
 	https://mp.weixin.qq.com/s/-LssIUI4fjwUVaAYvAyA8Q MONGODB Wiredtiger 为什么那么快？
 
-https://blog.csdn.net/gaozhigang/article/details/79241044  Mongodb存储特性与内部原理
-https://docs.mongodb.com/manual/core/wiredtiger/ 
-https://docs.mongodb.com/manual/core/wiredtiger/#storage-wiredtiger-checkpoints
+	https://blog.csdn.net/gaozhigang/article/details/79241044  Mongodb存储特性与内部原理
+	https://docs.mongodb.com/manual/core/wiredtiger/ 
+	https://docs.mongodb.com/manual/core/wiredtiger/#storage-wiredtiger-checkpoints
 
 
 这个描述得可以
