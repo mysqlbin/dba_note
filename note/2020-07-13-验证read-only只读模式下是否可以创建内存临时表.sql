@@ -14,8 +14,6 @@ mysql> show global variables LIKE '%only%';
 6 rows in set (0.01 sec)
 
 
-
-
  create temporary table temp(id int, data char(20));
  insert into temp values(1, "Some");
  select * from temp;
@@ -39,3 +37,16 @@ mysql>  select * from temp;
 mysql> delete from table_clublogscore20200701 where id=15004289;
 ERROR 1290 (HY000): The MySQL server is running with the --read-only option so it cannot execute this statement
 
+
+内存临时表是否会同步到从库？
+	不会。
+	还需要验证下。
+	
+在从库操作临时表，会影响备份？
+	过段时间验证下。
+	
+操作内存临时表是否会记录到 binlog ？
+	
+
+
+	
