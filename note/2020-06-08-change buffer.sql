@@ -37,7 +37,7 @@ discarded operations：
     Change Buffer中无需合并的次数；
 	
 
-insert buffer的效果 = merges / (insert + delete mark + delete) =  3254 / (39657 + 5 + 1)  * 100 = 8%；     相当于每10次更新操作合并1次。
+insert buffer的效果 = merges / (insert + delete mark + delete) =  3254 / (39657 + 5 + 1)  * 100 = 8%；     相当于每10次更新操作合并1次刷盘。
 
 
 
