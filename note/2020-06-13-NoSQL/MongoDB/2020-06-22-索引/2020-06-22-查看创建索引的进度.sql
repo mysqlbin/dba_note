@@ -1,7 +1,9 @@
 
-通过 db.currentOp() 查看创建索引的进度
-1. 主库 
-2. 从库
+1. 通过 db.currentOp() 查看创建索引的进度
+	1.1 主库 
+	1.2  从库
+
+2. 通过查看日志查看创建索引的进度
 
 
 1. 主库 
@@ -13,7 +15,7 @@
 				"host" : "database-03.system.com:27017",
 				"desc" : "conn16",
 				"connectionId" : 16,
-				"client" : "10.31.76.227:46606",
+				"client" : "10.10.10.227:46606",
 				"clientMetadata" : {
 					"driver" : {
 						"name" : "NetworkInterfaceTL",
@@ -879,4 +881,57 @@ repl_set:SECONDARY> db.currentOp()
 	},
 	"operationTime" : Timestamp(1592799078, 1)
 }
+
+
+
+2. 通过查看日志查看创建索引的进度
+	
+	2020-08-07T10:50:48.827+0800 I  INDEX    [conn1729] index build: starting on aiuaiu_h5.table_clubgamelog properties: { v: 2, key: { szToken: 1.0 }, name: "szToken_1", ns: "aiuaiu_h5.table_clubgamelog" } using method: Hybrid
+	2020-08-07T10:50:48.827+0800 I  INDEX    [conn1729] build may temporarily use up to 200 megabytes of RAM
+	2020-08-07T10:50:51.001+0800 I  -        [conn1729]   Index Build: scanning collection: 588000/10309190 5%
+	2020-08-07T10:50:54.001+0800 I  -        [conn1729]   Index Build: scanning collection: 1400100/10309190 13%
+	2020-08-07T10:50:57.001+0800 I  -        [conn1729]   Index Build: scanning collection: 2228000/10309190 21%
+	2020-08-07T10:51:00.001+0800 I  -        [conn1729]   Index Build: scanning collection: 3019500/10309190 29%
+	2020-08-07T10:51:08.850+0800 I  -        [conn1729]   Index Build: scanning collection: 3172600/10309190 30%
+	2020-08-07T10:51:11.610+0800 I  -        [conn1729]   Index Build: scanning collection: 3473900/10309190 33%
+	2020-08-07T10:51:14.001+0800 I  -        [conn1729]   Index Build: scanning collection: 3897200/10309190 37%
+	2020-08-07T10:51:17.159+0800 I  -        [conn1729]   Index Build: scanning collection: 4112000/10309190 39%
+	2020-08-07T10:51:20.001+0800 I  -        [conn1729]   Index Build: scanning collection: 4800300/10309190 46%
+	2020-08-07T10:51:23.001+0800 I  -        [conn1729]   Index Build: scanning collection: 5537200/10309190 53%
+	2020-08-07T10:51:26.001+0800 I  -        [conn1729]   Index Build: scanning collection: 6299200/10309190 61%
+	2020-08-07T10:51:31.189+0800 I  NETWORK  [conn117] end connection 10.10.10.227:19984 (9 connections now open)
+	2020-08-07T10:51:34.207+0800 I  -        [conn1729]   Index Build: scanning collection: 6344600/10309190 61%
+	2020-08-07T10:51:37.001+0800 I  -        [conn1729]   Index Build: scanning collection: 7044200/10309190 68%
+	2020-08-07T10:51:39.916+0800 I  COMMAND  [conn66] command admin.$cmd command: replSetHeartbeat { replSetHeartbeat: "repl_set", configVersion: 4, hbv: 1, from: "10.10.10.223:27017", fromId: 3, term: 170, $replData: 1, $db: "admin" } numYields:0 reslen:609 locks:{} protocol:op_msg 812ms
+	2020-08-07T10:51:39.916+0800 I  COMMAND  [conn105] command admin.$cmd command: replSetHeartbeat { replSetHeartbeat: "repl_set", configVersion: 4, hbv: 1, from: "10.10.10.227:27017", fromId: 1, term: 170, $replData: 1, $clusterTime: { clusterTime: Timestamp(1596768688, 1), signature: { hash: BinData(0, 8C8B4840B38B9EB4359FA1E330E866F1119166EE), keyId: 6838881995993382915 } }, $db: "admin" } numYields:0 reslen:609 locks:{} protocol:op_msg 417ms
+	2020-08-07T10:51:40.001+0800 I  -        [conn1729]   Index Build: scanning collection: 7389600/10309190 71%
+	2020-08-07T10:51:43.005+0800 I  -        [conn1729]   Index Build: scanning collection: 8126600/10309190 78%
+	2020-08-07T10:51:44.896+0800 I  COMMAND  [conn107] command local.oplog.rs command: getMore { getMore: 8851265460055525400, collection: "oplog.rs", batchSize: 13981010, maxTimeMS: 5000, term: 170, lastKnownCommittedOpTime: { ts: Timestamp(1596768612, 1), t: 170 }, $replData: 1, $oplogQueryData: 1, $readPreference: { mode: "secondaryPreferred" }, $clusterTime: { clusterTime: Timestamp(1596768698, 1), signature: { hash: BinData(0, 7ABC34BB0CC0EA6FA166C9BDF45A75F71318716D), keyId: 6838881995993382915 } }, $db: "local" } originatingCommand: { find: "oplog.rs", filter: { ts: { $gte: Timestamp(1596443479, 1) } }, tailable: true, oplogReplay: true, awaitData: true, maxTimeMS: 60000, batchSize: 13981010, term: 170, readConcern: { afterClusterTime: Timestamp(0, 1) }, $replData: 1, $oplogQueryData: 1, $readPreference: { mode: "secondaryPreferred" }, $clusterTime: { clusterTime: Timestamp(1596443491, 2), signature: { hash: BinData(0, E867F33D22DC4CCBF887C2290E8C424668E61046), keyId: 6838881995993382915 } }, $db: "local" } planSummary: COLLSCAN cursorid:8851265460055525400 keysExamined:0 docsExamined:0 numYields:2 nreturned:0 reslen:646 locks:{ ReplicationStateTransition: { acquireCount: { w: 3 } }, Global: { acquireCount: { r: 3 } }, Database: { acquireCount: { r: 3 } }, Mutex: { acquireCount: { r: 1 } }, oplog: { acquireCount: { r: 3 } } } storage:{} protocol:op_msg 305ms
+	2020-08-07T10:51:46.002+0800 I  -        [conn1729]   Index Build: scanning collection: 8913300/10309190 86%
+	2020-08-07T10:51:48.347+0800 I  COMMAND  [PeriodicTaskRunner] task: DBConnectionPool-cleaner took: 277ms
+	2020-08-07T10:51:51.165+0800 I  NETWORK  [listener] connection accepted from 10.10.10.227:40038 #1748 (10 connections now open)
+	2020-08-07T10:51:51.180+0800 I  NETWORK  [conn1748] received client metadata from 10.10.10.227:40038 conn1748: { driver: { name: "NetworkInterfaceTL", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.3.1611 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-514.26.2.el7.x86_64" } }
+	2020-08-07T10:51:51.219+0800 I  ACCESS   [conn1748] Successfully authenticated as principal __system on local from client 10.10.10.227:40038
+	2020-08-07T10:51:51.287+0800 I  ACCESS   [conn119] Successfully authenticated as principal __system on local from client 10.10.10.227:19987
+	2020-08-07T10:51:51.288+0800 I  ACCESS   [conn118] Successfully authenticated as principal __system on local from client 10.10.10.227:19986
+	2020-08-07T10:51:51.322+0800 I  ACCESS   [conn119] Successfully authenticated as principal __system on local from client 10.10.10.227:19987
+	2020-08-07T10:51:51.358+0800 I  ACCESS   [conn119] Successfully authenticated as principal __system on local from client 10.10.10.227:19987
+	2020-08-07T10:51:51.393+0800 I  ACCESS   [conn119] Successfully authenticated as principal __system on local from client 10.10.10.227:19987
+	2020-08-07T10:51:54.464+0800 I  STORAGE  [TimestampMonitor] Removing drop-pending idents with drop timestamps before timestamp Timestamp(1596768703, 1)
+	2020-08-07T10:51:54.464+0800 I  STORAGE  [TimestampMonitor] Completing drop for ident index-4-1333472901181259253 (ns: aiuaiu_h5.table_clubgamelog.$szToken_1) with drop timestamp Timestamp(1596768619, 1)
+	2020-08-07T10:51:56.497+0800 I  -        [conn1729]   Index Build: scanning collection: 9517200/10309190 92%
+	2020-08-07T10:51:59.318+0800 I  -        [conn1729]   Index Build: scanning collection: 9905300/10309190 96%
+	2020-08-07T10:52:02.001+0800 I  -        [conn1729]   Index Build: scanning collection: 10377000/10309190 100%
+	2020-08-07T10:52:04.300+0800 I  COMMAND  [ftdc] serverStatus was very slow: { after basic: 0, after asserts: 0, after connections: 0, after electionMetrics: 0, after extra_info: 0, after flowControl: 0, after globalLock: 0, after locks: 0, after logicalSessionRecordCache: 0, after network: 0, after opLatencies: 0, after opReadConcernCounters: 0, after opcounters: 0, after opcountersRepl: 0, after oplogTruncation: 0, after repl: 0, after security: 0, after storageEngine: 0, after tcmalloc: 0, after trafficRecording: 0, after transactions: 0, after transportSecurity: 0, after twoPhaseCommitCoordinator: 0, after wiredTiger: 0, at end: 1299 }
+	2020-08-07T10:52:04.778+0800 I  INDEX    [conn1729] index build: collection scan done. scanned 10442742 total records in 75 seconds
+	
+	--在集合有1000W个文档的场景，创建一个索引花了 75 秒。
+	
+	2020-08-07T10:52:10.000+0800 I  -        [conn1729]   Index Build: inserting keys from external sorter into index: 3715100/10442742 35%
+	2020-08-07T10:52:13.000+0800 I  -        [conn1729]   Index Build: inserting keys from external sorter into index: 9052700/10442742 86%
+	2020-08-07T10:52:13.764+0800 I  INDEX    [conn1729] index build: inserted 10442742 keys from external sorter into index in 8 seconds
+	2020-08-07T10:52:14.280+0800 I  INDEX    [conn1729] index build: done building index szToken_1 on ns aiuaiu_h5.table_clubgamelog
+	2020-08-07T10:52:14.294+0800 I  COMMAND  [conn1729] command aiuaiu_h5.table_clubgamelog appName: "MongoDB Shell" command: createIndexes { createIndexes: "table_clubgamelog", indexes: [ { key: { szToken: 1.0 }, name: "szToken_1" } ], lsid: { id: UUID("d9f33e54-a973-4d47-8c1d-21f29ccba5c8") }, $clusterTime: { clusterTime: Timestamp(1596768619, 1), signature: { hash: BinData(0, C989B2F76714BDF8FE5D76CD982A2F1DAD9B4447), keyId: 6838881995993382915 } }, $db: "aiuaiu_h5" } numYields:81616 reslen:239 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 81618 } }, ReplicationStateTransition: { acquireCount: { w: 81619 } }, Global: { acquireCount: { r: 1, w: 81618 } }, Database: { acquireCount: { r: 1, w: 81618 } }, Collection: { acquireCount: { r: 81618, w: 1, R: 1, W: 2 } }, Mutex: { acquireCount: { r: 4 } } } flowControl:{ acquireCount: 81617, timeAcquiringMicros: 36910 } storage:{ data: { bytesRead: 23188016671, timeReadingMicros: 39321171 }, timeWaitingMicros: { cache: 662 } } protocol:op_msg 85509ms
+
+
 	
