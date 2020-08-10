@@ -1,3 +1,4 @@
+
 1. 标准输入
 2. 标准输出
 3. STDIN/STDOUT/STDERR
@@ -5,25 +6,33 @@
 5. 输入重定向
 6. 重定向深入讲解
 7. /dev/null 文件
+8. 相关参考
 
 
 1. 标准输入
+
 	一个命令通常从一个叫标准输入的地方读取输入, 默认情况下, 这是你的终端
 
 2. 标准输出
+
 	一个命令通常将其输出写入到标准输出, 默认情况下, 这是你的终端
 	
 3. STDIN/STDOUT/STDERR
-	文件描述符 0 通常是标准输入（STDIN），1 是标准输出（STDOUT），2 是标准错误输出（STDERR）。
+
+	文件描述符
+	0 通常是标准输入（STDIN）
+	1 是标准输出（STDOUT）
+	2 是标准错误输出（STDERR）。
 	
 4. 输出重定向
+
 	语法: 
 		command1 > file1
 	含义: 
 		执行 command1 然后将输出的内容存入 file1 
 	
 	注意事项:
-		任何file1内的已经存在的内容将被新内容替代。如果要将新内容添加在文件末尾，请使用>>操作符。
+		任何file1内的已经存在的内容将被新内容替代。如果要将新内容添加在文件末尾，请使用">>"操作符。
 		
 	样例: 
 		shell> who > users
@@ -74,15 +83,19 @@
 			root     pts/0        2020-04-14 10:07 (192.168.0.71)
 			root     pts/1        2020-04-14 10:14 (192.168.0.71)
 			
-		上面两个例子的结果不同：第一个例子，会输出文件名；第二个不会，因为它仅仅知道从标准输入读取内容。
+		上面两个例子的结果不同：
+			第一个例子，会输出文件名；
+			第二个不会，因为它仅仅知道从标准输入读取内容。
 		
 	
 6. 重定向深入讲解
+
 	一般情况下，每个 Unix/Linux 命令运行时都会打开三个文件：
 
 		标准输入文件(stdin) ：stdin  的文件描述符为0，Unix程序默认从stdin读取数据。
 		标准输出文件(stdout)：stdout 的文件描述符为1，Unix程序默认向stdout输出数据。
 		标准错误文件(stderr)：stderr 的文件描述符为2，Unix程序会向stderr流中写入错误信息。
+		
 	默认情况下，command > file 将 stdout 重定向到 file，command < file 将stdin 重定向到 file。
 	
 	样例
@@ -102,5 +115,9 @@
 
 		command > /dev/null 2>&1
 		
+8. 相关参考
 	
+	https://developer.ibm.com/zh/tutorials/l-lpic1-103-4/
+	https://www.runoob.com/linux/linux-shell-io-redirections.html
+		
 		
