@@ -2,9 +2,6 @@
 port	= 3306
 socket	= /mydata/mysql/mysql3306/data/mysql3306.sock
 
-[mysql]
-prompt="\u@mysqldb \R:\m:\s [\d]> "
-no-auto-rehash
 
 [mysqld]
 user	= mysql
@@ -17,8 +14,8 @@ pid-file = mysqldb.pid
 #字符集设置
 character-set-server = utf8mb4
 collation-server=utf8mb4_general_ci
-#init-connect='SET NAMES utf8'
-init-connect='SET NAMES utf8;Insert into audit_db.accesslog(ConnectionID ,ConnUser ,MatchUser ,LoginTime)values(connection_id(),user(),current_user(),now());'
+#init-connect='SET NAMES utf8mb4'
+init-connect='SET NAMES utf8mb4;Insert into audit_db.accesslog(ConnectionID ,ConnUser ,MatchUser ,LoginTime)values(connection_id(),user(),current_user(),now());'
 
 
 skip_name_resolve = 1
