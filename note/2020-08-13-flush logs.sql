@@ -73,27 +73,9 @@ flush logs的影响/作用
 
 		[root@localhost data]# ll
 		总用量 4310640
-		-rw-r-----. 1 mysql mysql         56 6月   1 17:07 auto.cnf
-		drwxr-x---. 2 mysql mysql      57344 7月  24 15:35 bak_niuniuh5_db
-		drwxr-x---. 2 mysql mysql       4096 8月  10 11:32 base_db
 		-rw-r-----. 1 mysql mysql   11060588 8月  13 16:04 error.log
-		-rw-r-----. 1 mysql mysql    1510418 8月  10 10:47 ib_buffer_pool
-		-rw-r-----. 1 mysql mysql 1073741824 8月  13 15:59 ibdata1
-		-rw-r-----. 1 mysql mysql 1073741824 8月  13 15:59 ib_logfile0
-		-rw-r-----. 1 mysql mysql 1073741824 7月  12 02:30 ib_logfile1
-		-rw-r-----. 1 mysql mysql 1073741824 8月  13 15:59 ib_logfile2
-		-rw-r-----. 1 mysql mysql   79691776 8月  10 11:32 ibtmp1
 		-rw-r-----. 1 mysql mysql       5726 8月  13 16:05 innodb_status.31400
-		-rw-r-----. 1 mysql mysql   23225841 6月  15 16:05 localhost.log
-		drwxr-x---. 2 mysql mysql       4096 6月   1 17:07 mysql
-		srwxrwxrwx. 1 mysql mysql          0 8月  10 10:48 mysql3306.sock
-		-rw-------. 1 mysql mysql          6 8月  10 10:48 mysql3306.sock.lock
-		-rw-r-----. 1 mysql mysql          6 8月  10 10:48 mysqldb.pid
-		drwxr-x---. 2 mysql mysql      40960 6月  11 16:55 niuniuh5_db
-		drwxr-x---. 2 mysql mysql       8192 6月   1 17:07 performance_schema
 		-rw-r-----. 1 mysql mysql    3428349 8月  13 04:50 slow.log
-		drwxr-x---. 2 mysql mysql       8192 6月   1 17:07 sys
-		drwxr-x---. 2 mysql mysql       4096 7月  31 17:39 test_db
 
 
 	flush logs 后
@@ -103,32 +85,13 @@ flush logs的影响/作用
 		-rw-r-----. 1 mysql mysql    154 8月  13 16:06 mysql-bin.000031
 		-rw-r-----. 1 mysql mysql     88 8月  13 16:06 mysql-bin.index
 
-
-		[root@localhost data]# pwd
-		/home/mysql/mysql3306/data
+		
 		[root@localhost data]# ll
 		总用量 4310876
-		-rw-r-----. 1 mysql mysql         56 6月   1 17:07 auto.cnf
-		drwxr-x---. 2 mysql mysql      57344 7月  24 15:35 bak_niuniuh5_db
-		drwxr-x---. 2 mysql mysql       4096 8月  10 11:32 base_db
 		-rw-r-----. 1 mysql mysql   11060762 8月  13 16:06 error.log
-		-rw-r-----. 1 mysql mysql    1510418 8月  10 10:47 ib_buffer_pool
-		-rw-r-----. 1 mysql mysql 1073741824 8月  13 15:59 ibdata1
-		-rw-r-----. 1 mysql mysql 1073741824 8月  13 15:59 ib_logfile0
-		-rw-r-----. 1 mysql mysql 1073741824 7月  12 02:30 ib_logfile1
-		-rw-r-----. 1 mysql mysql 1073741824 8月  13 15:59 ib_logfile2
-		-rw-r-----. 1 mysql mysql   79691776 8月  10 11:32 ibtmp1
 		-rw-r-----. 1 mysql mysql       5726 8月  13 16:06 innodb_status.31400
-		-rw-r-----. 1 mysql mysql   23225841 6月  15 16:05 localhost.log
-		drwxr-x---. 2 mysql mysql       4096 6月   1 17:07 mysql
-		srwxrwxrwx. 1 mysql mysql          0 8月  10 10:48 mysql3306.sock
-		-rw-------. 1 mysql mysql          6 8月  10 10:48 mysql3306.sock.lock
-		-rw-r-----. 1 mysql mysql          6 8月  10 10:48 mysqldb.pid
-		drwxr-x---. 2 mysql mysql      40960 6月  11 16:55 niuniuh5_db
-		drwxr-x---. 2 mysql mysql       8192 6月   1 17:07 performance_schema
 		-rw-r-----. 1 mysql mysql    3428559 8月  13 16:06 slow.log
-		drwxr-x---. 2 mysql mysql       8192 6月   1 17:07 sys
-		drwxr-x---. 2 mysql mysql       4096 7月  31 17:39 test_db
+
 		[root@localhost data]# date
 
 
