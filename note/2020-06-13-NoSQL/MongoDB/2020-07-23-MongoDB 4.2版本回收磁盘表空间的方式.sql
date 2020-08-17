@@ -1418,6 +1418,7 @@
 	1. remove 会产生逻辑的空闲空间，这些空间能立即用于写入新数据，但文件占用的总物理空间不会立即回收；
 	
 	2. 如何查看碎片空间的大小
+		
 		观察 block-manager.file bytes available for reuse 指标就知道碎片空间的大小了。
 		
 	3. compact 的加锁：

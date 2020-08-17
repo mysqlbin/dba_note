@@ -61,6 +61,11 @@
 	db.foo.drop()      # 删除集合本身 和 集合的元数据
 
 
+删除单个文档
+	db.table_clubgamelog.remove({'szToken':'10002-890598-1593716379-1-3'})
+
+
+
 5. 修改/更新
 	
 	

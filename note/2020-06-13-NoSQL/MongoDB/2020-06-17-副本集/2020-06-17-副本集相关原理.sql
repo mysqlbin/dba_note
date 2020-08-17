@@ -1,4 +1,7 @@
 
+https://mongoing.com/archives/2369  MongoDB复制集数据同步流程
+https://zhuanlan.zhihu.com/p/79786663 MongoDB副本集同步原理
+
 
 复制的原理：
 	
@@ -60,5 +63,6 @@
 		
 	5. 所有从节点的最后操作时间都是一样怎么办？就是谁先成为主节点的时间最快就选谁。
 	
+
 	
 	
