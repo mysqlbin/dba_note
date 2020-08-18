@@ -167,3 +167,4 @@ quick
 max_allowed_packet = 32M
 #默认是4M，容易造成 Packets out of order 的问题。
 
+sql_mode=NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES 
