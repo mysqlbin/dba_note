@@ -244,8 +244,13 @@
 
 
 9. 小结和相关参考
-	https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/iostat.html
+	
 	结合 zabbix 监控中CPU utiliztion项的 CPU idle time 和 CPU iowait time 来做分析。
-
-
+	
+	iostat 中3个重要的指标：
+		磁盘I/O：%util 和 %iowait
+		CPU空闲：%idle 
+	
+	https://linuxtools-rst.readthedocs.io/zh_CN/latest/tool/iostat.html
+	
 
