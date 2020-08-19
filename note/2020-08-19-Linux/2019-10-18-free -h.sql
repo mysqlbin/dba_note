@@ -16,6 +16,7 @@ https://blog.csdn.net/alan_liuyue/article/details/90236419
 	buff/cache：缓冲、缓存区内存数，缓存在应用之中；
  
 	available：真正剩余的可被程序应用的内存数；
+	
  3. 说明：
 
 系统剩余内存为：available
