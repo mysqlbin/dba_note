@@ -46,6 +46,30 @@ other:
 
 
 
+清空表数据
+	t1   ：表大小13GB
+	t2   ：表大小3GB
+	t3   ：表大小2.5GB
+	t4   ：表大小3GB
+
+	mysql> truncate table t1;
+	Query OK, 0 rows affected (0.78 sec)
+
+	mysql> truncate table t2;
+	Query OK, 0 rows affected (0.48 sec)
+
+	mysql> truncate table t3;
+	Query OK, 0 rows affected (0.43 sec)
+
+	mysql> truncate table t4;
+	Query OK, 0 rows affected (0.34 sec)
+	
+	
+	-- 3个月前已经把这几个表的数据，按日期写入每天的日期表中，然后这4个表最近3个月都没有数据写入，也没有对表进行读操作。
+	-- 在BP缓冲池没有数据，也没有脏页，所以删除会很快。
+	
+	
+	
 
 
 
