@@ -46,7 +46,7 @@ other:
 
 
 
-清空表数据
+生产环境清空表数据实践
 	t1   ：表大小13GB
 	t2   ：表大小3GB
 	t3   ：表大小2.5GB
@@ -64,9 +64,9 @@ other:
 	mysql> truncate table t4;
 	Query OK, 0 rows affected (0.34 sec)
 	
-	
+	-- truncate table = drop table + create table;
 	-- 3个月前已经把这几个表的数据，按日期写入每天的日期表中，然后这4个表最近3个月都没有数据写入，也没有对表进行读操作。
-	-- 在BP缓冲池没有数据，也没有脏页，所以删除会很快。
+	-- 在BP缓冲池没有数据，也没有脏页，所以drop table会很快。
 	
 	
 	
