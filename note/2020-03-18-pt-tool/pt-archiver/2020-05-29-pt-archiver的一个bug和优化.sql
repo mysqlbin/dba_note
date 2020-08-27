@@ -149,7 +149,7 @@
 	2020-05-29T08:02:53.271065Z	 7520 Quit	
 	
 5. 解决办法
-		
+	/usr/bin/pt-archiver	
 	$first_sql .= " AND ($col < " . $q->quote_val($val) . ")"; 
 	改为
 	$first_sql .= " AND ($col <= " . $q->quote_val($val) . ")";

@@ -14,7 +14,7 @@
 1.12 Start temporary, End temporary
 1.13 LooseScan
 1.14 FirstMatch(tbl_name)
-
+1.15 Select tables optimized away
 
 
 1.1 No tables used
@@ -367,5 +367,53 @@
 1.14 FirstMatch(tbl_name)
 
 	在将In子查询转为semi-join时，如果采用的是FirstMatch执行策略，则在被驱动表执行计划的Extra列就是显示FirstMatch(tbl_name)提示，比如这样：
+	
+	
+1.15 Select tables optimized away
+
+	Select tables optimized away: 
+		选择经过优化的表
+		在没有 GROUPBY 子句的情况下，基于索引优化 MIN/MAX 操作或者 对于 MyISAM 存储引擎优化 COUNT(*)操作，不必等到执行阶段再进行计算， 查询执行计划生成的阶段即完成优化
+		
+	mysql> select version();
+	+------------+
+	| version()  |
+	+------------+
+	| 5.7.22-log |
+	+------------+
+	1 row in set (0.00 sec)
+	
+	CREATE TABLE `table_t120200801` (
+	  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引',
+	  `userId` int(11) NOT NULL COMMENT '',
+	  `CreateTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发生时间',
+	  PRIMARY KEY (`ID`),
+	  KEY `idx_CreateTime` (`CreateTime`)
+	) ENGINE=InnoDB AUTO_INCREMENT=1847500000000 DEFAULT CHARSET=utf8mb4 COMMENT='';
+
+	
+	mysql> desc select max(ID), min(ID) from table_t120200801;
+	+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------------------------+
+	| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                        |
+	+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------------------------+
+	|  1 | SIMPLE      | NULL  | NULL       | NULL | NULL          | NULL | NULL    | NULL | NULL |     NULL | Select tables optimized away |
+	+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+------------------------------+
+	1 row in set, 1 warning (0.03 sec)
+	
+	mysql> select count(*) from table_t120200801;
+	+----------+
+	| count(*) |
+	+----------+
+	|   205742 |
+	+----------+
+	1 row in set (0.09 sec)
+
+	mysql> select max(ID), min(ID) from table_t120200801;
+	+---------------+---------------+
+	| max(ID)       | min(ID)       |
+	+---------------+---------------+
+	| 1847500205741 | 1847500000000 |
+	+---------------+---------------+
+	1 row in set (0.00 sec)
 	
 	
