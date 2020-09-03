@@ -47,3 +47,11 @@
 5. 小结
 	快速加列是需要加MDL写锁的。
 	
+	http://blog.itpub.net/15498/viewspace-2645164/  
+		Instant add column功能自MySQL 8.0.12版本引入，INSTANT操作仅修改数据字典中的元数据。在准备和执行期间，不会在表上采用独占元数据锁， 并且表数据不受影响，从而使操作立即生效。允许并发DML。
+		这里感觉不对。
+		
+	进一步的验证方法，指定ALGORITHM = INSTANT：
+		alter table test1 add column age int(11) not null default 0 comment '年龄', ALGORITHM = INSTANT;	
+		
+	
