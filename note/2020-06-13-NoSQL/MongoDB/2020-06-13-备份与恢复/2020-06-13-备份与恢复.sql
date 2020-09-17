@@ -40,7 +40,7 @@
 		
 		mongorestore --host "192.168.1.31:27017"  -u "admin" -p "admin" --authenticationDatabase "admin" -d sbtest_db_02 --gzip --dir='/data/20200613/sbtest_db'  
 
-		mongorestore --host "1"  -u "admin" -p "admin123456" --authenticationDatabase "admin" -d niuniuh5_modb --gzip --dir='/home/dba2/20200615/niuniuh5_modb' 	
+		mongorestore --host "1"  -u "admin" -p "admin123456" --authenticationDatabase "admin" -d aiuaiuh5_modb --gzip --dir='/home/dba2/20200615/aiuaiuh5_modb' 	
 		
 
 生产实践		
@@ -49,22 +49,22 @@
 	benet          0.000GB
 	config         0.000GB
 	local          0.000GB
-	niuniuh5_modb  6.726GB
+	aiuaiuh5_modb  6.726GB
 	
-	niuniuh5_modb 占用磁盘的空间大小： 11.20GB + 7.61GB
+	aiuaiuh5_modb 占用磁盘的空间大小： 11.20GB + 7.61GB
 	
 	
 备份数据	
-	time mongodump -d niuniuh5_modb -o /mydata/`date +%Y%m%d` 
+	time mongodump -d aiuaiuh5_modb -o /mydata/`date +%Y%m%d` 
 	
-	2020-06-13T16:39:42.305+0800	[########################]  niuniuh5_modb.table_clubgamelog  5126153/5126153  (100.0%)
-	2020-06-13T16:39:42.305+0800	done dumping niuniuh5_modb.table_clubgamelog (5126153 documents)
-	2020-06-13T16:39:42.428+0800	[###############.........]  niuniuh5_modb.table_clubgamescorerobotdetail  18217062/27497094  (66.3%)
+	2020-06-13T16:39:42.305+0800	[########################]  aiuaiuh5_modb.table_clubgamelog  5126153/5126153  (100.0%)
+	2020-06-13T16:39:42.305+0800	done dumping aiuaiuh5_modb.table_clubgamelog (5126153 documents)
+	2020-06-13T16:39:42.428+0800	[###############.........]  aiuaiuh5_modb.table_clubgamescorerobotdetail  18217062/27497094  (66.3%)
 
 	....................................................................................................................................
 	
-	2020-06-13T16:40:21.477+0800	[########################]  niuniuh5_modb.table_clubgamescorerobotdetail  27497094/27497094  (100.0%)
-	2020-06-13T16:40:21.477+0800	done dumping niuniuh5_modb.table_clubgamescorerobotdetail (27497094 documents)
+	2020-06-13T16:40:21.477+0800	[########################]  aiuaiuh5_modb.table_clubgamescorerobotdetail  27497094/27497094  (100.0%)
+	2020-06-13T16:40:21.477+0800	done dumping aiuaiuh5_modb.table_clubgamescorerobotdetail (27497094 documents)
 
 	real	2m18.136s
 	user	1m2.872s
@@ -93,58 +93,58 @@
 
 
 恢复数据
-	time mongorestore  -d niuniuh5_modb_02 --dir='/mydata/20200613/niuniuh5_modb'  
+	time mongorestore  -d aiuaiuh5_modb_02 --dir='/mydata/20200613/aiuaiuh5_modb'  
 
-	[root@database-03 mydata]# time mongorestore  -d niuniuh5_modb_02 --dir='/mydata/20200613/niuniuh5_modb' 
+	[root@database-03 mydata]# time mongorestore  -d aiuaiuh5_modb_02 --dir='/mydata/20200613/aiuaiuh5_modb' 
 		2020-06-13T21:39:15.926+0800	the --db and --collection args should only be used when restoring from a BSON file. Other uses are deprecated and will not exist in the future; use --nsInclude instead
-		2020-06-13T21:39:15.926+0800	building a list of collections to restore from /mydata/20200613/niuniuh5_modb dir
-		2020-06-13T21:39:15.928+0800	reading metadata for niuniuh5_modb_02.table_clubgamescorerobotdetail from /mydata/20200613/niuniuh5_modb/table_clubgamescorerobotdetail.metadata.json
-		2020-06-13T21:39:15.928+0800	reading metadata for niuniuh5_modb_02.table_clubgamelog from /mydata/20200613/niuniuh5_modb/table_clubgamelog.metadata.json
-		2020-06-13T21:39:15.945+0800	restoring niuniuh5_modb_02.table_clubgamescorerobotdetail from /mydata/20200613/niuniuh5_modb/table_clubgamescorerobotdetail.bson
-		2020-06-13T21:39:15.960+0800	restoring niuniuh5_modb_02.table_clubgamelog from /mydata/20200613/niuniuh5_modb/table_clubgamelog.bson
-		2020-06-13T21:39:18.925+0800	[........................]  niuniuh5_modb_02.table_clubgamescorerobotdetail  66.0MB/11.2GB  (0.6%)
-		2020-06-13T21:39:18.925+0800	[........................]               niuniuh5_modb_02.table_clubgamelog   180MB/7.61GB  (2.3%)
+		2020-06-13T21:39:15.926+0800	building a list of collections to restore from /mydata/20200613/aiuaiuh5_modb dir
+		2020-06-13T21:39:15.928+0800	reading metadata for aiuaiuh5_modb_02.table_clubgamescorerobotdetail from /mydata/20200613/aiuaiuh5_modb/table_clubgamescorerobotdetail.metadata.json
+		2020-06-13T21:39:15.928+0800	reading metadata for aiuaiuh5_modb_02.table_clubgamelog from /mydata/20200613/aiuaiuh5_modb/table_clubgamelog.metadata.json
+		2020-06-13T21:39:15.945+0800	restoring aiuaiuh5_modb_02.table_clubgamescorerobotdetail from /mydata/20200613/aiuaiuh5_modb/table_clubgamescorerobotdetail.bson
+		2020-06-13T21:39:15.960+0800	restoring aiuaiuh5_modb_02.table_clubgamelog from /mydata/20200613/aiuaiuh5_modb/table_clubgamelog.bson
+		2020-06-13T21:39:18.925+0800	[........................]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  66.0MB/11.2GB  (0.6%)
+		2020-06-13T21:39:18.925+0800	[........................]               aiuaiuh5_modb_02.table_clubgamelog   180MB/7.61GB  (2.3%)
 		2020-06-13T21:39:18.925+08
 		2020-06-13T21:39:30.926+0800	
-		2020-06-13T21:39:33.927+0800	[........................]  niuniuh5_modb_02.table_clubgamescorerobotdetail   371MB/11.2GB   (3.2%)
-		2020-06-13T21:39:33.927+0800	[###.....................]               niuniuh5_modb_02.table_clubgamelog  1012MB/7.61GB  (13.0%)
+		2020-06-13T21:39:33.927+0800	[........................]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail   371MB/11.2GB   (3.2%)
+		2020-06-13T21:39:33.927+0800	[###.....................]               aiuaiuh5_modb_02.table_clubgamelog  1012MB/7.61GB  (13.0%)
 		2020-06-13T21:39:33.927+0800	
 		....................................................................................................................................
 		
-		2020-06-13T21:41:39.925+0800	[######################..]               niuniuh5_modb_02.table_clubgamelog  7.20GB/7.61GB  (94.7%)
+		2020-06-13T21:41:39.925+0800	[######################..]               aiuaiuh5_modb_02.table_clubgamelog  7.20GB/7.61GB  (94.7%)
 		2020-06-13T21:41:39.925+0800	
-		2020-06-13T21:41:42.925+0800	[#####...................]  niuniuh5_modb_02.table_clubgamescorerobotdetail  2.69GB/11.2GB  (24.0%)
-		2020-06-13T21:41:42.925+0800	[#######################.]               niuniuh5_modb_02.table_clubgamelog  7.37GB/7.61GB  (96.9%)
+		2020-06-13T21:41:42.925+0800	[#####...................]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  2.69GB/11.2GB  (24.0%)
+		2020-06-13T21:41:42.925+0800	[#######################.]               aiuaiuh5_modb_02.table_clubgamelog  7.37GB/7.61GB  (96.9%)
 		2020-06-13T21:41:42.925+0800	
-		2020-06-13T21:41:45.926+0800	[#####...................]  niuniuh5_modb_02.table_clubgamescorerobotdetail  2.74GB/11.2GB  (24.5%)
-		2020-06-13T21:41:45.926+0800	[#######################.]               niuniuh5_modb_02.table_clubgamelog  7.50GB/7.61GB  (98.6%)
+		2020-06-13T21:41:45.926+0800	[#####...................]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  2.74GB/11.2GB  (24.5%)
+		2020-06-13T21:41:45.926+0800	[#######################.]               aiuaiuh5_modb_02.table_clubgamelog  7.50GB/7.61GB  (98.6%)
 		2020-06-13T21:41:45.926+0800	
-		2020-06-13T21:41:47.981+0800	[########################]  niuniuh5_modb_02.table_clubgamelog  7.61GB/7.61GB  (100.0%)
+		2020-06-13T21:41:47.981+0800	[########################]  aiuaiuh5_modb_02.table_clubgamelog  7.61GB/7.61GB  (100.0%)
 		数据导入完成之后才建索引
-		2020-06-13T21:41:47.981+0800	restoring indexes for collection niuniuh5_modb_02.table_clubgamelog from metadata
-		2020-06-13T21:41:48.925+0800	[######..................]  niuniuh5_modb_02.table_clubgamescorerobotdetail  2.81GB/11.2GB  (25.1%)
-		2020-06-13T21:41:51.925+0800	[######..................]  niuniuh5_modb_02.table_clubgamescorerobotdetail  2.88GB/11.2GB  (25.7%)
+		2020-06-13T21:41:47.981+0800	restoring indexes for collection aiuaiuh5_modb_02.table_clubgamelog from metadata
+		2020-06-13T21:41:48.925+0800	[######..................]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  2.81GB/11.2GB  (25.1%)
+		2020-06-13T21:41:51.925+0800	[######..................]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  2.88GB/11.2GB  (25.7%)
 		
 		....................................................................................................................................
 		
-		2020-06-13T21:42:54.925+0800	[#########...............]  niuniuh5_modb_02.table_clubgamescorerobotdetail  4.26GB/11.2GB  (38.1%)
-		2020-06-13T21:42:57.925+0800	[#########...............]  niuniuh5_modb_02.table_clubgamescorerobotdetail  4.33GB/11.2GB  (38.7%)
-		2020-06-13T21:43:00.000+0800	finished restoring niuniuh5_modb_02.table_clubgamelog (5126153 documents, 0 failures)
-		2020-06-13T21:43:00.925+0800	[#########...............]  niuniuh5_modb_02.table_clubgamescorerobotdetail  4.40GB/11.2GB  (39.4%)
+		2020-06-13T21:42:54.925+0800	[#########...............]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  4.26GB/11.2GB  (38.1%)
+		2020-06-13T21:42:57.925+0800	[#########...............]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  4.33GB/11.2GB  (38.7%)
+		2020-06-13T21:43:00.000+0800	finished restoring aiuaiuh5_modb_02.table_clubgamelog (5126153 documents, 0 failures)
+		2020-06-13T21:43:00.925+0800	[#########...............]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  4.40GB/11.2GB  (39.4%)
 		
 		....................................................................................................................................
 		
-		2020-06-13T21:43:12.925+0800	[##########..............]  niuniuh5_modb_02.table_clubgamescorerobotdetail  4.74GB/11.2GB  (42.3%)
+		2020-06-13T21:43:12.925+0800	[##########..............]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  4.74GB/11.2GB  (42.3%)
 		
 		....................................................................................................................................
 		
-		2020-06-13T21:43:30.925+0800	[###########.............]  niuniuh5_modb_02.table_clubgamescorerobotdetail  5.23GB/11.2GB  (46.8%)
+		2020-06-13T21:43:30.925+0800	[###########.............]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  5.23GB/11.2GB  (46.8%)
 		
 		....................................................................................................................................
 
-		2020-06-13T21:47:11.839+0800	[########################]  niuniuh5_modb_02.table_clubgamescorerobotdetail  11.2GB/11.2GB  (100.0%)
-		2020-06-13T21:47:11.839+0800	restoring indexes for collection niuniuh5_modb_02.table_clubgamescorerobotdetail from metadata
-		2020-06-13T21:51:14.255+0800	finished restoring niuniuh5_modb_02.table_clubgamescorerobotdetail (27497094 documents, 0 failures)
+		2020-06-13T21:47:11.839+0800	[########################]  aiuaiuh5_modb_02.table_clubgamescorerobotdetail  11.2GB/11.2GB  (100.0%)
+		2020-06-13T21:47:11.839+0800	restoring indexes for collection aiuaiuh5_modb_02.table_clubgamescorerobotdetail from metadata
+		2020-06-13T21:51:14.255+0800	finished restoring aiuaiuh5_modb_02.table_clubgamescorerobotdetail (27497094 documents, 0 failures)
 		2020-06-13T21:51:14.255+0800	32623247 document(s) restored successfully. 0 document(s) failed to restore.
 
 		real	11m58.623s
@@ -157,18 +157,18 @@
 	benet             0.000GB
 	config            0.000GB
 	local             0.000GB
-	niuniuh5_modb     6.726GB
-	niuniuh5_modb_02  6.278GB
+	aiuaiuh5_modb     6.726GB
+	aiuaiuh5_modb_02  6.278GB
 
 	
-	use niuniuh5_modb
+	use aiuaiuh5_modb
 	db.table_clubgamelog.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 	db.table_clubgamescorerobotdetail.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 	
 	detail:
 
-		> use niuniuh5_modb
-		switched to db niuniuh5_modb
+		> use aiuaiuh5_modb
+		switched to db aiuaiuh5_modb
 		> db.table_clubgamelog.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 		{ "_id" : null, "num_tutorial" : 5126153 }
 		> db.table_clubgamescorerobotdetail.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
@@ -176,14 +176,14 @@
 	
 	....................................................................................................................................
 	
-	use niuniuh5_modb_02
+	use aiuaiuh5_modb_02
 	db.table_clubgamelog.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 	db.table_clubgamescorerobotdetail.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 	
 	
 	detail:
-		> use niuniuh5_modb_02
-		switched to db niuniuh5_modb_02
+		> use aiuaiuh5_modb_02
+		switched to db aiuaiuh5_modb_02
 		> db.table_clubgamelog.aggregate([{$group : {_id : "$by_user", num_tutorial : {$sum : 1}}}])
 
 		{ "_id" : null, "num_tutorial" : 5126153 }

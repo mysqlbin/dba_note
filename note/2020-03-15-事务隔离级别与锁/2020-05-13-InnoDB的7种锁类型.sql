@@ -411,6 +411,8 @@
 	https://dev.mysql.com/doc/refman/8.0/en/innodb-locking.html
 	https://mp.weixin.qq.com/s/2VHDVbZdJxldjVFQqzCC7A  MySQL InnoDB 引擎中的 7 种锁类型，你都知道吗？
 	https://mp.weixin.qq.com/s/iXZATb1qjrt-Pv1wx-rykQ  技本功丨浅谈MySQL的七种锁 # 原创 袋鼠云技术团队
+	https://mp.weixin.qq.com/s/KL-xVv8asA78bH9bVQLwPw  MySQL锁都分不清，怎么面试进大厂？
+
 
 5. 别人的总结
 

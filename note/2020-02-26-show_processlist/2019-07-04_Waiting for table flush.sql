@@ -1,7 +1,9 @@
 
 
 
-LOCK TABLES `t3` WRITE;
+LOCK TABLES `t1` WRITE;
+INSERT INTO `test_db`.`t1` ( `age`, `tEndTime`) VALUES ('1', '2020-07-13 14:41:43');
+
 
 root@mysqldb 05:41:  [(none)]> show processlist;
 +----+-----------------+--------------------+----------+---------+------+-------------------------+------------------------+

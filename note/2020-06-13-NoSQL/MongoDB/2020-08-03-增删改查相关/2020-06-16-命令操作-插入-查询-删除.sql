@@ -180,5 +180,35 @@
 
 	
 10. 查询最后一个文档
-db.table_clubgamelog.find().sort({"_id":-1}).limit(1)
-db.table_clubgamescorerobotdetail.find().sort({"_id":-1}).limit(1)
+	db.table_clubgamelog.find().sort({"_id":-1}).limit(1)
+	db.table_clubgamescorerobotdetail.find().sort({"_id":-1}).limit(1)
+
+
+11. 删除数据库
+	repl_set:PRIMARY> use abc_db
+	switched to db abc_db
+	repl_set:PRIMARY> db.dropDatabase()
+	{
+		"dropped" : "abc_db",
+		"ok" : 1,
+		"$clusterTime" : {
+			"clusterTime" : Timestamp(1599721912, 11),
+			"signature" : {
+				"hash" : BinData(0,"p51L+zyZRE6Ltsy75uLiIxbI20M="),
+				"keyId" : NumberLong("6838881995993382915")
+			}
+		},
+		"operationTime" : Timestamp(1599721912, 11)
+	}
+	repl_set:PRIMARY> show dbs
+	admin      0.000GB
+	benet      0.000GB
+	config     0.000GB
+	local      2.491GB
+	niuniu_h5  6.482GB
+	test       0.049GB
+	
+	https://www.runoob.com/mongodb/mongodb-dropdatabase.html  MongoDB 删除数据库
+
+
+	
