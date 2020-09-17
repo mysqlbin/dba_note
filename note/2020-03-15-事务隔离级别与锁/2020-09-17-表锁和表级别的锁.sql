@@ -84,7 +84,7 @@
 		------------
 		...........................................
 		---TRANSACTION 421692776193488, not started
-		mysql tables in use 1, locked 1
+		mysql tables in use 1, locked 1    -- 通过表锁锁表.
 		0 lock struct(s), heap size 1136, 0 row lock(s)
 
 --------------------------------------
