@@ -1,26 +1,28 @@
 
--1. 实验目的	
-0. 使用到的相关SQL语句 
-1. 初始表结构和数据
-2. MySQL 8.0.18
+1. 实验目的	
+2. 使用到的相关SQL语句 
+3. 初始表结构和数据
+4. MySQL 8.0.18
+	4.1 环境1--事务隔离级别为RC读已提交
+	4.2 环境2--事务隔离级别为RR可重复读
+5. 小结	
 
-	2.1 环境1--事务隔离级别为RC读已提交
-	2.2 环境2--事务隔离级别为RR可重复读
-	
+
+1. 实验目的：
+	参数innodb_autoinc_lock_mode=1：INSERT IGNORE INTO `_t_new` ... selet ... from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) lock in share mode; 
+		
+	在 8.0.18  版本中RC或者RR隔离级别还需要申请 t.id = 500001 的主键记录锁吗
+	在 8.0.18 版本中优化了唯一索引范围 bug（RC隔离级别也是如此吗），如下： 
+
+		session A                                       session B                                                                                                                                                                                     
+		begin;
+		select * from t where id>10 and id<=15 for update;
+														update t set d=d+1 where id=20;
+														(Query OK)  
+	可以通过实验验证下。
 
 
--1. 实验目的：
-	参数innodb_autoinc_lock_mode=1：INSERT IGNORE INTO `_t_new` ... selet ... from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) lock in share mode; 在 8.0.19  版本中RC或者RR隔离级别还需要申请 t.id = 500001 的主键记录锁吗
-		 在 8.0.18 版本中优化了唯一索引范围 bug（RC隔离级别也是如此吗），如下： 
-
-			session A                                       session B                                                                                                                                                                                     
-			begin;
-			select * from t where id>10 and id<=15 for update;
-															update t set d=d+1 where id=20;
-															(Query OK)  
-		可以通过实验验证下。
-
-0. 使用到的相关SQL语句 
+2.. 使用到的相关SQL语句 
 
 	create  database zst DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
 		
@@ -52,7 +54,7 @@
 	set global sync_binlog=1;
 
 
-1. 初始表结构和数据、数据库版本
+3. 初始表结构和数据、数据库版本
 
 	CREATE TABLE `t` (
 	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
@@ -99,7 +101,8 @@
 	+------------+
 	1 row in set (0.00 sec)
 
-2.1 环境1--事务隔离级别为RC读已提交
+
+4.1 环境1--事务隔离级别为RC读已提交
 	root@mysqldb 03:11:  [sbtest]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_schema='sbtest' and table_name="t";
 	+----------------+
 	| AUTO_INCREMENT |
@@ -124,12 +127,7 @@
 						SELECT * from t WHERE ((`id` >= '1')) AND ((`id` <= '5')) LOCK IN SHARE MODE;
 						(Blocked)
 						
-	root@mysqldb 11:11:  [(none)]> select * from information_schema.innodb_trx\G;
-	ERROR 2006 (HY000): MySQL server has gone away
-	No connection. Trying to reconnect...
-	Connection id:    18
-	Current database: *** NONE ***
-
+	mysql> select * from information_schema.innodb_trx\G;
 	*************************** 1. row ***************************
 						trx_id: 1005113
 					 trx_state: RUNNING
@@ -215,7 +213,7 @@
 	9 rows in set (0.00 sec)
 
 
-2.2 环境2--事务隔离级别为RR可重复读
+4.2 环境2--事务隔离级别为RR可重复读
 	ALTER TABLE t auto_increment=6;
 	root@mysqldb 12:51:  [zst]> select version();
 	+-----------+
@@ -266,9 +264,9 @@
 	begin;	            
 	INSERT INTO `t` (`c`, `d`) VALUES ('6', '6');  							
 	Query OK, 1 row affected (0.00 sec)
+	
 						begin;  
 						SELECT * from t WHERE ((`id` >= '1')) AND ((`id` <= '5')) LOCK IN SHARE MODE;
-	
 						Query OK, 5 rows affected (0.00 sec)
 						Records: 5  Duplicates: 0  Warnings: 0
 
@@ -276,8 +274,7 @@
 	SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
 	select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 
-	root@mysqldb 19:48:  [(none)]> select * from information_schema.innodb_trx\G;
-	,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	mysql> select * from information_schema.innodb_trx\G;
 	*************************** 1. row ***************************
 						trx_id: 1005121
 					 trx_state: RUNNING
@@ -331,7 +328,7 @@
 	2 rows in set (0.00 sec)
 
 	
-	root@mysqldb 19:49:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 	| ENGINE_LOCK_ID                          | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
@@ -346,6 +343,8 @@
 	7 rows in set (0.00 sec)
 
 
-
-
-\
+5. 小结
+	本实验验证了MySQL 8.0.18下RR隔离级别对唯一索引等值范围加锁的优化：不再需要访问到满足条件的第一行记录为止。
+	
+	
+	

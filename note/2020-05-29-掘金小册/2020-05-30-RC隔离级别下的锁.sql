@@ -5,11 +5,24 @@
 4. 二级索引等值范围锁
 	4.1 实验1
 	4.2 实验2
-
+5. 全表扫描	
+	5.1 实验1	
+	5.2 实验2	
+	5.3 实验小结
 6. 小结
-
+7. 证明RC隔离级别下先加锁再退化释放锁的实验
+	7.1 表结构和数据的初始
+	7.2 实验1
+	7.3 实验2
+	7.5 小结
+	7.6 思考
+8. 证明RC隔离级别下先加锁再退化释放锁的实验 --基于主键索引范围等值查询
+	8.1 初始化表结构和数据 
+	8.2 实验1
+	8.3 实验2	
 	
 1. 表结构和数据的初始化
+
 	drop table if exists hero;
 	CREATE TABLE hero (
 		number INT,
@@ -26,7 +39,7 @@
 	INSERT INTO hero VALUES (20, 's孙权', '吴');
 
 
-	root@mysqldb 17:36:  [(none)]> select @@session.transaction_isolation;
+	mysql> select @@session.transaction_isolation;
 	+---------------------------------+
 	| @@session.transaction_isolation |
 	+---------------------------------+
@@ -76,9 +89,10 @@
 		|     15 | x荀彧   | 魏      |
 		+--------+---------+---------+
 		1 row in set (0.00 sec)
-						BEGIN;
-						SELECT * FROM hero WHERE number <= 8 LOCK IN SHARE MODE;
-						(BLocked)
+								
+								BEGIN;
+								SELECT * FROM hero WHERE number <= 8 LOCK IN SHARE MODE;
+								(BLocked)
 
 		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
@@ -96,6 +110,7 @@
 
 		
 		session B 的加锁过程之一: 
+			
 			因为这里是范围等值查询, 需要访问到 id=15 才会停止下来, 所以需要申请 id=15 的记录加锁, 因此被 session A 阻塞. 
 			假设没有 session A 这个事务, 并且 id=15 在RC级别下没有别的事务锁住，所以 session B 会把 id=15 的记录锁释放.
 			如果对不满足条件的行上的行锁加锁的时候, 如果该行锁已经被别的事务持有,那么就会被阻塞.
@@ -103,6 +118,7 @@
 
 			
 3. 二级索引等值锁
+
 	等值查询, 不再需要向遍历到不满足条件的第一个值为止.
 	
 	session A           session B
@@ -180,7 +196,7 @@
 	T1
 
 						begin;
-	T2					SELECT * FROM hero WHERE name = 'l刘备' FOR UPDATE;
+	T2					SELECT * FROM hero WHERE name = 'l刘备' FOR UPDATE;    
 						(Blocked)
 	
 	T1
@@ -202,15 +218,20 @@
 		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+--------------+
 		| 140349534317136:1168:140349464965208  |                  6409 |        61 | hero        | NULL       | TABLE     | IX            | GRANTED     | NULL         |
 		| 140349534317136:8:5:2:140349464962168 |                  6409 |        61 | hero        | idx_name   | RECORD    | X,REC_NOT_GAP | WAITING     | 'l刘备', 1   |
+		
 		| 140349534318000:1168:140349464971160  |       421824511028656 |        62 | hero        | NULL       | TABLE     | IS            | GRANTED     | NULL         |
 		| 140349534318000:8:5:2:140349464968232 |       421824511028656 |        62 | hero        | idx_name   | RECORD    | S,REC_NOT_GAP | GRANTED     | 'l刘备', 1   |
 		| 140349534318000:8:5:4:140349464968232 |       421824511028656 |        62 | hero        | idx_name   | RECORD    | S,REC_NOT_GAP | GRANTED     | 'c曹操', 8   |
 		| 140349534318000:8:4:4:140349464968576 |       421824511028656 |        62 | hero        | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 8            |
 		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+--------------+
 		6 rows in set (0.01 sec)
-	
+						
+						update hero set name = 'l刘备' where number=1;
+						(Query OK)。
+						
 	
 	session A 的加锁过程:
+	
 		RC隔离级别:
 			普通索引的范围等值查询, 需要访问到不满足条件的第一个值为止, 并且需要加锁, 不会立即把该锁释放掉.
 				类似于RR隔离级别下的唯一索引范围bug
@@ -223,10 +244,11 @@
 					"如果 session B 是更新语句, 那就不一样了"
 				
 			如果是主键索引的范围等值查询,也是需要访问到不满足条件的第一个值为止, 并且需要加锁, 判断该记录不符合等值条件，又要释放掉这条记录的锁. 
-				参考笔记 <2020-05-27-证明RC隔离级别下先加锁再退化释放锁的实验.sql>
+				
 			
 		
-		会为name值为'c曹操'和'l刘备'的二级索引记录以及'c曹操'对应的聚簇索引进行加锁
+		会为name值为'c曹操'和'l刘备'的二级索引记录以及'c曹操'对应的聚簇索引进行加锁。
+		
 		
 	session A 的加锁范围:
 		idx_name: record lock: (name='c曹操', id=8)
@@ -238,7 +260,9 @@
 	
 	
 	思考: session A 是否会对 number=1 的记录加锁?
+	
 		答: 不会.
+		
 		验证如下
 			session A        session B		
 			begin;
@@ -258,6 +282,8 @@
 							|      8 | c曹操   | 魏      |
 							+--------+---------+---------+
 							1 row in set (0.11 sec)
+							
+							
 
 			或者这样验证
 				session A           session B		
@@ -269,6 +295,19 @@
 				|      8 | c曹操   | 魏      |
 				+--------+---------+---------+
 				1 row in set (0.00 sec)
+				
+				"""
+				
+				或者用 for update.
+				SELECT * FROM hero FORCE INDEX(idx_name) WHERE name <= 'c曹操' for update;
+				+--------+---------+---------+
+				| number | name    | country |
+				+--------+---------+---------+
+				|      8 | c曹操   | 魏      |
+				+--------+---------+---------+
+				1 row in set (0.01 sec)
+				"""
+				
 				T1
 
 									begin;
@@ -282,28 +321,9 @@
 									1 row in set (0.00 sec)
 					
 			
-			再或者这样验证
-				session A           session B		
-				begin;
-				SELECT * FROM hero FORCE INDEX(idx_name) WHERE name <= 'c曹操' for update;
-				+--------+---------+---------+
-				| number | name    | country |
-				+--------+---------+---------+
-				|      8 | c曹操   | 魏      |
-				+--------+---------+---------+
-				1 row in set (0.01 sec)
 			
-									begin;
-									SELECT * FROM hero WHERE number = 1 FOR UPDATE;
-				
-									+--------+---------+---------+
-									| number | name    | country |
-									+--------+---------+---------+
-									|      1 | l刘备   | 蜀      |
-									+--------+---------+---------+
-									1 row in set (0.00 sec)
 
-									
+							
 			再或者这样验证
 				session A        session B		
 				begin;
@@ -316,7 +336,7 @@
 				1 row in set (0.00 sec)
 				
 								begin;
-								desc SELECT * FROM hero FORCE INDEX(idx_name) WHERE name <= 'c曹操' for update;
+								SELECT * FROM hero FORCE INDEX(idx_name) WHERE name <= 'c曹操' for update; 
 								+--------+---------+---------+
 								| number | name    | country |
 								+--------+---------+---------+
@@ -324,8 +344,11 @@
 								+--------+---------+---------+
 								1 row in set (0.00 sec)	
 								
-				
-		如果 session B 是更新语句, 那就不一样了		
+			
+		-----------------------------------------------------------------------------------------------------------------------------
+		
+		如果 session B 是更新语句, 那就不一样了	
+		
 			session A       session B		
 			begin;
 			SELECT * FROM hero WHERE number=1 FOR UPDATE;
@@ -337,7 +360,7 @@
 			1 row in set (0.00 sec)
 			
 							begin;
-							update hero set name = '曹操' where name <= 'c曹操';
+							update hero set name = 'c曹操' where name <= 'c曹操';
 							(Blocked)
 							
 			mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
@@ -348,7 +371,6 @@
 			| 140349534317136:8:5:2:140349464962168 |                  6434 |        72 | hero        | idx_name   | RECORD    | X,REC_NOT_GAP | GRANTED     | 'l刘备', 1   |
 			| 140349534317136:8:5:4:140349464962168 |                  6434 |        72 | hero        | idx_name   | RECORD    | X,REC_NOT_GAP | GRANTED     | 'c曹操', 8   |
 			| 140349534317136:8:4:4:140349464962512 |                  6434 |        72 | hero        | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 8            |
-			
 			| 140349534317136:8:4:2:140349464962856 |                  6434 |        72 | hero        | PRIMARY    | RECORD    | X,REC_NOT_GAP | WAITING     | 1            |
 			
 			| 140349534318000:1168:140349464971160  |                  6432 |        71 | hero        | NULL       | TABLE     | IX            | GRANTED     | NULL         |
@@ -356,9 +378,15 @@
 			+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+--------------+
 			7 rows in set (0.05 sec)
 			
-		
+							update hero set name = 'c曹操' where name <= 'c曹操';
+							(Blocked)
+							--原地更新照样加锁。
 			
+			-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+			
+			session A       	session B		
 			begin;
+			
 			SELECT * FROM hero WHERE number=1 FOR UPDATE;
 			+--------+---------+---------+
 			| number | name    | country |
@@ -381,6 +409,7 @@
 			| 140349534318000:8:5:4:140349464968232 |                  6445 |        77 | hero        | idx_name   | RECORD    | X,REC_NOT_GAP | GRANTED     | 'c曹操', 8   |
 			| 140349534318000:8:4:4:140349464968576 |                  6445 |        77 | hero        | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 8            |
 			| 140349534318000:8:4:2:140349464968920 |                  6445 |        77 | hero        | PRIMARY    | RECORD    | X,REC_NOT_GAP | WAITING     | 1            |
+			
 			| 140349534317136:1168:140349464965208  |                  6444 |        76 | hero        | NULL       | TABLE     | IX            | GRANTED     | NULL         |
 			| 140349534317136:8:4:2:140349464962168 |                  6444 |        76 | hero        | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 1            |
 			+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+--------------+
@@ -436,13 +465,17 @@
 	5 rows in set (0.00 sec)
 	
 	UPDATE hero SET country = '汉' WHERE name <= 'c曹操';
+	
 	语句的加锁过程:
+	
 		先锁住比idx_name索引页的最小值还要小的Infimum记录值
+		
 		再对name <= 'c曹操'的记录加锁: idx_name: record lock: (name='c曹操',number=8), 同时锁住对应的主键: primary: record lock:[8]
 		
 		普通索引的范围等值查询, 需要查找到不满足条件的第一行记录为止并加锁, idx_name: record lock: (name='l刘备',number=1) + primary: record lock:[1]
 		
-		接着开始释放锁:  
+		接着开始释放锁: 
+				
 			释放 Infimum 锁
 			释放 idx_name: record lock: (name='l刘备',number=1) + primary: record lock:[1] 锁.
 			
@@ -459,7 +492,10 @@
 	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+--------------+
 	3 rows in set (0.00 sec)	
 	
-	验证是否会锁住不满足条件的第一个值
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	验证是否会锁住不满足条件的第一个值：
+	
 		session A            session B
 		begin;
 		UPDATE hero SET country = '汉' WHERE name <= 'c曹操';
@@ -467,16 +503,32 @@
 							 BEGIN;
 							 delete from hero where name='l刘备';
 							 (Query OK)
-					
-	验证是否会锁住不满足条件的第一个值对应的主键值
-		session A 
+	
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	验证是否会锁住不满足条件的第一个值对应的主键值：
+	
+	mysql> select * from hero order by name asc;
+	+--------+------------+---------+
+	| number | name       | country |
+	+--------+------------+---------+
+	|      8 | c曹操      | 魏      |
+	|      1 | l刘备      | 蜀      |
+	|     20 | s孙权      | 吴      |
+	|     15 | x荀彧      | 魏      |
+	|      3 | z诸葛亮    | 蜀      |
+	+--------+------------+---------+
+	5 rows in set (0.00 sec)
+	
+		session A 			session B
 		begin;
 		delete from hero where number=1;
+							
 							begin;
 							UPDATE hero SET country = '汉' WHERE name <= 'c曹操';
 							(Blocked)
 		
-		root@mysqldb 22:52:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+--------------+
 		| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA    |
 		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+--------------+
@@ -493,6 +545,7 @@
 		
 		
 5. 全表扫描
+	
 	mysql> select * from hero order by name asc;
 	+--------+------------+---------+
 	| number | name       | country |
@@ -505,7 +558,8 @@
 	+--------+------------+---------+
 	5 rows in set (0.00 sec)
 	
-	下面的例子验证了读提交隔离级别下还有一个优化，即：语句执行过程中加上的行锁，在语句执行完成后，就要把 不满足条件的行 上的行锁直接释放了，不需要等到事务提交。  
+	
+5.1 实验1	
 	session A          session B
 	begin;
 	SELECT * FROM hero WHERE country  = '魏' LOCK IN SHARE MODE;
@@ -547,6 +601,9 @@
 		3 rows in set (0.03 sec)
 			
 	
+	--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+5.2 实验2	
 	session A          session B
 	begin;
 	delete from hero where number=1;
@@ -566,11 +623,15 @@
 	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 	4 rows in set (0.00 sec)
 	
+5.3 实验小结
+
+	验证了读提交隔离级别下还有一个优化，即：语句执行过程中加上的行锁，在语句执行完成后，就要把 不满足条件的行 上的行锁直接释放了，不需要等到事务提交。
 	
 	RR隔离级别呢, SELECT * FROM hero WHERE country  = '魏' LOCK IN SHARE MODE; 是否会在语句执行结束后, 就把不符合条件的行锁释放掉
 	答: 不会. 参考实验笔记 <2020-05-31-RR隔离级别下的锁.sql>
 	
 6. 小结
+	
 	1. 关于ICP索引下推
 		索引条件下推（ Index Condition Pushdown，简称ICP）的功能，也就是把查询中与被使用索引有关的查询条件下推到存储引擎中判断，而不是返回到server层再判断
 		索引条件下推只是为了减少回表次数，也就是减少读取完整的聚簇索引记录的次数，从而减少IO操作。
@@ -580,13 +641,16 @@
 	2. 针对主键索引的范围等值查询, 需要访问到不满足条件的第一个值为止, 会把不满足条件的第一个值的锁释放掉.
 	
 	3. 针对update/delete模式的二级索引范围等值查询
+	
 		需要访问到不满足条件的第一个值为止, 但是会把不满足条件的第一个值+对应的主键索引的锁释放
 		 
 		
-	4. 针对for update/lock in share mode模式的二级索引范围等值查询,需要访问到不满足条件的第一个值为止, 对应的主键索引不需要上锁, 并且对不满足条件的第一个值加锁, 
+	4. 针对for update/lock in share mode模式的二级索引范围等值查询,需要访问到不满足条件的第一个值为止, 不满足条件的第一个值对应的主键索引不需要上锁, 并且对不满足条件的第一个值加锁, 
+		-- 实际的update语句模式的二级索引范围等值查询,需要访问到不满足条件的第一个值为止, 不满足条件的第一个值对应的主键索引需要上锁, 并且对不满足条件的第一个值加锁。
 		
 	
     5. 普通索引的范围等值查询, 需要访问到不满足条件的第一个值为止, 并且需要加锁, 不会立即把该锁释放掉.
+	
 		类似于RR隔离级别下的唯一索引范围bug
 				
 		如果是更新语句(update/delete), 需要回到主键索引上进行加锁.
@@ -605,5 +669,322 @@
 
 	
 	
+
+7. 证明RC隔离级别下先加锁再退化释放锁的实验
+
+7.1 表结构和数据的初始
+	drop table if exists t1;
+	CREATE TABLE `t1` (
+	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `c` (`c`)
+	) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+
+	INSERT INTO `t1` (`id`, `c`, `d`) VALUES ('1', '1', '1');
+	INSERT INTO `t1` (`id`, `c`, `d`) VALUES ('3', '3', '3');
+	INSERT INTO `t1` (`id`, `c`, `d`) VALUES ('5', '5', '5');
+
+	mysql> select * from t1;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  3 |    3 |    3 |
+	|  5 |    5 |    5 |
+	+----+------+------+
+	3 rows in set (0.00 sec)
+
+	mysql> select @@session.transaction_isolation;
+	+---------------------------------+
+	| @@session.transaction_isolation |
+	+---------------------------------+
+	| READ-COMMITTED                  |
+	+---------------------------------+
+	1 row in set (0.00 sec)
+
+	mysql> select version();
+	+-----------+
+	| version() |
+	+-----------+
+	| 8.0.17    |
+	+-----------+
+	1 row in set (0.00 sec)
+	
+7.2 实验1
+	
+	session A      session B
+	begin;      
+	delete from t1 where id<=1; 
+	
+	
+				   begin;
+				   insert into t1 values(2,2,2);
+				   (Query OK)
+				   
+				   delete from t1 where id=3;
+				   (Query OK)
+				   
+	
+7.3 实验2
+	
+	session A                    session B
+	begin;     
+	SELECT * FROM t1 where id=3 for update;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  3 |    3 |    3 |
+	+----+------+------+
+	1 row in set (0.00 sec)
+
+							    begin;
+								delete from t1 where id<=1;
+								(Blocked)
+	
+	session B 的加锁过程之一: 
+
+		因为这里是范围等值查询, 需要访问到 id=3 才会停止下来, 所以需要申请 id=3 的记录加锁, 因此被 session A 阻塞.
+
+		假设没有 session A 这个事务, 并且 id=3 在RC级别下没有别的事务锁住，所以 session B 会把 id=3 的记录锁释放.
+		
+		如果对不满足条件的行上的行锁加锁的时候, 如果该行锁已经被别的事务持有, 那么就会被阻塞.
+		
+		也就是说找到的记录都会加锁，不符合加锁规则的就释放掉.
+		
+	
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 139645745561008:1060:139645627205528  |                  2094 |        64 | t1          | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 139645745561008:3:4:2:139645627202600 |                  2094 |        64 | t1          | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 1         |
+	| 139645745561008:3:4:3:139645627202944 |                  2094 |        64 | t1          | PRIMARY    | RECORD    | X,REC_NOT_GAP | WAITING     | 3         |
+	
+	| 139645745560144:1060:139645627199576  |                  2093 |        63 | t1          | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 139645745560144:3:4:3:139645627196536 |                  2093 |        63 | t1          | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 3         |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	5 rows in set (0.00 sec)
+
+
+
+7.4 小结
+	
+	读提交隔离级别下还有一个优化，即：语句执行过程中加上的行锁，在语句执行完成后，就要把 不满足条件的行 上的行锁直接释放了，不需要等到事务提交。  
+	
+	
+7.5 思考
+	RR隔离级别怎么验证先加锁再退化释放锁
+	
+	
+	
+
+8. 证明RC隔离级别下先加锁再退化释放锁的实验 --基于主键索引范围等值查询
+				
+
+8.1 初始化表结构和数据 
+	CREATE TABLE `t` (
+	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `c` (`c`)
+	) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+	
+	
+	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('1', '1', '1');
+	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('2', '2', '2');
+	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('3', '3', '3');
+	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('4', '4', '4');
+	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('5', '5', '5');
+	
+	root@mysqldb 13:32:  [sbtest]> select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  2 |    2 |    2 |
+	|  3 |    3 |    3 |
+	|  4 |    4 |    4 |
+	|  5 |    5 |    5 |
+	+----+------+------+
+	5 rows in set (0.00 sec)
+		
+	select version();
+	+-----------+
+	| version() |
+	+-----------+
+	| 8.0.12    |
+	+-----------+
+	1 row in set (0.07 sec)
+
+	mysql> select @@session.transaction_isolation;
+	+---------------------------------+
+	| @@session.transaction_isolation |
+	+---------------------------------+
+	| READ-COMMITTED                  |
+	+---------------------------------+
+	1 row in set (0.00 sec)
+
+8.2 实验1
+
+	ALTER table t auto_increment=6;
+	session A           session B
+
+	begin;	            
+	mysql> INSERT INTO `t` (`c`, `d`) VALUES ('6', '6');  							
+	Query OK, 1 row affected (0.00 sec)
+	
+	mysql> select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  2 |    2 |    2 |
+	|  3 |    3 |    3 |
+	|  4 |    4 |    4 |
+	|  5 |    5 |    5 |
+	|  6 |    6 |    6 |
+	+----+------+------+
+	6 rows in set (0.00 sec)
+	T1时刻
+						begin;  
+						mysql> SELECT `id`, `c`, `d` from t WHERE ((`id` >= '4')) AND ((`id` <= '5')) LOCK IN SHARE MODE;	 
+						(Blocked)
+	T2时刻
+		
+		
+	T1时刻
+	
+		root@mysqldb 19:12:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		+----------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+		| ENGINE_LOCK_ID | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE | LOCK_STATUS | LOCK_DATA |
+		+----------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+		| 1594:1059      |                  1594 |        65 | t           | NULL       | TABLE     | IX        | GRANTED     | NULL      |
+		+----------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+		1 row in set (0.00 sec)
+		
+		
+	T2时刻	
+	
+		---TRANSACTION 1594, ACTIVE 446 sec
+		2 lock struct(s), heap size 1136, 1 row lock(s), undo log entries 1
+		MySQL thread id 17, OS thread handle 140146535069440, query id 94 localhost root
+		TABLE LOCK table `sbtest`.`t` trx id 1594 lock mode IX
+		RECORD LOCKS space id 2 page no 4 n bits 80 index PRIMARY of table `sbtest`.`t` trx id 1594 lock_mode X locks rec but not gap
+		Record lock, heap no 7 PHYSICAL RECORD: n_fields 5; compact format; info bits 0
+		 0: len 8; hex 8000000000000006; asc         ;;
+		 1: len 6; hex 00000000063a; asc      :;;
+		 2: len 7; hex 810000008b0110; asc        ;;
+		 3: len 4; hex 80000006; asc     ;;
+		 4: len 4; hex 80000006; asc     ;;
+
+		
+		root@mysqldb 19:34:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		+-----------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+		| ENGINE_LOCK_ID        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE | LOCK_STATUS | LOCK_DATA |
+		+-----------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+		| 1594:1059             |                  1594 |        65 | t           | NULL       | TABLE     | IX        | GRANTED     | NULL      |
+		
+		| 1594:2:4:7            |                  1594 |        66 | t           | PRIMARY    | RECORD    | X         | GRANTED     | 6         |
+		
+		| 421624251677432:1059  |       421624251677432 |        66 | t           | NULL       | TABLE     | IS        | GRANTED     | NULL      |
+		| 421624251677432:2:4:5 |       421624251677432 |        66 | t           | PRIMARY    | RECORD    | S         | GRANTED     | 4         |
+		| 421624251677432:2:4:6 |       421624251677432 |        66 | t           | PRIMARY    | RECORD    | S         | GRANTED     | 5         |
+		
+		| 421624251677432:2:4:7 |       421624251677432 |        66 | t           | PRIMARY    | RECORD    | S         | WAITING     | 6         |
+		+-----------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+		6 rows in set (0.00 sec)
+	
+		thread_id看起来也很奇怪。
+		
+			session A 持有 id=6 的行锁
+			session B 是当前读，想持有 id=6 的行锁，处于等待状态中
+			
+		mysql> select * from performance_schema.data_lock_waits;
+		+--------+---------------------------+----------------------------------+----------------------+---------------------+----------------------------------+-------------------------+--------------------------------+--------------------+-------------------+--------------------------------+
+		| ENGINE | REQUESTING_ENGINE_LOCK_ID | REQUESTING_ENGINE_TRANSACTION_ID | REQUESTING_THREAD_ID | REQUESTING_EVENT_ID | REQUESTING_OBJECT_INSTANCE_BEGIN | BLOCKING_ENGINE_LOCK_ID | BLOCKING_ENGINE_TRANSACTION_ID | BLOCKING_THREAD_ID | BLOCKING_EVENT_ID | BLOCKING_OBJECT_INSTANCE_BEGIN |
+		+--------+---------------------------+----------------------------------+----------------------+---------------------+----------------------------------+-------------------------+--------------------------------+--------------------+-------------------+--------------------------------+
+		| INNODB | 421624251677432:2:4:7     |                  421624251677432 |                   66 |                   8 |                  140149279202752 | 1594:2:4:7              |                           1594 |                 66 |                 4 |                140149279196456 |
+		+--------+---------------------------+----------------------------------+----------------------+---------------------+----------------------------------+-------------------------+--------------------------------+--------------------+-------------------+--------------------------------+
+
+
+	
+	session B先执行， session A不会被阻塞，如下所示
+	
+		session A           session B
+		begin;				
+		SELECT `id`, `c`, `d` from t WHERE ((`id` >= '4')) AND ((`id` <= '5')) LOCK IN SHARE MODE;
+		+----+------+------+
+		| id | c    | d    |
+		+----+------+------+
+		|  4 |    4 |    4 |
+		|  5 |    5 |    5 |
+		+----+------+------+
+		2 rows in set (0.00 sec)
+		
+							begin;
+							insert into t(c,d) values(6,6);
+							(Query OK)
+							1 row in set (0.00 sec)	
+							
+							mysql> select * from t;
+							+----+------+------+
+							| id | c    | d    |
+							+----+------+------+
+							|  1 |    1 |    1 |
+							|  2 |    2 |    2 |
+							|  3 |    3 |    3 |
+							|  4 |    4 |    4 |
+							|  5 |    5 |    5 |
+							|  6 |    6 |    6 |
+							+----+------+------+
+							6 rows in set (0.00 sec)
+
+		
+		session A 持有的锁
+			root@mysqldb 22:05:  [sbtest]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+			+-----------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+			| ENGINE_LOCK_ID        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE | LOCK_STATUS | LOCK_DATA |
+			+-----------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+			| 421624251676512:1059  |       421624251676512 |        69 | t           | NULL       | TABLE     | IS        | GRANTED     | NULL      |
+			| 421624251676512:2:4:5 |       421624251676512 |        69 | t           | PRIMARY    | RECORD    | S         | GRANTED     | 4         |
+			| 421624251676512:2:4:6 |       421624251676512 |        69 | t           | PRIMARY    | RECORD    | S         | GRANTED     | 5         |
+			+-----------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+			3 rows in set (0.10 sec)
+		
+8.3  实验2		
+			
+	session A           session B
+
+	begin;	         
+	SELECT `id`, `c`, `d` from t WHERE ((`id` >= '4')) AND ((`id` <= '5')) LOCK IN SHARE MODE;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  4 |    4 |    4 |
+	|  5 |    5 |    5 |
+	+----+------+------+
+	2 rows in set (0.03 sec)
+
+	T1
+						begin;
+						INSERT INTO `t` (`c`, `d`) VALUES ('6', '6');  							
+						Query OK, 1 row affected (0.00 sec)
+											  
+										
+	root@mysqldb 15:13:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+-----------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+	| ENGINE_LOCK_ID        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE | LOCK_STATUS | LOCK_DATA |
+	+-----------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+	| 421624251676512:1059  |       421624251676512 |        59 | t           | NULL       | TABLE     | IS        | GRANTED     | NULL      |
+	| 421624251676512:2:4:5 |       421624251676512 |        59 | t           | PRIMARY    | RECORD    | S         | GRANTED     | 4         |
+	| 421624251676512:2:4:6 |       421624251676512 |        59 | t           | PRIMARY    | RECORD    | S         | GRANTED     | 5         |
+	+-----------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+	3 rows in set (0.01 sec)
+
+
+
 	
 	

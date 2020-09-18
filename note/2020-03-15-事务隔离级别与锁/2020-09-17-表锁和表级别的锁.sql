@@ -167,10 +167,6 @@
 		 2: len 7; hex 81000001090110; asc        ;;
 		 3: len 4; hex 80000005; asc     ;;
 		 4: len 4; hex 80000005; asc     ;; ;;
-			
-			
-
-	
 	
 									session B;
 									

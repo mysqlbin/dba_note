@@ -204,12 +204,6 @@
 	参考笔记 《2020-05-24-innodb_autoinc_lock_mode-验证 8.0.18版本是否存在主键记录锁扩大.sql》
 
 
-
-
-
-
-						
-	
 3. RC隔离级别
 	mysql> select @@session.transaction_isolation;
 	+---------------------------------+

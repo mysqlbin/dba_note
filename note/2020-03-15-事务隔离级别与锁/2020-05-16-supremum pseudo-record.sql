@@ -1,7 +1,8 @@
 
 0. 什么是supremum pseudo-record
 
-	supremum pseudo-record : InnoDB给每个索引加了一个不存在的最大值 supremum, 相当于比索引中最大值还大，相当于最后一行之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
+	InnoDB给每个索引加了一个不存在的最大值 supremum, 相当于比索引中最大值还大，相当于最后一行之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
+	
 	RR隔离级别才会持有。（总的来说就是每个索引页不存在的最大值）
 	
 	参考笔记《2020-05-17-验证supremum pseudo-record.sql的存在》
@@ -170,6 +171,7 @@
 			  trx_is_read_only: 0
 	trx_autocommit_non_locking: 0
 	2 rows in set (0.00 sec)
+
 
 2.2 环境 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
 
@@ -434,9 +436,10 @@
 	
 	
 4. 小结
-	supremum pseudo-record : 比索引中的最大值还大，相当于最后一行之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
-	RR隔离级别才会持有；
-	RC隔离级别下也会持有，不过如果 supremum 没有被别的事务锁住，那么会立即被释放。
+	supremum pseudo-record : 
+		比索引中的最大值还大，相当于最后一行之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
+		RR隔离级别持有；
+		RC隔离级别下也会持有，不过如果 supremum 没有被别的事务锁住，那么会立即被释放。
 
 	
 

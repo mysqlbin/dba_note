@@ -1,15 +1,15 @@
 
--1. 实验目的	
-0. 使用到的相关SQL语句 
-1. 初始表结构和数据
-2. MySQL 8.0.19
-	2.1 环境1 --事务隔离级别为RC读已提交
-	2.2 环境2 --事务隔离级别为RR可重复读
-3. 	MySQL 5.7.22
+1. 实验目的	
+2. 使用到的相关SQL语句 
+3. 初始表结构和数据
+4. MySQL 8.0.19
+	4.1 环境1 --事务隔离级别为RC读已提交
+	4.2 环境2 --事务隔离级别为RR可重复读
+5. 	MySQL 5.7.22
 
 
 
--1. 实验目的：
+1. 实验目的：
 	参数innodb_autoinc_lock_mode=1：INSERT IGNORE INTO `_t_new` ... selet ... from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) lock in share mode; 在 8.0.19  版本中RC或者RR隔离级别还需要申请 t.id = 500001 的主键记录锁吗
 		 在 8.0.18 版本中优化了唯一索引范围 bug（RC隔离级别也是如此吗），如下： 
 
@@ -20,7 +20,7 @@
 															(Query OK)  
 		可以通过实验验证下。
 
-0. 使用到的相关SQL语句 
+2. 使用到的相关SQL语句 
 
 	create  database zst DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
 		
@@ -54,7 +54,7 @@
 	set global sync_binlog=1;
 
 
-1. 初始表结构和数据、数据库版本
+3. 初始表结构和数据、数据库版本
 
 	CREATE TABLE `t` (
 	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
@@ -101,7 +101,7 @@
 	+------------+
 	1 row in set (0.00 sec)
 
-2.1 环境1 --事务隔离级别为RC读已提交
+4.1 环境1 --事务隔离级别为RC读已提交
 
 	session A           session B
 
@@ -112,16 +112,10 @@
 						INSERT LOW_PRIORITY IGNORE INTO `_t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '5')) LOCK IN SHARE MODE;
 						(Blocked)
 
-2.2 环境2 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
-	root@mysqldb 12:51:  [zst]> select version();
-	+-----------+
-	| version() |
-	+-----------+
-	| 8.0.18    |
-	+-----------+
-	1 row in set (0.00 sec)
-
-	root@mysqldb 12:51:  [zst]> show global variables like '%innodb_autoinc_lock_mode%';
+4.2 环境2 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
+	
+	
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -172,11 +166,8 @@
 						Query OK, 5 rows affected (0.00 sec)
 						Records: 5  Duplicates: 0  Warnings: 0
 
-	select * from information_schema.innodb_trx\G;
-	SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
-	select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 
-	root@mysqldb 14:58:  [sbtest]> select * from information_schema.innodb_trx\G;
+	mysql> select * from information_schema.innodb_trx\G;
 	*************************** 1. row ***************************
 						trx_id: 1003812
 					 trx_state: RUNNING
@@ -229,12 +220,11 @@
 	trx_autocommit_non_locking: 0
 	2 rows in set (0.01 sec)
 
-	root@mysqldb 14:58:  [sbtest]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
+	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
 	Empty set (0.03 sec)
 
-
-	root@mysqldb 14:58:  [sbtest]> 
-	root@mysqldb 14:58:  [sbtest]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 	| ENGINE_LOCK_ID                          | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+

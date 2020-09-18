@@ -1,4 +1,6 @@
 
+1. 表结构和数据的初始化
+2. 全表扫描
 
 1. 表结构和数据的初始化
 	drop table if exists hero;
@@ -40,7 +42,7 @@
 	+--------+------------+---------+
 	5 rows in set (0.00 sec)
 	
-	root@mysqldb 02:34:  [(none)]> select @@session.transaction_isolation;
+	mysql> select @@session.transaction_isolation;
 	+---------------------------------+
 	| @@session.transaction_isolation |
 	+---------------------------------+
@@ -58,7 +60,8 @@
 	
 	
 
-5. 全表扫描
+2. 全表扫描
+	
 	mysql> select * from hero order by name asc;
 	+--------+------------+---------+
 	| number | name       | country |
@@ -80,6 +83,8 @@
 						begin;
 						delete from hero where number=1;
 	T2                  (Blocked)
+	
+	-------------------------------------------------------------
 	
 	T1
 		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
@@ -114,7 +119,9 @@
 		| 140365316147792:8:4:6:140365235545208 |       421840292858448 |        58 | hero        | PRIMARY    | RECORD    | S             | GRANTED     | 20                     |
 		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+------------------------+
 		9 rows in set (0.00 sec)
-
+	
+	-------------------------------------------------------------
+	
 	验证是否可以做插入动作	
 		session A          session B
 		begin;
@@ -122,14 +129,14 @@
 							begin;
 							INSERT INTO hero VALUES (30, 'l卢建斌', '现代');
 							(Blocked)
-
-
+		
 		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+--------------------+-------------+------------------------+
 		| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE          | LOCK_STATUS | LOCK_DATA              |
 		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+--------------------+-------------+------------------------+
 		| 140365316147792:1168:140365235548248  |                  7947 |        61 | hero        | NULL       | TABLE     | IX                 | GRANTED     | NULL                   |
 		| 140365316147792:8:4:1:140365235545208 |                  7947 |        61 | hero        | PRIMARY    | RECORD    | X,INSERT_INTENTION | WAITING     | supremum pseudo-record |
+		
 		| 140365316148656:1168:140365235554200  |       421840292859312 |        63 | hero        | NULL       | TABLE     | IS                 | GRANTED     | NULL                   |
 		| 140365316148656:8:4:1:140365235551272 |       421840292859312 |        63 | hero        | PRIMARY    | RECORD    | S                  | GRANTED     | supremum pseudo-record |
 		| 140365316148656:8:4:2:140365235551272 |       421840292859312 |        63 | hero        | PRIMARY    | RECORD    | S                  | GRANTED     | 1                      |
@@ -140,6 +147,6 @@
 		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+--------------------+-------------+------------------------+
 		9 rows in set (0.13 sec)
 
-
+		这个案例在RC隔离级别下就可以插入。
 
 	
