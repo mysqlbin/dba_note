@@ -55,7 +55,8 @@
 2. RR隔离级别
 
 2.1 实验1
-	root@mysqldb 17:50:  [zst]> select @@session.transaction_isolation;
+
+	mysql> select @@session.transaction_isolation;
 	+---------------------------------+
 	| @@session.transaction_isolation |
 	+---------------------------------+
@@ -63,7 +64,7 @@
 	+---------------------------------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 17:52:  [zst]> select version();
+	mysql> select version();
 	+-----------+
 	| version() |
 	+-----------+
@@ -157,6 +158,7 @@
 
 2.4 实验4
 
+	session A           	session B
 	begin;
 
 	select * from t where id<=5 lock in share mode;
@@ -175,7 +177,7 @@
 							insert into t(c,d) values(6,6);
 							(Blocked)
 							
-	root@mysqldb 18:09:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+--------------------+-------------+------------------------+
 	| ENGINE_LOCK_ID                          | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE          | LOCK_STATUS | LOCK_DATA              |
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+--------------------+-------------+------------------------+
@@ -193,7 +195,8 @@
 
 
 2.5 实验5
-
+	
+	session A           session B
 	begin;
 	insert into t(c,d) values(6,6);
 							
@@ -266,7 +269,7 @@
 	+----+------+------+
 	3 rows in set (0.00 sec)
 										
-	root@mysqldb 11:08:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 	| ENGINE_LOCK_ID                          | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
