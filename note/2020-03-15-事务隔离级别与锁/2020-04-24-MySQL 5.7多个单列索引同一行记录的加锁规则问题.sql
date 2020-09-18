@@ -11,7 +11,10 @@
 0. 环境
 	MySQL 5.7.22 版本
 	RC隔离级别
-
+	
+	RR呢？
+	
+	
 1. 初始化表结构和数据
 
 	drop table if exists t1 ;
