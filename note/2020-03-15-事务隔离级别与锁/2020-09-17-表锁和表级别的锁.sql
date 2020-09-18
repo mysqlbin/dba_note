@@ -227,7 +227,7 @@
 	|  5 |    5 |    5 |
 	+----+------+------+
 	5 rows in set (0.00 sec)
-
+	
 	mysql> show engine innodb status\G;	
 	---TRANSACTION 3362, ACTIVE 6 sec
 	2 lock struct(s), heap size 1136, 1 row lock(s)

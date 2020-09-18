@@ -60,7 +60,7 @@ select * from t1 where id in (select id from t2 where id=1);
 							delete from t2 where id=1;
 							(Query OK)
 							
-	
+-------------------------------------------------------------	
 session A                  session B
 
 begin;
@@ -68,14 +68,60 @@ delete from t2 where id=1;
 							begin;
 							select * from t1 where id in (select id from t2 where id=1);
 							(Query OK)	
+
+-------------------------------------------------------------							
+session A                  session B
+
+begin;
+select * from t1 where id in (select id from t1 where id=1);
 							
-					
+							begin;
+							delete from t1 where id=1;
+							(Query OK)	
+
+							
 
 select * from information_schema.innodb_trx\G;
 select * from information_schema.innodb_locks\G;
 select * from information_schema.innodb_lock_waits\G;
 SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 
+-------------------------------------------------------------------------------------------------------
+
+	
+CREATE TABLE `t10` (
+	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `c` (`c`)
+	) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+
+DROP PROCEDURE IF EXISTS `idata`;
+DELIMITER ;;
+CREATE DEFINER=`root`@`%` PROCEDURE `idata`()
+begin
+  declare i int;
+  set i=1;
+	start transaction;
+  while(i<=1000000) do
+	INSERT INTO t10 (c,d) values (i,i);
+	set i=i+1;
+  end while;
+	commit;
+end
+;;
+DELIMITER ;
+call idata();
+
+session A        session B
+begin;
+select * from t10 where id in (select max(id) from t10 group by d);
+
+				begin;
+				delete from t10 where id=1;	
+				
+				
 	
 join 语句的加锁
 
