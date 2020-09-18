@@ -1,11 +1,20 @@
 
 0. 什么是supremum pseudo-record
+1.初始表结构、数据和实验目的
+2. MySQL 5.7.22	
+	2.1 环境 --innodb_autoinc_lock_mode=1, 事务隔离级别为RC读已提交
+	2.2 环境 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
+3. MySQL 8.0.19
+	3.1 环境 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
+4. 小结
+
+
+0. 什么是supremum pseudo-record
 
 	InnoDB给每个索引加了一个不存在的最大值 supremum, 相当于比索引中最大值还大，相当于最后一行之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
 	
 	RR隔离级别才会持有。（总的来说就是每个索引页不存在的最大值）
 	
-	参考笔记《2020-05-17-验证supremum pseudo-record.sql的存在》
 	
 	https://phpor.net/blog/post/3186  关于mysql锁的学习
 	
@@ -21,16 +30,7 @@
 		https://mp.weixin.qq.com/s/CWUz4oTIhMwqkkqQyRjr7g  InnoDB 层锁、事务、统计信息字典表 | 全方位认识 information_schema
 
 
-1.初始表结构、数据和实验目的
-2. MySQL 5.7.22	
-	2.1 环境 --innodb_autoinc_lock_mode=1, 事务隔离级别为RC读已提交
-	2.2 环境 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
-	
-3. MySQL 8.0.19
-	3.1 环境 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
-	
-	
-4. 小结
+
 
 1. 初始表结构和数据
 	
@@ -48,7 +48,7 @@
 	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('4', '4', '4');
 	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('5', '5', '5');
 
-	root@localhost [db2]>select * from t;
+	mysql>select * from t;
 	+----+------+------+
 	| id | c    | d    |
 	+----+------+------+
@@ -110,15 +110,16 @@
 	+----------------+
 	1 row in set (0.00 sec)
 
-
+	session A           session B
 	begin;				begin;
 	select * from t where id>=5 for update;
+	
 						insert into t(c,d) values(6,6);
 						(Query OK)
 						
 	select * from t where id>=5 lock in share mode; 呢
 	
-	root@localhost [(none)]>select * from information_schema.innodb_trx\G;
+	mysql>select * from information_schema.innodb_trx\G;
 
 	*************************** 1. row ***************************
 						trx_id: 5893700
@@ -175,7 +176,7 @@
 
 2.2 环境 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
 
-	root@localhost [db2]>select version();
+	mysql>select version();
 	+------------+
 	| version()  |
 	+------------+
@@ -183,7 +184,7 @@
 	+------------+
 	1 row in set (0.00 sec)
 
-	root@localhost [db2]>show global variables like '%innodb_autoinc_lock_mode%';
+	mysql>show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -191,7 +192,7 @@
 	+--------------------------+-------+
 	1 row in set (0.01 sec)
 
-	root@localhost [db2]>show global variables like '%isolation%';
+	mysql>show global variables like '%isolation%';
 	+---------------+-----------------+
 	| Variable_name | Value           |
 	+---------------+-----------------+
@@ -199,7 +200,7 @@
 	+---------------+-----------------+
 	1 row in set (0.00 sec)
 
-	root@localhost [db2]>select @@session.tx_isolation;
+	mysql>select @@session.tx_isolation;
 	+------------------------+
 	| @@session.tx_isolation |
 	+------------------------+
@@ -208,7 +209,7 @@
 	1 row in set (0.00 sec)
 
 
-	root@localhost [db2]>SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_schema='db2' and table_name="t";
+	mysql>SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_schema='db2' and table_name="t";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+

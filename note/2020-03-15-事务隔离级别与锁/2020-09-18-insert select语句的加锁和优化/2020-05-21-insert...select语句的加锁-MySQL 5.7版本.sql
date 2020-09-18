@@ -7,7 +7,7 @@
 3. RR隔离级别
 	3.1 insert ... select ...
 4. 小结
-
+5. 相关参考
 	
 1. 初始化表结构和数据
 	CREATE TABLE `t` (
@@ -72,6 +72,7 @@
 	1 row in set, 1 warning (0.00 sec)
 
 2.1 insert ... select ...
+
 	事务的执行次序	
 	session A             session B            
 	begin;
@@ -81,8 +82,20 @@
 						  delete from t where id=1;
 						  (Query OK)
 					  
-					  
+	-------------------------------------------------
+	
+	事务的执行次序	
+	session A             session B            
+	begin;
+	delete from t where id=1;
+						 	
+						  begin;
+						  insert into _t_new(id,c,d) select id,c,d from t;
+						  (Query OK)
+	
 2.2 insert ... select ... lock in share mode
+
+
 	事务的执行次序	
 	session A           session B  
 	begin;
@@ -211,6 +224,7 @@
 
 				  
 3.1 insert ... select ...	
+
 	事务的执行次序
 	session A             session B            
 	begin;
@@ -319,6 +333,9 @@
 4. 小结
 	RC隔离级别的 insert ... select ... t 语句,默认对 t表的数据不加锁
 	RR隔离级别的 insert ... select ... t 语句,默认对 t表的数据加共享锁.
+
 	
-	
+5. 相关参考
+
+
 

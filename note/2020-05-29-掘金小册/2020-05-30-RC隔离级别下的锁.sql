@@ -20,6 +20,22 @@
 	8.1 初始化表结构和数据 
 	8.2 实验1
 	8.3 实验2	
+
+9. 验证RC隔离级别是否存在唯一范围bug
+	9.1 初始化表结构和数据
+	9.2 环境 
+	9.3 实验1
+	9.4 实验2
+	9.5 实验3
+	9.6 小结
+
+10. 证明RC隔离级别下先加锁再退化释放锁的实验
+	10.1 初始表结构和数据初始化
+	10.2 现象和我的问题
+	10.3 MySQL 8.0.17版本
+		10.3.1 事务隔离级别为RC读已提交
+	10.4 MySQL 8.0.18版本
+		10.4.1 事务隔离级别为RC读已提交
 	
 1. 表结构和数据的初始化
 
@@ -48,6 +64,7 @@
 	1 row in set (0.00 sec)
 
 2. 主键索引范围锁
+
 	2.1 实验1-没有阻塞
 		session A               session B
 		BEGIN;
@@ -986,5 +1003,357 @@
 
 
 
+
+9.1 初始化表结构和数据
+	CREATE TABLE `t` (
+	  `id` int(11) NOT NULL,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `c` (`c`)
+	) ENGINE=InnoDB;
+	insert into t values(0,0,0),(5,5,5),(10,10,10),(15,15,15),(20,20,20),(25,25,25);
+
+	mysql>select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  0 |    0 |    0 |
+	|  5 |    5 |    5 |
+	| 10 |   10 |   10 |
+	| 15 |   15 |   15 |
+	| 20 |   20 |   20 |
+	| 25 |   25 |   25 |
+	+----+------+------+
+	6 rows in set (0.00 sec)
+
+9.2 环境 
+	mysql>select version();
+	+------------+
+	| version()  |
+	+------------+
+	| 5.7.19-log |
+	+------------+
+	1 row in set (0.00 sec)
+
+	mysql>show global variables like '%innodb_autoinc_lock_mode%';
+	+--------------------------+-------+
+	| Variable_name            | Value |
+	+--------------------------+-------+
+	| innodb_autoinc_lock_mode | 1     |
+	+--------------------------+-------+
+	1 row in set (0.01 sec)
+
+	mysql>show global variables like '%isolation%';
+
+	+---------------+----------------+
+	| Variable_name | Value          |
+	+---------------+----------------+
+	| tx_isolation  | READ-COMMITTED |
+	+---------------+----------------+
+	1 row in set (0.00 sec)
+
+	mysql>select @@session.tx_isolation;
+	+------------------------+
+	| @@session.tx_isolation |
+	+------------------------+
+	| READ-COMMITTED         |
+	+------------------------+
+	1 row in set (0.00 sec)
+
+9.3 实验1
+
+	session A                              session B                                                                                                                                                                                                            
+	begin;
+	select * from t where id>10 and id<=15 for update;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	| 15 |   15 |   15 |
+	+----+------+------+
+	1 row in set (0.00 sec)
+
+											update t set d=d+1 where id=20;
+											Query OK, 1 row affected (0.00 sec)
+											Rows matched: 1  Changed: 1  Warnings: 0 
+	
+		
+	
+9.4 实验2
+
+	session A                            	session B                                                                                                                                                                                                            
+	begin;
+	update t set d=d+1 where id=20;
+	Query OK, 1 row affected (0.00 sec)
+	Rows matched: 1  Changed: 1  Warnings: 0
+
+											begin;
+											select * from t where id>10 and id<=15 for update;
+											(Blocked)
+	
+	mysql> select * from information_schema.innodb_trx\G;
+	*************************** 1. row ***************************
+						trx_id: 5244497
+					 trx_state: LOCK WAIT
+				   trx_started: 2020-09-18 14:36:58
+		 trx_requested_lock_id: 5244497:2068:3:6
+			  trx_wait_started: 2020-09-18 14:36:58
+					trx_weight: 3
+		   trx_mysql_thread_id: 34012
+					 trx_query: select * from t where id>10 and id<=15 for update
+		   trx_operation_state: fetching rows
+			 trx_tables_in_use: 1
+			 trx_tables_locked: 1
+			  trx_lock_structs: 3
+		 trx_lock_memory_bytes: 1136
+			   trx_rows_locked: 2
+			 trx_rows_modified: 0
+	   trx_concurrency_tickets: 0
+		   trx_isolation_level: READ COMMITTED
+			 trx_unique_checks: 1
+		trx_foreign_key_checks: 1
+	trx_last_foreign_key_error: NULL
+	 trx_adaptive_hash_latched: 0
+	 trx_adaptive_hash_timeout: 0
+			  trx_is_read_only: 0
+	trx_autocommit_non_locking: 0
+	*************************** 2. row ***************************
+						trx_id: 5244494
+					 trx_state: RUNNING
+				   trx_started: 2020-09-18 14:33:20
+		 trx_requested_lock_id: NULL
+			  trx_wait_started: NULL
+					trx_weight: 3
+		   trx_mysql_thread_id: 34011
+					 trx_query: NULL
+		   trx_operation_state: NULL
+			 trx_tables_in_use: 0
+			 trx_tables_locked: 1
+			  trx_lock_structs: 2
+		 trx_lock_memory_bytes: 1136
+			   trx_rows_locked: 1
+			 trx_rows_modified: 1
+	   trx_concurrency_tickets: 0
+		   trx_isolation_level: READ COMMITTED
+			 trx_unique_checks: 1
+		trx_foreign_key_checks: 1
+	trx_last_foreign_key_error: NULL
+	 trx_adaptive_hash_latched: 0
+	 trx_adaptive_hash_timeout: 0
+			  trx_is_read_only: 0
+	trx_autocommit_non_locking: 0
+	2 rows in set (0.00 sec)
+		
+	mysql> select * from information_schema.innodb_locks\G;
+	*************************** 1. row ***************************
+		lock_id: 5244497:2068:3:6
+	lock_trx_id: 5244497
+	  lock_mode: X
+	  lock_type: RECORD
+	 lock_table: `base_db`.`t`
+	 lock_index: PRIMARY
+	 lock_space: 2068
+	  lock_page: 3
+	   lock_rec: 6
+	  lock_data: 20
+	*************************** 2. row ***************************
+		lock_id: 5244494:2068:3:6
+	lock_trx_id: 5244494
+	  lock_mode: X
+	  lock_type: RECORD
+	 lock_table: `base_db`.`t`
+	 lock_index: PRIMARY
+	 lock_space: 2068
+	  lock_page: 3
+	   lock_rec: 6
+	  lock_data: 20
+	2 rows in set, 1 warning (0.00 sec)
+
+	mysql> select * from information_schema.innodb_lock_waits\G;
+	*************************** 1. row ***************************
+	requesting_trx_id: 5244497
+	requested_lock_id: 5244497:2068:3:6
+	  blocking_trx_id: 5244494
+	 blocking_lock_id: 5244494:2068:3:6
+	1 row in set, 1 warning (0.00 sec)
+
+
+	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+	+--------------+-------------+---------------------------------------------------+-------------------+--------------------+
+	| locked_index | locked_type | waiting_query                                     | waiting_lock_mode | blocking_lock_mode |
+	+--------------+-------------+---------------------------------------------------+-------------------+--------------------+
+	| PRIMARY      | RECORD      | select * from t where id>10 and id<=15 for update | X                 | X                  |
+	+--------------+-------------+---------------------------------------------------+-------------------+--------------------+
+	1 row in set, 3 warnings (0.03 sec)
+
+
+											
+9.5 实验3
+
+	session A                               session B                                                                                                                                                                                                            
+	begin;
+	update t set d=d+1 where id=20;
+	Query OK, 1 row affected (0.00 sec)
+	Rows matched: 1  Changed: 1  Warnings: 0
+											
+											begin;
+											update t set d=d+1 where id>10 and id<=15;
+											Query OK, 1 row affected (0.00 sec)
+											Rows matched: 1  Changed: 1  Warnings: 0
+
+
+										
+9.6 小结
+	存在，先加锁后释放锁。
+	下面的3个实验也有提到：
+		2020-05-17-验证8.0.19版本主键索引是否存在锁升级即唯一索引bug.sql
+		2020-05-24-验证8.0.18版本是否存在主键记录锁扩大即唯一索引bug的优化.sql
+		2020-05-25-验证8.0.17版本RR隔离级别没有优化唯一索引的bug.sql
+		
+		
+		
+	
+	
+10.1 初始表结构和数据初始化	CREATE TABLE `t` (
+	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `c` (`c`)
+	) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+
+	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('1', '1', '1');
+	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('2', '2', '2');
+	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('3', '3', '3');
+	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('4', '4', '4');
+	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('5', '5', '5');
+	
+10.2 现象和我的问题
+	
+	事务的执行次序
+		session A           session B
+		begin;	            
+		INSERT INTO `t` (`c`, `d`) VALUES ('6', '6');  
+		
+							begin;	  
+							SELECT * from t WHERE ((`id` >= '1')) AND ((`id` <= '5')) LOCK IN SHARE MODE;
+							
+	现象:
+		在MySQL 8.0.17版本和MySQL 8.0.18版本中, 在 RC读已提交隔离级别下, session B都会被阻塞.
+		
+		这个现象的实验在 '3.1 事务隔离级别为RC读已提交' 和 '4.1 事务隔离级别为RC读已提交' 中.
+		
+	我的问题:
+		
+		在RC读已提交隔离级别下, session B 为什么会被阻塞？
+		
+		理解了，参考笔记 《2020-05-27-证明RC隔离级别下先加锁再退化释放锁的实验.sql》
+		
+	姜少华的解答
+		1.insert的通过自增加的隐式锁       
+		2.第二个语句是锁的过程实际上是id<=5的下一条记录也就是这个页的最大记录（如果这个在RC级别下没有被锁，则会立即释放）
+		举个例子  id 1，3，5   
+		在RC级别下 select * from table where id<=3 实际上加锁的过程是1 3 5(这个随后释放掉)   最终加锁1 3
+
+
+10.3 MySQL 8.0.17版本
+	mysql> select version();
+	+-----------+
+	| version() |
+	+-----------+
+	| 8.0.17    |
+	+-----------+
+	1 row in set (0.00 sec)
+	
+10.3.1 事务隔离级别为RC读已提交
+	
+	mysql> select @@session.transaction_isolation;
+	+---------------------------------+
+	| @@session.transaction_isolation |
+	+---------------------------------+
+	| READ-COMMITTED                  |
+	+---------------------------------+
+	1 row in set (0.00 sec)
+	
+	事务的执行次序
+	session A           session B
+
+	begin;	            
+	INSERT INTO `t` (`c`, `d`) VALUES ('6', '6');  							
+						begin;	  
+						SELECT * from t WHERE ((`id` >= '1')) AND ((`id` <= '5')) LOCK IN SHARE MODE;
+						(Blocked)
+	
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 140412282083920:1059:140412211753048  |                  4343 |        65 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 140412282083920:2:4:7:140412211750008 |                  4343 |        66 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 6         |
+	
+	| 140412282084784:1059:140412211759000  |       421887258795440 |        66 | t           | NULL       | TABLE     | IS            | GRANTED     | NULL      |
+	| 140412282084784:2:4:2:140412211756072 |       421887258795440 |        66 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 1         |
+	| 140412282084784:2:4:3:140412211756072 |       421887258795440 |        66 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 2         |
+	| 140412282084784:2:4:4:140412211756072 |       421887258795440 |        66 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 3         |
+	| 140412282084784:2:4:5:140412211756072 |       421887258795440 |        66 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 4         |
+	| 140412282084784:2:4:6:140412211756072 |       421887258795440 |        66 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 5         |
+	| 140412282084784:2:4:7:140412211756416 |       421887258795440 |        66 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | WAITING     | 6         |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	9 rows in set (0.00 sec)
+
+	session A 持有 id=6 的行锁
+	session B 是当前读，想持有 id=6 的行锁，处于等待状态中。
+			
+10.4 MySQL 8.0.18版本
+
+	mysql> select version();
+	+-----------+
+	| version() |
+	+-----------+
+	| 8.0.18    |
+	+-----------+
+	1 row in set (0.00 sec)
+	
+10.4.1 事务隔离级别为RC读已提交
+
+	mysql> select @@session.transaction_isolation;
+	+---------------------------------+
+	| @@session.transaction_isolation |
+	+---------------------------------+
+	| READ-COMMITTED                  |
+	+---------------------------------+
+	1 row in set (0.00 sec)
+	
+	事务的执行次序
+	session A           session B
+
+	begin;	            
+	INSERT INTO `t` (`c`, `d`) VALUES ('6', '6');
+	Query OK, 1 row affected (0.00 sec)	
+						begin;	  
+						SELECT * from t WHERE ((`id` >= '1')) AND ((`id` <= '5')) LOCK IN SHARE MODE;
+						(Blocked, 被阻塞)
+						
+									
+	通过 performance_schema.data_locks 视图查看锁数据详情					
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                          | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 140570760522344:1338:140570655781544    |               1005113 |        66 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 140570760522344:281:4:7:140570655778504 |               1005113 |        67 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 6         |
+
+	| 140570760523216:1338:140570655787496    |       422045737233872 |        67 | t           | NULL       | TABLE     | IS            | GRANTED     | NULL      |
+	| 140570760523216:281:4:2:140570655784568 |       422045737233872 |        67 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 1         |
+	| 140570760523216:281:4:3:140570655784568 |       422045737233872 |        67 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 2         |
+	| 140570760523216:281:4:4:140570655784568 |       422045737233872 |        67 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 3         |
+	| 140570760523216:281:4:5:140570655784568 |       422045737233872 |        67 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 4         |
+	| 140570760523216:281:4:6:140570655784568 |       422045737233872 |        67 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 5         |
+	| 140570760523216:281:4:7:140570655784912 |       422045737233872 |        67 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | WAITING     | 6         |
+	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	9 rows in set (0.00 sec)
+	
+	session A 持有 id=6 的行锁
+	session B 是当前读，想持有 id=6 的行锁，处于等待状态中。
 	
 	

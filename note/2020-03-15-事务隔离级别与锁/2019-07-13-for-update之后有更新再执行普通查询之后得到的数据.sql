@@ -7,6 +7,9 @@ root@localhost [zst]>select @@tx_isolation;
 | REPEATABLE-READ |
 +-----------------+
 1 row in set (0.00 sec)
+
+
+
 begin;
 select * from product where name='mi8' for update;
 update product set amount=amount-1 where name='mi8';
