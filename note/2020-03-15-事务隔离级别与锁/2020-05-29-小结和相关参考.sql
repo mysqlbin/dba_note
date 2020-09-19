@@ -1,5 +1,23 @@
 
 
+1. 访问到记录都会加锁
+2. 不需要的锁就会释放掉
+3. RR隔离级别下的锁升级、RC隔离级别下的锁退化。
+4. 务实基础。
+5. 业务的更新语句少用范围更新。
+6. 有时候重复看自己做的实验和分析，会有不一样的理解。
+
+
+
+
+
+1. 2020-04-29-MySQL 自增ID 字段指定了具体的值是否还会需要申请自增锁?
+	答：需要的。
+	
+	
+	
+	
+
 http://blog.itpub.net/7728585/viewspace-2146183/    Innodb:RR隔离级别下insert...select 对select表加锁模型和死锁案列
 
 
@@ -14,4 +32,6 @@ http://blog.itpub.net/7728585/viewspace-2146183/    Innodb:RR隔离级别下inse
 	
 	
 https://www.cnblogs.com/CQqfjy/p/12703029.html  手把手教你分析Mysql死锁问题
+
+
 
