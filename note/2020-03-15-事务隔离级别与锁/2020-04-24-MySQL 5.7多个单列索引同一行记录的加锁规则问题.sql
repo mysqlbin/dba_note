@@ -4,16 +4,13 @@
 1. 初始化表结构和数据
 2. 事务执行流程
 3. 查看锁的信息
-4. session A的加锁范围
+4. 语句的加锁范围
 5. 本案例下RR隔离级别的锁详情
 
 
 0. 环境
 	MySQL 5.7.22 版本
 	RC隔离级别
-	
-	RR呢？
-	
 	
 1. 初始化表结构和数据
 
@@ -156,14 +153,24 @@
 	1 row in set, 3 warnings (0.01 sec)
 
 
-
-
-4. session A的加锁范围
-
-	既然加锁是加在索引上，那么 session A 的语句 'select * from t1 where order_no='123456' for update;' 持有的锁如下： 
-
-		PARIMARY: record lock： [1]  + idx_order_no： record lock: (order_no='123456', ID=1) + idx_status: record lock: (status=0, ID=1)
-
+4. 语句的加锁范围
+	
+	session A "select * from t1 where order_no='123456' for update; " 语句的加锁范围：
+	 
+		idx_order_no: record lock: ['123456', 1] + primary: record lock: [1]
+		
+		
+		不需要持有普通索引 idx_status 的锁。
+		
+	----------------------------------------------------------------------
+	
+	session B "UPDATE t1 SET status = 5 WHERE status=0; " 语句的加锁范围：
+	
+		idx_status: record lock: [0, 1] -- 加锁成功
+		primary: record lock: [1]       -- 被锁住了。
+		
+		
+	
 5. 本案例下RR隔离级别的锁详情
 
 	mysql> select * from information_schema.innodb_trx\G;
@@ -268,5 +275,26 @@
 	1 row in set, 3 warnings (0.00 sec)
 
 
+
+	session A "select * from t1 where order_no='123456' for update; " 语句的加锁范围：
+	 
+		idx_order_no: next-key lock: 
+			record lock: (order_no = '123456', id=1) + gap lock: ('123456', supremum pseudo-record]
 			
+		primary: record lock: [1]
+		
+	
+		不需要持有普通索引 idx_status 的锁。
+	
+	----------------------------------------------------------------------
+	
+	session B "UPDATE t1 SET status = 5 WHERE status=0; " 语句的加锁范围：
+	
+		idx_status: record lock: [0, 1] -- 加锁成功
+		primary: record lock: [1]       -- 被锁住了。
+		
+		
+6. 小结
+	InnoDB的行锁是加在索引上，并且只对必要的索引加锁。
+				
 		
