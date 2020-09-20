@@ -225,7 +225,7 @@ select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOC
 											在等主键索引 ID=1 的记录锁
 											
 											
-											
+		死锁类型： 同一行记录，不同索引的锁冲突。
 		 
 ----------------------------------------------------------------------	
 	
@@ -352,10 +352,10 @@ select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOC
 		primary: record lock: [1]       -- 被锁住了。
 			
 7. 小结
+	
 	InnoDB的行锁是加在索引上，并且只对必要的索引加锁。
 	
-	8.0版本记录了更详情的死锁日志，把死锁的事务持有的锁和在等待的锁的详情都记录下来了。 不再需要根据某一个事务在等待的锁去分析另一个事务持有的锁。
-	
+	8.0版本记录了更详情的死锁日志，把死锁的事务持有的锁和在等待的锁的详情都记录下来了；
 	不再需要根据死锁日志中的锁等待的记录信息推导出另一个事务持有的锁信息，分析死锁会更加轻松。
 	
 	
