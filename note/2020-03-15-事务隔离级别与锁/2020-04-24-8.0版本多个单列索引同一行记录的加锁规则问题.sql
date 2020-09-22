@@ -359,4 +359,11 @@ select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOC
 	不再需要根据死锁日志中的锁等待的记录信息推导出另一个事务持有的锁信息，分析死锁会更加轻松。
 	
 	
+	行级锁：
+		开销大，加锁慢；
+		会出现死锁；
+		锁定粒度最小，发生锁冲突的概率最低，并发度也最高。
+		行锁总是逐步获得的，因此会出现死锁。
+
 	
+
