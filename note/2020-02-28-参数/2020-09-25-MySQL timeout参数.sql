@@ -24,7 +24,7 @@ timeout参数列表：
 	| lock_wait_timeout           | 3600     |    --锁的超时时长
 	| net_read_timeout            | 30       |
 	| net_write_timeout           | 60       |
-	| rpl_stop_slave_timeout      | 31536000 |    --执行 stop slave; 命令没有关闭复制的超时时间
+	| rpl_stop_slave_timeout      | 31536000 |    --执行 stop slave; 命令没有停止复制的超时时间
 	| slave_net_timeout           | 60       |    --从库连接主库的超时时长
 	| wait_timeout                | 31536000 |
 	+-----------------------------+----------+
@@ -62,7 +62,22 @@ https://blog.csdn.net/u010027484/article/details/58585589  MySQL几个超时参�
 
 https://www.cnblogs.com/xiaoboluo768/p/6222862.html  MySQL 各种超时参数的含义
 
-
+wait_timeout和interactive_timeout：
+	连接处于空闲状态：
+		   1. 连接完成后，如果没有后续的动作，这个连接就处于空闲状态
+			  体现在show processlist.Command=Sleep: 表示现在系统里面有一个空闲连接。    
+		   2. 客户端如果太长时间没动静，连接器就会自动将空闲连接断开
+			   这个时间是由参数 wait_timeout 控制的，默认值是 8 小时。
+	  wait_timeout：
+		  关闭非交互连接之前等待的秒数（通过应用程序连接MySQL的话，超时就会断开）
+		  通过 jdbc 等程序连接的是非交互会话
+	  interactive_timeout：
+		  关闭交互式连接前等待的秒数（通过命令行连接MySQL的话，超时就会断开）
+		  通过 mysql cli 客户端连接的是交互会话
+			   一般wait_timeout和interactive_timeout参数要设置成一样。      
+		   3. 连接被断开之后，客户端再次发送请求，就会收到一个错误提醒： Lost connection to MySQL server during query
+				这时候如果你要继续，就需要重连，然后再执行请求了。
+				
 rpl_stop_slave_timeout:
 
 	正常的stop slave流程
