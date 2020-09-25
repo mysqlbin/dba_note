@@ -30,7 +30,7 @@
                binlog_group_commit_sync_no_delay_count=10W
                     累积多少次之后才一起把 binlog fsync持久化到磁盘
             4. 也可以关闭 binlog 再导入。
-			
+			5. MySQL 8.0.21 版本，可以关闭redo, 这样可以加快数据的恢复速度。
 			
 
 2. 关于一致性备份
@@ -72,6 +72,7 @@
         指定 --single-transaction、--master-data选项，  会自动开启 --lock-tables 参数。
 		  
    4. 备份之前，确认有没有未提交的事务，因为备份需要执行 flush table with read lock; 命令，关闭实例下所有的表；
+   
        同一个表不能在同一个时间段做打开表和关闭表操作。 
 		
 		session A						  session B                               

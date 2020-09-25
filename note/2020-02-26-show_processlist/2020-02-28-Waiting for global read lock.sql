@@ -58,3 +58,8 @@ root@mysqldb 08:15:  [(none)]> show processlist;
 
 
 
+原因：
+	执行了 flush table with read lock; 没有执行 unlock tables，导致期间只能执行只读操作。
+	
+	
+

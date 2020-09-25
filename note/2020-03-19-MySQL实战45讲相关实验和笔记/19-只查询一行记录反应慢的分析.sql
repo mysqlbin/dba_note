@@ -1,4 +1,5 @@
 
+"""
 mysql> CREATE TABLE `t` (
   `id` int(11) NOT NULL,
   `c` int(11) DEFAULT NULL,
@@ -18,6 +19,7 @@ end;;
 delimiter ;
 
 call idata();
+"""
 
 
 1. 第一类：查询长时间不返回
@@ -32,24 +34,45 @@ mysql> select * from t where id=1;
 分析原因：
 	1. 先执行 show processlist命令，看看当前语句处于什么状态；
 	2. 针对每种状态，分析它们产生的原因、如何复现、如何处理。
-
-	
+	********************************************************
+		
 1.1 等MDL锁
 
-session A                session B
-lock table t write;
-						 select * from t where id=1;
-		
-mysql> show processlist;
-+------+-----------+--------------------+----------+-------------+--------+-------------------------------------+----------------------------+
-| Id   | User      | Host               | db       | Command     | Time   | State                               | Info                       |
-+------+-----------+--------------------+----------+-------------+--------+-------------------------------------+----------------------------+
-| 2277 | root      | 192.168.0.54:44034 | admin_db | Sleep       |     14 |                                     | NULL                       |
-| 2278 | root      | 192.168.0.54:44036 | admin_db | Query       |      7 | Waiting for table metadata lock      select * from t where id=1  |
-| 2279 | root      | 192.168.0.54:44038 | NULL     | Query       |      0 | starting                            | show processlist           |
-+------+-----------+--------------------+----------+-------------+--------+-------------------------------------+----------------------------+
-4 rows in set (0.00 sec)
+初始化表结构和数据：
+	CREATE TABLE `t` (
+	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `c` (`c`)
+	) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
+	INSERT INTO `test_db`.`t` (`id`, `c`, `d`) VALUES ('1', '1', '1');
+	INSERT INTO `test_db`.`t` (`id`, `c`, `d`) VALUES ('2', '2', '2');
+	INSERT INTO `test_db`.`t` (`id`, `c`, `d`) VALUES ('3', '3', '3');
+	INSERT INTO `test_db`.`t` (`id`, `c`, `d`) VALUES ('4', '4', '4');
+	INSERT INTO `test_db`.`t` (`id`, `c`, `d`) VALUES ('5', '5', '5');
+
+MDL锁的复现：
+	session A                session B             session C
+	lock table t write;
+							 select * from t where id=1;
+					
+															
+	mysql> show processlist;
+	+-------+-----------------+---------------------+---------+---------+-------+---------------------------------+----------------------------+
+	| Id    | User            | Host                | db      | Command | Time  | State                           | Info                       |
+	+-------+-----------------+---------------------+---------+---------+-------+---------------------------------+----------------------------+
+	|     1 | event_scheduler | localhost           | NULL    | Daemon  | 15797 | Waiting for next activation     | NULL                       |
+	| 34117 | root            | localhost           | test_db | Sleep   |    42 |                                 | NULL                       |
+	| 34118 | root            | localhost           | test_db | Query   |    34 | Waiting for table metadata lock | select * from t where id=1 |
+	| 34119 | root            | localhost           | test_db | Query   |     0 | starting                        | show processlist           |
+	| 34120 | ljb_user        | 192.168.0.218:53918 | NULL    | Sleep   |   313 |                                 | NULL                       |
+	| 34121 | ljb_user        | 192.168.0.218:53919 | test_db | Sleep   |   305 |                                 | NULL                       |
+	| 34122 | ljb_user        | 192.168.0.218:53923 | test_db | Sleep   |   308 |                                 | NULL                       |
+	+-------+-----------------+---------------------+---------+---------+-------+---------------------------------+----------------------------+
+												
+													
 1. 表现：使用show processlist命令查看 State的状态处于 Waiting for table metadata lock; 
 
 2. 这里状态处于Waiting for table metadata lock的含义：
@@ -65,134 +88,174 @@ mysql> show processlist;
 	
 	就是找到谁持有 MDL 写锁，然后把它 kill 掉。
 	
-	在 show processlist 的结果里面，session A 的 Command 列是“Sleep”，导致查找起来很不方便； 
+	在 show processlist 的结果里面，session A(thread id=34117) 的 Command 列是“Sleep”，导致查找起来很不方便； 
 
 	1.MySQL 5.6版本，通过performance_schema系统库来找：
 		MySQL 启动时需要设置 performance_schema=on，相比于设置为 off 会有 10% 左右的性能损失。
 		
-	2.MySQL 5.7版本  通过sys库来找：
-	   查询 sys.schema_table_lock_waits 这张表，可以直接找出造成阻塞的 process id，用 kill 命令把这个连接断开即可。
+	2.MySQL 5.7版本，通过sys库来找：
+	   查询 sys.schema_table_lock_waits 这张表，可以直接找出造成阻塞的 process id，用 kill 命令把这个连接断开即可。  
+		********************************************************
+		
+		mysql> select * from sys.schema_table_lock_waits\G;
+		*************************** 1. row ***************************
+					   object_schema: test_db
+						 object_name: t
+				   waiting_thread_id: 34151
+						 waiting_pid: 34118
+					 waiting_account: root@localhost
+				   waiting_lock_type: SHARED_READ
+			   waiting_lock_duration: TRANSACTION
+					   waiting_query: select * from t where id=1
+				  waiting_query_secs: 164
+		 waiting_query_rows_affected: 0
+		 waiting_query_rows_examined: 0
+				  blocking_thread_id: 34150
+						blocking_pid: 34117
+					blocking_account: root@localhost
+				  blocking_lock_type: SHARED_NO_READ_WRITE
+			  blocking_lock_duration: TRANSACTION
+			 sql_kill_blocking_query: KILL QUERY 34117
+		sql_kill_blocking_connection: KILL 34117
+		1 row in set (0.03 sec)
 
-	mysql> select * from sys.schema_table_lock_waits\G;
-	*************************** 1. row ***************************
-				   object_schema: admin_db
-					 object_name: t
-			   waiting_thread_id: 2311
-					 waiting_pid: 2278
-				 waiting_account: root@192.168.0.54
-			   waiting_lock_type: SHARED_READ
-		   waiting_lock_duration: TRANSACTION
-				   waiting_query: select * from t where id=1
-			  waiting_query_secs: 79
-	 waiting_query_rows_affected: 0
-	 waiting_query_rows_examined: 0
-			  blocking_thread_id: 2310
-					blocking_pid: 2277
-				blocking_account: root@192.168.0.54
-			  blocking_lock_type: SHARED_NO_READ_WRITE
-		  blocking_lock_duration: TRANSACTION
-		 sql_kill_blocking_query: KILL QUERY 2277
-	sql_kill_blocking_connection: KILL 2277
-	1 row in set (0.00 sec)
 
-	mysql> kill 2277;
+		mysql> select * from information_schema.INNODB_TRX\G;
+		Empty set (0.00 sec)
+		
+		
+	3. 处理方式
+				session B					session C
+											mysql> kill 34117;
+	
+				mysql> select * from t where id=1;
+				+----+------+------+
+				| id | c    | d    |
+				+----+------+------+
+				|  1 |    1 |    1 |
+				+----+------+------+
+				1 row in set (4 min 57.87 sec)
 
 	
+	
+		
+		mysql> show processlist;
+		+-------+-----------------+---------------------+---------+---------+-------+-----------------------------+------------------+
+		| Id    | User            | Host                | db      | Command | Time  | State                       | Info             |
+		+-------+-----------------+---------------------+---------+---------+-------+-----------------------------+------------------+
+		|     1 | event_scheduler | localhost           | NULL    | Daemon  | 16332 | Waiting for next activation | NULL             |
+		| 34118 | root            | localhost           | test_db | Sleep   |   569 |                             | NULL             |
+		| 34119 | root            | localhost           | test_db | Query   |     0 | starting                    | show processlist |
+		| 34120 | ljb_user        | 192.168.0.218:53918 | NULL    | Sleep   |   848 |                             | NULL             |
+		| 34121 | ljb_user        | 192.168.0.218:53919 | test_db | Sleep   |   840 |                             | NULL             |
+		| 34122 | ljb_user        | 192.168.0.218:53923 | test_db | Sleep   |   843 |                             | NULL             |
+		+-------+-----------------+---------------------+---------+---------+-------+-----------------------------+------------------+
+		6 rows in set (0.00 sec)
+		
+		可以看到, thread_id = 34117 的连接已经断开了，不会再阻塞后面的查询语句。
+		
+			
+
+	相关参考：
+		https://www.cnblogs.com/ivictor/p/9460147.html   MySQL 5.7中如何定位DDL被阻塞的问题
+		
+		
 
 1.2 等flush
 
-session A          session B               session C
+	session A          session B               session C
 
-select sleep(1) from t;
-			       flush tables t write;
+	select sleep(1) from t;
+					   flush tables t write;
 
-										   select * from t where id=1;
-mysql> show processlist;
-+------+-----------+--------------------+----------+-------------+--------+---------------------------+----------------------------+
-| Id   | User      | Host               | db       | Command     | Time   | State                     | Info                       |
-+------+-----------+--------------------+----------+-------------+--------+---------------------------+----------------------------+
-| 2289 | root      | 192.168.0.54:44040 | admin_db | Query       |     64 | User sleep                | select sleep(1) from t     |
-| 2293 | root      | 192.168.0.54:44042 | admin_db | Query       |      2 | Waiting for table flush   | select * from t where id=1 |
-| 2294 | root      | 192.168.0.54:44044 | NULL     | Query       |      0 | starting                  | show processlist           |
-| 2295 | app_user  | 192.168.0.71:33533 | NULL     | Sleep       |     58 |                           | NULL                       |
-| 2296 | app_user  | 192.168.0.71:33537 | NULL     | Sleep       |     43 |                           | NULL                       |
-| 2297 | root      | 192.168.0.54:44046 | admin_db | Query       |     31 | Waiting for table flush   | flush tables t             |
-+------+-----------+--------------------+----------+-------------+--------+---------------------------+----------------------------+
+											   select * from t where id=1;
+	mysql> show processlist;
+	+------+-----------+--------------------+----------+-------------+--------+---------------------------+----------------------------+
+	| Id   | User      | Host               | db       | Command     | Time   | State                     | Info                       |
+	+------+-----------+--------------------+----------+-------------+--------+---------------------------+----------------------------+
+	| 2289 | root      | 192.168.0.54:44040 | admin_db | Query       |     64 | User sleep                | select sleep(1) from t     |
+	| 2293 | root      | 192.168.0.54:44042 | admin_db | Query       |      2 | Waiting for table flush   | select * from t where id=1 |
+	| 2294 | root      | 192.168.0.54:44044 | NULL     | Query       |      0 | starting                  | show processlist           |
+	| 2295 | app_user  | 192.168.0.71:33533 | NULL     | Sleep       |     58 |                           | NULL                       |
+	| 2296 | app_user  | 192.168.0.71:33537 | NULL     | Sleep       |     43 |                           | NULL                       |
+	| 2297 | root      | 192.168.0.54:44046 | admin_db | Query       |     31 | Waiting for table flush   | flush tables t             |
+	+------+-----------+--------------------+----------+-------------+--------+---------------------------+----------------------------+
 
 
-1.分析：
-	1. 在 session A 中，每行都调用一次 sleep(1)，这样这个语句默认要执行 10 万秒，
-	   在这期间表 t 一直是被 session A“打开”着。
+	1.分析：
+		1. 在 session A 中，每行都调用一次 sleep(1)，这样这个语句默认要执行 10 万秒，
+		   在这期间表 t 一直是被 session A“打开”着。
 
-	2. session B 的 flush tables t 命令再要去关闭表 t，就需要等 session A 的查询结束。
+		2. session B 的 flush tables t 命令再要去关闭表 t，就需要等 session A 的查询结束。
 
-	3. session C 要再次查询的话，就会被 flush 命令堵住了。	
-	
-2. 表现：使用show processlist命令查看State的状态处于 Waiting for table flush; 
+		3. session C 要再次查询的话，就会被 flush 命令堵住了。	
+		
+	2. 表现：使用show processlist命令查看State的状态处于 Waiting for table flush; 
 
-3. 这里状态处于Waiting for table flush的含义：
-	
-	表示 现在有一个线程正要对 表t 做 flush操作; 
-	
-4. 出现Waiting for table flush状态的可能情况：
-	有一个 flush tables 命令被别的语句堵住了，然后它又堵住了我们的 select 语句。
+	3. 这里状态处于Waiting for table flush的含义：
+		
+		表示 现在有一个线程正要对 表t 做 flush操作; 
+		
+	4. 出现Waiting for table flush状态的可能情况：
 
-5. MySQL 里面对表做 flush 操作的两个用法：
+		有一个 flush tables 命令被别的语句堵住了，然后它又堵住了我们的 select 语句。
 
-	flush tables t with read lock;
-	flush tables with read lock;
+	5. MySQL 里面对表做 flush 操作的两个用法：
 
-	flush 语句，如果指定表 t 的话，代表的是只关闭表 t；
-	如果没有指定具体的表名，则表示关闭 MySQL 里所有打开的表。
-	
-5. 查询语句需要打开表, flush tables语句需要关闭表; 
-   因此, 同一个表不能在同一个时间段做打开表和关闭表操作。	
+		flush tables t with read lock;
+		flush tables with read lock;
+
+		flush 语句，如果指定表 t 的话，代表的是只关闭表 t；
+		如果没有指定具体的表名，则表示关闭 MySQL 里所有打开的表。
+		
+	5. 查询语句需要打开表, flush tables语句需要关闭表; 
+	   因此, 同一个表不能在同一个时间段做打开表和关闭表操作。	
 
 1.3 等行锁
 	
-session A                session B
+	session A                session B
 
-begin;
+	begin;
 
-update t set c=c+1 where id=1;
-							
-						select * from t where id=1 lock in share mode;
+	update t set c=c+1 where id=1;
+								
+							select * from t where id=1 lock in share mode;
 
-mysql> select * from sys.innodb_lock_waits\G;
-*************************** 1. row ***************************
-                wait_started: 2019-07-22 10:17:47
-                    wait_age: 00:00:24
-               wait_age_secs: 24
-                locked_table: `admin_db`.`t`
-                locked_index: PRIMARY
-                 locked_type: RECORD
-              waiting_trx_id: 421298126309664
-         waiting_trx_started: 2019-07-22 10:17:47
-             waiting_trx_age: 00:00:24
-     waiting_trx_rows_locked: 1
-   waiting_trx_rows_modified: 0
-                 waiting_pid: 2328
-               waiting_query: select * from t where id=1 lock in share mode
-             waiting_lock_id: 421298126309664:4347:4:2
-           waiting_lock_mode: S
-             blocking_trx_id: 8114275
-                blocking_pid: 2327
-              blocking_query: NULL
-            blocking_lock_id: 8114275:4347:4:2
-          blocking_lock_mode: X
-        blocking_trx_started: 2019-07-22 10:16:16
-            blocking_trx_age: 00:01:55
-    blocking_trx_rows_locked: 1
-  blocking_trx_rows_modified: 1
-     sql_kill_blocking_query: KILL QUERY 2327
-sql_kill_blocking_connection: KILL 2327
-1 row in set, 3 warnings (0.01 sec)
+	mysql> select * from sys.innodb_lock_waits\G;
+	*************************** 1. row ***************************
+					wait_started: 2019-07-22 10:17:47
+						wait_age: 00:00:24
+				   wait_age_secs: 24
+					locked_table: `admin_db`.`t`
+					locked_index: PRIMARY
+					 locked_type: RECORD
+				  waiting_trx_id: 421298126309664
+			 waiting_trx_started: 2019-07-22 10:17:47
+				 waiting_trx_age: 00:00:24
+		 waiting_trx_rows_locked: 1
+	   waiting_trx_rows_modified: 0
+					 waiting_pid: 2328
+				   waiting_query: select * from t where id=1 lock in share mode
+				 waiting_lock_id: 421298126309664:4347:4:2
+			   waiting_lock_mode: S
+				 blocking_trx_id: 8114275
+					blocking_pid: 2327
+				  blocking_query: NULL
+				blocking_lock_id: 8114275:4347:4:2
+			  blocking_lock_mode: X
+			blocking_trx_started: 2019-07-22 10:16:16
+				blocking_trx_age: 00:01:55
+		blocking_trx_rows_locked: 1
+	  blocking_trx_rows_modified: 1
+		 sql_kill_blocking_query: KILL QUERY 2327
+	sql_kill_blocking_connection: KILL 2327
+	1 row in set, 3 warnings (0.01 sec)
 
-mysql> kill 2327; 
+	mysql> kill 2327; 
 
- 分析：
-	1. 通过 sys.innodb_lock_waits表查找到 blocking pid,  用 kill blocking pid断开这个连接；
-	2. 连接被断开的时候，会自动回滚这个连接里面正在执行的线程，也就释放了 行锁。
+	 分析：
+		1. 通过 sys.innodb_lock_waits表查找到 blocking pid,  用 kill blocking pid断开这个连接；
+		2. 连接被断开的时候，会自动回滚这个连接里面正在执行的线程，也就释放了 行锁。
 
 2.第二类: 查询慢
 	
