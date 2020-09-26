@@ -1,4 +1,8 @@
 
+
+
+如果 MySQL 数据库本身就有很大的压力，导致数据库服务器 CPU 占用率很高或 ioutil（IO 利用率）很高，这种情况下所有语句的执行都有可能变慢，
+
 """
 mysql> CREATE TABLE `t` (
   `id` int(11) NOT NULL,
@@ -81,14 +85,14 @@ MDL锁的复现：
 	
 3. 分析原因和过程：
 	session A 通过 lock table 命令持有表 t 的 MDL写锁，而 session B 的查询需要获取 MDL 读锁； 
-	所以，session B 进入等待状态。
+	MDL写锁与MDL读锁互斥，所以，session B 进入等待状态。
 	
 
 4. 处理方式：
 	
-	就是找到谁持有 MDL 写锁，然后把它 kill 掉。
+	就是找到谁持有MDL写锁，然后把它 kill 掉。
 	
-	在 show processlist 的结果里面，session A(thread id=34117) 的 Command 列是“Sleep”，导致查找起来很不方便； 
+	在 show processlist 的结果里面，session A(thread id=34117) 的 Command 列是"Sleep"，导致查找起来很不方便； 
 
 	1.MySQL 5.6版本，通过performance_schema系统库来找：
 		MySQL 启动时需要设置 performance_schema=on，相比于设置为 off 会有 10% 左右的性能损失。
@@ -111,7 +115,7 @@ MDL锁的复现：
 		 waiting_query_rows_affected: 0
 		 waiting_query_rows_examined: 0
 				  blocking_thread_id: 34150
-						blocking_pid: 34117
+						blocking_pid: 34117   -- 查获加表锁的线程 id，也就是造成阻塞的 process id。
 					blocking_account: root@localhost
 				  blocking_lock_type: SHARED_NO_READ_WRITE
 			  blocking_lock_duration: TRANSACTION
@@ -307,5 +311,18 @@ mysql> select * from t where id=1 lock in share mode;
 2. lock in share mode: 当前读，因此会直接读到 1000001 这个结果，所以速度很快;
 3. select * from t where id=1: 一致性读，因此需要从 1000001 开始，依次执行 undo log，执行了 100 万次以后，才将 1 这个结果返回;
 4. undo log 里记录的其实是“把 2 改成 1”，“把 3 改成 2”这样的操作逻辑，画成减 1 的目的是方便看图。
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

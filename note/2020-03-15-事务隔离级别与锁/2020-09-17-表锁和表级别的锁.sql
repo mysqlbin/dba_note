@@ -89,7 +89,9 @@
 		---TRANSACTION 421692776193488, not started
 		mysql tables in use 1, locked 1    -- 通过表锁锁表.
 		0 lock struct(s), heap size 1136, 0 row lock(s)
-
+	
+	 lock tables t write; 命令会持有MDL写锁。
+	 
 --------------------------------------
 	
 4. 隔离级别RR下的表级锁

@@ -70,7 +70,7 @@
 	 waiting_query_rows_affected: 0
 	 waiting_query_rows_examined: 0
 			  blocking_thread_id: 34151
-					blocking_pid: 34118
+					blocking_pid: 34118    -- 查获加MDL写锁的线程 id，也就是造成阻塞的 process id。
 				blocking_account: root@localhost
 			  blocking_lock_type: SHARED_UPGRADABLE
 		  blocking_lock_duration: TRANSACTION
