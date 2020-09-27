@@ -1,9 +1,13 @@
 
 
+1. 主库
+2. 从库
+3. 命令执行
 
-主库
+
+1. 主库
 	DML:
-		root@mysqldb 11:20:  [test_20191101]> delete from t1 where a=2;
+		mysql> delete from t1 where a=2;
 		Query OK, 1 row affected (0.02 sec)
 
 	
@@ -23,8 +27,8 @@
 	7 rows in set (0.00 sec)
 
   
- 从库
-	root@mysqldb 23:46:  [(none)]>  show binlog events in 'mysql-bin.000005';
+2. 从库
+	mysql>  show binlog events in 'mysql-bin.000005';
 	+------------------+-----+----------------+-----------+-------------+------------------------------------------------------------------------+
 	| Log_name         | Pos | Event_type     | Server_id | End_log_pos | Info                                                                   |
 	+------------------+-----+----------------+-----------+-------------+------------------------------------------------------------------------+
@@ -106,10 +110,8 @@
 				Network_Namespace: 
 	1 row in set (0.00 sec)
 
-	ERROR: 
-	No query specified
 
-命令执行：
+3. 命令执行
 	mysqlbinlog -vv --base64-output='decode-rows' --stop-position=673 kp05-relay-bin.000005  > relay-log.sql
 	mysqlbinlog -vv --base64-output='decode-rows'  mysql-bin.000005  > slave-binary-log.sql
 	mysqlbinlog -vv --base64-output='decode-rows'  mysql-bin.000007  > master-binary-log.sql

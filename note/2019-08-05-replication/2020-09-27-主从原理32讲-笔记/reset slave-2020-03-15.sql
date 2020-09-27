@@ -10,6 +10,7 @@
 	
 	
 1. reset slave 会重置的信息:
+	
 	1. master.info 文件 
 	2. relay.info 文件 
 	3. 删除所有的 relay log（中继日志）文件 并且 创建一个新的 relay log 文件
@@ -22,12 +23,13 @@
 	
 	
 2. 通过实验来验证 reset slave会重置的信息
+
 	主库：
 		192.168.1.27
 	从库：
 		192.168.1.29
 		
-	root@localhost [(none)]>select version();
+	mysql>select version();
 	+------------+
 	| version()  |
 	+------------+

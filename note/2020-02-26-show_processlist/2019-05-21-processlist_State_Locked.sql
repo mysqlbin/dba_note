@@ -144,3 +144,7 @@ Command: Query
 
 kill 掉这个 线程就行。
 
+kill 37。
+
+
+

@@ -38,11 +38,11 @@
 
 		InnoDB存储引擎支持两种意向锁：
 
-			意向共享锁(IS Lock): 
+			意向共享锁(IS Lock): 意向读锁
 				事务想要获取表A中某些行的共享锁(S 锁)，必须要获取表A的意向共享锁(IS 锁)
 				当事务准备在某条记录上加S锁时，需要先在表级别加一个IS锁。   --
 
-			意向排他锁(IX Lock): 
+			意向排他锁(IX Lock): 意向写锁
 				事务想要获取表A中某些行的排他锁(X 锁)，必须要获取表A的意向排他锁(IX 锁)
 				当事务准备在某条记录上加X锁时，需要先在表级别加一个IX锁。	 -- 
 
@@ -171,12 +171,13 @@
 		会话B先判断表上有没有表级锁，如果没有表级锁，则开始判断有没有行级锁
 
 		这个案例基于MySQL 5.7.22
-		innodb_status_output_locks参数处于开启状态。
+		innodb_status_output_locks 参数处于开启状态。
 		begin;
 		select * from t2 lock in share mode;
 								begin;
 								select * from t2 where c=10 for update;
-		show engine innodb status\G;
+								
+		mysql show engine innodb status\G;
 			---TRANSACTION 5893164, ACTIVE 4 sec starting index read
 			mysql tables in use 1, locked 1
 			LOCK WAIT 3 lock struct(s), heap size 1136, 2 row lock(s)
@@ -206,7 +207,7 @@
 			 3: len 4; hex 8000000a; asc     ;;
 			 4: len 4; hex 8000000a; asc     ;;
 
-		root@localhost [(none)]>select * from information_schema.innodb_locks\G;
+		mysql>select * from information_schema.innodb_locks\G;
 		*************************** 1. row ***************************
 		    lock_id: 5893164:231:3:2
 		lock_trx_id: 5893164
@@ -234,7 +235,7 @@
 		ERROR: 
 		No query specified
 
-		root@localhost [(none)]>select * from information_schema.innodb_lock_waits\G;
+		mysql>select * from information_schema.innodb_lock_waits\G;
 		*************************** 1. row ***************************
 		requesting_trx_id: 5893164
 		requested_lock_id: 5893164:231:3:2
@@ -382,13 +383,14 @@
 		
 	表锁和表级锁
 		表锁: lock table t write/read; 
-		表级锁: MDL锁、自增锁、意向锁
+		表级锁: MDL锁、自增锁、意向锁、锁住全表的记录(使用全表的Next-Key Lock来锁住整个表的记录)
 		
 	行锁
 		行锁根据锁定的范围可以分为： 行锁的模式即 LOCK_TYPE=RECORD， LOCK_MODE： X,GAP,INSERT_INTENTION
 			1、间隙锁：间隙锁锁定范围是索引记录之间的间隙或者第一个或最后一个索引记录之前的间隙(指虚拟最大记录)
 			2、记录锁：MySQL中记录锁都是添加在索引上，即使表上没有索引也会在隐藏的聚集索引上添加记录锁
-			3、next-key lock：Next-Key Locks是Record Locks与Gap Locks间隙锁的组合，也就是索引记录本身加上 之前的间隙。间隙锁防止了保证RR级别下不出现幻读现象会，防止同一个事务内得 到的结果不一致
+			3、next-key lock：Next-Key Locks是Record Locks与Gap Locks间隙锁的组合，也就是索引记录本身加上 之前的间隙。
+				间隙锁防止了保证RR级别下不出现幻读现象会，防止同一个事务内得 到的结果不一致
 			4、插入意向锁：插入意向锁定是在行插入之前由INSERT操作设置的一种间隙锁。这个锁表示插入的意图，即插入相同索引间隙的多个事务如果不插入间隙内的相同位置则不需要等待彼此，插入意向锁是一种特殊的GAP LOCK
 			
 			mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
