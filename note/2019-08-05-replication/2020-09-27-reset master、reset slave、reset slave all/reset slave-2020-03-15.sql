@@ -1,5 +1,5 @@
 
-1. reset slave 会重置的信息
+1. reset slave会重置的信息
 2. 通过实验来验证 reset slave会重置的信息
 3. reset slave all
 4. 思考：
@@ -7,25 +7,30 @@
 5. 相关参考
 	https://dev.mysql.com/doc/refman/5.7/en/reset-slave.html
 6. cat master.info 和 cat relay-log.info  
+7. 小结
 	
-	
-1. reset slave 会重置的信息:
+1. reset slave会重置的信息
 	
 	1. master.info 文件 
 	2. relay.info 文件 
 	3. 删除所有的 relay log（中继日志）文件 并且 创建一个新的 relay log 文件
-		It clears the master info and relay log info repositories, deletes all the relay log files, and starts a new relay log file.
+		It clears the master info and relay log info repositories, deletes all the relay log files, and starts a new relay log file
+		重置中继日志。
+		
 	4. GTID 模式下：
-		不影响GTID的执行信息， 比如不会重置 gtid_executed变量、gtid_purged变量、mysql.gtid_executed 表
+		不影响GTID的执行信息， 比如不会重置gtid_executed变量、gtid_purged变量、mysql.gtid_executed表
 		issuing RESET SLAVE has no effect on the GTID execution history. The statement does not change the values of gtid_executed or gtid_purged, or the mysql.gtid_executed table.
+		
 	5. reset slave 存在的问题：
-		RESET SLAVE有个问题，它虽然删除了上述文件，但内存中的 change master 信息并没有删除，此时，可直接执行start slave，但因为删除了master.info和relay-log.info，它会从头开始接受主的binlog并应用。
+		RESET SLAVE有个问题，它虽然删除了上述文件，但内存中的 change master 信息并没有删除，
+		此时，可直接执行start slave，但因为删除了master.info和relay-log.info，它会从头开始接受主的binlog并应用。
 	
 	
 2. 通过实验来验证 reset slave会重置的信息
 
 	主库：
 		192.168.1.27
+		
 	从库：
 		192.168.1.29
 		
@@ -39,7 +44,7 @@
 	
 	slave old info：
 
-		root@localhost [(none)]>select * from mysql.gtid_executed;
+		mysql>select * from mysql.gtid_executed;
 		+--------------------------------------+----------------+--------------+
 		| source_uuid                          | interval_start | interval_end |
 		+--------------------------------------+----------------+--------------+
@@ -47,7 +52,7 @@
 		+--------------------------------------+----------------+--------------+
 		1 row in set (0.01 sec)
 		
-		root@localhost [(none)]>show global variables  like '%gtid%';
+		mysql>show global variables  like '%gtid%';
 		+----------------------------------+------------------------------------------+
 		| Variable_name                    | Value                                    |
 		+----------------------------------+------------------------------------------+
@@ -94,7 +99,7 @@
 		drwxr-x--- 2 mysql mysql       4096 Mar 14 06:10 zst
 
 		
-		root@localhost [(none)]>show slave status\G;
+		mysql>show slave status\G;
 		*************************** 1. row ***************************
 					   Slave_IO_State: Waiting for master to send event
 						  Master_Host: 192.168.1.27
@@ -155,22 +160,21 @@
 				   Master_TLS_Version: 
 		1 row in set (0.00 sec)
 
-		ERROR: 
-		No query specified	
 
 
 	reset slave;
 
-		root@localhost [(none)]>reset slave;
+		mysql>reset slave;
 		ERROR 3081 (HY000): This operation cannot be performed with running replication threads; run STOP SLAVE FOR CHANNEL '' first
-		root@localhost [(none)]>stop slave;
+		
+		mysql>stop slave;
 		Query OK, 0 rows affected (0.00 sec)
 
-		root@localhost [(none)]>reset slave;
+		mysql>reset slave;
 		Query OK, 0 rows affected (0.01 sec)
 		
 		
-		root@localhost [(none)]>select * from mysql.gtid_executed;
+		mysql>select * from mysql.gtid_executed;
 		+--------------------------------------+----------------+--------------+
 		| source_uuid                          | interval_start | interval_end |
 		+--------------------------------------+----------------+--------------+
@@ -178,7 +182,7 @@
 		+--------------------------------------+----------------+--------------+
 		1 row in set (0.00 sec)
 
-		root@localhost [(none)]>show global variables  like '%gtid%';
+		mysql>show global variables  like '%gtid%';
 		+----------------------------------+------------------------------------------+
 		| Variable_name                    | Value                                    |
 		+----------------------------------+------------------------------------------+
@@ -220,7 +224,7 @@
 		drwxr-x--- 2 mysql mysql       4096 Mar 14 06:10 terrace_db
 		drwxr-x--- 2 mysql mysql       4096 Mar 14 06:10 zst
 
-		root@localhost [(none)]>show slave status\G;
+		mysql>show slave status\G;
 		*************************** 1. row ***************************
 					   Slave_IO_State: 
 						  Master_Host: 192.168.1.27
@@ -281,16 +285,13 @@
 				   Master_TLS_Version: 
 		1 row in set (0.00 sec)
 
-		ERROR: 
-		No query specified
-
 	start slave;
 
 	
-		root@localhost [(none)]>start slave;
+		mysql>start slave;
 		Query OK, 0 rows affected (0.05 sec)
 
-		root@localhost [(none)]>show slave status\G;
+		mysql>show slave status\G;
 		*************************** 1. row ***************************
 					   Slave_IO_State: Waiting for master to send event
 						  Master_Host: 192.168.1.27
@@ -351,16 +352,14 @@
 				   Master_TLS_Version: 
 		1 row in set (0.00 sec)
 
-		ERROR: 
-		No query specified
-		
+
 	
 	master：
-		root@localhost [(none)]>delete from zst.t20190930 where id=1;
+		mysql>delete from zst.t20190930 where id=1;
 		Query OK, 1 row affected (0.05 sec)
 	
 	slave：
-		root@localhost [(none)]>show slave status\G;
+		mysql>show slave status\G;
 		*************************** 1. row ***************************
 					   Slave_IO_State: Waiting for master to send event
 						  Master_Host: 192.168.1.27
@@ -421,33 +420,28 @@
 				   Master_TLS_Version: 
 		1 row in set (0.00 sec)
 
-		ERROR: 
-		No query specified
-
+		
 
 		
 3. reset slave all
 
-	root@localhost [(none)]> reset slave all;
+	mysql> reset slave all;
 	ERROR 3081 (HY000): This operation cannot be performed with running replication threads; run STOP SLAVE FOR CHANNEL '' first
-	root@localhost [(none)]>stop slave;
+	
+	mysql>stop slave;
 	Query OK, 0 rows affected (0.04 sec)
 
-	root@localhost [(none)]> reset slave all;
+	mysql> reset slave all;
 	Query OK, 0 rows affected (0.02 sec)
 
-	root@localhost [(none)]>show slave status\G;
+	mysql>show slave status\G;
 	Empty set (0.00 sec)
 
-	ERROR: 
-	No query specified
-
-	root@localhost [(none)]>start slave;
+	mysql>start slave;
 	ERROR 1200 (HY000): The server is not configured as slave; fix in config file or with CHANGE MASTER TO
 
-	
-	
-	root@localhost [(none)]>change master to 
+
+	mysql>change master to 
     -> master_host='192.168.1.27',
     -> master_user='repl',
     -> master_password='123456abc',
@@ -455,14 +449,14 @@
     -> MASTER_AUTO_POSITION = 1;
 	Query OK, 0 rows affected, 2 warnings (0.09 sec)
 
-	root@localhost [(none)]>
-	root@localhost [(none)]>start slave;
+	mysql>
+	mysql>start slave;
 	ERROR 1872 (HY000): Slave failed to initialize relay log info structure from the repository
 
 	error.log
 		2020-03-16T00:12:38.481407Z 3 [ERROR] Slave SQL for channel '': Slave failed to initialize relay log info structure from the repository, Error_code: 1872
 	
-	root@localhost [(none)]>show global variables like '%relay_log_recovery%';
+	mysql>show global variables like '%relay_log_recovery%';
 	+--------------------+-------+
 	| Variable_name      | Value |
 	+--------------------+-------+
@@ -471,6 +465,7 @@
 	1 row in set (0.00 sec)
 	
 	现象：
+		
 		When i tried to configurate a crash safe slave with MTS and GTID based replication, but after a OS crash replication failed to be start.
 		
 		当我尝试使用基于MTS和GTID的复制配置崩溃安全从服务器时，但是在操作系统崩溃复制后无法启动。
@@ -479,22 +474,22 @@
 		https://www.cnblogs.com/shengdimaya/p/7681550.html
 		https://bugs.mysql.com/bug.php?id=83713
 		
-	root@localhost [(none)]>reset slave;
+	mysql>reset slave;
 	Query OK, 0 rows affected (0.03 sec)
 
-	root@localhost [(none)]>start slave IO_THREAD;
+	mysql>start slave IO_THREAD;
 	Query OK, 0 rows affected (0.05 sec)
 
-	root@localhost [(none)]>stop slave IO_THREAD;
+	mysql>stop slave IO_THREAD;
 	Query OK, 0 rows affected (0.00 sec)
 
-	root@localhost [(none)]>reset slave;
+	mysql>reset slave;
 	Query OK, 0 rows affected (0.04 sec)
 
-	root@localhost [(none)]>start slave;
+	mysql>start slave;
 	Query OK, 0 rows affected (0.02 sec)
 
-	root@localhost [(none)]>show slave status\G;
+	mysql>show slave status\G;
 	*************************** 1. row ***************************
 				   Slave_IO_State: Waiting for master to send event
 					  Master_Host: 192.168.1.27
@@ -555,17 +550,13 @@
 			   Master_TLS_Version: 
 	1 row in set (0.00 sec)
 
-	ERROR: 
-	No query specified
-
-
 	
-
 4. 思考：
+
 	1. stop slave; reset slave; 后 start slave; 但是此时 master 的 binary log 并不是从第一个文件开始，有什么问题？
 		验证如下：
 		master：
-			root@localhost [(none)]>show binary logs;
+			mysql>show binary logs;
 			+------------------+-----------+
 			| Log_name         | File_size |
 			+------------------+-----------+
@@ -577,7 +568,7 @@
 			purge binary logs to 'mysql-bin.000002';
 			
 			
-			root@localhost [(none)]>show binary logs;
+			mysql>show binary logs;
 			+------------------+-----------+
 			| Log_name         | File_size |
 			+------------------+-----------+
@@ -588,16 +579,16 @@
 
 		slave:
 		
-			root@localhost [(none)]>stop slave;
+			mysql>stop slave;
 			Query OK, 0 rows affected (0.00 sec)
 
-			root@localhost [(none)]>reset slave;
+			mysql>reset slave;
 			Query OK, 0 rows affected (0.02 sec)
 
-			root@localhost [(none)]>start slave;
+			mysql>start slave;
 			Query OK, 0 rows affected (0.03 sec)
 
-			root@localhost [(none)]>show slave status\G;
+			mysql>show slave status\G;
 			*************************** 1. row ***************************
 						   Slave_IO_State: Waiting for master to send event
 							  Master_Host: 192.168.1.27
@@ -662,8 +653,10 @@
 			No query specified
 
 		
-		不会有问题，因为是从master上的第一个binary log 文件开始读取，如果第一个 binary log 文件是 mysql-bin.000002， 那么就从 mysql-bin.000002 开始读取。
+		GTID模式下不会有问题，因为是从master上的第一个binary log 文件开始读取，如果第一个 binary log 文件是 mysql-bin.000002， 那么就从 mysql-bin.000002 开始读取。
 		
+		
+		彻底清空复制信息。
 		
 	
 5. 相关参考
@@ -712,3 +705,11 @@
 		1
 
 
+7. 小结
+	reset slave:
+		重置relay log、change master to 的复制信息还在。
+	reset slave all:
+		重置relay log，清空所有的复制信息，包含在内存中的 change master 信息。
+		
+	
+	
