@@ -26,7 +26,9 @@
 	5. reset slave 存在的问题：
 		RESET SLAVE有个问题，它虽然删除了上述文件，但内存中的 change master 信息并没有删除，
 		此时，可直接执行start slave，但因为删除了master.info和relay-log.info，它会从头开始接受主的binlog并应用。
-	
+		
+		传统复制下会报错，GTID模式下估计不会有问题。
+		
 	
 2. 通过实验来验证 reset slave会重置的信息
 
