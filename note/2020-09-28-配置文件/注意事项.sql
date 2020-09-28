@@ -1,9 +1,11 @@
 
 
 时区的问题
+日志的时间问题
 大小写问题
 SQL_MODE 问题
 二进制日志、错误日志、慢查询日志的时间是否跟当前系统时间一致
 my.cnf 配置文件还是放在 /etc/ 目录下, OOM的时候MySQL会在这个目录下找配置文件.
 
 
+innodb_temp_data_file_path = ibtmp1:64M:autoextend:max:5G

@@ -77,7 +77,7 @@ OR
 6：
 添加环境变量：
 echo $PATH
-echo "export PATH=$PATH:/usr/local/mysql-5.6.36/bin">>/etc/profile
+echo "export PATH=$PATH:/usr/local/mysql/bin">>/etc/profile
 source /etc/profile  //让配置生效
 
 7：

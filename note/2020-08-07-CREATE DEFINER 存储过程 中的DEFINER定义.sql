@@ -6,7 +6,7 @@
 
 
 
-	root@mysqldb 16:18:  [test_db]>  show grants for 'root'@'localhost';
+	mysql  show grants for 'root'@'localhost';
 	+---------------------------------------------------------------------+
 	| Grants for root@localhost                                           |
 	+---------------------------------------------------------------------+
@@ -15,7 +15,7 @@
 	+---------------------------------------------------------------------+
 	2 rows in set (0.00 sec)
 	 
-	root@mysqldb 16:17:  [test_db]> show grants for 'select_user'@'%';
+	mysql> show grants for 'select_user'@'%';
 	+---------------------------------------------------------------------+
 	| Grants for select_user@%                                            |
 	+---------------------------------------------------------------------+
@@ -24,7 +24,7 @@
 	1 row in set (0.00 sec)
 
 
-	root@mysqldb 16:07:  [test_db]> select * from t1;
+	mysql> select * from t1;
 	+----+-----+---------------------+
 	| ID | age | tEndTime            |
 	+----+-----+---------------------+
@@ -52,7 +52,7 @@
 	select_user@mysqldb 16:20:  [test_db]> call check_data();
 	Query OK, 1 row affected (0.03 sec)
 
-	root@mysqldb 16:21:  [test_db]> select * from t1;
+	mysql> select * from t1;
 	+----+-----+---------------------+
 	| ID | age | tEndTime            |
 	+----+-----+---------------------+
@@ -71,6 +71,10 @@
 2. 小结
 
 	CREATE DEFINER=`root`@`localhost` PROCEDURE `check_data`() ;    -- 通过 `root`@`localhost` 账号的权限来操作 check_data存储过程中的SQL语句。
+	
+3. 方案
+	
+	在程序种判断传入的存储过程参数是否包含 drop、truncate等关键字。
 	
 	
 

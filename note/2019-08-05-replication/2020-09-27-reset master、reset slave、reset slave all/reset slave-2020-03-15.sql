@@ -12,7 +12,9 @@
 1. reset slave会重置的信息
 	
 	1. master.info 文件 
+	
 	2. relay.info 文件 
+		
 	3. 删除所有的 relay log（中继日志）文件 并且 创建一个新的 relay log 文件
 		It clears the master info and relay log info repositories, deletes all the relay log files, and starts a new relay log file
 		重置中继日志。
@@ -712,4 +714,6 @@
 		重置relay log，清空所有的复制信息，包含在内存中的 change master 信息。
 		
 	
+
+
 	

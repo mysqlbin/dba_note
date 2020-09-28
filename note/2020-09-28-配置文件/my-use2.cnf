@@ -1,21 +1,20 @@
 [client]
 port	= 3306
-socket	= /mydata/mysql/mysql3306/data/mysql3306.sock
+socket	= /home/mysql/3306/data/3306.sock
 
 
 [mysqld]
 user	= mysql
 port	= 3306
 basedir	= /usr/local/mysql
-datadir	= /mydata/mysql/mysql3306/data
-socket	= /mydata/mysql/mysql3306/data/mysql3306.sock
+datadir	= /home/mysql/3306/data
+socket	= /home/mysql/3306/data/3306.sock
 pid-file = mysqldb.pid
 
 #字符集设置
 character-set-server = utf8mb4
 collation-server=utf8mb4_general_ci
 #init-connect='SET NAMES utf8mb4'
-init-connect='SET NAMES utf8mb4;Insert into audit_db.accesslog(ConnectionID ,ConnUser ,MatchUser ,LoginTime)values(connection_id(),user(),current_user(),now());'
 
 
 skip_name_resolve = 1
@@ -35,7 +34,7 @@ max_allowed_packet = 32M
 sort_buffer_size = 4M
 join_buffer_size = 4M
 thread_cache_size = 768
-tmpdir=/mydata/mysql/mysql3306/tmp
+tmpdir=/home/mysql/3306/tmp
 
 # 这里业务场景来设置
 interactive_timeout = 31536000  #游戏业务场景：31536000（1年）
@@ -62,7 +61,7 @@ server-id = 330607
 #binlog
 #log_bin = on 			#SQL_LOG_BIN
 binlog_format = row
-log-bin = /mydata/mysql/mysql3306/logs/mysql-bin
+log-bin = /home/mysql/3306/logs/mysql-bin
 sync_binlog = 1
 binlog_cache_size = 4M
 max_binlog_cache_size = 2G
@@ -164,7 +163,7 @@ performance_schema_instrument = '%=on'
 #定时任务机制
 event_scheduler = on
 
-sql_safe_updates=1
+#sql_safe_updates=1
 
 sql_mode=STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION   #SQL的严格模式,数据库升级后该参数要一致
 
