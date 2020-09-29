@@ -11,7 +11,14 @@ db.t1.stats();
 db.t2.stats();
 
 db.serverStatus
-db.serverStatus().connections
+MongoDB查看当前连接数
+	db.serverStatus().connections
+	
+	repl_set:PRIMARY> db.serverStatus().connections
+	{ "current" : 139, "available" : 680, "totalCreated" : 1048, "active" : 2 }
+	
+	repl_set:SECONDARY> db.serverStatus().connections
+	{ "current" : 6, "available" : 813, "totalCreated" : 206, "active" : 1 }
 
 
 Collection聚集集合操作

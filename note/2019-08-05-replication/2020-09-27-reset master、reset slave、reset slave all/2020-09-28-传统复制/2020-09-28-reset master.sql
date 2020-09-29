@@ -1,6 +1,10 @@
 
+1. master
+2. slave
+3. reset master
 
-master:
+
+1. master
 	mysql> show master status\G;
 	*************************** 1. row ***************************
 				 File: mysql-bin.000003
@@ -24,7 +28,7 @@ master:
 	3 rows in set (0.00 sec)
 
 
-slave
+2. slave
 
 	mysql> show slave status\G;
 	*************************** 1. row ***************************
@@ -61,7 +65,7 @@ slave
 
 
 
-reset master;
+3. reset master
 	
 	master
 		mysql> show master status\G;
@@ -120,7 +124,9 @@ reset master;
 				Seconds_Behind_Master: NULL
 		Master_SSL_Verify_Server_Cert: No
 						Last_IO_Errno: 1236
-						Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: 'could not find next log; the first event 'mysql-bin.000003' at 2614, the last event read from '/home/mysql/3306/logs/mysql-bin.000003' at 123, the last byte read from '/home/mysql/3306/logs/mysql-bin.000003' at 2614.'
+						Last_IO_Error: Got fatal error 1236 from master when reading data from binary log: 
+						'could not find next log; the first event 'mysql-bin.000003' at 2614, the last event read from '/home/mysql/3306/logs/mysql-bin.000003' at 123, 
+						the last byte read from '/home/mysql/3306/logs/mysql-bin.000003' at 2614.'
 					   Last_SQL_Errno: 0
 					   Last_SQL_Error: 
 		  Replicate_Ignore_Server_Ids: 
@@ -143,9 +149,13 @@ reset master;
 						 Channel_Name: 
 				   Master_TLS_Version: 
 		1 row in set (0.00 sec)
-
-		ERROR: 
-		No query specified
-
+		
+		-- 说明了
+		
+		
+		
+		
+		
+		
 
 
