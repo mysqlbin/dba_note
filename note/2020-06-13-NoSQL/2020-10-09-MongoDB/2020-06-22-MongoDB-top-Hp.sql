@@ -1,4 +1,6 @@
-[root@iZoi1yuqcvndysZ log]# top -Hp 27255
+
+
+shell> top -Hp 27255
 top - 10:20:57 up 431 days, 20:59,  7 users,  load average: 0.24, 0.46, 0.57
 Threads: 158 total,   0 running, 158 sleeping,   0 stopped,   0 zombie
 %Cpu0  :  4.4 us,  7.4 sy,  0.0 ni, 87.5 id,  0.3 wa,  0.0 hi,  0.3 si,  0.0 st

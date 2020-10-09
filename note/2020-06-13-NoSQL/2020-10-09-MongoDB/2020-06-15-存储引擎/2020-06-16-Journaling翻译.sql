@@ -46,6 +46,7 @@ WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB
 	2. MongoDB将WiredTiger配置为使用内存缓冲来存储日记记录。 线程进行协调以分配并复制到其缓冲区中。 最多可缓存128kB的所有日记记录。
 	
 	3. WiredTiger在以下任一情况下将缓冲的日记记录同步到磁盘：
+		
 		1. 对于副本集成员（主要和次要成员）：
 			
 			如果有操作在等待操作日志条目。 可以等待操作日志条目的操作包括：
@@ -61,6 +62,7 @@ WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB
 		
 		
 3. 日志文件 --Journal Files
+
 	对于日记文件，MongoDB在dbPath目录下创建一个名为journal的子目录。 
 	WiredTiger日志文件的名称具有以下格式WiredTigerLog。<sequence>，其中<sequence>是从0000000001开始的零填充数字。
 
@@ -73,6 +75,7 @@ WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB
 	-rw------- 1 mongodb mongodb 104857600 2020-06-15 14:28 WiredTigerPreplog.0000000057
 	
 4. 日志文件中的记录 --Journal Records
+	
 	日志文件包含每个客户端的写操作的记录
 	
 	日记记录包括由初始写入引起的任何内部写入操作。 例如，对集合中文档的更新可能会导致对索引的修改； WiredTiger创建一条日志记录，其中包含更新操作及其关联的索引修改。
@@ -82,6 +85,7 @@ WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB
 	WiredTiger的最小日志记录大小为128个字节。
 	
 5. 压缩 --Compression
+
 	默认情况下，MongoDB将WiredTiger配置为对其日记数据使用快速压缩(snappy compression)。
 	
 	
@@ -96,6 +100,8 @@ WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB
 	
 	
 
+8. 小结
+	
 
 
 	
