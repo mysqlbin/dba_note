@@ -2,7 +2,21 @@
 
 
 https://docs.mongodb.com/manual/reference/method/db.stats/
+https://docs.mongodb.com/manual/reference/method/db.collection.stats/
 
+
+模块：
+	LSM
+	block-manager
+	btree
+	cache
+		MySQL: sys.innodb_buffer_stats_by_table
+	cache_walk
+	compression
+	cursor
+	reconciliation
+	session
+	transaction
 
 
 repl_set:PRIMARY> db.table_t1.stats()
@@ -54,6 +68,31 @@ repl_set:PRIMARY> db.table_t1.stats()
 			"column-store variable-size deleted values" : 0,
 			"column-store variable-size leaf pages" : 0,
 			"fixed-record size" : 0,
+			"maximum internal page key size" : 368,  	-- 最大内节点页的键大小
+			"maximum internal page size" : 4096,    	-- 最大内节点页的页面大小
+			
+			"maximum leaf page key size" : 2867,    	-- 叶子节点页
+			"maximum leaf page size" : 32768,        	-- 叶子节点页
+			"maximum leaf page value size" : 67108864, 	-- 叶子节点页
+			
+			"maximum tree depth" : 5,
+			"number of key/value pairs" : 0,
+			"overflow pages" : 0,
+			"pages rewritten by compaction" : 0,
+			"row-store empty values" : 0,
+			"row-store internal pages" : 0,
+			"row-store leaf pages" : 0
+		},
+		
+		/*
+		"btree" : {
+			"btree checkpoint generation" : 55304,
+			"column-store fixed-size leaf pages" : 0,
+			"column-store internal pages" : 0,
+			"column-store variable-size RLE encoded values" : 0,
+			"column-store variable-size deleted values" : 0,
+			"column-store variable-size leaf pages" : 0,
+			"fixed-record size" : 0,
 			"maximum internal page key size" : 368,
 			"maximum internal page size" : 4096,
 			"maximum leaf page key size" : 2867,
@@ -67,14 +106,44 @@ repl_set:PRIMARY> db.table_t1.stats()
 			"row-store internal pages" : 0,
 			"row-store leaf pages" : 0
 		},
+		
+		"btree" : {
+			"btree checkpoint generation" : 55307,
+			"column-store fixed-size leaf pages" : 0,
+			"column-store internal pages" : 0,
+			"column-store variable-size RLE encoded values" : 0,
+			"column-store variable-size deleted values" : 0,
+			"column-store variable-size leaf pages" : 0,
+			"fixed-record size" : 0,
+			"maximum internal page key size" : 368,
+			"maximum internal page size" : 4096,
+			"maximum leaf page key size" : 2867,
+			"maximum leaf page size" : 32768,
+			"maximum leaf page value size" : 67108864,
+			"maximum tree depth" : 5,
+			"number of key/value pairs" : 0,
+			"overflow pages" : 0,
+			"pages rewritten by compaction" : 0,
+			"row-store empty values" : 0,
+			"row-store internal pages" : 0,
+			"row-store leaf pages" : 0
+		},
+		
+		-- btree模块中的指标没有什么意义。
+		
+		*/
+		
+		
+		
 		"cache" : {
-			"bytes currently in the cache" : 865205785,
-			"bytes dirty in the cache cumulative" : 933170045,
-			"bytes read into cache" : 81671151280,
-			"bytes written from cache" : 17468219091,
-			"checkpoint blocked page eviction" : 752,
-			"data source pages selected for eviction unable to be evicted" : 3539,
-			"eviction walk passes of a file" : 68906,
+			"bytes currently in the cache" : 865205785,   -- 当前在缓存中的字节大小
+			"bytes dirty in the cache cumulative" : 933170045,  -- 缓存中累积的脏数据的字节大小
+			"bytes read into cache" : 81671151280,   -- 从缓存中读取的字节大小
+			"bytes written from cache" : 17468219091,  --写入缓存中的字节大小
+			"checkpoint blocked page eviction" : 752,  --从缓存中淘汰的数据页个数
+			"data source pages selected for eviction unable to be evicted" : 3539,   --无法逐出选定要逐出的数据源页  选择驱逐的数据源页面无法驱逐
+			
+			"eviction walk passes of a file" : 68906,   -- 逐出文件
 			"eviction walk target pages histogram - 0-9" : 7011,
 			"eviction walk target pages histogram - 10-31" : 17709,
 			"eviction walk target pages histogram - 128 and higher" : 0,
@@ -97,7 +166,7 @@ repl_set:PRIMARY> db.table_t1.stats()
 			"overflow pages read into cache" : 0,
 			"page split during eviction deepened the tree" : 0,
 			"page written requiring cache overflow records" : 7969,
-			"pages read into cache" : 1615291,
+			"pages read into cache" : 1615291,  --读入缓存的页面数
 			"pages read into cache after truncate" : 0,
 			"pages read into cache after truncate in prepare state" : 0,
 			"pages read into cache requiring cache overflow entries" : 7972,
@@ -108,6 +177,96 @@ repl_set:PRIMARY> db.table_t1.stats()
 			"tracked dirty bytes in the cache" : 0,
 			"unmodified pages evicted" : 1866955
 		},
+		
+		/*
+		
+		"cache" : {
+			"bytes currently in the cache" : 4847314217,   -- 4.5 GB
+			"bytes dirty in the cache cumulative" : 118518143890,
+			"bytes read into cache" : 332979272477,   -- 310 GB
+			"bytes written from cache" : 219425488730,  -- 204 GB
+			"checkpoint blocked page eviction" : 0,
+			"data source pages selected for eviction unable to be evicted" : 2981,
+			"eviction walk passes of a file" : 162496,
+			"eviction walk target pages histogram - 0-9" : 10099,
+			"eviction walk target pages histogram - 10-31" : 23616,
+			"eviction walk target pages histogram - 128 and higher" : 0,
+			"eviction walk target pages histogram - 32-63" : 34558,
+			"eviction walk target pages histogram - 64-128" : 94223,
+			"eviction walks abandoned" : 24072,
+			"eviction walks gave up because they restarted their walk twice" : 0,
+			"eviction walks gave up because they saw too many pages and found no candidates" : 2081,
+			"eviction walks gave up because they saw too many pages and found too few candidates" : 915,
+			"eviction walks reached end of tree" : 18195,
+			"eviction walks started from root of tree" : 27072,
+			"eviction walks started from saved location in tree" : 135424,
+			"hazard pointer blocked page eviction" : 244,
+			"in-memory page passed criteria to be split" : 1678,
+			"in-memory page splits" : 834,
+			"internal pages evicted" : 45077,
+			"internal pages split during eviction" : 13,
+			"leaf pages split during eviction" : 1177,
+			"modified pages evicted" : 187827,
+			"overflow pages read into cache" : 0,
+			"page split during eviction deepened the tree" : 0,
+			"page written requiring cache overflow records" : 0,
+			"pages read into cache" : 7439853,
+			"pages read into cache after truncate" : 0,
+			"pages read into cache after truncate in prepare state" : 0,
+			"pages read into cache requiring cache overflow entries" : 0,
+			"pages requested from the cache" : 68275244,
+			"pages seen by eviction walk" : 15771724,
+			"pages written from cache" : 4597362,
+			"pages written requiring in-memory restoration" : 1021,
+			"tracked dirty bytes in the cache" : 4515700,
+			"unmodified pages evicted" : 7162547
+		},
+
+		"cache" : {
+			"bytes currently in the cache" : 288371018,
+			"bytes dirty in the cache cumulative" : 128349663984,
+			"bytes read into cache" : 252297210296,
+			"bytes written from cache" : 11547099953,
+			"checkpoint blocked page eviction" : 0,
+			"data source pages selected for eviction unable to be evicted" : 545,
+			"eviction walk passes of a file" : 117616,
+			"eviction walk target pages histogram - 0-9" : 13197,
+			"eviction walk target pages histogram - 10-31" : 37270,
+			"eviction walk target pages histogram - 128 and higher" : 0,
+			"eviction walk target pages histogram - 32-63" : 36639,
+			"eviction walk target pages histogram - 64-128" : 30510,
+			"eviction walks abandoned" : 25236,
+			"eviction walks gave up because they restarted their walk twice" : 257,
+			"eviction walks gave up because they saw too many pages and found no candidates" : 2242,
+			"eviction walks gave up because they saw too many pages and found too few candidates" : 714,
+			"eviction walks reached end of tree" : 21811,
+			"eviction walks started from root of tree" : 28456,
+			"eviction walks started from saved location in tree" : 89160,
+			"hazard pointer blocked page eviction" : 112,
+			"in-memory page passed criteria to be split" : 1219,
+			"in-memory page splits" : 577,
+			"internal pages evicted" : 16310,
+			"internal pages split during eviction" : 3,
+			"leaf pages split during eviction" : 2163,
+			"modified pages evicted" : 55870,
+			"overflow pages read into cache" : 0,
+			"page split during eviction deepened the tree" : 0,
+			"page written requiring cache overflow records" : 0,
+			"pages read into cache" : 2168476,
+			"pages read into cache after truncate" : 0,
+			"pages read into cache after truncate in prepare state" : 0,
+			"pages read into cache requiring cache overflow entries" : 0,
+			"pages requested from the cache" : 130599824,
+			"pages seen by eviction walk" : 9216940,
+			"pages written from cache" : 282287,
+			"pages written requiring in-memory restoration" : 5549,
+			"tracked dirty bytes in the cache" : 5353214,
+			"unmodified pages evicted" : 2119474
+		},
+
+		
+		
+		*/
 		"cache_walk" : {
 			"Average difference between current eviction generation when the page was last considered" : 0,
 			"Average on-disk page image size seen" : 0,

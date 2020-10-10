@@ -1422,6 +1422,7 @@
 		观察 block-manager.file bytes available for reuse 指标就知道碎片空间的大小了。
 		
 	3. compact 的加锁：
+	
 		一个集合，会加集合所在DB的互斥写锁，会导致该DB上所有的读写请求都阻塞；
 		因为 compact 执行的时间可能很长，跟集合的数据量相关，所以强烈建议在业务低峰期执行，避免影响业务。  --已验证。
 	

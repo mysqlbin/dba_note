@@ -7,7 +7,7 @@
 
 > db.table_clubgamescorerobotdetail.stats(); 
 {
-	"ns" : "niuniuh5_modb.table_clubgamescorerobotdetail",  -- 集合的命名空间
+	"ns" : "aiuaiuh5_modb.table_clubgamescorerobotdetail",  -- 集合的命名空间
 	"size" : 12011032377,  -- 集合占用磁盘空间的大小
 	"count" : 27497094,    -- 集合中文档的数目
 	"avgObjSize" : 436,    -- 集合中平均对象大小
@@ -202,7 +202,7 @@
 
 > db.table_clubgamelog.stats();
 {
-	"ns" : "niuniuh5_modb.table_clubgamelog",
+	"ns" : "aiuaiuh5_modb.table_clubgamelog",
 	"size" : 8166278793,
 	"count" : 5126153,
 	"avgObjSize" : 1593,
@@ -395,14 +395,14 @@
 }
 
 2. 查看数据库的大小
-	 > use niuniuh5_modb
-	switched to db niuniuh5_modb
+	 > use aiuaiuh5_modb
+	switched to db aiuaiuh5_modb
 	> db.stats(1024*1024*1024)
 	{
-		"db" : "niuniuh5_modb",
-		"collections" : 2,
+		"db" : "aiuaiuh5_modb",
+		"collections" : 2,                    -- 集合数量
 		"views" : 0,
-		"objects" : 32623247,
+		"objects" : 32623247,                 -- 
 		"avgObjSize" : 618.4948779010256,
 		"dataSize" : 18.791585387662053,      -- 数据占用磁盘空间的大小
 		"storageSize" : 5.4725799560546875,   -- 数据的大小，不包含索引的大小
@@ -418,7 +418,7 @@
 	 
 	> db.stats()
 	{
-		"db" : "niuniuh5_modb",
+		"db" : "aiuaiuh5_modb",
 		"collections" : 2,
 		"views" : 0,
 		"objects" : 32623247,
@@ -439,7 +439,7 @@
 	benet          0.000GB
 	config         0.000GB
 	local          0.000GB
-	niuniuh5_modb  6.726GB          -- 数据和索引的大小
+	aiuaiuh5_modb  6.726GB          -- 数据和索引的大小
 		
 		
 

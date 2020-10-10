@@ -30,13 +30,13 @@ Collection聚集集合操作
 	查看数据空间大小
 		db.userInfo.dataSize();
 		
-	得到当前聚集的状态
+	得到当前集合的状态
 		db.userInfo.stats();
 		
-	得到聚集集合总大小
+	得到集合总大小
 		db.userInfo.totalSize();
 		
-	聚集集合储存空间大小
+	集合储存空间大小
 		db.userInfo.storageSize();	
 		
 	
