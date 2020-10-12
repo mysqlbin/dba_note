@@ -5,7 +5,7 @@
 3. Journal
 4. 压缩 --Compression
 5. 内存使用 --Memory Use
-
+6. 参考
 
 1. 文档层级并发 --Document Level Concurrency 
 
@@ -91,7 +91,11 @@
 		
 		
 		
-		
+6. 参考
+
+	https://docs.mongodb.com/manual/core/wiredtiger/ 
+	https://docs.mongodb.com/manual/core/wiredtiger/#storage-wiredtiger-checkpoints
+	
 		
 		
 		

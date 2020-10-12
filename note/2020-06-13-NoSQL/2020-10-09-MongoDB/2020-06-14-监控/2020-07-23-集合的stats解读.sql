@@ -70,7 +70,6 @@ repl_set:PRIMARY> db.table_t1.stats()
 			"fixed-record size" : 0,
 			"maximum internal page key size" : 368,  	-- 最大内节点页的键大小
 			"maximum internal page size" : 4096,    	-- 最大内节点页的页面大小
-			
 			"maximum leaf page key size" : 2867,    	-- 叶子节点页
 			"maximum leaf page size" : 32768,        	-- 叶子节点页
 			"maximum leaf page value size" : 67108864, 	-- 叶子节点页

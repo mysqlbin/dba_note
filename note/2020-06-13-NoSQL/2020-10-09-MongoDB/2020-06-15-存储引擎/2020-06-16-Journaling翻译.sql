@@ -9,33 +9,32 @@
 7. 相关参考
 
 1. 日志的介绍
-
-本节中提到的日志是指WiredTiger预写日志（即日志），而不是MongoDB日志文件。
-WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB从最后一个检查点恢复。 但是，如果MongoDB在检查点之间意外退出，则需要日志记录来恢复在最后一个检查点之后发生的信息。
-
-从MongoDB 4.0开始，您不能指定--nojournal选项或storage.journal.enabled：使用WiredTiger存储引擎的副本集成员为false。
-
-
-使用日记的恢复过程：
-
-	在数据文件中查找到最后一个检查点的标识符。
-	在日志文件中搜索与最后一个检查点的标识符匹配的记录。
-	重做对应记录之后的全部操作；
 	
-	/*
-	为了在数据库宕机保证 MongoDB 中数据的持久性，MongoDB 使用了 Write Ahead Logging 向磁盘上的 journal 文件预先进行写入；
-	除了 journal 日志，MongoDB 还使用检查点（Checkpoint）来保证数据的一致性，当数据库发生宕机时，我们就需要 Checkpoint 和 journal 文件协作完成数据的恢复工作：
+	本节中提到的日志是指WiredTiger预写日志（即日志），而不是MongoDB日志文件。
+	WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB从最后一个检查点恢复。 但是，如果MongoDB在检查点之间意外退出，则需要日志记录来恢复在最后一个检查点之后发生的信息。
+	从MongoDB 4.0开始，您不能指定--nojournal选项或storage.journal.enabled：使用WiredTiger存储引擎的副本集成员为false。
 
-		在数据文件中查找上一个检查点的标识符；
 
-		在 journal 文件中查找标识符对应的记录；
+	使用日记的恢复过程：
 
+		在数据文件中查找到最后一个检查点的标识符。
+		在日志文件中搜索与最后一个检查点的标识符匹配的记录。
 		重做对应记录之后的全部操作；
 		
-		https://mp.weixin.qq.com/s/jUhXqrGuHBK32bSlWolu5w  『浅入浅出』MongoDB 和 WiredTiger 
+		/*
+		为了在数据库宕机保证 MongoDB 中数据的持久性，MongoDB 使用了 Write Ahead Logging 向磁盘上的 journal 文件预先进行写入；
+		除了 journal 日志，MongoDB 还使用检查点（Checkpoint）来保证数据的一致性，当数据库发生宕机时，我们就需要 Checkpoint 和 journal 文件协作完成数据的恢复工作：
+
+			在数据文件中查找上一个检查点的标识符；
+
+			在 journal 文件中查找标识符对应的记录；
+
+			重做对应记录之后的全部操作；
 			
-	*/
-	
+			https://mp.weixin.qq.com/s/jUhXqrGuHBK32bSlWolu5w  『浅入浅出』MongoDB 和 WiredTiger 
+				
+		*/
+		
 	
 2. 日志处理 --Journaling Process
 	
@@ -58,7 +57,8 @@ WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB
 			
 		3. 每100毫秒(每隔0.1秒)
 		
-		4. WiredTiger创建新的日记文件时。 由于MongoDB使用的日志文件大小限制为100 MB，因此WiredTiger大约每100 MB数据创建一个新的日志文件。
+		4. WiredTiger创建新的日记文件时。 
+			由于MongoDB使用的日志文件大小限制为100 MB，因此WiredTiger大约每100 MB数据创建一个新的日志文件。
 		
 		
 3. 日志文件 --Journal Files
@@ -93,12 +93,12 @@ WiredTiger使用检查点提供磁盘上数据的一致视图，并允许MongoDB
 
 	MongoDB的WiredTiger日志文件的最大大小限制为大约100 MB。
 	一旦文件超过该限制，WiredTiger将创建一个新的日记文件。
-	WiredTiger自动删除旧的日记文件，仅维护从上一个检查点恢复所需的文件。
+	WiredTiger自动删除旧的日记文件，只需要维护从上一个检查点开始需要恢复的文件。
 	
 
 7. 相关参考
 	
-	
+	https://docs.mongodb.com/manual/core/journaling/
 
 8. 小结
 	
