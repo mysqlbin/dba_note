@@ -21,6 +21,7 @@
 	redo日志格式小结
 	虽然上边说了一大堆关于redo日志格式的内容，但是如果你不是为了写一个解析redo日志的工具或者自己开发一套redo日志系统的话，那就没必要把InnoDB中的各种类型的redo日志格式都研究的透透的，没那个必要。
 	上边我只是象征性的介绍了几种类型的redo日志格式，目的还是想让大家明白：
+	
 		redo日志会把事务在执行过程中对数据库所做的所有修改都记录下来，在之后系统崩溃重启后可以把事务所做的任何修改都恢复出来。
 	
 	------------------------------------------------------------------------
@@ -138,16 +139,18 @@
 	
 	
 	比方说现在页a被刷新到了磁盘，mtr_1生成的redo日志就可以被覆盖了，所以我们可以进行一个增加checkpoint_lsn的操作，我们把这个过程称之为做一次checkpoint。
-
-
+		脏页刷盘，对应的 redo log 就可以不需要了，这部分的redo log就可以被覆盖写。
+		脏页刷盘之后，对应的 redo log 做 checkpoint。
+		
 	因为redo日志是循环覆盖写，那么怎么判断哪些日志空间是可以覆盖的呢？
-
 		通过checkpoint检查点来做判断。
-		
 		日志中的checkpoint检查点之前到当前redo log写入的位置区间都是可以被覆盖的。
-		
-	脏页刷盘，对应的 redo log 就可以不需要了，这部分的redo log就可以被覆盖写。
-	脏页刷盘之后，才可以对 redo log 做 checkpoint,
+	
+	监控redo log日志剩余可写空间： 也就是可以被覆盖写的日志
+        redo总大小 - (日志已经刷盘的字节数 - Checkpoint LSN)    =    innodb_log_file_size * innodb_log_files_in_group - (Log flushed up to-Last checkpoint at)
+
+
+	------------------------------------------------------------------------------------
 
 
 	系统第一次启动后，向log buffer中写入了mtr_1、mtr_2、mtr_3这三个mtr产生的redo日志，假设这三个mtr开始和结束时对应的lsn值分别是：
@@ -159,8 +162,6 @@
 		mtr_3：9948 ～ 10000
 				page b 和 page d
 		
-
-
 
 	搞懂了 checkpoint LSN 是怎么取值的：
 		
@@ -199,7 +200,7 @@
 	因为是先刷脏页，才能推进做redo log的 checkpoint, 所以 Pages flushed up to 的 LSN 值是大于 Last checkpoint at 的 LSN 值的。
 	
 	
-	对于系统来说，以上4个LSN是递减的，即： LSN1>=（大于等于）LSN2>=LSN3>=LSN4。
+	对于系统来说，以上4个LSN是递减的，即： LSN1>=LSN2>=LSN3>=LSN4。
 
 	---
 	LOG
@@ -239,8 +240,12 @@
 	
 	脏页刷盘，对应的redo日志才能做checkpoint，日志做checkpoint之后的空间才能被覆盖写。
 	
+	redo日志、checkpoint、刷脏页要结合来看，因为每一块并不是独立的。
+	
+	
 
 8. 问题
+
 	1. 为什么 Pages flushed up to 不能作为崩溃恢复的起点？
 		首先要理解 Pages flushed up to 和 Last checkpoint at 的含义
 

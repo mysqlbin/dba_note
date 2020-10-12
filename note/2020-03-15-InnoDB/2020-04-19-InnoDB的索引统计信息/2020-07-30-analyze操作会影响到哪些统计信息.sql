@@ -9,6 +9,7 @@
 	比如 索引基数字段CARDINALITY
 	
 4. analyze table命令只对二级索引有效。
-
+	
+	
 5. 小结
 	索引统计信息不准确或者说优化器选择的索引并不是最优的， 用 analyze table；

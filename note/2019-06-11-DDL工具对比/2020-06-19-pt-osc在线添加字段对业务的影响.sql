@@ -44,7 +44,7 @@ BEGIN
 */
 IF $bRobot=0 THEN
 #真人的战绩
-    INSERT INTO table_clubgamescoredetail 
+    INSERT INTO t1 
             (
                 nClubID,nTableID,nChairID,szToken,nRound,nBaseScore,nPlayCount,
                 tStartTime,tEndTime,nPlayerID,bRobot,nBankID,szCardData,nEnterScore,
