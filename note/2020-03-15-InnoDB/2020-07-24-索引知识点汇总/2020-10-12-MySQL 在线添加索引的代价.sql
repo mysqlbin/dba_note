@@ -38,4 +38,433 @@ The LOCK clause is useful for fine-tuning the degree of concurrent access to the
 	3. To avoid tying up the server with an ALTER TABLE operation that copies the table, include ALGORITHM=INPLACE. The statement halts immediately if it cannot use the in-place mechanism.
 		为避免使用复制表的ALTER TABLE操作捆绑服务器，请包含ALGORITHM = INPLACE。 如果无法使用就地机制，该语句将立即暂停。
 		
+
 		
+		
+环境	
+	CREATE TABLE `sbtest2` (
+	  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	  `k` int(10) unsigned NOT NULL DEFAULT '0',
+	  `c` char(120) NOT NULL DEFAULT '',
+	  `pad` char(60) NOT NULL DEFAULT '',
+	  PRIMARY KEY (`id`),
+	  KEY `k_2` (`k`)
+	) ENGINE=InnoDB AUTO_INCREMENT=500001 DEFAULT CHARSET=utf8mb4 MAX_ROWS=1000000;
+	
+	mysql>select count(*) from sbtest2;
+	+----------+
+	| count(*) |
+	+----------+
+	|   500000 |
+	+----------+
+	1 row in set (0.10 sec)
+
+
+	索引长度：7.52 MB (7,880,704)
+	数据长度：122.63 MB (128,581,632)
+
+
+添加索引	
+	
+	
+	
+
+	mysql>select * from information_schema.statistics where TABLE_SCHEMA='sbtest' and table_name='sbtest2';
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| def           | sbtest       | sbtest2    |          0 | sbtest       | PRIMARY    |            1 | id          | A         |      493010 |     NULL | NULL   |          | BTREE      |         |               |
+	| def           | sbtest       | sbtest2    |          1 | sbtest       | k_2        |            1 | k           | A         |       79518 |     NULL | NULL   |          | BTREE      |         |               |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	2 rows in set (0.00 sec)
+
+	mysql>select * from mysql.innodb_table_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| sbtest        | sbtest2    | 2020-09-12 21:40:51 | 493010 |                 8104 |                      481 |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	1 row in set (0.01 sec)
+
+	mysql>select * from mysql.innodb_index_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | n_diff_pfx01 |     493010 |          20 | id                                |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | n_leaf_pages |       7043 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | size         |       8104 |        NULL | Number of pages in the index      |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_diff_pfx01 |      79518 |          20 | k                                 |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_diff_pfx02 |     500032 |          20 | k,id                              |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_leaf_pages |        416 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | size         |        481 |        NULL | Number of pages in the index      |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	7 rows in set (0.00 sec)
+
+	mysql>show index from sbtest2;
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| Table   | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| sbtest2 |          0 | PRIMARY  |            1 | id          | A         |      493010 |     NULL | NULL   |      | BTREE      |         |               |
+	| sbtest2 |          1 | k_2      |            1 | k           | A         |       79518 |     NULL | NULL   |      | BTREE      |         |               |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	2 rows in set (0.00 sec)
+		
+
+
+	mysql>alter table sbtest2 add index idx_c(`c`);
+	Query OK, 0 rows affected (26.17 sec)
+	Records: 0  Duplicates: 0  Warnings: 0
+
+	期间的运行状态
+		shell> ll
+		total 204840
+		-rw-r----- 1 mysql mysql        67 Mar 30 10:15 db.opt
+		-rw-r----- 1 mysql mysql      8606 Mar 30 19:53 sbtest1.frm
+		-rw-r----- 1 mysql mysql  62914560 Mar 30 19:54 sbtest1.ibd
+		-rw-r----- 1 mysql mysql      8632 Sep 12 19:13 sbtest2.frm
+		-rw-r----- 1 mysql mysql 146800640 Sep 12 19:17 sbtest2.ibd
+		-rw-r----- 1 mysql mysql      8632 Sep 12 19:17 #sql-9e3_24.frm
+
+		shell> iostat -dmx 1
+		Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+		sda               0.00   321.28    0.00  426.60     0.00    17.68    84.86     2.07    4.79    0.00    4.79   2.42 103.19
+		dm-0              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+		dm-1              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+		dm-2              0.00     0.00    0.00  692.55     0.00    17.67    52.27    24.81   35.79    0.00   35.79   1.49 103.19
+
+		.........................................................................................................................
+
+		Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+		sda               0.00   390.53    0.00  382.11     0.00    22.81   122.26     1.86    5.37    0.00    5.37   2.69 102.84
+		dm-0              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+		dm-1              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+		dm-2              0.00     0.00    0.00  744.21     0.00    22.58    62.14    12.07   18.13    0.00   18.13   1.38 102.84
+
+		.........................................................................................................................
+
+		Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+		sda               0.00     0.00    0.00   20.20     0.00     0.21    21.25     0.03    1.45    0.00    1.45   1.35   2.73
+		dm-0              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+		dm-1              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+		dm-2              0.00     0.00    0.00   15.15     0.00     0.21    28.33     0.03    1.93    0.00    1.93   1.80   2.73
+
+	
+	mysql>select * from information_schema.statistics where TABLE_SCHEMA='sbtest' and table_name='sbtest2';
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| def           | sbtest       | sbtest2    |          0 | sbtest       | PRIMARY    |            1 | id          | A         |      493010 |     NULL | NULL   |          | BTREE      |         |               |
+	| def           | sbtest       | sbtest2    |          1 | sbtest       | k_2        |            1 | k           | A         |       79518 |     NULL | NULL   |          | BTREE      |         |               |
+	| def           | sbtest       | sbtest2    |          1 | sbtest       | idx_c      |            1 | c           | A         |      493010 |     NULL | NULL   |          | BTREE      |         |               |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	3 rows in set (0.00 sec)
+
+	mysql>select * from mysql.innodb_table_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| sbtest        | sbtest2    | 2020-09-12 21:47:41 | 493010 |                 8104 |                      481 |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	1 row in set (0.00 sec)
+
+	mysql>select * from mysql.innodb_index_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | n_diff_pfx01 |     493010 |          20 | id                                |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | n_leaf_pages |       7043 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | size         |       8104 |        NULL | Number of pages in the index      |
+	| sbtest        | sbtest2    | idx_c      | 2020-09-12 21:47:41 | n_diff_pfx01 |     496059 |          20 | c                                 |
+	| sbtest        | sbtest2    | idx_c      | 2020-09-12 21:47:41 | n_diff_pfx02 |     496059 |          20 | c,id                              |
+	| sbtest        | sbtest2    | idx_c      | 2020-09-12 21:47:41 | n_leaf_pages |       4033 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | idx_c      | 2020-09-12 21:47:41 | size         |       4735 |        NULL | Number of pages in the index      |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_diff_pfx01 |      79518 |          20 | k                                 |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_diff_pfx02 |     500032 |          20 | k,id                              |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_leaf_pages |        416 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | size         |        481 |        NULL | Number of pages in the index      |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	11 rows in set (0.01 sec)
+
+	mysql>show index from sbtest2;
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| Table   | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| sbtest2 |          0 | PRIMARY  |            1 | id          | A         |      493010 |     NULL | NULL   |      | BTREE      |         |               |
+	| sbtest2 |          1 | k_2      |            1 | k           | A         |       79518 |     NULL | NULL   |      | BTREE      |         |               |
+	| sbtest2 |          1 | idx_c    |            1 | c           | A         |      493010 |     NULL | NULL   |      | BTREE      |         |               |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	3 rows in set (0.00 sec)
+
+	
+删除索引
+
+
+	mysql>select * from information_schema.statistics where TABLE_SCHEMA='sbtest' and table_name='sbtest2';
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| def           | sbtest       | sbtest2    |          0 | sbtest       | PRIMARY    |            1 | id          | A         |      493010 |     NULL | NULL   |          | BTREE      |         |               |
+	| def           | sbtest       | sbtest2    |          1 | sbtest       | k_2        |            1 | k           | A         |       79518 |     NULL | NULL   |          | BTREE      |         |               |
+	| def           | sbtest       | sbtest2    |          1 | sbtest       | idx_c      |            1 | c           | A         |      493010 |     NULL | NULL   |          | BTREE      |         |               |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	3 rows in set (0.00 sec)
+
+	mysql>select * from mysql.innodb_table_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| sbtest        | sbtest2    | 2020-09-12 21:47:41 | 493010 |                 8104 |                      481 |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	1 row in set (0.00 sec)
+
+	mysql>select * from mysql.innodb_index_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | n_diff_pfx01 |     493010 |          20 | id                                |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | n_leaf_pages |       7043 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | size         |       8104 |        NULL | Number of pages in the index      |
+	| sbtest        | sbtest2    | idx_c      | 2020-09-12 21:47:41 | n_diff_pfx01 |     496059 |          20 | c                                 |
+	| sbtest        | sbtest2    | idx_c      | 2020-09-12 21:47:41 | n_diff_pfx02 |     496059 |          20 | c,id                              |
+	| sbtest        | sbtest2    | idx_c      | 2020-09-12 21:47:41 | n_leaf_pages |       4033 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | idx_c      | 2020-09-12 21:47:41 | size         |       4735 |        NULL | Number of pages in the index      |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_diff_pfx01 |      79518 |          20 | k                                 |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_diff_pfx02 |     500032 |          20 | k,id                              |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_leaf_pages |        416 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | size         |        481 |        NULL | Number of pages in the index      |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	11 rows in set (0.01 sec)
+
+	mysql>show index from sbtest2;
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| Table   | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| sbtest2 |          0 | PRIMARY  |            1 | id          | A         |      493010 |     NULL | NULL   |      | BTREE      |         |               |
+	| sbtest2 |          1 | k_2      |            1 | k           | A         |       79518 |     NULL | NULL   |      | BTREE      |         |               |
+	| sbtest2 |          1 | idx_c    |            1 | c           | A         |      493010 |     NULL | NULL   |      | BTREE      |         |               |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	3 rows in set (0.00 sec)
+	
+	
+	mysql> alter table sbtest2 drop index idx_c;
+	Query OK, 0 rows affected (0.12 sec)
+	Records: 0  Duplicates: 0  Warnings: 0
+	
+	思考：为什么删除索引耗时很短？
+
+	
+	mysql>select * from information_schema.statistics where TABLE_SCHEMA='sbtest' and table_name='sbtest2';
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| def           | sbtest       | sbtest2    |          0 | sbtest       | PRIMARY    |            1 | id          | A         |      493010 |     NULL | NULL   |          | BTREE      |         |               |
+	| def           | sbtest       | sbtest2    |          1 | sbtest       | k_2        |            1 | k           | A         |       79518 |     NULL | NULL   |          | BTREE      |         |               |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	2 rows in set (0.00 sec)
+
+	mysql>select * from mysql.innodb_table_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| sbtest        | sbtest2    | 2020-09-12 21:47:41 | 493010 |                 8104 |                      481 |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	1 row in set (0.00 sec)
+
+	mysql>select * from mysql.innodb_index_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | n_diff_pfx01 |     493010 |          20 | id                                |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | n_leaf_pages |       7043 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | size         |       8104 |        NULL | Number of pages in the index      |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_diff_pfx01 |      79518 |          20 | k                                 |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_diff_pfx02 |     500032 |          20 | k,id                              |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_leaf_pages |        416 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | size         |        481 |        NULL | Number of pages in the index      |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	7 rows in set (0.00 sec)
+
+	mysql>show index from sbtest2;
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| Table   | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| sbtest2 |          0 | PRIMARY  |            1 | id          | A         |      493010 |     NULL | NULL   |      | BTREE      |         |               |
+	| sbtest2 |          1 | k_2      |            1 | k           | A         |       79518 |     NULL | NULL   |      | BTREE      |         |               |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	2 rows in set (0.00 sec)
+
+
+******************************** 添加/删除索引不会重建表，也不会修改索引的统计信息。
+	
+	
+添加字段
+	mysql> alter table sbtest2  add column d int(10) not null;
+	Query OK, 0 rows affected (23.36 sec)
+	Records: 0  Duplicates: 0  Warnings: 0
+	
+	期间的运行状态
+		shell> ll
+		total 339992
+		-rw-r----- 1 mysql mysql        67 Mar 30 10:15 db.opt
+		-rw-r----- 1 mysql mysql      8606 Mar 30 19:53 sbtest1.frm
+		-rw-r----- 1 mysql mysql  62914560 Mar 30 19:54 sbtest1.ibd
+		-rw-r----- 1 mysql mysql      8632 Sep 12 19:19 sbtest2.frm
+		-rw-r----- 1 mysql mysql 222298112 Sep 12 19:19 sbtest2.ibd
+		-rw-r----- 1 mysql mysql      8656 Sep 12 19:20 #sql-9e3_24.frm
+		-rw-r----- 1 mysql mysql  62914560 Sep 12 19:20 #sql-ib305-654917964.ibd
+
+	-- 添加字段会重建表，修改的是主键索引，因为主键索引的叶子存储的是整行记录。
+	
+
+删除字段
+
+	mysql> alter table sbtest2  drop column d;
+	Query OK, 0 rows affected (22.09 sec)
+	Records: 0  Duplicates: 0  Warnings: 0
+
+	期间的运行状态
+		shell> ll
+		total 239656
+		-rw-r----- 1 mysql mysql        67 Mar 30 10:15 db.opt
+		-rw-r----- 1 mysql mysql      8606 Mar 30 19:53 sbtest1.frm
+		-rw-r----- 1 mysql mysql  62914560 Mar 30 19:54 sbtest1.ibd
+		-rw-r----- 1 mysql mysql      8656 Sep 12 21:34 sbtest2.frm
+		-rw-r----- 1 mysql mysql 150994944 Sep 12 21:34 sbtest2.ibd
+		-rw-r----- 1 mysql mysql      8632 Sep 12 21:35 #sql-9e3_24.frm
+		-rw-r----- 1 mysql mysql  31457280 Sep 12 21:35 #sql-ib308-654917970.ibd
+	-- 添加字段也会重建表，修改的是主键索引，因为主键索引的叶子存储的是整行记录。
+
+	
+验证下，添加列之后，是否会修改统计二级索引的大小
+	估计是会的。
+	select * from information_schema.statistics where TABLE_SCHEMA='sbtest' and table_name='sbtest2';
+	select * from mysql.innodb_table_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	select * from mysql.innodb_index_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	show index from sbtest2;
+	
+	mysql>select * from information_schema.statistics where TABLE_SCHEMA='sbtest' and table_name='sbtest2';
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| def           | sbtest       | sbtest2    |          0 | sbtest       | PRIMARY    |            1 | id          | A         |      493200 |     NULL | NULL   |          | BTREE      |         |               |
+	| def           | sbtest       | sbtest2    |          1 | sbtest       | k_2        |            1 | k           | A         |       89086 |     NULL | NULL   |          | BTREE      |         |               |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	2 rows in set (0.00 sec)
+
+	mysql>select * from mysql.innodb_table_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| sbtest        | sbtest2    | 2020-09-12 21:35:27 | 493200 |                 7848 |                      481 |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	1 row in set (0.06 sec)
+
+	mysql>select * from mysql.innodb_index_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:35:27 | n_diff_pfx01 |     493200 |          20 | id                                |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:35:27 | n_leaf_pages |       6850 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:35:27 | size         |       7848 |        NULL | Number of pages in the index      |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:35:27 | n_diff_pfx01 |      89086 |          20 | k                                 |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:35:27 | n_diff_pfx02 |     500032 |          20 | k,id                              |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:35:27 | n_leaf_pages |        416 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:35:27 | size         |        481 |        NULL | Number of pages in the index      |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	7 rows in set (0.02 sec)
+
+	mysql>show index from sbtest2;
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| Table   | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| sbtest2 |          0 | PRIMARY  |            1 | id          | A         |      493200 |     NULL | NULL   |      | BTREE      |         |               |
+	| sbtest2 |          1 | k_2      |            1 | k           | A         |       89086 |     NULL | NULL   |      | BTREE      |         |               |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	2 rows in set (0.00 sec)
+	
+
+	
+	--添加字段
+	mysql>alter table sbtest2  add column d int(10) not null;
+	Query OK, 0 rows affected (24.29 sec)
+	Records: 0  Duplicates: 0  Warnings: 0
+	
+	mysql>select * from information_schema.statistics where TABLE_SCHEMA='sbtest' and table_name='sbtest2';
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	| def           | sbtest       | sbtest2    |          0 | sbtest       | PRIMARY    |            1 | id          | A         |      493010 |     NULL | NULL   |          | BTREE      |         |               |
+	| def           | sbtest       | sbtest2    |          1 | sbtest       | k_2        |            1 | k           | A         |       79518 |     NULL | NULL   |          | BTREE      |         |               |
+	+---------------+--------------+------------+------------+--------------+------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
+	2 rows in set (0.00 sec)
+
+	mysql>select * from mysql.innodb_table_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	| sbtest        | sbtest2    | 2020-09-12 21:40:51 | 493010 |                 8104 |                      481 |
+	+---------------+------------+---------------------+--------+----------------------+--------------------------+
+	1 row in set (0.00 sec)
+
+	mysql>select * from mysql.innodb_index_stats  where database_name='sbtest' and table_name = 'sbtest2';
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | n_diff_pfx01 |     493010 |          20 | id                                |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | n_leaf_pages |       7043 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | PRIMARY    | 2020-09-12 21:40:51 | size         |       8104 |        NULL | Number of pages in the index      |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_diff_pfx01 |      79518 |          20 | k                                 |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_diff_pfx02 |     500032 |          20 | k,id                              |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | n_leaf_pages |        416 |        NULL | Number of leaf pages in the index |
+	| sbtest        | sbtest2    | k_2        | 2020-09-12 21:40:51 | size         |        481 |        NULL | Number of pages in the index      |
+	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+	7 rows in set (0.00 sec)
+
+	mysql>show index from sbtest2;
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| Table   | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	| sbtest2 |          0 | PRIMARY  |            1 | id          | A         |      493010 |     NULL | NULL   |      | BTREE      |         |               |
+	| sbtest2 |          1 | k_2      |            1 | k           | A         |       79518 |     NULL | NULL   |      | BTREE      |         |               |
+	+---------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
+	2 rows in set (0.00 sec)	
+		
+	
+	
+验证 analyze table 命令是否会修改.ibd文件
+	[root@env27 sbtest]# ll
+	total 204828
+	-rw-r----- 1 mysql mysql        67 Mar 30 10:15 db.opt
+	-rw-r----- 1 mysql mysql      8606 Mar 30 19:53 sbtest1.frm
+	-rw-r----- 1 mysql mysql  62914560 Mar 30 19:54 sbtest1.ibd
+	-rw-r----- 1 mysql mysql      8632 Sep 12 19:29 sbtest2.frm
+	-rw-r----- 1 mysql mysql 146800640 Sep 12 19:29 sbtest2.ibd
+
+
+	mysql>analyze table sbtest2;
+	+----------------+---------+----------+----------+
+	| Table          | Op      | Msg_type | Msg_text |
+	+----------------+---------+----------+----------+
+	| sbtest.sbtest2 | analyze | status   | OK       |
+	+----------------+---------+----------+----------+
+
+	[root@env27 sbtest]# ll
+	total 204828
+	-rw-r----- 1 mysql mysql        67 Mar 30 10:15 db.opt
+	-rw-r----- 1 mysql mysql      8606 Mar 30 19:53 sbtest1.frm
+	-rw-r----- 1 mysql mysql  62914560 Mar 30 19:54 sbtest1.ibd
+	-rw-r----- 1 mysql mysql      8632 Sep 12 19:29 sbtest2.frm
+	-rw-r----- 1 mysql mysql 146800640 Sep 12 19:29 sbtest2.ibd
+
+	analyze table 命令并不会修改 .ibd文件。
+
+
+
+
+
+【潜水】B133-张路-北京 2020-05-06 10:08:48
+各位大佬，请教个问题。MySQL不管是聚簇索引还是普通二级索引，根节点只能有一个16KB的数据页吗？还是有多个？（我的认知是：B+树是一个矮胖矮胖的梯形，根节点不是只有一个数据页的）
+
+根节点只有一个Page, 并且这个Page是在内存中。
+
+
