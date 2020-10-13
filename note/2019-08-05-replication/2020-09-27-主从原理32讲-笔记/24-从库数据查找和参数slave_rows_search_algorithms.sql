@@ -10,7 +10,8 @@
 8. 相关参考
 
 1. 前言
-	对于DML语句来讲其数据的更改将被放到对应的Event中。比如‘Delete’语句会将所有删除数据的before_image放到DELETE_ROWS_EVENT中，从库只要读取这些before_image进行数据查找，然后调用相应的‘Delete’的操作就可以完成数据的删除了
+	对于DML语句来讲其数据的更改将被放到对应的Event中。
+	比如‘Delete’语句会将所有删除数据的before_image放到DELETE_ROWS_EVENT中，从库只要读取这些before_image进行数据查找，然后调用相应的‘Delete’的操作就可以完成数据的删除了
 	
 2. 5.6新参数 slave_rows_search_algorithms
 	
@@ -45,6 +46,7 @@
 		
 		
 		这个过程的单位是Event，我们前面说过一个DELETE_ROWS_EVENT可能包含了多行数据，Event最大为8K左右。
+		
 		因此使用Ht --> Hash over the entire table的方式，将会从原来的每行数据进行一次全表扫描变为每个Event才进行一次全表扫描。
 
 		但是对于Hi --> Hash over index来讲效果就没有那么明显了，因为如果删除的数据重复值很少的情况下，依然需要足够多的索引定位查找才行，但是如果删除的数据重复值较多那么构造的集合（set）元素将会大大减少，也就减少了索引查找定位的开销。
@@ -89,6 +91,7 @@
 		|   15 |   17 |   17 |
 		+------+------+------+
 		16 rows in set (2.21 sec)
+		
 		mysql> delete from tkkk where a=15;
 		Query OK, 3 rows affected (6.24 sec)
 		因为我做了debug索引这里时间看起来很长
@@ -137,8 +140,9 @@
 		
 		
 6. 总结
-	1. 我记得以前有位朋友问我主库没有主键如果我在从库建立一个主键能降低延迟吗？这里我们就清楚了答案是肯定的，因为从库会根据Event中的行数据进行使用索引的选择。那么总结一下：
 
+	1. 我记得以前有位朋友问我主库没有主键如果我在从库建立一个主键能降低延迟吗？这里我们就清楚了答案是肯定的，因为从库会根据Event中的行数据进行使用索引的选择。那么总结一下：
+		建立主键，只需要一次全表扫描。
 	2. slave_rows_search_algorithms参数设置了HASH_SCAN并不一定会提高性能，只有满足如下两个条件才会提高性能：
 		（1）（表中没有任何索引）或者（有索引且本条update/delete的数据关键字重复值较多，减少通过索引定位的次数）。     ### 通过做实验，理解了。
 		（2） 一个update/delete语句删除了大量的数据，形成了很多个8K左右的UPDATE_ROW_EVENT/DELETE_ROW_EVENT。
