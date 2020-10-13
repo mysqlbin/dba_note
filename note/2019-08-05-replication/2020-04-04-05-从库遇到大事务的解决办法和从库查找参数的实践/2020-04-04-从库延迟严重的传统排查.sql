@@ -90,6 +90,8 @@
 
 		
 2. perf top
+	-- https://mytecdb.com/blogDetail.php?id=181 MySQL Bug 并发更新，在函数 row_search_mvcc 中 Crash
+
 	amples: 49K of event 'cpu-clock', Event count (approx.): 5123469243                                                                                                                                              
 	Overhead  Shared Object        Symbol                                                                                                                                                                             
 	  10.50%  mysqld               [.] row_search_mvcc
@@ -214,6 +216,7 @@
 		
 	
 4. sql_thread卡在哪里
+	
 	1. 根据 Master_Log_File: mysql-bin.000017,  end_log_pos 50398187  ; 这个去主库上去解析binlog
 		[root@env27 logs]# mysqlbinlog -vv --base64-output=decode-rows --stop-position=50398187 mysql-bin.000017 > 1.sql
 
@@ -222,7 +225,7 @@
 
 		[root@env29 data]# mysqlbinlog -vv --base64-output=decode-rows --start-position=50398400 relay-bin.000042 > 2.sq
 
-
+	3. select * from information_schema.innodb_trx\G; 看看能否看到正在执行的SQL语句。
 
 5. 解决办法，添加索引
 
@@ -278,7 +281,7 @@
 		不是的。
 		
 	4. 系统里去 kill -9 pidof mysqld
-		不需要。
+		不需要，stop slave可以停下来的，如果回滚的数据量大，耗时比较长而已。
 		
 	5. 如何避免这类的问题
 		巡检脚本项中加入判断没有主键的表

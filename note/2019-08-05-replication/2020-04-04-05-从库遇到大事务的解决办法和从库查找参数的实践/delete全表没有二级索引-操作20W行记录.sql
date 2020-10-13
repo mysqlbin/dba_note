@@ -89,7 +89,7 @@
 		[root@env29 ~]# date
 		Sun Mar 22 12:53:30 CST 2020
 		
-		通过正在执行的事务查看进度, trx_weight 这个步骤很重要
+		通过正在执行的事务查看进度, trx_weight --这个步骤很重要
 		root@localhost [(none)]>select * from information_schema.innodb_trx\G;
 		*************************** 1. row ***************************
 							trx_id: 5889218

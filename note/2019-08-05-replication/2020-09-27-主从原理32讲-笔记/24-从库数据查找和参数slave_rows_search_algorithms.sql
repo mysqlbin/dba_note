@@ -1,5 +1,9 @@
 
 
+从库每条数据都需要索引定位查找数据，表上一个索引都没有，那么每条数据都需要做一次全表扫描。
+对于主库来讲一般只需要一次索引定位查找即可。
+
+
 1. 前言
 2. 5.6新参数 slave_rows_search_algorithms
 3. INDEX_SCAN,HASH_SCAN 即 ROW_LOOKUP_HASH_SCAN方式的数据查找
@@ -29,7 +33,10 @@
 
 
 3. INDEX_SCAN,HASH_SCAN 即 ROW_LOOKUP_HASH_SCAN方式的数据查找
-
+	
+	Ht: 它是通过表中的数据和Event中的数据进行比对
+	Hi: 它是通过Event中的数据跟表中的数据进行比对  --初步先这么理解。
+	
 	将参数 slave_rows_search_algorithms 设置为 INDEX_SCAN,HASH_SCAN，且表上没有主键和唯一键的话，那么上图的流程将会把数据查找的方式设置为 ROW_LOOKUP_HASH_SCAN 。
 
 	在 ROW_LOOKUP_HASH_SCAN 又包含两种数据查找的方式：
@@ -42,16 +49,26 @@
 		如果没有索引这个集合（set）将不会维护直接使用全表扫描，即Ht。
 		
 		Ht --> Hash over the entire table 会全表扫描，其中全表扫描之后得到的每行数据都会查询hash结构来比对数据。  # 类似 hash join 查找数据的原理。
-		Hi --> Hash over index 则会通过前面我们说的集合（set）来进行索引定位扫描，每行数据也会去查询hash结构来比对数据。
-		
+		Hi --> Hash over index 则会通过前面我们说的通过集合（set）来进行索引定位扫描，每行数据也会去查询hash结构来比对数据。
 		
 		这个过程的单位是Event，我们前面说过一个DELETE_ROWS_EVENT可能包含了多行数据，Event最大为8K左右。
 		
 		因此使用Ht --> Hash over the entire table的方式，将会从原来的每行数据进行一次全表扫描变为每个Event才进行一次全表扫描。
-
+			-- 一个Page为16KB，没有大字段的情况下，主键索引叶子节点 16KB的Page有 574行记录
+			-- 二级索引叶子节点 16KB的Page，一般都有1203行记录
+				CREATE TABLE `page_info` (
+				  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+				  `num` int(11) NOT NULL,
+				  PRIMARY KEY (`id`),
+				  KEY `idx_num` (`num`)
+				) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+	
+			假设8KB的 event，有600行记录，减少了599次全表扫描，速度确实提升了不了。
+			
+			
 		但是对于Hi --> Hash over index来讲效果就没有那么明显了，因为如果删除的数据重复值很少的情况下，依然需要足够多的索引定位查找才行，但是如果删除的数据重复值较多那么构造的集合（set）元素将会大大减少，也就减少了索引查找定位的开销。
 
-		如果我的每条delete语句一次只删除一行数据而不是delete一条语句删除大量的数据，那这种情况每个DELETE_ROWS_EVENT只有一条数据存在，那么使用ROW_LOOKUP_HASH_SCAN方式并不会提高性能，因为这条数据还是需要进行一次全表扫描或者索引定位才能查找到数据，和默认的方式没什么区别。
+		如果我的每条delete语句一次只删除一行数据而不是delete一条语句删除大量的数据，那这种情况每个 DELETE_ROWS_EVENT 只有一条数据存在，那么使用ROW_LOOKUP_HASH_SCAN方式并不会提高性能，因为这条数据还是需要进行一次全表扫描或者索引定位才能查找到数据，和默认的方式没什么区别。
 		
 4. 通过案例来来分析 Ht 和 Hi
 	
@@ -165,7 +182,8 @@
 	
 	2. Ht 查找方式类似于 MySQL 8.0.18 的Hash join
 
-
+	3. 每次看/复习/深入学习都有不一样的体会，也就是说理解得更好了，就差口头描述出来了。--加油。
+	
 8. 相关参考
 	https://dev.mysql.com/doc/refman/5.7/en/replication-options-slave.html#sysvar_slave_rows_search_algorithms   # 官方文档是最好的参考资料
 	

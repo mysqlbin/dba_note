@@ -62,4 +62,8 @@
 		stop slave;
 		SET GLOBAL slave_rows_search_algorithms = 'INDEX_SCAN,HASH_SCAN';
 		start slave;
+		
+		
+		
+
 	
