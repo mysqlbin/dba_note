@@ -164,7 +164,6 @@ insert into trade_detail values(11, 'aaaaaaac', 4, 'commit');
 	语句的执行流程：
 	
 	1. 
-		select d.tradeid from trade_detail d where d.id=4;
 		mysql> select d.tradeid from trade_detail d where d.id=4;
 		+----------+
 		| tradeid  |
@@ -174,7 +173,6 @@ insert into trade_detail values(11, 'aaaaaaac', 4, 'commit');
 		1 row in set (0.00 sec)
 	
 	2. 
-		select * from tradelog l where l.tradeid='aaaaaaab';
 		mysql> select * from tradelog l where l.tradeid='aaaaaaab';
 		+----+----------+----------+---------------------+
 		| id | tradeid  | operator | t_modified          |
@@ -204,9 +202,4 @@ insert into trade_detail values(11, 'aaaaaaac', 4, 'commit');
 			
 		
 字符编码加入巡检中。
-	
-CAST 函数：    CAST(tradid AS signed int)   -- 转数据类型
-CONVERT 函数： CONVERT('aaaaaaab' USING utf8mb4)  -- 转字符编码
-
-utf8 和 utf8mb4 做关联，会把 utf8 转换为  utf8mb4 。
 

@@ -19,6 +19,7 @@
 	要更新 Cardinality 值，请运行 ANALYZE TABLE 或（对于MyISAM表）运行myisamchk -a。
 	
 2. 验证 show index from 中的 Cardinality 是否是从 innodb_index_stats 中取得		
+
 	2.1 添加记录之前
 		root@mysqldb 20:12:  [db1]> select * from test1;
 		+----+------+---------------------+

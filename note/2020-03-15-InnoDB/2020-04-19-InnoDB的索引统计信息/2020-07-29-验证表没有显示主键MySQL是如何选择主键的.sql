@@ -7,7 +7,7 @@
 6. 相关参考
 
 1. MySQL 版本
-	root@mysqldb 15:47:  [audit_db]> select version();
+	mysql> select version();
 	+------------+
 	| version()  |
 	+------------+
@@ -30,7 +30,7 @@
 	  KEY `idx_createTime` (`createTime`)
 	) ENGINE=InnoDB;
 
-	root@mysqldb 15:46:  [audit_db]> select * from mysql.innodb_index_stats  where database_name='audit_db' and table_name = 't_20200729';
+	mysql> select * from mysql.innodb_index_stats  where database_name='audit_db' and table_name = 't_20200729';
 	+---------------+------------+----------------+---------------------+--------------+------------+-------------+-----------------------------------+
 	| database_name | table_name | index_name     | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
 	+---------------+------------+----------------+---------------------+--------------+------------+-------------+-----------------------------------+
@@ -61,7 +61,7 @@
 	  KEY `idx_createTime` (`createTime`)
 	) ENGINE=InnoDB;
 
-	root@mysqldb 15:47:  [audit_db]> select * from mysql.innodb_index_stats  where database_name='audit_db' and table_name = 't_20200729';
+	mysql> select * from mysql.innodb_index_stats  where database_name='audit_db' and table_name = 't_20200729';
 	+---------------+------------+-----------------+---------------------+--------------+------------+-------------+-----------------------------------+
 	| database_name | table_name | index_name      | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
 	+---------------+------------+-----------------+---------------------+--------------+------------+-------------+-----------------------------------+

@@ -40,7 +40,6 @@
 	+--------------+-----------------------------------+----------------+----------------+----------------+------------+
 	1 row in set (0.00 sec)
 
-	mysql> 
 	mysql> select * from information_schema.statistics where TABLE_SCHEMA='lialia_db' and table_name='table_abcgamebbbbbbabtail_history';
 	+---------------+--------------+-----------------------------------+------------+--------------+------------------------+--------------+-------------+-----------+-------------+----------+--------+----------+------------+---------+---------------+
 	| TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME                        | NON_UNIQUE | INDEX_SCHEMA | INDEX_NAME             | SEQ_IN_INDEX | COLUMN_NAME | COLLATION | CARDINALITY | SUB_PART | PACKED | NULLABLE | INDEX_TYPE | COMMENT | INDEX_COMMENT |
@@ -150,8 +149,7 @@
 	select * from mysql.innodb_table_stats  where database_name='lialia_db' and table_name = 'table_abcgamebbbbbbabtail_history';
 	select * from mysql.innodb_index_stats  where database_name='lialia_db' and table_name = 'table_abcgamebbbbbbabtail_history';
 
-
-
+	
 	mysql> select now();
 	+---------------------+
 	| now()               |

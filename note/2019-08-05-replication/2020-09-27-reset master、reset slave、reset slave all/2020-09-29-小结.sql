@@ -17,7 +17,7 @@
 	2.2 主库执行 reset maser，slave会发生什么
 		slave会报错，需要重建从库。 
 		-- 操作要谨慎。
-		-- 目前通过实验，明白了GTID模式下，主库执行 reset master，从库并不需要重建。
+		-- 目前通过实验，明白了GTID模式下，主库执行 reset master之后从库并不需要重建。
 		
 		
 3.  reset slave会重置的信息
@@ -42,6 +42,8 @@
 		传统复制下会报错，GTID模式下执行start slave则不会有问题。
 		
 		
-		
+4. 相关参考
+
+	https://dev.mysql.com/doc/refman/5.7/en/reset-slave.html		
 		
 		
