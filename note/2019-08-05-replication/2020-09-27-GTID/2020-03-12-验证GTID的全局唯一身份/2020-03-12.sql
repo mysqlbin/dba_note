@@ -42,9 +42,9 @@
 	+------------------+-----+----------------+-----------+-------------+------------------------------------------------------------------------+
 	7 rows in set (0.00 sec)
 
-	
-	
-	root@mysqldb 23:44:  [(none)]> show slave status\G;
+	show relaylog events in '';
+	 
+	mysql> show slave status\G;
 	*************************** 1. row ***************************
 				   Slave_IO_State: Waiting for master to send event
 					  Master_Host: 192.168.0.91

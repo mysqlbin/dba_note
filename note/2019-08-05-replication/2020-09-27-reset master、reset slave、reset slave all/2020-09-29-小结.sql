@@ -1,10 +1,11 @@
 
 
 1. 主库执行了 reset master之后，从库不需要重建。
-
+	--针对GTID复制的模式才可以。
+	
 2. 主库 reset master 触发的行为
 	2.1 reset master重置的信息
-		清除 GTID 信息：
+		清除GTID信息：
 			mysql.gtid_executed 表信息
 			gtid_executed
 			gtid_purged
@@ -20,12 +21,12 @@
 		-- 目前通过实验，明白了GTID模式下，主库执行 reset master之后从库并不需要重建。
 		
 		
-3.  reset slave会重置的信息
+3. reset slave 会重置的信息
 
 	1. master_info_repository=TABLE和relay_log_info_repository=TABLE
 	
 		会清空 mysql.slave_master_info和mysql.slave_relay_log_info表的信息。
-		
+		即会清空复制表的信息：mysql.slave_master_info、mysql.slave_relay_log_info。
 		
 	3. 删除所有的 relay log（中继日志）文件 并且 创建一个新的 relay log 文件
 		It clears the master info and relay log info repositories, deletes all the relay log files, and starts a new relay log file
@@ -39,7 +40,8 @@
 	5. reset slave 存在的问题：
 		RESET SLAVE有个问题，它虽然删除了上述文件，但内存中的 change master 信息并没有删除，
 		此时，可直接执行start slave，但因为删除了master.info和relay-log.info，它会从头开始接受主的binlog并应用。
-		传统复制下会报错，GTID模式下执行start slave则不会有问题。
+		传统复制下会报错：比如从库的数据已经存在了，但是从头开始接收主的binlog并应用，那么就会报错。
+		GTID模式下执行start slave则不会有问题。
 		
 		
 4. 相关参考

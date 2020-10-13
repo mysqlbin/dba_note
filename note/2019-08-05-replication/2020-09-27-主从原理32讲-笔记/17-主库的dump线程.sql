@@ -26,6 +26,7 @@
 	结合从库的 IO 线程，看看 IO 线程是如何发送信息给 dump 线程的
 	
 1. dump 线程的主要功能	
+
 	对于每一个从库在主库都对应了一个 dump 线程，主要功能就是发送 event 给从库，如下：
 
 	mysql> select id,user,command,time,state from information_schema.`PROCESSLIST`;

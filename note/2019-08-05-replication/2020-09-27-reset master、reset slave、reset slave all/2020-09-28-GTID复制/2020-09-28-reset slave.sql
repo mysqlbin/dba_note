@@ -197,17 +197,11 @@
 	mysql> select * from mysql.slave_relay_log_info\G;
 	Empty set (0.00 sec)
 
-
-		
 	shell> ll
-
 	-rw-r-----. 1 mysql mysql        217 9月  28 18:21 localhost-relay-bin.000001
 	-rw-r-----. 1 mysql mysql         29 9月  28 18:21 localhost-relay-bin.index
 
 	
-		
-
-
 4. 修复主从关系
 	
 	master
@@ -223,8 +217,6 @@
 		Executed_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:1-2
 		1 row in set (0.00 sec)
 
-		ERROR: 
-		No query specified
 
 		mysql> select * from t;
 		+----+------+------+
@@ -280,4 +272,4 @@
 
 		
 	
-l
+
