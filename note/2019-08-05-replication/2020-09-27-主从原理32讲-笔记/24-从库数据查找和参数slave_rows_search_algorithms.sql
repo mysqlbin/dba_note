@@ -230,6 +230,7 @@
 		建立主键，只需要一次全表扫描。
 	2. slave_rows_search_algorithms参数设置了HASH_SCAN并不一定会提高性能，只有满足如下两个条件才会提高性能：
 		（1）（表中没有任何索引）或者（有索引且本条update/delete的数据关键字重复值较多，减少通过索引定位的次数）。     ### 通过做实验，理解了。
+			
 		（2） 一个update/delete语句删除了大量的数据，形成了很多个8K左右的UPDATE_ROW_EVENT/DELETE_ROW_EVENT。
 			update/delete语句只修改少量的数据（比如每个语句修改一行数据）并不能提高性能。
 
