@@ -562,12 +562,11 @@ The LOCK clause is useful for fine-tuning the degree of concurrent access to the
 		
 
 
-
-
 【潜水】B133-张路-北京 2020-05-06 10:08:48
 各位大佬，请教个问题。MySQL不管是聚簇索引还是普通二级索引，根节点只能有一个16KB的数据页吗？还是有多个？（我的认知是：B+树是一个矮胖矮胖的梯形，根节点不是只有一个数据页的）
 
-根据innodb ruby工具解析索引页，可以发现根节点只有一个Page, 并且这个Page是在内存中。
+根据innodb ruby工具解析索引页，可以发现根节点只有一个Page。
+根节点的Page都是在内存中。
 
 
 

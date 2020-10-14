@@ -64,6 +64,21 @@
 		start slave;
 		
 		
+	优化点：
+		mysql> show global variables like '%log_slave_updates%';
+		+-------------------+-------+
+		| Variable_name     | Value |
+		+-------------------+-------+
+		| log_slave_updates | ON    |
+		+-------------------+-------+
+		1 row in set (0.00 sec)
+		
+		
+		非级联复制的从库没有必要开启 log_slave_updates参数，从库写入relay log、应用relay log后写binlog，代价很高，使用pt-osc或者gh-ost做DDL会发生从库会有延迟。
+		
+		关闭log_slave_updates，同时innodb_flush_log_at_trx_commit 设置为2表示 redo只需要写入到操作系统层面事务就完成，几乎没有延迟了。
+		
+		
 		
 
 	

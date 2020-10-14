@@ -265,9 +265,13 @@
 
 	
 6. 重要步骤
+	1. select * from information_schema.innodb_trx\G;
+		
+		查看长事务的执行情况，重要关注 trx_started 和 trx_weight 这2个字段的值
+		可以考虑 kill掉这个连接。
+		
 	1. stop slave; 停止不下来		
-		select * from information_schema.innodb_trx\G;
-		重要关注  trx_started 和 trx_weight 这2个字段的值
+		通过 select * from information_schema.innodb_trx\G; 命令查看回滚的状态。
 		
 	2. pstack and perf top
 		LWP 

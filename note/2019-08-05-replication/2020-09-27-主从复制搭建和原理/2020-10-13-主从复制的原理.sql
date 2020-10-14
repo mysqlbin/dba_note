@@ -40,10 +40,19 @@
 		主库并发高、TPS高，就会导致备库消费中转日志（relay log）的速度，比主库生产 binlog 的速度要慢， 从而出现严重的主备延迟问题。
 		参考笔记：《23-从库的SQL线程.sql》
 		解决这种延迟的方式：
-			1. 从库不需要开启binlog
+			1. 从库不需要开启log_slave_updates参数
 			2. innodb_flush_log_at_trx_commit 设置为2
 			3. 启用并行复制 
 		
+			参数						配置
+			master_info_repository		table
+			relay_log_info_repository	table
+			recovery_relay_log			on
+			sync_master_info			默认，10000
+			sync_relay_log				默认，10000
+			sync_relay_log_info			默认，10000
+			
+			
 		
 2. 主从复制原理
 	
