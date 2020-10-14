@@ -125,6 +125,11 @@
 	从库查找方式   'INDEX_SCAN,TABLE_SCAN'   'INDEX_SCAN,HASH_SCAN'  
 	耗时            57S                         147S      
 	
+	数据表有二级索引，但是 INDEX_SCAN,TABLE_SCAN 比 INDEX_SCAN,HASH_SCAN 的速度 快了3倍左右
+	原因：
+		估计删除的数据重复值很少，需要足够多的索引定位查找才行
+		如果删除的数据重复值较多那么构造的集合（set）元素将会大大减少，也就减少了索引查找定位的开销
+	
 5. 小结
 	
 	从库查找参数 slave_rows_search_algorithms 设置为 'INDEX_SCAN,HASH_SCAN' 并不一定能提升性能.

@@ -33,7 +33,7 @@
 	+----+------+---------------------+--------+------------------+------+---------------------------------------------------------------+------------------------------------+
 	4 rows in set (0.00 sec)
 
-	root@localhost [sbtest]>select count(*) from sbtest1;
+	mysql>select count(*) from sbtest1;
 	+----------+
 	| count(*) |
 	+----------+
@@ -41,7 +41,7 @@
 	+----------+
 	1 row in set (3.37 sec)
 
-	root@localhost [sbtest]>show create table sbtest1\G;
+	mysql>show create table sbtest1\G;
 	*************************** 1. row ***************************
 		   Table: sbtest1
 	Create Table: CREATE TABLE `sbtest1` (
@@ -55,7 +55,7 @@
 	No query specified
 	
 
-	root@localhost [sbtest]>select count(*) as counts, k from sbtest1 group by k having counts > 95 order by counts desc;
+	mysql>select count(*) as counts, k from sbtest1 group by k having counts > 95 order by counts desc;
 	+--------+--------+
 	| counts | k      |
 	+--------+--------+
@@ -83,7 +83,7 @@
 	主库执行大事务
 		update sbtest1 set k=4 where k between 166794 and 400000;
 		
-		root@localhost [sbtest]>update sbtest1 set k=4 where k between 166794 and 400000;
+		mysql>update sbtest1 set k=4 where k between 166794 and 400000;
 		Query OK, 26368 rows affected (21.16 sec)
 		Rows matched: 26368  Changed: 26368  Warnings: 0
 
@@ -230,10 +230,10 @@
 5. 解决办法，添加索引
 
 	主库
-		root@localhost [sbtest]>set sql_log_bin=0;
+		mysql>set sql_log_bin=0;
 		Query OK, 0 rows affected (0.00 sec)
 
-		root@localhost [sbtest]>alter table sbtest1 add index idx_k(`k`);
+		mysql>alter table sbtest1 add index idx_k(`k`);
 		Query OK, 0 rows affected (9.70 sec)
 		Records: 0  Duplicates: 0  Warnings: 0
 
@@ -243,16 +243,16 @@
 		stop slave;
 		
 		
-		root@localhost [sbtest]>set sql_log_bin=0;
+		mysql>set sql_log_bin=0;
 		Query OK, 0 rows affected (0.00 sec)
 
-		root@localhost [sbtest]>alter table sbtest1 add index idx_k(`k`);
+		mysql>alter table sbtest1 add index idx_k(`k`);
 		Query OK, 0 rows affected (9.21 sec)
 		Records: 0  Duplicates: 0  Warnings: 0
 		
 		start slave;
 			
-		root@localhost [sbtest]>desc update sbtest1 set k=4 where k between 166794 and 400000;
+		mysql>desc update sbtest1 set k=4 where k between 166794 and 400000;
 		+----+-------------+---------+------------+-------+---------------+-------+---------+-------+-------+----------+------------------------------+
 		| id | select_type | table   | partitions | type  | possible_keys | key   | key_len | ref   | rows  | filtered | Extra                        |
 		+----+-------------+---------+------------+-------+---------------+-------+---------+-------+-------+----------+------------------------------+
