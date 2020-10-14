@@ -12,6 +12,7 @@
 
 1. GTID的作用
 	基本概念： 
+		
 		全称是 global transaction identifed 即全局事务ID， 是一个事务在提交的时候生成的， 是全局唯一标识。
 	
 		MySQL 会为每一个 DML/DDL 操作增加一个唯一标识叫做 GTID , 这个标记在整个复制环境都是唯一的。
@@ -202,7 +203,9 @@
 
 
 4. Previous_gtids_log_event 和 GTID_LOG_EVENT 简介
+
 	4.1 Previous_gtids_log_event
+	
 		包含在每一个 binary log 的开头，用于描述直到上一个 binary log 所包含的全部 GTID（包括已经删除的 binary log）
 		在 5.7 中即便不开启 GTID 也会包含这个 Previous_gtids_log_event
 		为快速扫描 binary log 获得正确 gtid_executed 变量提供了基础， 否则可能扫描大量的 binary log 才能得到（比如关闭 GTID 的情况）
@@ -222,7 +225,9 @@
 		上一个 binary log(mysql-bin.000007) 所包含的全部 GTID : 7af746a1-5c2d-11ea-bc75-00163e08b460:1-5600
 		
 		
+		
 	4.2 GTID_LOG_EVENT 这个event主要记录的部分有3个即作用
+	
 		1. 记录GTID的详细信息
 		2. 记录逻辑时钟详细信息，即 last commit 和 seq number
 		3. 是否为行模式，比如 DDL 语句就不是行模式	
@@ -239,6 +244,7 @@
 				
 				 
 5. mysql.gtid_executed 表
+
 	5.1 GTID的两种持久化介质：
 		1. gtid_executed表
 			gtid_executed 表是GTID持久化的一个介质

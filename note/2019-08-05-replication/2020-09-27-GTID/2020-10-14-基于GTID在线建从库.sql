@@ -63,7 +63,8 @@ SET @@GLOBAL.GTID_PURGED='13a4ac40-707c-11e8-97cb-0800276af808:1-7';
 
 change master to master_host='192.168.0.52',master_user='app_user',master_password='123456abc',master_port=3307,master_auto_position=1;
 
+--上面的笔记做得很垃圾。
 
 
-
+参考笔记：《2020-10-14-基于GTID在线建从库.sql》
 

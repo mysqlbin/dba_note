@@ -5,10 +5,10 @@
 
 1. set-gtid-purged=AUTO 
 
-	/usr/bin/mysqldump -uroot -p$--single-transaction --master-data=2 -R -E -B  niuniuh5_db  > niuniuh5_db_20200310_185007.dump
+	shell> /usr/bin/mysqldump -uroot -p$--single-transaction --master-data=2 -R -E -B  niuniuh5_db  > niuniuh5_db_20200310_185007.dump
 
 
-	[coding001@db-b backup]$ head -40 niuniu_db_20200310_185007.dump
+	shell> head -40 niuniu_db_20200310_185007.dump
 	-- MySQL dump 10.13  Distrib 5.7.26, for Linux (x86_64)
 	--
 	-- Host: localhost    Database: niuniuh5_db
@@ -52,10 +52,10 @@
 
 2. set-gtid-purged=OFF 
 
-	/usr/bin/mysqldump -uroot -p${Password} --single-transaction --master-data=2 --set-gtid-purged=OFF -B niuniuh5_db --tables table_web_clubmemberproxy table_clubmemberAppLine |gzip  >  ${BAK_PATH}niuniuh5_db_2tables_${DATE}.dump.gz
+	shell> /usr/bin/mysqldump -uroot -p${Password} --single-transaction --master-data=2 --set-gtid-purged=OFF -B niuniuh5_db --tables table_web_clubmemberproxy table_clubmemberAppLine |gzip  >  ${BAK_PATH}niuniuh5_db_2tables_${DATE}.dump.gz
 
 
-	[coding001@db-b backup]$ head -30 niuniuh5_db_2tables_20200314_060001.dump
+	shell> head -30 niuniuh5_db_2tables_20200314_060001.dump
 	-- MySQL dump 10.13  Distrib 5.7.26, for Linux (x86_64)
 	--
 	-- Host: localhost    Database: niuniuh5_db
@@ -84,3 +84,16 @@
 	--
 
 	.............................
+	
+	
+3. 小结
+
+	set-gtid-purged 参数用来控制备份的内容是否记录  SET @@GLOBAL.GTID_PURGED 的信息。
+
+	set-gtid-purged=OFF ：表示不记录 SET @@GLOBAL.GTID_PURGED 的信息。
+	
+	什么情况开启和关闭：
+		用于在线建立从库的时候需要开启，备份则需要关闭。
+	
+	–set-gtid-purged=off： 表示不输出跟 GTID 相关的信息；
+	

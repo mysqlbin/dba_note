@@ -46,6 +46,7 @@
 
 		
 2. mysqldump导出行为的改变
+
 	使用mysqldump导出数据的时候受到选项set-gtid-purged=AUTO的影响和非GTID下导出略有不同
 	在 GTID 开启情况下使用如下语句导出数据：
 		mysqldump  -uroot -p123456abc --single-transaction  --master-data=2  -R -E --triggers  --all-databases > 2020-03-14.sql
@@ -74,7 +75,7 @@
 
 		当然也可以使用 '--set-gtid-purged=OFF' 选项来告诉 mysqldump 不需要设置 SQL_LOG_BIN= 0 和 GTID_PURGED 变量，但是初始化搭建主从的时候一定不要设置为 OFF。
 	
-	参考实验：《GTID模式下用msyqldump备份的情况-2020-03-14.sql》
+	参考实验：《2020-10-14-GTID模式下用msyqldump备份的情况set-gtid-purged.sql》
 
 	
 3. 5.7中搭建基于Gtid的主从
@@ -98,7 +99,7 @@
 	4. 从库导入数据
 	
 	5. 从库执行reset master语句
-		
+		用于清空gtid信息
 		这一步主要防止gtid_executed被更改过。这个问题在在percona 5.7.14 5.7.17存在但是在percona 5.7.15 5.7.19又不存在。所以为了安全还是执行下面的两步。
 
 			reset master；
@@ -191,10 +192,13 @@
 
 	OFF(0): Both new and replicated transactions must be anonymous.
 			表示生成的是匿名事务, 从库也只能应用匿名事务
+			
 	OFF_PERMISSIVE(1): New transactions are anonymous. Replicated transactions can be either anonymous or GTID transactions.
 			表示生成的是匿名事务, 从库可以应用匿名和GTID事务从库可以应用匿名和GTID事务
+			
 	ON_PERMISSIVE(2): New transactions are GTID transactions. Replicated transactions can be either anonymous or GTID transactions.
 			生成的是GTID事务, 从库可以应用匿名和GTID事务
+			
 	ON(3): Both new and replicated transactions must be GTID transactions.		
 			生成的是GTID事务, 从库也只能应用GTID事务
 			

@@ -225,7 +225,7 @@
 
 		[root@env29 data]# mysqlbinlog -vv --base64-output=decode-rows --start-position=50398400 relay-bin.000042 > 2.sq
 
-	3. select * from information_schema.innodb_trx\G; 看看能否看到正在执行的SQL语句。
+	3. select * from information_schema.innodb_trx\G; 看看能否看到正在执行的SQL语句状态。
 
 5. 解决办法，添加索引
 

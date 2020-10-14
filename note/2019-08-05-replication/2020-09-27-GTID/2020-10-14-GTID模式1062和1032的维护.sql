@@ -1,21 +1,23 @@
 
 
+0. 主从各自的 server-uuid
 
 1. 1032
 2. 1062
 
+0. 主从各自的 server-uuid
+	master host
+	[root@123456abc-05 data]# cat auto.cnf 
+	[auto]
+	server-uuid=64f06970-098a-11e9-aee6-00163e020f37
 
-master host
-[root@123456abc-05 data]# cat auto.cnf 
-[auto]
-server-uuid=64f06970-098a-11e9-aee6-00163e020f37
 
+	slave host: 
+	[root@123456abc-06 data]# cat auto.cnf 
+	[auto]
+	server-uuid=53ebf01e-bbec-11e8-9a62-00163e087d10
 
-slave host: 
-[root@123456abc-06 data]# cat auto.cnf 
-[auto]
-server-uuid=53ebf01e-bbec-11e8-9a62-00163e087d10
-
+1. 1032
 
 2. 1062
 
