@@ -34,8 +34,6 @@ Slave2:
 	90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-415
 	1 row in set (0.00 sec)
 
-	ERROR: 
-	No query specified
 
 Slave1:
 
@@ -104,5 +102,3 @@ Slave2:
 					Auto_Position: 1
 	1 row in set (0.00 sec)
 
-	ERROR: 
-	No query specified

@@ -8,5 +8,7 @@ DML 语句、DDL 语句 在主库执行的哪个阶段开始发送给从库？
 
 2. relay log 日志切换的时机：
 	1. flush logs;
-	2. 
+	2. relay log写满
+	
+	
 	

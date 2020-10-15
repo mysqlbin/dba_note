@@ -6,3 +6,5 @@
 	https://mp.weixin.qq.com/s/_3tvvTNMmXp0GIy1CPQ2bg  关于MySQL binlog中的内容分析
 
 
+	https://blog.csdn.net/jolly10/article/details/80077366 mysqlbinlog -v与-vv --base64-output 与不加的区别
+	

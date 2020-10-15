@@ -1,8 +1,8 @@
 
 1. binary log、表结构和数据初始化
-2. 更新记录的 event
-3. 通过 mysqlbinlog 查看事务的 binlog
-
+2. 更新记录的event
+3. 通过mysqlbinlog查看事务的binlog
+4. 相关参考
 
 1. binary log、表结构和数据初始化
 
@@ -29,8 +29,9 @@
 	update t set a=3 where id=1;
 	
 
-2. 更新记录的 event
-	root@mysqldb 18:38:  [(none)]> show binlog events in 'mysql-bin.000008' from 764 limit 5;
+2. 更新记录的event
+
+	mysql> show binlog events in 'mysql-bin.000008' from 764 limit 5;
 	+------------------+------+-------------+-----------+-------------+----------------------------------------------------------------------+
 	| Log_name         | Pos  | Event_type  | Server_id | End_log_pos | Info                                                                 |
 	+------------------+------+-------------+-----------+-------------+----------------------------------------------------------------------+
@@ -49,13 +50,16 @@
 		BEGIN，跟第五行的 COMMIT对应，表示中间是一个事务；
 		
     3. 两个event 替换了 SQL的原始语句
-        1. Table_map event，用于说明接下来要操作的表是 test 库的表 t;
-        2. Update_rows event，用于定义更新操作的行为。
+        1. Table_map event：  
+			用于说明接下来要操作的表是 test 库的表 t;
+			每个表都有一个对应的 Table_map event、都会 map 到一个单独的数字，用于区分对不同表的操作。
+        2. Update_rows event：用于定义更新操作的行为。
     4. 第五行： COMMIT表示事务提交成功之后写入的状态， XID 表示事务被正确提交了。
 	 
 	
-3. 通过 mysqlbinlog 查看事务的 binlog
-	mysqlbinlog -vv --base64-output='decode-rows' --start-position=764 mysql-bin.000008
+3. 通过mysqlbinlog查看事务的binlog
+
+	shell> mysqlbinlog -vv --base64-output='decode-rows' --start-position=764 mysql-bin.000008
 
 	# at 764
 	#200307 15:01:33 server id 330640  end_log_pos 829 CRC32 0x0a8ab72f 	GTID	last_committed=2	sequence_number=3	rbr_only=yes  
@@ -83,15 +87,29 @@
 	#200307 15:01:33 server id 330640  end_log_pos 1055 CRC32 0x802e7340 	Xid = 36102                                                  # xid event 
 	COMMIT/*!*/;
 	# at 1055
-
 	
-	1. server id  330640 表示这个事务是在 server_id=330640 的这个库上执行的。
-	2. 参数 binlog_checksum = CRC32 表示每个event都有CRC32的值.
+	1. server id  330640 ：表示这个事务是在 server_id=330640 的这个库上执行的。
+	
+	2. 参数 binlog_checksum = CRC32 ：表示每个event都有CRC32的值.
+	
 	3. -vv参数是为了把内容都解析出来, 比如 各个字段的值：   @1=1, @2=1, @3=1542038400
+	
 	4. 参数 binlog_row_image 的默认配置是 FULL，因此 Update_rows 里面，包含了更新前的值和更新后的值。
 		如果把 binlog_row_image 设置为 MINIMAL，则只会记录必要的信息，在这个例子里，就是只会记录 id=1, a=3 这个信息。
-		# 相关验证，参考笔记 《2020-03-09-binlog-MINIMAL.sql》
+		# 相关验证，参考笔记 《2020-03-09-binlog_row_image=MINIMAL.sql》
+		
 	5. Xid event：表示事务被正确提交了.
+	
 	6. row格式下不会有主备删除不同行记录的问题：
 		binlog 里面记录了真实删除行的主键 id， binlog 传到备库去的时候，会删除 id=1 的行，不会有主备删除不同行的问题。
-		
+	--理解了。
+	
+4. 相关参考
+	MySQL 实战45讲中的第24讲 24: MySQL主从原理和binlog的3种格式
+	
+	
+	
+	
+	
+	
+	

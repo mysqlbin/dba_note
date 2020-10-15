@@ -34,7 +34,9 @@ DELIMITER ;
 /*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0*/;
 
 DDL:
+
 	Query event : 
+	
 		执行时间是实际语句的执行时间 即 语句的开始执行时间为 200307 20:29:37
 
 	语句的结束时间为 200307 20:29:43	

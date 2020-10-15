@@ -57,8 +57,8 @@
 	
 4. max_binlog_cache_size
 	会话级别参数，定义了 binlog cache 临时文件的最大容量
-	如果某个事务的 event 总量大于 (binlog_cache_size + max_binlog_cache_size) 的大小那么将会报错，如下
-		Multi-statement transaction required more than 'max_binlog_cache_size' bytes of storage;	
+	如果某个事务的 event 总量大于 (binlog_cache_size + max_binlog_cache_size) 的大小那么将会报错
+	报错信息：Multi-statement transaction required more than 'max_binlog_cache_size' bytes of storage;	
 
 5. 如何观察到 binlog cache 临时文件的存在
 		通过 命令 lsof | grep delete 来观察到 ML 开头的临时文件
@@ -73,16 +73,19 @@
 		
 			
 6. 相关参数
+
 	缓冲区参数
 		binlog_cache_size
 		
 	物理磁盘参数
 		max_binlog_cache_size
 			控制 binlog cache 临时文件能达到的上限
+			
 		max_binlog_size
 			控制单个 binlog 文件大小能达到的上限，超过这个上限就切换binlog到下一个 binlog 来写。
 			
 7. 相关status状态值
+
 	Binlog_cache_disk_use
 		使用到 binlog cache 临时文件的次数
 		当 binlog cache 缓冲区不够用的时候，会调用函数 my_b_flush_io_cache， 这个函数主要功能如下：
@@ -106,6 +109,7 @@
 	
 	
 9. 其它相关参考
+
 	23：MySQL 通过binlog和redo log的完整性保证数据不丢失
 	24: MySQL主从原理和binlog的3种格式
 	https://mp.weixin.qq.com/s/ujs7E--QzD5jmY3o9696iQ    故障分析 | binlog flush 失败导致的 Crash

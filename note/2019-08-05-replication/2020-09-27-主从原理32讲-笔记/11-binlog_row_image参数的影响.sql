@@ -5,10 +5,9 @@
 	3.1 初始化表结构和数据
 	3.2 binlog_row_image = FULL	 
 	3.3 binlog_row_image = minimal		
-		如果是 update 呢?
 	3.4 小结							
 4. 相关参考	
-5. 未完成
+5. 其它实验
 
 	
 	
@@ -387,6 +386,7 @@
 				
 		
 	3.4 小结
+		
 		1. 验证了 before_image 值记录非空唯一键的值：
 			对于 binlog_row_image=FULL 中的 before_image, 这里记录的是 b = 10。
 			对于 binlog_row_image=minimal 中的 before_image 来讲只要记录主键或者第一个非空的唯一键到 event，这里记录是 非空的唯一键 b = 20。
@@ -397,7 +397,8 @@
 			
 			# 这里还不明白。
 			
-		3. binlog_row_image 参数控制着是否把 行记录的所有字段值的前映像和后映像写入到 binlog 中。
+		3. binlog_row_image 参数控制着是否把 行记录的所有字段值的前映像（修改前的值）和后映像（修改后的值）写入到 binlog 中。
+		
 		
 4. 相关参考	
 	
@@ -407,19 +408,15 @@
 	https://www.cnblogs.com/gomysql/p/6155160.html  MySQL 5.7贴心参数之binlog_row_image
 	http://www.yangchengec.cn/setup/84.html   安全考虑,binlog_row_image建议尽量使用FULL
 	https://www.jianshu.com/p/b9262b87b08f   十一：参数binlog_row_image（笔记）
-	
 	http://blog.itpub.net/20892230/viewspace-2129567/  binlog很有用的2个参数binlog_rows_query_log_events和binlog_row_image
 	
 	
 	
-5. 未完成
+5. 其它实验
 	1.  binlog_row_image 3 个值的实验实验
 		对比了 binlog_row_image = full 和 binlog_row_image = MINIMAL 下的 DML.
-		
-	2.  对比一下  insert 语句 下的 binlog_row_image = full 和 binlog_row_image = MINIMAL 在 binlog 日志文件中的格式
-		对比了 binlog_row_image = full 和 binlog_row_image = MINIMAL 下的 DML.
 	
-	3. 参考笔记 《2020-03-07-binlog-FULL.sql》 《2020-03-09-binlog-MINIMAL.sql》
+	2. 参考笔记 《2020-10-15-binlog_row_image=FULL.sql》 和 《2020-10-15-binlog_row_image=MINIMAL.sql》
 
 	
 	

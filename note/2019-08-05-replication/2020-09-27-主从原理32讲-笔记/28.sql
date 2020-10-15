@@ -1,6 +1,0 @@
-
-
-iotop
-
-top -Hp pid
-

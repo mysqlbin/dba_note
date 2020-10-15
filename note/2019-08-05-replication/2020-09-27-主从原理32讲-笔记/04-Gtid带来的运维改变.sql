@@ -267,7 +267,17 @@
 	
 	
 	
-	
+10. 小结
+
+	GTID带来最方便的作用就是搭建和维护一主多从复制，主从切换会非常便捷。
+
+	开启 GTID 的参数:
+		MySQL实例开启GTID模式：
+		gtid-mode = on ： 开启 GTID 
+		
+		enforce-gtid-consistency=1： 执行GTID一致性（使用GTID模式复制时，需要开启此参数，用来保证GTID一致性）。
+		
+		
 		
 			
 		

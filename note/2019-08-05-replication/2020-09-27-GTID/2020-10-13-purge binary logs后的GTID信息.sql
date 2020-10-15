@@ -2,10 +2,10 @@
 1. old gtid info
 2. purge binary logs to
 3. new gtid info
-
+4. 小结
 
 1. old gtid info
-	root@localhost [(none)]>select * from mysql.gtid_executed;
+	mysql> select * from mysql.gtid_executed;
 	+--------------------------------------+----------------+--------------+
 	| source_uuid                          | interval_start | interval_end |
 	+--------------------------------------+----------------+--------------+
@@ -13,7 +13,7 @@
 	+--------------------------------------+----------------+--------------+
 	1 row in set (0.00 sec)
 
-	root@localhost [(none)]> show global variables  like 'gtid_%';
+	mysql>  show global variables  like 'gtid_%';
 	+----------------------------------+---------------------------------------------+
 	| Variable_name                    | Value                                       |
 	+----------------------------------+---------------------------------------------+
@@ -25,7 +25,7 @@
 	+----------------------------------+---------------------------------------------+
 	5 rows in set (0.00 sec)
 
-	root@localhost [(none)]> show binary logs;
+	mysql>  show binary logs;
 	+------------------+-----------+
 	| Log_name         | File_size |
 	+------------------+-----------+
@@ -37,7 +37,7 @@
 	4 rows in set (0.00 sec)
 
 
-	root@localhost [(none)]>show binlog events in 'mysql-bin.000004';
+	mysql> show binlog events in 'mysql-bin.000004';
 	+------------------+-----+----------------+-----------+-------------+----------------------------------------------------------------------+
 	| Log_name         | Pos | Event_type     | Server_id | End_log_pos | Info                                                                 |
 	+------------------+-----+----------------+-----------+-------------+----------------------------------------------------------------------+
@@ -54,13 +54,13 @@
 
 2. purge binary logs to
 
-	root@localhost [(none)]>purge binary logs to 'mysql-bin.000004';
+	mysql> purge binary logs to 'mysql-bin.000004';
 	Query OK, 0 rows affected (0.04 sec)
 
 
 3. new gtid info
 
-	root@localhost [(none)]>select * from mysql.gtid_executed;
+	mysql> select * from mysql.gtid_executed;
 	+--------------------------------------+----------------+--------------+
 	| source_uuid                          | interval_start | interval_end |
 	+--------------------------------------+----------------+--------------+
@@ -68,7 +68,7 @@
 	+--------------------------------------+----------------+--------------+
 	1 row in set (0.00 sec)
 
-	root@localhost [(none)]>show global variables  like 'gtid_%';
+	mysql> show global variables  like 'gtid_%';
 	+----------------------------------+---------------------------------------------+
 	| Variable_name                    | Value                                       |
 	+----------------------------------+---------------------------------------------+
@@ -81,7 +81,7 @@
 	5 rows in set (0.00 sec)
 
 
-	root@localhost [(none)]> show binary logs;
+	mysql>  show binary logs;
 	+------------------+-----------+
 	| Log_name         | File_size |
 	+------------------+-----------+
@@ -89,4 +89,7 @@
 	+------------------+-----------+
 	1 row in set (0.00 sec)
 
-
+4. 小结
+	
+	purge binary logs后会记录gtid_purged变量的值。
+	

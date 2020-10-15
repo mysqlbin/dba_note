@@ -19,13 +19,97 @@
 		
 	1.2 gtid_executed变量：
 	
-		表示数据库中执行了哪些GTID，它是一个GTID SET处于内存中。‘show slave status’中的Executed_Gtid_Set和‘show master status’中的Executed_Gtid_Set都来自于它。
+		表示数据库中执行了哪些GTID，它是一个GTID SET处于内存中。
+		"show slave status"中的 Executed_Gtid_Set 和"show master status"中的 Executed_Gtid_Set 都来自于它。
+
+		master:
+		
+			mysql> select * from mysql.gtid_executed;
+			+--------------------------------------+----------------+--------------+
+			| source_uuid                          | interval_start | interval_end |
+			+--------------------------------------+----------------+--------------+
+			| 9e520b78-013c-11eb-a84c-0800271bf591 |              1 |            6 |
+			+--------------------------------------+----------------+--------------+
+			1 row in set (0.00 sec)
+			
+			mysql> show global variables like '%gtid%';
+			+----------------------------------+-------------------------------------------+
+			| Variable_name                    | Value                                     |
+			+----------------------------------+-------------------------------------------+
+			| binlog_gtid_simple_recovery      | ON                                        |
+			| enforce_gtid_consistency         | ON                                        |
+			| gtid_executed                    | 9e520b78-013c-11eb-a84c-0800271bf591:1-11 |
+			| gtid_executed_compression_period | 1000                                      |
+			| gtid_mode                        | ON                                        |
+			| gtid_owned                       |                                           |
+			| gtid_purged                      |                                           |
+			| session_track_gtids              | OFF                                       |
+			+----------------------------------+-------------------------------------------+
+			8 rows in set (0.00 sec)
+
+			mysql> show master status\G;
+			*************************** 1. row ***************************
+						 File: mysql-bin.000005
+					 Position: 1520
+				 Binlog_Do_DB: 
+			 Binlog_Ignore_DB: 
+			Executed_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:1-11
+			1 row in set (0.00 sec)
+
+		salve:
+			mysql> show slave status\G;
+			*************************** 1. row ***************************
+						   Slave_IO_State: Waiting for master to send event
+
+					   Retrieved_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:5-11
+						Executed_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:1-11
+							Auto_Position: 1
+
+
+			mysql> show master status\G;
+			*************************** 1. row ***************************
+						 File: mysql-bin.000001
+					 Position: 154
+				 Binlog_Do_DB: 
+			 Binlog_Ignore_DB: 
+			Executed_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:1-11
+			1 row in set (0.00 sec)
+
+			mysql> show global variables like '%gtid%';
+			+----------------------------------+-------------------------------------------+
+			| Variable_name                    | Value                                     |
+			+----------------------------------+-------------------------------------------+
+			| binlog_gtid_simple_recovery      | ON                                        |
+			| enforce_gtid_consistency         | ON                                        |
+			| gtid_executed                    | 9e520b78-013c-11eb-a84c-0800271bf591:1-11 |
+			| gtid_executed_compression_period | 1000                                      |
+			| gtid_mode                        | ON                                        |
+			| gtid_owned                       |                                           |
+			| gtid_purged                      | 9e520b78-013c-11eb-a84c-0800271bf591:1-11 |
+			| session_track_gtids              | OFF                                       |
+			+----------------------------------+-------------------------------------------+
+			8 rows in set (0.01 sec)
+
+			mysql> select * from mysql.gtid_executed;
+			+--------------------------------------+----------------+--------------+
+			| source_uuid                          | interval_start | interval_end |
+			+--------------------------------------+----------------+--------------+
+			| 9e520b78-013c-11eb-a84c-0800271bf591 |              1 |            4 |
+			| 9e520b78-013c-11eb-a84c-0800271bf591 |              5 |            5 |
+			| 9e520b78-013c-11eb-a84c-0800271bf591 |              6 |            6 |
+			| 9e520b78-013c-11eb-a84c-0800271bf591 |              7 |            7 |
+			| 9e520b78-013c-11eb-a84c-0800271bf591 |              8 |            8 |
+			| 9e520b78-013c-11eb-a84c-0800271bf591 |              9 |            9 |
+			| 9e520b78-013c-11eb-a84c-0800271bf591 |             10 |           10 |
+			| 9e520b78-013c-11eb-a84c-0800271bf591 |             11 |           11 |
+			+--------------------------------------+----------------+--------------+
+			8 rows in set (0.00 sec)
 
 	1.3 gtid_purged变量：
 	
 		表示由于binary log文件的删除(如purge binary logfiles或者超过expire_logs_days设置)已经丢失的GTID Event它是一个GTID SET处于内存中。
 		
-		我们在搭建备库的时候，通常需要使用‘set global gtid_purged’命令来设置本变量，用于表示这个备份已经执行了哪些GTID操作。
+		我们在搭建备库的时候，通常需要使用"set global gtid_purged"命令来设置本变量，用于表示这个备份已经执行了哪些GTID操作。
 		注意手动删除binary log将不会更新这个变量。
 		
 2. 讨论主库修改时机、从库修改时机、通用修改时机
