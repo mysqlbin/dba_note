@@ -49,3 +49,35 @@ binlog 刷盘是把日志写入二进制文件？
 参考：
 MYSQL 什么时候同步binlog文件以及它的临时文件在哪里？
 MySQL Binlog实用攻略
+
+
+mysql> show global variables like '%binlog%';
++--------------------------------------------+----------------------+
+| Variable_name                              | Value                |
++--------------------------------------------+----------------------+
+| binlog_cache_size                          | 4194304              |
+| binlog_checksum                            | CRC32                |
+| binlog_direct_non_transactional_updates    | OFF                  |
+| binlog_error_action                        | ABORT_SERVER         |
+| binlog_format                              | ROW                  |
+| binlog_group_commit_sync_delay             | 0                    |
+| binlog_group_commit_sync_no_delay_count    | 0                    |
+| binlog_gtid_simple_recovery                | ON                   |
+| binlog_max_flush_queue_time                | 0                    |
+| binlog_order_commits                       | ON                   |
+| binlog_row_image                           | MINIMAL              |
+| binlog_rows_query_log_events               | OFF                  |
+| binlog_stmt_cache_size                     | 32768                |
+| binlog_transaction_dependency_history_size | 25000                |
+| binlog_transaction_dependency_tracking     | COMMIT_ORDER         |
+| innodb_api_enable_binlog                   | OFF                  |
+| innodb_locks_unsafe_for_binlog             | OFF                  |
+| log_statements_unsafe_for_binlog           | ON                   |
+| max_binlog_cache_size                      | 2147483648           |
+| max_binlog_size                            | 1073741824           |
+| max_binlog_stmt_cache_size                 | 18446744073709547520 |
+| sync_binlog                                | 1                    |
++--------------------------------------------+----------------------+
+22 rows in set (0.01 sec)
+
+
