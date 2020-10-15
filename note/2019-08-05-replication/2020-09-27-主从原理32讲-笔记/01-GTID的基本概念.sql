@@ -14,13 +14,14 @@
 	基本概念： 
 		
 		全称是 global transaction identifed 即全局事务ID， 是一个事务在提交的时候生成的， 是全局唯一标识。
-	
-		MySQL 会为每一个 DML/DDL 操作增加一个唯一标识叫做 GTID , 这个标记在整个复制环境都是唯一的。
+				
+		MySQL 会为每一个 DML/DDL 操作增加一个唯一标识叫做 GTID , 这个标识在整个复制环境都是唯一的。
 		
 		主从环境中的 dump 线程可以直接通过 GTID 定位到需要发送的 binary log 位置，而不再需要指定 binary log 的文件名和位置， 因此切换极为方便
 		
 		# 关于DUMP线程是如何通过GTID定位到binary log位置的，我们将在第17节进行讨论。
-
+		
+		验证GTID的全局唯一身份，参考笔记 《2020-03-12-验证GTID的全局唯一身份》
 		
 2. GTID的基本表示
 
@@ -46,15 +47,18 @@
 		1 row in set (0.00 sec)
 		
 	gno：
+	
 		单个 GTID 后面的序号，比如上面的 GTID 其 gno 就是24。
 		这个 gno 实际上从全局计数器 next_free_gno 中获取的。
 	
 	GTID SET：
+	
 		一个GTID的集合，可以包含多个 server_uuid，比如我们常见的 execute_gtid 、gtid_purged 就是一个GTID SET。
 		类似 '24985463-a536-11e8-a30c-5254008138e4:1-5:7-10' 就是一个GTID SET。
 		对应源码中的类结构Gtid_set，其中还包含一个 sid_map 用于表示多个 server_uuid 。
 	
 	GTID SET Interval：
+	
 		GTID SET中某个server_uuid可能包含多个区间比如‘1-5:7-10’，比如这里就有2个GTID SET Interval分别是‘1-5’和‘7-10’。
 		当然通常只有一个GTID SET Interval如‘1-10’。对应源码中的结构体 Gtid_set::Interval。
 
