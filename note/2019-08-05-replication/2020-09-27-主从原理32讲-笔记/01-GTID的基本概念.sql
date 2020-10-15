@@ -62,7 +62,7 @@
 	
 	在数据库第一次初始化后启动的时候生成，默认保存在数据目录中，文件名为 auto.cnf，可以修改。
 		
-	root@localhost [(none)]>select @@server_uuid;
+	mysql>select @@server_uuid;
 	+--------------------------------------+
 	| @@server_uuid                        |
 	+--------------------------------------+
@@ -71,7 +71,7 @@
 	1 row in set (0.00 sec)
 
 
-	root@localhost [(none)]>show master status\G;
+	mysql>show master status\G;
 	*************************** 1. row ***************************
 				 File: mysql-bin.000040
 			 Position: 234
@@ -81,10 +81,8 @@
 	c39f419e-cecd-26e7-9649-0800279d4f09:1-922364
 	1 row in set (0.00 sec)
 
-	ERROR: 
-	No query specified
 
-	root@localhost [(none)]> show global variables  like '%gtid%';
+	mysql> show global variables  like '%gtid%';
 	+----------------------------------+--------------------------------------------------------------------------------------------+
 	| Variable_name                    | Value                                                                                      |
 	+----------------------------------+--------------------------------------------------------------------------------------------+
@@ -102,25 +100,26 @@
 	8 rows in set (0.01 sec)
 
 	修改 server_uuid
-		[root@env data]# ls -lht auto.cnf 
+	
+		shell> ls -lht auto.cnf 
 		-rw-r----- 1 mysql mysql 56 Feb  4  2018 auto.cnf
-		[root@env data]# pwd
+		shell> pwd
 		/data/mysql/mysql3306/data
-		[root@env data]# cat auto.cnf 
+		shell> cat auto.cnf 
 		[auto]
 		server-uuid=c27f419e-cecd-27e7-9649-0800279d4f09
 	
-		[root@env data]# rm auto.cnf 
+		shell> rm auto.cnf 
 		rm: remove regular file ?.uto.cnf?. y
 		
-		[root@env data]# /etc/init.d/mysql restart
+		shell> /etc/init.d/mysql restart
 		Shutting down MySQL.... SUCCESS! 
 		Starting MySQL.......... SUCCESS! 
-		[root@env data]# cat auto.cnf 
+		shell> cat auto.cnf 
 		[auto]
 		server-uuid=f7323d17-6442-11ea-8a77-080027758761
 
-		root@localhost [(none)]>select @@server_uuid;
+		mysql>select @@server_uuid;
 		+--------------------------------------+
 		| @@server_uuid                        |
 		+--------------------------------------+
@@ -128,7 +127,7 @@
 		+--------------------------------------+
 		1 row in set (0.00 sec)
 
-		root@localhost [(none)]>show master status\G;
+		mysql>show master status\G;
 		*************************** 1. row ***************************
 					 File: mysql-bin.000043
 				 Position: 234
@@ -138,9 +137,8 @@
 		c39f419e-cecd-26e7-9649-0800279d4f09:1-922364
 		1 row in set (0.00 sec)
 
-		ERROR: 
-		No query specified
-		root@localhost [(none)]> show global variables  like '%gtid%';
+
+		mysql> show global variables  like '%gtid%';
 		+----------------------------------+--------------------------------------------------------------------------------------------+
 		| Variable_name                    | Value                                                                                      |
 		+----------------------------------+--------------------------------------------------------------------------------------------+
@@ -158,10 +156,10 @@
 		8 rows in set (0.00 sec)
 
 		删除数据
-			root@localhost [(none)]>delete  from zst.t where id=1;
+			mysql>delete  from zst.t where id=1;
 			Query OK, 1 row affected (0.03 sec)
 
-			root@localhost [(none)]>select @@server_uuid;\
+			mysql>select @@server_uuid;
 			+--------------------------------------+
 			| @@server_uuid                        |
 			+--------------------------------------+
@@ -169,7 +167,7 @@
 			+--------------------------------------+
 			1 row in set (0.00 sec)
 
-			root@localhost [(none)]>show master status\G;
+			mysql>show master status\G;
 			*************************** 1. row ***************************
 						 File: mysql-bin.000043
 					 Position: 492
@@ -180,10 +178,8 @@
 			f7323d17-6442-11ea-8a77-080027758761:1
 			1 row in set (0.00 sec)
 
-			ERROR: 
-			No query specified
 
-			root@localhost [(none)]> show global variables  like '%gtid%';
+			mysql> show global variables  like '%gtid%';
 			+----------------------------------+------------------------------------------------------------------------------------------------------------------------------------+
 			| Variable_name                    | Value                                                                                                                              |
 			+----------------------------------+------------------------------------------------------------------------------------------------------------------------------------+
@@ -205,12 +201,12 @@
 4. Previous_gtids_log_event 和 GTID_LOG_EVENT 简介
 
 	4.1 Previous_gtids_log_event
-	
+		
 		包含在每一个 binary log 的开头，用于描述直到上一个 binary log 所包含的全部 GTID（包括已经删除的 binary log）
 		在 5.7 中即便不开启 GTID 也会包含这个 Previous_gtids_log_event
 		为快速扫描 binary log 获得正确 gtid_executed 变量提供了基础， 否则可能扫描大量的 binary log 才能得到（比如关闭 GTID 的情况）
 		
-		root@mysqldb 15:02:  [niuniuh5_db]> show binlog events in 'mysql-bin.000008';
+		mysql> show binlog events in 'mysql-bin.000008';
 		+------------------+------+----------------+-----------+-------------+----------------------------------------------------------------------+
 		| Log_name         | Pos  | Event_type     | Server_id | End_log_pos | Info                                                                 |
 		+------------------+------+----------------+-----------+-------------+----------------------------------------------------------------------+
@@ -245,26 +241,28 @@
 				 
 5. mysql.gtid_executed 表
 
-	5.1 GTID的两种持久化介质：
+	5.1 GTID的两种持久化介质
 		1. gtid_executed表
 			gtid_executed 表是GTID持久化的一个介质
 			实例重启后所有的内存信息都会丢失， GTID模块初始化就需要读取GTID持久化介质。
 			
 		2. binary log中的 GTID_LOG_EVENT
+		
 			5.6 中使用GTID做从库，从库必须开启 binary log 并且设置 log_slave_updates=true:
 				因为从库执行过的GTID操作都需要保留在 binary log中， 当GTID模块初始化的时候会读取它获取正确的 GTID SET
 				
-			
-			mysql.gtid_executed表示5.7.5才开始的一个优化，在没有这个表之前gtid持久化介质就只有binlog，但是针对于复制中的slave有时候并不需要设置级联主从，所以没有必要开启log_slave_update参数，没有开启的这个参数的话就会减少了磁盘和IO。减轻了负担，提高了性能。
+
+			mysql.gtid_executed表示5.7.5才开始的一个优化，在没有这个表之前gtid持久化介质就只有binlog，但是针对于复制中的slave有时候并不需要设置级联主从
+				所以没有必要开启log_slave_update参数，没有开启的这个参数的话就会减少了磁盘和IO。减轻了负担，提高了性能。
 	
 			因此， 我们需要另外一种GTID持久化介质，而不是 binlog 中的 GTID_LOG_EVENT, gtid_executed 表正是这样一种GTID持久化的介质。
 			
 			
 			
-	5.2 验证主库修改 mysql.gtid_executed 的时机：
+	5.2 验证主库修改 mysql.gtid_executed 的时机
 	 
 	 
-		root@mysqldb 19:37:  [(none)]> show binlog events in 'mysql-bin.000004';
+		mysql> show binlog events in 'mysql-bin.000004';
 		+------------------+------+----------------+-----------+-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 		| Log_name         | Pos  | Event_type     | Server_id | End_log_pos | Info                                                                                                                                                                                                                                   |
 		+------------------+------+----------------+-----------+-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -281,7 +279,7 @@
 		+------------------+------+----------------+-----------+-------------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 		37 rows in set (0.07 sec)
 
-		root@mysqldb 19:38:  [(none)]> select * from mysql.gtid_executed;
+		mysql> select * from mysql.gtid_executed;
 		+--------------------------------------+----------------+--------------+
 		| source_uuid                          | interval_start | interval_end |
 		+--------------------------------------+----------------+--------------+
@@ -291,10 +289,11 @@
 
 		 
 		binlog 切换
-			root@mysqldb 19:38:  [(none)]> flush logs;
+		
+			mysql> flush logs;
 			Query OK, 0 rows affected (0.12 sec)
 
-			root@mysqldb 19:38:  [(none)]> select * from mysql.gtid_executed;
+			mysql> select * from mysql.gtid_executed;
 			+--------------------------------------+----------------+--------------+
 			| source_uuid                          | interval_start | interval_end |
 			+--------------------------------------+----------------+--------------+
@@ -303,9 +302,7 @@
 			1 row in set (0.00 sec)
 
 		
-		
-		说明了 在binlog打开的情况下， mysql.gtid_executed表修改时机
-			在binlog发生切换(rotate)的时候保存直到上一个binlog文件执行过的全部Gtid，它不是实时更新的。
+		说明了 在binlog打开的情况下， mysql.gtid_executed表修改时机为 在binlog发生切换(rotate)的时候保存直到上一个binlog文件执行过的全部Gtid，它不是实时更新的。
 
 			作者：重庆八怪
 			链接：https://www.jianshu.com/p/905d7e89a305
@@ -313,6 +310,7 @@
 	
 	
 	
+-------------------------------------------------------------------------------------------------------
 	
 gtid_executed (执行过的所有GTID)
 在当前实例上执行过的GTID集合; 实际上包含了所有记录到binlog中的事务。所以，设置set sql_log_bin=0后执行的事务不会生成binlog 事件，也不会被记录到gtid_executed中。

@@ -13,16 +13,23 @@
 1. mysql.gtid_executed表/gtid_executed变量/gtid_purged变量
 
 	1.1 mysql.gtid_executed表：
+	
 		GTID持久化的介质，GTID模块初始化的时候会读取这个表来作为获取gtid_executed变量的基础。
 		也就是说  mysql.gtid_executed表 作为 GTID模块初始化获取 gtid_executed变量的起点。
 		
 	1.2 gtid_executed变量：
+	
 		表示数据库中执行了哪些GTID，它是一个GTID SET处于内存中。‘show slave status’中的Executed_Gtid_Set和‘show master status’中的Executed_Gtid_Set都来自于它。
 
 	1.3 gtid_purged变量：
-		表示由于binary log文件的删除(如purge binary logfiles或者超过expire_logs_days设置)已经丢失的GTID Event，它是一个GTID SET处于内存中。我们在搭建备库的时候，通常需要使用‘set global gtid_purged’命令来设置本变量，用于表示这个备份已经执行了哪些GTID操作。注意手动删除binary log将不会更新这个变量。
-
+	
+		表示由于binary log文件的删除(如purge binary logfiles或者超过expire_logs_days设置)已经丢失的GTID Event它是一个GTID SET处于内存中。
+		
+		我们在搭建备库的时候，通常需要使用‘set global gtid_purged’命令来设置本变量，用于表示这个备份已经执行了哪些GTID操作。
+		注意手动删除binary log将不会更新这个变量。
+		
 2. 讨论主库修改时机、从库修改时机、通用修改时机
+
 	我们先来达成一个共识，gtid_executed变量一定是实时更新的，不管主库还是从库。我们的讨论将分为三部分：
 	
 	2.1 主库修改时机

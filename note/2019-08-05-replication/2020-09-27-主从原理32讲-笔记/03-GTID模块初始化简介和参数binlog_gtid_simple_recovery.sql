@@ -71,7 +71,7 @@
 5. 主库GTID模块的初始化实验/验证
 	
 	5.1 old gtid info
-		root@localhost [(none)]>show global variables  like 'gtid_%';
+		mysql> show global variables  like 'gtid_%';
 		+----------------------------------+---------------------------------------------+
 		| Variable_name                    | Value                                       |
 		+----------------------------------+---------------------------------------------+
@@ -83,7 +83,7 @@
 		+----------------------------------+---------------------------------------------+
 		5 rows in set (0.00 sec)
 
-		root@localhost [(none)]>select * from mysql.gtid_executed;
+		mysql> select * from mysql.gtid_executed;
 		+--------------------------------------+----------------+--------------+
 		| source_uuid                          | interval_start | interval_end |
 		+--------------------------------------+----------------+--------------+
@@ -91,7 +91,7 @@
 		+--------------------------------------+----------------+--------------+
 		1 row in set (0.00 sec)
 
-		root@localhost [(none)]>show binary logs;
+		mysql> show binary logs;
 		+------------------+-----------+
 		| Log_name         | File_size |
 		+------------------+-----------+
@@ -99,7 +99,7 @@
 		+------------------+-----------+
 		1 row in set (0.00 sec)
 
-		root@localhost [(none)]>show master status\G;
+		mysql> show master status\G;
 		*************************** 1. row ***************************
 					 File: mysql-bin.000004
 				 Position: 648
@@ -108,18 +108,16 @@
 		Executed_Gtid_Set: f7323d17-6442-11ea-8a77-080027758761:1-1005
 		1 row in set (0.00 sec)
 
-		ERROR: 
-		No query specified
 
 
 	5.2 删除一条记录：
-		root@localhost [(none)]>delete from sbtest.sbtest1 where id=1007;
+		mysql> delete from sbtest.sbtest1 where id=1007;
 		Query OK, 1 row affected (0.00 sec)
 
 	
 	5.3 old gtid info：
 	
-		root@localhost [(none)]>show global variables  like 'gtid_%';
+		mysql> show global variables  like 'gtid_%';
 		+----------------------------------+---------------------------------------------+
 		| Variable_name                    | Value                                       |
 		+----------------------------------+---------------------------------------------+
@@ -131,7 +129,7 @@
 		+----------------------------------+---------------------------------------------+
 		5 rows in set (0.00 sec)
 
-		root@localhost [(none)]>select * from mysql.gtid_executed;
+		mysql> select * from mysql.gtid_executed;
 		+--------------------------------------+----------------+--------------+
 		| source_uuid                          | interval_start | interval_end |
 		+--------------------------------------+----------------+--------------+
@@ -139,7 +137,7 @@
 		+--------------------------------------+----------------+--------------+
 		1 row in set (0.00 sec)
 
-		root@localhost [(none)]>show binary logs;
+		mysql> show binary logs;
 		+------------------+-----------+
 		| Log_name         | File_size |
 		+------------------+-----------+
@@ -147,7 +145,7 @@
 		+------------------+-----------+
 		1 row in set (0.00 sec)
 
-		root@localhost [(none)]>show master status\G;
+		mysql> show master status\G;
 		*************************** 1. row ***************************
 					 File: mysql-bin.000004
 				 Position: 1096
@@ -156,10 +154,10 @@
 		Executed_Gtid_Set: f7323d17-6442-11ea-8a77-080027758761:1-1006
 		1 row in set (0.00 sec)
 
-		ERROR: 
-		No query specified
+
 
 	5.4 数据库重启
+	
 		shell> /etc/init.d/mysql restart
 			Shutting down MySQL.... SUCCESS! 
 			Starting MySQL... SUCCESS! 
@@ -179,7 +177,7 @@
 			Executed_Gtid_Set: f7323d17-6442-11ea-8a77-080027758761:1-1006
 			
 		
-		root@localhost [(none)]>show global variables  like 'gtid_%'; 
+		mysql> show global variables  like 'gtid_%'; 
 		+----------------------------------+---------------------------------------------+
 		| Variable_name                    | Value                                       |
 		+----------------------------------+---------------------------------------------+
@@ -191,7 +189,7 @@
 		+----------------------------------+---------------------------------------------+
 		5 rows in set (0.00 sec)
 
-		root@localhost [(none)]>select * from mysql.gtid_executed;
+		mysql> select * from mysql.gtid_executed;
 		+--------------------------------------+----------------+--------------+
 		| source_uuid                          | interval_start | interval_end |
 		+--------------------------------------+----------------+--------------+
@@ -200,7 +198,7 @@
 		+--------------------------------------+----------------+--------------+
 		2 rows in set (0.00 sec)
 
-		root@localhost [(none)]>show binary logs;
+		mysql> show binary logs;
 		+------------------+-----------+
 		| Log_name         | File_size |
 		+------------------+-----------+
@@ -209,7 +207,7 @@
 		+------------------+-----------+
 		2 rows in set (0.00 sec)
 
-		root@localhost [(none)]>show master status\G;
+		mysql> show master status\G;
 		*************************** 1. row ***************************
 					 File: mysql-bin.000005
 				 Position: 194
@@ -217,8 +215,6 @@
 		 Binlog_Ignore_DB: 
 		Executed_Gtid_Set: f7323d17-6442-11ea-8a77-080027758761:1-1006
 		1 row in set (0.00 sec)
-
-		ERROR: 
-		No query specified
-				
+		
+		
 		

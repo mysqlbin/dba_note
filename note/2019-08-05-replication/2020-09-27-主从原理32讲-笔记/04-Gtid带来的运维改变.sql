@@ -64,8 +64,13 @@
 		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-20227';
 
 	这样设置的原因：
-		如果我们使用这个备份做主从，是否生成 binary log evnet 就意味着在导入数据的时候是否基于本地数据库生成新的GTID， 如果生成了本地GTID 显示是不对的，所以将 SQL_LOG_BIN= 0 设置为0是必须的。
-		
+	
+		如果我们使用这个备份做主从，是否生成 binary log evnet 就意味着在导入数据的时候是否基于本地数据库生成新的GTID
+			如果生成了本地GTID 显示是不对的，所以将 SQL_LOG_BIN= 0 设置为0是必须的。
+			--理解了，参考实验笔记：
+				--《2020-10-14-GTID模式下set-gtid-purged的行为.sql》
+				--《2020-10-15-在线搭建主从复制同时观察执行GTID_PURGED会修改的信息和备份文件中记录SQL_LOG_BIN为0是否生成本地数据库的GTID.sql》
+			
 		接着GTID_PURGED被设置为备份时刻已经执行过的Gtid事务，设置GTID_PURGED会设置三个地方的Gtid如下:   
 			mysql.gtid_executed表
 			gtid_purge变量
@@ -75,15 +80,14 @@
 
 		当然也可以使用 '--set-gtid-purged=OFF' 选项来告诉 mysqldump 不需要设置 SQL_LOG_BIN= 0 和 GTID_PURGED 变量，但是初始化搭建主从的时候一定不要设置为 OFF。
 	
-	参考实验：《2020-10-14-GTID模式下用msyqldump备份的情况set-gtid-purged.sql》
-
+		
 	
 3. 5.7中搭建基于Gtid的主从
 	
 	1. 注意主备库必须开启Gtid和设置好server_id
 		enforce_gtid_consistency = ON
 		gtid_mode = ON
-		server_id = 9910
+		server_id = 9910  --主库跟从库的 server_id 值不能一样。
 		binlog_format = row	
 		
 		同时主备库都开启binlog如果不设置级联从库，从库不要设置log_slave_updates参数。这是最合理的设置。
@@ -99,13 +103,15 @@
 	4. 从库导入数据
 	
 	5. 从库执行reset master语句
+		
 		用于清空gtid信息
-		这一步主要防止gtid_executed被更改过。这个问题在在percona 5.7.14 5.7.17存在但是在percona 5.7.15 5.7.19又不存在。所以为了安全还是执行下面的两步。
+		这一步主要防止gtid_executed被更改过。
+		这个问题在在percona 5.7.14 5.7.17存在但是在percona 5.7.15 5.7.19又不存在。所以为了安全还是执行下面的两步。
 
 			reset master；
 
 		提取GTID_PURGED，并且执行
-		使用head -n 40 命令可以快速的得到比如我这里的
+		使用head -n 40 命令可以快速的得到比如我这里的：
 		
 			
 			--
@@ -119,7 +125,7 @@
 			SET @@GLOBAL.GTID_PURGED='ec9bdd78-a593-11e7-9315-5254008138e4:1-21';
 			
 			完成本部分mysql.gtid_executed表会重构。
-
+	
 	6. 使用MASTER_AUTO_POSITION建立同步
 			change master to 
 			master_host='192.168.99.41',
@@ -148,7 +154,7 @@
 	正常的切换步骤：
 		从库(新主库)：
 			stop slave;
-			reset slave all;     # 今天做下实验，看下执行  reset slave all 命令会发生什么。
+			reset slave all;  
 	
 		主库(新从库)：
 			change master to 

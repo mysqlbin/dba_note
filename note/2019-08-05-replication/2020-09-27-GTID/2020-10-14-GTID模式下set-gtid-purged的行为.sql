@@ -2,6 +2,8 @@
 
 1. set-gtid-purged=AUTO 
 2. set-gtid-purged=OFF 
+3. 小结
+
 
 1. set-gtid-purged=AUTO 
 
