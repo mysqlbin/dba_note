@@ -42,10 +42,12 @@
 		2.3 如果 binlog cache 缓冲区已经写满了，则将 binlog cache 缓冲区的数据写入到 binlog cache 临时文件，同时清空 binlog cache，这个临时文件名以 ML 开头
 		
 	3. 事务提交 
-		binlog cache 缓冲区 和 binlog cache 临时文件数据全部写入到 binary log 中进行固化，释放 binlog cache 缓冲区和 binlog cache 临时文件
-		此时 binlog cache 缓冲区的内存空间留用供下次事务使用
+		binlog cache 缓冲区 和 binlog cache 临时文件数据全部写入到 binary log 中进行固化
 		
-	4. 使用 binlog cache 流程的小结：
+	4. 事务提交完成
+		释放 binlog cache 缓冲区和 binlog cache 临时文件，此时 binlog cache 缓冲区的内存空间留用供下次事务使用。
+		
+	5. 使用 binlog cache 流程的小结：
 		事务执行过程中，先把 binlog event 写到 binlog cache，如果 binlog cache 写满，那么写到 binlog cache 临时文件中
 			临时文件写满，那么将会报错，报错信息：Multi-statement transaction required more than 'max_binlog_cache_size' bytes of storage;	
 			
