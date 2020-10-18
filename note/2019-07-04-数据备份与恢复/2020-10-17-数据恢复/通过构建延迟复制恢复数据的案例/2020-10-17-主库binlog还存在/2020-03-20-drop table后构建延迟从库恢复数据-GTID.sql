@@ -1,12 +1,21 @@
 
-1. 关于 drop table 后的黑科技恢复思路
-2. 实操
-	2.1 Master 制造数据
-	2.2 发起一个误删除数据表操作
-	2.3 数据恢复
+大纲
+	0. 环境
+	1. 关于 drop table 后的黑科技恢复思路
+	2. 实操
+		2.1 Master 制造数据
+		2.2 发起一个误删除数据表操作
+		2.3 数据恢复
+		2.4 建立复制关系并通过 start slave until 把复制停止在SQL线程的某个位置
 
-	2.4 建立复制关系并通过 start slave until 把复制停止在SQL线程的某个位置
 
+
+
+0. 环境
+	IP地址   			角色
+	192.168.1.27        master
+	
+		
 1. 关于 drop table 后的黑科技恢复思路
 
 	1. 假设没有构建延迟从库 
@@ -15,12 +24,10 @@
 		
 	2. 发生drop table后，必须要停止业务
 	
-	3. 然后通过已经有的全备建立延迟从库，start slave until 直到删除到drop table之前停下来.
+	3. 然后通过已有在从库的全备建立延迟从库，start slave until 直到删除到drop table之前停下来.
 	
-	4. 注意事项:
-		不能在已有的从库做数据恢复操作
+	4. 注意事项：不能在已有的从库做数据恢复操作
 		 
-	
 		 
 2. 实操
 		 
@@ -44,7 +51,7 @@
 	INSERT INTO `db1`.`t1`(`id`, `name`, `amount`) VALUES (3, '1', 2); 
 	
 	
-	root@localhost [(none)]>show master status\G;
+	mysql> show master status\G;
 	*************************** 1. row ***************************
 				 File: mysql-bin.000007
 			 Position: 1385
@@ -53,11 +60,9 @@
 	Executed_Gtid_Set: f7323d17-6442-11ea-8a77-080027758761:1-110653
 	1 row in set (0.00 sec)
 
-	ERROR: 
-	No query specified
 
 	# 这里开始备份数据 并且 应用 apply-log 并且待 apply-log 应用完成后再执行下面的部分
-
+	-- 这里怎么是在主库备份
 	
 	CREATE TABLE `t2` (
 	  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键Id',
@@ -80,7 +85,7 @@
 	INSERT INTO `db1`.`t1`(`id`, `name`, `amount`) VALUES (4, '1', 2); 
 
 	
-	root@localhost [(none)]>show master status\G;
+	mysql> show master status\G;
 	*************************** 1. row ***************************
 				 File: mysql-bin.000007
 			 Position: 3106
@@ -88,9 +93,8 @@
 	 Binlog_Ignore_DB: 
 	Executed_Gtid_Set: f7323d17-6442-11ea-8a77-080027758761:1-110659
 	1 row in set (0.00 sec)
-
-	ERROR: 
-	No query specified	
+	
+	
 
 
 2.2 发起一个误删除数据表操作
@@ -99,7 +103,7 @@
 	
 	INSERT INTO `db1`.`t2`(`id`, `name`, `amount`) VALUES (5, '1', 2); 
 	
-	root@localhost [(none)]>show master status\G;
+	mysql> show master status\G;
 	*************************** 1. row ***************************
 				 File: mysql-bin.000007
 			 Position: 3549
@@ -108,13 +112,11 @@
 	Executed_Gtid_Set: f7323d17-6442-11ea-8a77-080027758761:1-110661
 	1 row in set (0.00 sec)
 
-	ERROR: 
-	No query specified
 
-	root@localhost [(none)]>flush logs;
+	mysql> flush logs;
 	Query OK, 0 rows affected (0.90 sec)
 
-	root@localhost [(none)]>show master status\G;
+	mysql> show master status\G;
 	*************************** 1. row ***************************
 				 File: mysql-bin.000008
 			 Position: 194
@@ -138,7 +140,7 @@
 	
 2.3 数据恢复
 	
-	root@localhost [(none)]>select * from db1.t1;
+	mysql> select * from db1.t1;
 	+----+------+--------+
 	| id | name | amount |
 	+----+------+--------+
@@ -148,7 +150,7 @@
 	+----+------+--------+
 	3 rows in set (0.04 sec)
 	
-	root@localhost [(none)]>select * from db1.t2;
+	mysql> select * from db1.t2;
 	ERROR 1146 (42S02): Table 'db1.t2' doesnt exist
 
 
@@ -165,16 +167,13 @@
 	Slave:
 		
 		reset master; \
-		
 		set global gtid_purged = 'f7323d17-6442-11ea-8a77-080027758761:1-110653'; \
-		
 		change master to master_host='192.168.1.27',master_user='repl',master_password='123456abc',master_port=3306,master_auto_position=1; \
-		
 		change replication filter replicate_do_table = (db1.t1); 
 		# 到时候验证下 db1.t2 表会不会复制过来。
 		start slave until SQL_BEFORE_GTIDS = 'f7323d17-6442-11ea-8a77-080027758761:110660';
 		
-		root@localhost [(none)]>show slave status\G;
+		mysql> show slave status\G;
 		*************************** 1. row ***************************
 					   Slave_IO_State: Waiting for master to send event
 						  Master_Host: 192.168.1.27
@@ -238,7 +237,7 @@
 		ERROR: 
 		No query specified		
 		
-	root@localhost [(none)]>select * from db1.t1;
+	mysql> select * from db1.t1;
 	+----+------+--------+
 	| id | name | amount |
 	+----+------+--------+
@@ -249,7 +248,7 @@
 	+----+------+--------+
 	4 rows in set (0.00 sec)
 
-	root@localhost [(none)]>select * from db1.t2;
+	mysql> select * from db1.t2;
 	ERROR 1146 (42S02): Table 'db1.t2' doesn't exist
 	
 	

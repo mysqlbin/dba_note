@@ -16,9 +16,11 @@
 
 
 0. 本文主要目的
+	
 	在 MySQL 5.7.22 和 MySQL 8.0.18环境下, 使用pt-osc批量迁移数据+通过触发器迁移增量数据在参数 innodb_autoinc_lock_mode=2 下是否会产生死锁
 	
 1.1 表结构和数据初始化
+
 	DROP TABLE IF EXISTS `t`;
 	CREATE TABLE `t` (
 	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
@@ -63,14 +65,16 @@
 	| 5.7.22-log |
 	+------------+
 	1 row in set (0.00 sec)
-	root@mysqldb 11:46:  [(none)]> show global variables like '%innodb_autoinc_lock_mode%';
+	
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
 	| innodb_autoinc_lock_mode | 1     |
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
-	root@mysqldb 11:46:  [(none)]> show global variables like '%isolation%';
+	
+	mysql> show global variables like '%isolation%';
 	+-----------------------+-----------------+
 	| Variable_name         | Value           |
 	+-----------------------+-----------------+
@@ -130,7 +134,8 @@
 
 
 2.2 环境2 --innodb_autoinc_lock_mode=1, 事务隔离级别为RC读已提交
-	root@mysqldb 11:46:  [(none)]> show global variables like '%innodb_autoinc_lock_mode%';
+
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -138,7 +143,7 @@
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
 	
-	root@mysqldb 12:13:  [sbtest]> select @@global.tx_isolation;
+	mysql> select @@global.tx_isolation;
 	+-----------------------+
 	| @@global.tx_isolation |
 	+-----------------------+
@@ -146,14 +151,13 @@
 	+-----------------------+
 	1 row in set, 1 warning (0.00 sec)
 
-	root@mysqldb 12:14:  [sbtest]> 
-	root@mysqldb 12:14:  [sbtest]> select @@session.tx_isolation;
+	
+	mysql> select @@session.tx_isolation;
 	+------------------------+
 	| @@session.tx_isolation |
 	+------------------------+
 	| READ-COMMITTED         |
 	+------------------------+
-
 
 
 	事务1(重建表的语句的批量迁移语句)                  事务2(业务的插入语句)
@@ -208,7 +212,8 @@
 
 
 2.3 环境3 --innodb_autoinc_lock_mode=2, 事务隔离级别为RC读已提交
-	root@mysqldb 11:46:  [(none)]> show global variables like '%innodb_autoinc_lock_mode%';
+
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -216,7 +221,7 @@
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
 	
-	root@mysqldb 12:13:  [sbtest]> select @@global.tx_isolation;
+	mysql> select @@global.tx_isolation;
 	+-----------------------+
 	| @@global.tx_isolation |
 	+-----------------------+
@@ -224,7 +229,7 @@
 	+-----------------------+
 	1 row in set, 1 warning (0.00 sec)
 	
-	root@mysqldb 12:14:  [sbtest]> select @@session.tx_isolation;
+	mysql> select @@session.tx_isolation;
 	+------------------------+
 	| @@session.tx_isolation |
 	+------------------------+
@@ -238,12 +243,13 @@
 	
 
 														INSERT INTO `t` (`c`, `d`) VALUES ('500001', '500001');  --插入原始表
-														
+														(Query OK)
 														replace INTO `t_new` (`c`, `d`) VALUES ('500001', '500001');  --插入新表	
 														
 														ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
 														
-	死锁日志													
+	死锁日志		
+	
 		2020-05-14T19:07:11.608920+08:00 10 [Note] InnoDB: Transactions deadlock detected, dumping detailed information.
 		2020-05-14T19:07:11.608957+08:00 10 [Note] InnoDB: 
 		*** (1) TRANSACTION:
@@ -294,7 +300,8 @@
 	
 	
 2.4 环境4 --innodb_autoinc_lock_mode=2, 事务隔离级别为RR可重复读
-	root@mysqldb 19:10:  [sbtest]>  select version();
+
+	mysql>  select version();
 	+------------+
 	| version()  |
 	+------------+
@@ -302,7 +309,7 @@
 	+------------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 19:10:  [sbtest]>  show global variables like '%innodb_autoinc_lock_mode%';
+	mysql>  show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -310,7 +317,7 @@
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 19:10:  [sbtest]>  show global variables like '%isolation%';
+	mysql>  show global variables like '%isolation%';
 	+-----------------------+-----------------+
 	| Variable_name         | Value           |
 	+-----------------------+-----------------+
@@ -481,6 +488,7 @@
 	
 	
 4. 小结
+
 	1. 事务回滚, 导致自增ID不是连续的
 	2. 在 MySQL 5.7.22 和 MySQL 8.0.18环境下, 事务隔离级别为RC, 使用pt-osc批量迁移数据+通过触发器迁移增量数据在参数 innodb_autoinc_lock_mode=2 下是会产生死锁, 不过不是基于自增锁模式的死锁, 而是基于主键行锁模式的死锁
 	3. 在 MySQL 5.7.22 环境下, 事务隔离级别为RC或者RR, 使用pt-osc批量迁移数据+通过触发器迁移增量数据在参数 innodb_autoinc_lock_mode=1 下是会产生死锁, 是基于自增锁模式的死锁

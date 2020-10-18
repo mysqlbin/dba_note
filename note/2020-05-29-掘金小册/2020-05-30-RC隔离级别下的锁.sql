@@ -1208,10 +1208,9 @@
 		2020-05-24-验证8.0.18版本是否存在主键记录锁扩大即唯一索引bug的优化.sql
 		2020-05-25-验证8.0.17版本RR隔离级别没有优化唯一索引的bug.sql
 		
+
+10. 证明RC隔离级别下先加锁再退化释放锁的实验
 		
-		
-	
-	
 10.1 初始表结构和数据初始化	CREATE TABLE `t` (
 	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
 	  `c` int(11) DEFAULT NULL,

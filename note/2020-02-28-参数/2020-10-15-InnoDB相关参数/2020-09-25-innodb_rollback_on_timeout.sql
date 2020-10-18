@@ -8,6 +8,7 @@
 
 
 1. innodb_rollback_on_timeout参数的含义
+	
 	InnoDB rolls back only the last statement on a transaction timeout by default. If --innodb-rollback-on-timeout is specified, a transaction timeout causes InnoDB to abort and roll back the entire transaction.
 	--默认情况下，InnoDB仅回退事务超时时的最后一条语句。 如果指定了--innodb-rollback-on-timeout，则事务超时将导致InnoDB中止并回滚整个事务。
 	--默认情况下innodb_lock_wait_timeout 超时后只是超时的sql执行失败，整个事务并不回滚，也不做提交，如需要事务在超时的时候回滚，则需要设置innodb_rollback_on_timeout=ON，该参数默认为OFF

@@ -14,6 +14,7 @@
 6. 相关参考
 
 -1： 本文主要目的
+	
 	验证自增长锁的释放时机
 
 
@@ -89,7 +90,7 @@
 2.1 环境1 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
 
 
-	root@mysqldb 14:32:  [sbtest]>  show global variables like '%innodb_autoinc_lock_mode%';
+	mysql>  show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -97,7 +98,7 @@
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 14:32:  [sbtest]>  show global variables like '%isolation%';
+	mysql>  show global variables like '%isolation%';
 	+-----------------------+-----------------+
 	| Variable_name         | Value           |
 	+-----------------------+-----------------+
@@ -107,7 +108,7 @@
 	2 rows in set (0.00 sec)
 
 
-	root@mysqldb 14:53:  [sbtest]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="t";
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="t";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
@@ -116,7 +117,7 @@
 	+----------------+
 	2 rows in set (0.00 sec)
 
-	root@mysqldb 14:53:  [sbtest]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
@@ -125,7 +126,7 @@
 	1 row in set (0.00 sec)
 
 
-	root@mysqldb 14:51:  [sbtest]> show create table _t_new\G;
+	mysql> show create table _t_new\G;
 	*************************** 1. row ***************************
 	       Table: _t_new
 	Create Table: CREATE TABLE `_t_new` (
@@ -146,6 +147,7 @@
 	INSERT LOW_PRIORITY IGNORE INTO `_t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE;
 						  replace INTO `_t_new` (`id`, `c`, `d`) VALUES ('500001', '500001', '500001'); 
 						  (Blocked)
+						  
 	Query OK, 500000 rows affected (4.81 sec)
 	Records: 500000  Duplicates: 0  Warnings: 0
 						  Query OK, 1 row affected (4.16 sec)
@@ -153,7 +155,7 @@
 	commit;
 
 	自增锁等待信息
-		root@mysqldb 14:58:  [(none)]> select * from information_schema.innodb_locks\G;
+		mysql> select * from information_schema.innodb_locks\G;
 		*************************** 1. row ***************************
 		    lock_id: 166082911:448
 		lock_trx_id: 166082911
@@ -178,10 +180,8 @@
 		  lock_data: NULL
 		2 rows in set, 1 warning (0.00 sec)
 
-		ERROR: 
-		No query specified
 
-		root@mysqldb 14:58:  [(none)]> select * from information_schema.innodb_lock_waits\G;
+		mysql> select * from information_schema.innodb_lock_waits\G;
 		*************************** 1. row ***************************
 		requesting_trx_id: 166082911
 		requested_lock_id: 166082911:448
@@ -189,10 +189,8 @@
 		 blocking_lock_id: 166082906:448
 		1 row in set, 1 warning (0.00 sec)
 
-		ERROR: 
-		No query specified
-
-		root@mysqldb 14:58:  [(none)]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+		
+		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 		+--------------+-------------+-------------------------------------------------------------------+-------------------+--------------------+
 		| locked_index | locked_type | waiting_query                                                     | waiting_lock_mode | blocking_lock_mode |
 		+--------------+-------------+-------------------------------------------------------------------+-------------------+--------------------+
@@ -202,7 +200,7 @@
 
 	查看数据
 
-		root@mysqldb 14:58:  [sbtest]> select * from _t_new order by id desc limit 5;
+		mysql> select * from _t_new order by id desc limit 5;
 		+--------+--------+--------+-------------------------+
 		| id     | c      | d      | CreateTime              |
 		+--------+--------+--------+-------------------------+
@@ -269,7 +267,7 @@
 
 
     自增锁等待信息
-		root@mysqldb 18:22:  [sbtest]> select * from information_schema.innodb_locks\G;
+		mysql> select * from information_schema.innodb_locks\G;
 		*************************** 1. row ***************************
 		    lock_id: 166083045:454
 		lock_trx_id: 166083045
@@ -293,11 +291,8 @@
 		   lock_rec: NULL
 		  lock_data: NULL
 		2 rows in set, 1 warning (0.00 sec)
-
-		ERROR: 
-		No query specified
-
-		root@mysqldb 18:23:  [sbtest]> select * from information_schema.innodb_lock_waits\G;
+		
+		mysql> select * from information_schema.innodb_lock_waits\G;
 		*************************** 1. row ***************************
 		requesting_trx_id: 166083045
 		requested_lock_id: 166083045:454
@@ -305,10 +300,7 @@
 		 blocking_lock_id: 166083040:454
 		1 row in set, 1 warning (0.00 sec)
 
-		ERROR: 
-		No query specified
-
-		root@mysqldb 18:23:  [sbtest]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 		+--------------+-------------+-------------------------------------------------------------------+-------------------+--------------------+
 		| locked_index | locked_type | waiting_query                                                     | waiting_lock_mode | blocking_lock_mode |
 		+--------------+-------------+-------------------------------------------------------------------+-------------------+--------------------+
@@ -325,7 +317,7 @@
 2.3 环境3 --innodb_autoinc_lock_mode=2, 事务隔离级别为RR可重复读
 
 	
-	root@mysqldb 18:46:  [sbtest]> show global variables like '%innodb_autoinc_lock_mode%';
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -333,7 +325,7 @@
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 18:46:  [sbtest]> show global variables like '%isolation%';
+	mysql> show global variables like '%isolation%';
 	+-----------------------+-----------------+
 	| Variable_name         | Value           |
 	+-----------------------+-----------------+
@@ -342,13 +334,13 @@
 	+-----------------------+-----------------+
 	2 rows in set (0.00 sec)
 
-
-	root@mysqldb 18:46:  [sbtest]> truncate table _t_new;
+	mysql> truncate table _t_new;
 	Query OK, 0 rows affected (0.06 sec)
 
-	root@mysqldb 18:46:  [sbtest]> --ALTER TABLE t auto_increment=500001;
+	mysql> --ALTER TABLE t auto_increment=500001;
 	ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '--ALTER TABLE t auto_increment=500001' at line 1
-	root@mysqldb 18:46:  [sbtest]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="t";
+	
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="t";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
@@ -357,7 +349,7 @@
 	+----------------+
 	2 rows in set (0.24 sec)
 
-	root@mysqldb 18:46:  [sbtest]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
@@ -378,7 +370,7 @@
 
 	(No Blocked)
 
-	root@mysqldb 18:53:  [sbtest]> show global status like '%row_lock%';
+	mysql> show global status like '%row_lock%';
 	+-------------------------------+-------+
 	| Variable_name                 | Value |
 	+-------------------------------+-------+
@@ -394,7 +386,7 @@
 
 2.4 环境4 --innodb_autoinc_lock_mode=2, 事务隔离级别为RC读已提交
 
-	root@mysqldb 18:53:  [sbtest]> select version();
+	mysql> select version();
 	+------------+
 	| version()  |
 	+------------+
@@ -402,7 +394,7 @@
 	+------------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 18:53:  [sbtest]> show global variables like '%innodb_autoinc_lock_mode%';
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -410,7 +402,7 @@
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 18:53:  [sbtest]> show global variables like '%isolation%';
+	mysql> show global variables like '%isolation%';
 	+-----------------------+----------------+
 	| Variable_name         | Value          |
 	+-----------------------+----------------+
@@ -419,7 +411,7 @@
 	+-----------------------+----------------+
 	2 rows in set (0.00 sec)
 
-	root@mysqldb 18:53:  [sbtest]> truncate table _t_new;
+	mysql> truncate table _t_new;
 	Query OK, 0 rows affected (0.02 sec)
 
 	root@mysqldb 18:53:  [sbtest]> --ALTER TABLE t auto_increment=500001;
@@ -433,7 +425,7 @@
 	+----------------+
 	2 rows in set (0.00 sec)
 
-	root@mysqldb 18:53:  [sbtest]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
@@ -455,7 +447,7 @@
 	
 	(No Blocked)
 
-	root@mysqldb 18:53:  [sbtest]> show global status like '%row_lock%';
+	mysql> show global status like '%row_lock%';
 	+-------------------------------+-------+
 	| Variable_name                 | Value |
 	+-------------------------------+-------+
@@ -470,7 +462,7 @@
 
 2.5 环境5 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读，有两个事务需要申请自增锁
 
-	root@localhost [(none)]>select version();
+	mysql> select version();
 	+------------+
 	| version()  |
 	+------------+
@@ -478,7 +470,7 @@
 	+------------+
 	1 row in set (0.00 sec)
 
-	root@localhost [(none)]>show global variables like '%innodb_autoinc_lock_mode%';
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -486,7 +478,7 @@
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
 
-	root@localhost [(none)]>show global variables like '%isolation%';
+	mysql> show global variables like '%isolation%';
 	+---------------+-----------------+
 	| Variable_name | Value           |
 	+---------------+-----------------+
@@ -508,7 +500,7 @@
 							  Query OK, 1 row affected (6.43 sec)
 							  							Query OK, 1 row affected (5.56 sec)
 						  		
-	root@localhost [(none)]>select * from information_schema.innodb_locks\G;
+	mysql> select * from information_schema.innodb_locks\G;
 	*************************** 1. row ***************************
 	    lock_id: 5893242:241
 	lock_trx_id: 5893242
@@ -544,10 +536,8 @@
 	  lock_data: NULL
 	3 rows in set, 1 warning (0.00 sec)
 
-	ERROR: 
-	No query specified
-
-	root@localhost [(none)]>select * from information_schema.innodb_lock_waits\G;
+	
+	mysql> select * from information_schema.innodb_lock_waits\G;
 	*************************** 1. row ***************************
 	requesting_trx_id: 5893242
 	requested_lock_id: 5893242:241
@@ -565,10 +555,9 @@
 	 blocking_lock_id: 5893236:241
 	3 rows in set, 1 warning (0.00 sec)
 
-	ERROR: 
-	No query specified
 
-	root@localhost [(none)]>SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+
+	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 	+--------------+-------------+--------------------------------------------------------------+-------------------+--------------------+
 	| locked_index | locked_type | waiting_query                                                | waiting_lock_mode | blocking_lock_mode |
 	+--------------+-------------+--------------------------------------------------------------+-------------------+--------------------+
@@ -579,7 +568,7 @@
 	3 rows in set, 3 warnings (0.01 sec)
 
 
-	root@localhost [sbtest]>select id,c,d from _t_new;
+	mysql> select id,c,d from _t_new;
 	+--------+--------+--------+
 	| id     | c      | d      |
 	+--------+--------+--------+
@@ -589,6 +578,7 @@
 	2 rows in set (0.18 sec)
 
 3. 小结
+	
 	1. 通过实验和理解，'insert into _t_new ... select ... from ... WHERE ((`id` >= '1')) AND ((`id` <= '500000')) lock in share mode;' 语句 _t_new表自增长锁的释放时机：
 		innodb_autoinc_lock_mode=2： 1 and 500001 的自增长锁全部申请完就释放，插入动作在自增长锁全部申请完成之后执行；
 		innodb_autoinc_lock_mode=1： 1 and 500001 的自增长锁是等语句执行结束(注意：不是事务提交)才释放;
@@ -600,8 +590,7 @@
 			2.5 环境5 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读，有两个事务需要申请自增锁	
 
 5. 思考
-	
-
+		
 	1. innodb_autoinc_lock_mode=1： INSERT LOW_PRIORITY IGNORE INTO `_t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE;
 		 在 8.0.18 以上的版本中还需要持有 _t_new.id = 500001 的自增锁吗
 
@@ -610,10 +599,18 @@
 			3.2 环境2 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
 				
 	2. innodb_autoinc_lock_mode=1： WHERE ((`id` >= '1')) AND ((`id` <= '500000')) lock in share mode; 在 5.7 版本中RC隔离级别还需要持有 id = 500001 的行锁吗
-
+	
+		WHERE ((`id` >= '1')) AND ((`id` <= '500000')) lock in share mode;  的加锁范围跟参数 innodb_autoinc_lock_mode 没有关系，跟事务隔离级别有关
+		
+		WHERE ((`id` >= '1')) AND ((`id` <= '500000')) lock in share mode; 在 5.7 版本中RC隔离级别锁的过程实际上是id<=5的下一条记录也就是这个页的最大记录（如果这个在RC级别下没有被锁，则会立即释放）
+			-- 参考笔记 《2020-05-30-RC隔离级别下的锁.sql》 中的  10. 证明RC隔离级别下先加锁再退化释放锁的实验
+		
+		
 
 	3. 唯一索引范围 bug，在RC隔离级别中也存在吗
 
+	
+	
 6. 相关参考
 	https://dev.mysql.com/doc/refman/8.0/en/innodb-parameters.html#sysvar_innodb_autoinc_lock_mode
 	https://dev.mysql.com/doc/refman/8.0/en/innodb-auto-increment-handling.html#innodb-auto-increment-lock-modes

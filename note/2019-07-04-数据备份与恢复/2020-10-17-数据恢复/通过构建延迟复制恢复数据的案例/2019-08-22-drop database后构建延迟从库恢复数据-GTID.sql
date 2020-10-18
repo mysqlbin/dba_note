@@ -6,7 +6,6 @@
 	
 	1. 假设没有构建延迟从库 
 		复制架构: 一主一从, 每天凌晨6点在从库进行单库全备
-		
 		从库保留7天的binlog
 		
 	2. 发生drop database后，必须要停止业务
@@ -14,8 +13,9 @@
 	3. 然后通过已经有的全备建立延迟从库，start slave until 直到删除到drop database之前停下来.
 	
 	注意事项:
+		
 		不能在已有的从库做数据恢复操作
-		 从库要开启 参数log_slave_updates
+		 从库要开启参数log_slave_updates
 		 
 
 Master:
@@ -42,10 +42,10 @@ shell>  mysqldump -h192.168.0.54 -uroot -p123456abc --master-data=2  --single-tr
 
 mysqldump: [Warning] Using a password on the command line interface can be insecure.
 Warning: A partial dump from a server that has GTIDs will by default include the GTIDs of all transactions, even those that changed suppressed parts of the database. 
-If you don't want to restore GTIDs, pass --set-gtid-purged=OFF. To make a complete dump, pass --all-databases --triggers --routines --events. 	
+If you dont want to restore GTIDs, pass --set-gtid-purged=OFF. To make a complete dump, pass --all-databases --triggers --routines --events. 	
 
 #GTID模式下, mysqldump+set-gtid-purged, 表示在备份文件中, 不会显示GTID信息: SET @@GLOBAL.GTID_PURGED='b453f45b-ba9f-11e8-a29c-080027eb50c1:1-7823290';
-shell> mysqldump --set-gtid-purged=OFF
+
 
 
 INSERT INTO `db1`.`product`(`id`, `name`, `amount`) VALUES (3, '1', 2); 

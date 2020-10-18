@@ -7,7 +7,12 @@
 3. 小结
 4. 相关参考
 
+-1. 实验目的 
 
+	验证 innodb_autoinc_lock_mode=1： 
+		INSERT LOW_PRIORITY IGNORE INTO `_t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE;
+		在 8.0.18 以上的版本中还需要持有 _t_new.id > 500000 的自增锁吗
+			
 0. 使用到的相关SQL语句 
 
 	select * from information_schema.innodb_locks\G;
@@ -81,7 +86,7 @@
 
 2.1 环境1 --innodb_autoinc_lock_mode=1, 事务隔离级别为RC读已提交
 
-	root@mysqldb 14:47:  [sbtest]> select version();
+	mysql> select version();
 	+-----------+
 	| version() |
 	+-----------+
@@ -89,7 +94,7 @@
 	+-----------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 14:47:  [sbtest]> show global variables like '%innodb_autoinc_lock_mode%';
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -97,7 +102,7 @@
 	+--------------------------+-------+
 	1 row in set (0.01 sec)
 
-	root@mysqldb 14:47:  [sbtest]> show global variables like '%isolation%';
+	mysql> show global variables like '%isolation%';
 	+-----------------------+----------------+
 	| Variable_name         | Value          |
 	+-----------------------+----------------+
@@ -105,7 +110,7 @@
 	+-----------------------+----------------+
 	1 row in set (0.01 sec)
 
-	root@mysqldb 14:55:  [sbtest]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="t";
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="t";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
@@ -113,7 +118,7 @@
 	+----------------+
 	1 row in set (0.01 sec)
 
-	root@mysqldb 14:55:  [sbtest]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
@@ -131,9 +136,7 @@
 	Records: 500000  Duplicates: 0  Warnings: 0
 						 
 							
-	
-
-	root@mysqldb 14:54:  [sbtest]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
+	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
 	*************************** 1. row ***************************
 	      locked_index: NULL
 	       locked_type: TABLE
@@ -163,7 +166,7 @@
 
 2.2 环境2 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读
 
-	root@mysqldb 15:08:  [(none)]> select version();
+	mysql> select version();
 	+-----------+
 	| version() |
 	+-----------+
@@ -171,7 +174,7 @@
 	+-----------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 15:09:  [(none)]> show global variables like '%innodb_autoinc_lock_mode%';
+	rmysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -179,7 +182,7 @@
 	+--------------------------+-------+
 	1 row in set (0.01 sec)
 
-	root@mysqldb 15:09:  [(none)]> show global variables like '%isolation%';
+	mysql> show global variables like '%isolation%';
 	+-----------------------+-----------------+
 	| Variable_name         | Value           |
 	+-----------------------+-----------------+
@@ -187,7 +190,7 @@
 	+-----------------------+-----------------+
 	1 row in set (0.01 sec)
 
-	root@mysqldb 15:16:  [sbtest]> select @@session.transaction_isolation;
+	mysql> select @@session.transaction_isolation;
 	+---------------------------------+
 	| @@session.transaction_isolation |
 	+---------------------------------+
@@ -195,7 +198,7 @@
 	+---------------------------------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 15:09:  [(none)]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="t";
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="t";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
@@ -203,7 +206,7 @@
 	+----------------+
 	1 row in set (0.01 sec)
 
-	root@mysqldb 15:09:  [(none)]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
@@ -221,7 +224,7 @@
 	Records: 500000  Duplicates: 0  Warnings: 0
 						 
 
-	root@mysqldb 15:19:  [sbtest]> select * from information_schema.innodb_trx\G;
+	mysql> select * from information_schema.innodb_trx\G;
 	*************************** 1. row ***************************
 	                    trx_id: 1826
 	                 trx_state: LOCK WAIT
@@ -274,10 +277,8 @@
 	trx_autocommit_non_locking: 0
 	2 rows in set (0.00 sec)
 
-	ERROR: 
-	No query specified
 
-	root@mysqldb 15:19:  [sbtest]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
+	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
 	*************************** 1. row ***************************
 	      locked_index: NULL
 	       locked_type: TABLE
@@ -318,6 +319,7 @@
 
 
 3. 小结
+
 	1. innodb_autoinc_lock_mode=1： INSERT LOW_PRIORITY IGNORE INTO `_t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE;
 		 在 8.0.18 以上的版本中还需要持有 _t_new.id > 500000 的自增锁吗
 

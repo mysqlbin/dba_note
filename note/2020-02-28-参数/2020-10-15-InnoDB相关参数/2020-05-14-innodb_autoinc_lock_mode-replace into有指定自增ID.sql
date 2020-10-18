@@ -8,8 +8,8 @@
 	2.3 环境3 --innodb_autoinc_lock_mode=2, 事务隔离级别为RC读已提交
 	2.4 环境4 --innodb_autoinc_lock_mode=2, 事务隔离级别为RR可重复读
 
-3. MySQL 8.0.18
-	3.1 环境1
+3. MySQL 8.0.19
+	3.1 环境1 --innodb_autoinc_lock_mode=1, 事务隔离级别为RC读已提交
 	3.2 环境2
 	
 4. 小结
@@ -151,58 +151,58 @@
 
 	最新一次实验
 	
-	begin;	                                           
-	INSERT LOW_PRIORITY IGNORE INTO `t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE;
-																						
-											   begin; 
-												 
-											   INSERT INTO `t` (`c`, `d`) VALUES ('500001', '500001');  
-											   (Query OK)
-											   replace INTO `t_new` (`id`, `c`, `d`) VALUES (500001, '500001', '500001');  
-											   (Blocked)
-	Query OK, 500000 rows affected (5.04 sec)
-	Records: 500000  Duplicates: 0  Warnings: 0										
-											   ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
-													   	
-	
-	2020-05-21T17:42:46.135798+08:00 14 [Note] InnoDB: Transactions deadlock detected, dumping detailed information.
-	2020-05-21T17:42:46.135840+08:00 14 [Note] InnoDB: 
-	*** (1) TRANSACTION:
+		begin;	                                           
+		INSERT LOW_PRIORITY IGNORE INTO `t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE;
+																							
+												   begin; 
+													 
+												   INSERT INTO `t` (`c`, `d`) VALUES ('500001', '500001');  
+												   (Query OK)
+												   replace INTO `t_new` (`id`, `c`, `d`) VALUES (500001, '500001', '500001');  
+												   (Blocked)
+		Query OK, 500000 rows affected (5.04 sec)
+		Records: 500000  Duplicates: 0  Warnings: 0										
+												   ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+															
+		
+		2020-05-21T17:42:46.135798+08:00 14 [Note] InnoDB: Transactions deadlock detected, dumping detailed information.
+		2020-05-21T17:42:46.135840+08:00 14 [Note] InnoDB: 
+		*** (1) TRANSACTION:
 
-	TRANSACTION 166084137, ACTIVE 4 sec setting auto-inc lock
-	mysql tables in use 1, locked 1
-	LOCK WAIT 4 lock struct(s), heap size 1136, 1 row lock(s), undo log entries 2
-	MySQL thread id 15, OS thread handle 140194131363584, query id 222 localhost root update
-	replace INTO `t_new` (`id`, `c`, `d`) VALUES (500001, '500001', '500001')
-	2020-05-21T17:42:46.135878+08:00 14 [Note] InnoDB: *** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+		TRANSACTION 166084137, ACTIVE 4 sec setting auto-inc lock
+		mysql tables in use 1, locked 1
+		LOCK WAIT 4 lock struct(s), heap size 1136, 1 row lock(s), undo log entries 2
+		MySQL thread id 15, OS thread handle 140194131363584, query id 222 localhost root update
+		replace INTO `t_new` (`id`, `c`, `d`) VALUES (500001, '500001', '500001')
+		2020-05-21T17:42:46.135878+08:00 14 [Note] InnoDB: *** (1) WAITING FOR THIS LOCK TO BE GRANTED:
 
-	TABLE LOCK table `sbtest`.`t_new` trx id 166084137 lock mode AUTO-INC waiting
-	2020-05-21T17:42:46.135902+08:00 14 [Note] InnoDB: *** (2) TRANSACTION:
+		TABLE LOCK table `sbtest`.`t_new` trx id 166084137 lock mode AUTO-INC waiting
+		2020-05-21T17:42:46.135902+08:00 14 [Note] InnoDB: *** (2) TRANSACTION:
 
-	TRANSACTION 166084132, ACTIVE 5 sec fetching rows
-	mysql tables in use 2, locked 2
-	1174 lock struct(s), heap size 172240, 501169 row lock(s), undo log entries 500000
-	MySQL thread id 14, OS thread handle 140194130835200, query id 220 localhost root Sending data
-	INSERT LOW_PRIORITY IGNORE INTO `t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE
-	2020-05-21T17:42:46.135931+08:00 14 [Note] InnoDB: *** (2) HOLDS THE LOCK(S):
+		TRANSACTION 166084132, ACTIVE 5 sec fetching rows
+		mysql tables in use 2, locked 2
+		1174 lock struct(s), heap size 172240, 501169 row lock(s), undo log entries 500000
+		MySQL thread id 14, OS thread handle 140194130835200, query id 220 localhost root Sending data
+		INSERT LOW_PRIORITY IGNORE INTO `t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE
+		2020-05-21T17:42:46.135931+08:00 14 [Note] InnoDB: *** (2) HOLDS THE LOCK(S):
 
-	TABLE LOCK table `sbtest`.`t_new` trx id 166084132 lock mode AUTO-INC
-	2020-05-21T17:42:46.135946+08:00 14 [Note] InnoDB: *** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+		TABLE LOCK table `sbtest`.`t_new` trx id 166084132 lock mode AUTO-INC
+		2020-05-21T17:42:46.135946+08:00 14 [Note] InnoDB: *** (2) WAITING FOR THIS LOCK TO BE GRANTED:
 
-	RECORD LOCKS space id 296 page no 1840 n bits 384 index PRIMARY of table `sbtest`.`t` trx id 166084132 lock mode S waiting
-	Record lock, heap no 312 PHYSICAL RECORD: n_fields 5; compact format; info bits 0
-	 0: len 8; hex 800000000007a121; asc        !;;
-	 1: len 6; hex 000009e63e29; asc     >);;
-	 2: len 7; hex c0000001910110; asc        ;;
-	 3: len 4; hex 8007a121; asc    !;;
-	 4: len 4; hex 8007a121; asc    !;;
+		RECORD LOCKS space id 296 page no 1840 n bits 384 index PRIMARY of table `sbtest`.`t` trx id 166084132 lock mode S waiting
+		Record lock, heap no 312 PHYSICAL RECORD: n_fields 5; compact format; info bits 0
+		 0: len 8; hex 800000000007a121; asc        !;;
+		 1: len 6; hex 000009e63e29; asc     >);;
+		 2: len 7; hex c0000001910110; asc        ;;
+		 3: len 4; hex 8007a121; asc    !;;
+		 4: len 4; hex 8007a121; asc    !;;
 
-	2020-05-21T17:42:46.136140+08:00 14 [Note] InnoDB: *** WE ROLL BACK TRANSACTION (1)
+		2020-05-21T17:42:46.136140+08:00 14 [Note] InnoDB: *** WE ROLL BACK TRANSACTION (1)
 
 	
 2.2 环境2 --innodb_autoinc_lock_mode=1, 事务隔离级别为RC读已提交
 	
-	root@mysqldb 11:46:  [(none)]> show global variables like '%innodb_autoinc_lock_mode%';
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -210,7 +210,7 @@
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
 	
-	root@mysqldb 12:13:  [sbtest]> select @@global.tx_isolation;
+	mysql> select @@global.tx_isolation;
 	+-----------------------+
 	| @@global.tx_isolation |
 	+-----------------------+
@@ -218,8 +218,8 @@
 	+-----------------------+
 	1 row in set, 1 warning (0.00 sec)
 
-	root@mysqldb 12:14:  [sbtest]> 
-	root@mysqldb 12:14:  [sbtest]> select @@session.tx_isolation;
+	
+	mysql> select @@session.tx_isolation;
 	+------------------------+
 	| @@session.tx_isolation |
 	+------------------------+
@@ -231,15 +231,15 @@
 	事务1(重建表的语句的批量迁移语句)                  事务2(业务的插入语句)
 		
 	begin;	                                           begin;
-INSERT LOW_PRIORITY IGNORE INTO `t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE;
-																						
+	INSERT LOW_PRIORITY IGNORE INTO `t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE;
+																							
 														INSERT INTO `t` (`c`, `d`) VALUES ('500001', '500001'); 
-														 
+															 
 														replace INTO `t_new` (`id`, `c`, `d`) VALUES (500001, '500001', '500001');   
 														(Blocked)
-Query OK, 500000 rows affected (5.81 sec)
-Records: 500000  Duplicates: 0  Warnings: 0													
-(Query OK)
+	Query OK, 500000 rows affected (5.81 sec)
+	Records: 500000  Duplicates: 0  Warnings: 0													
+	(Query OK)
 														ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
 		
 	死锁日志		
@@ -277,57 +277,58 @@ Records: 500000  Duplicates: 0  Warnings: 0
 
 		2020-05-14T18:47:41.422373+08:00 21 [Note] InnoDB: *** WE ROLL BACK TRANSACTION (1)
 
-最近一次测试的死锁日志
-2020-05-21T16:54:27.687689+08:00 3 [Note] InnoDB: Transactions deadlock detected, dumping detailed information.
-2020-05-21T16:54:27.687728+08:00 3 [Note] InnoDB: 
-*** (1) TRANSACTION:
+	最近一次测试的死锁日志
+		2020-05-21T16:54:27.687689+08:00 3 [Note] InnoDB: Transactions deadlock detected, dumping detailed information.
+		2020-05-21T16:54:27.687728+08:00 3 [Note] InnoDB: 
+		*** (1) TRANSACTION:
 
-TRANSACTION 166084117, ACTIVE 4 sec setting auto-inc lock
-mysql tables in use 1, locked 1
-LOCK WAIT 4 lock struct(s), heap size 1136, 1 row lock(s), undo log entries 2
-MySQL thread id 4, OS thread handle 140194130835200, query id 42 localhost root update
-replace INTO `t_new` (`id`, `c`, `d`) VALUES (500001, '500001', '500001')
-2020-05-21T16:54:27.687791+08:00 3 [Note] InnoDB: *** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+		TRANSACTION 166084117, ACTIVE 4 sec setting auto-inc lock
+		mysql tables in use 1, locked 1
+		LOCK WAIT 4 lock struct(s), heap size 1136, 1 row lock(s), undo log entries 2
+		MySQL thread id 4, OS thread handle 140194130835200, query id 42 localhost root update
+		replace INTO `t_new` (`id`, `c`, `d`) VALUES (500001, '500001', '500001')
+		2020-05-21T16:54:27.687791+08:00 3 [Note] InnoDB: *** (1) WAITING FOR THIS LOCK TO BE GRANTED:
 
-TABLE LOCK table `sbtest`.`t_new` trx id 166084117 lock mode AUTO-INC waiting
-2020-05-21T16:54:27.687816+08:00 3 [Note] InnoDB: *** (2) TRANSACTION:
+		TABLE LOCK table `sbtest`.`t_new` trx id 166084117 lock mode AUTO-INC waiting
+		2020-05-21T16:54:27.687816+08:00 3 [Note] InnoDB: *** (2) TRANSACTION:
 
-TRANSACTION 166084112, ACTIVE 6 sec fetching rows
-mysql tables in use 2, locked 2
-1173 lock struct(s), heap size 172240, 500001 row lock(s), undo log entries 500000
-MySQL thread id 3, OS thread handle 140194131363584, query id 40 localhost root Sending data
-INSERT LOW_PRIORITY IGNORE INTO `t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE
-2020-05-21T16:54:27.687845+08:00 3 [Note] InnoDB: *** (2) HOLDS THE LOCK(S):
+		TRANSACTION 166084112, ACTIVE 6 sec fetching rows
+		mysql tables in use 2, locked 2
+		1173 lock struct(s), heap size 172240, 500001 row lock(s), undo log entries 500000
+		MySQL thread id 3, OS thread handle 140194131363584, query id 40 localhost root Sending data
+		INSERT LOW_PRIORITY IGNORE INTO `t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE
+		2020-05-21T16:54:27.687845+08:00 3 [Note] InnoDB: *** (2) HOLDS THE LOCK(S):
 
-TABLE LOCK table `sbtest`.`t_new` trx id 166084112 lock mode AUTO-INC
-2020-05-21T16:54:27.687861+08:00 3 [Note] InnoDB: *** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+		TABLE LOCK table `sbtest`.`t_new` trx id 166084112 lock mode AUTO-INC
+		2020-05-21T16:54:27.687861+08:00 3 [Note] InnoDB: *** (2) WAITING FOR THIS LOCK TO BE GRANTED:
 
-RECORD LOCKS space id 296 page no 1840 n bits 384 index PRIMARY of table `sbtest`.`t` trx id 166084112 lock mode S locks rec but not gap waiting
+		RECORD LOCKS space id 296 page no 1840 n bits 384 index PRIMARY of table `sbtest`.`t` trx id 166084112 lock mode S locks rec but not gap waiting
 
-Record lock, heap no 312 PHYSICAL RECORD: n_fields 5; compact format; info bits 0
- 0: len 8; hex 800000000007a121; asc        !;;  7a121 从16进制转换为10进制,得到的值为 500001
- 1: len 6; hex 000009e63e15; asc     > ;;
- 2: len 7; hex b3000002960110; asc        ;;
- 3: len 4; hex 8007a121; asc    !;;
- 4: len 4; hex 8007a121; asc    !;;
+		Record lock, heap no 312 PHYSICAL RECORD: n_fields 5; compact format; info bits 0
+		 0: len 8; hex 800000000007a121; asc        !;;  7a121 从16进制转换为10进制,得到的值为 500001
+		 1: len 6; hex 000009e63e15; asc     > ;;
+		 2: len 7; hex b3000002960110; asc        ;;
+		 3: len 4; hex 8007a121; asc    !;;
+		 4: len 4; hex 8007a121; asc    !;;
 
-2020-05-21T16:54:27.688082+08:00 3 [Note] InnoDB: *** WE ROLL BACK TRANSACTION (1)
+		2020-05-21T16:54:27.688082+08:00 3 [Note] InnoDB: *** WE ROLL BACK TRANSACTION (1)
 
-session A               session B 
-TRANSACTION 166084112   TRANSACTION 166084117
-持有的锁: 表t_new`: AUTO-INC
+		session A               session B 
+		TRANSACTION 166084112   TRANSACTION 166084117
+		持有的锁: 表t_new`: AUTO-INC
 
-						持有的锁: 表t: primary: record lock: id=500001
-						在等待的锁: 表t_new: AUTO-INC
+								持有的锁: 表t: primary: record lock: id=500001
+								在等待的锁: 表t_new: AUTO-INC
 
-在等待的锁: 表t: primary: record lock: id=500001
+		在等待的锁: 表t: primary: record lock: id=500001
 
 
 
 2.3 环境3 --innodb_autoinc_lock_mode=2, 事务隔离级别为RC读已提交
- select version();
- show global variables like '%innodb_autoinc_lock_mode%';
- show global variables like '%isolation%';
+
+	 select version();
+	 show global variables like '%innodb_autoinc_lock_mode%';
+	 show global variables like '%isolation%';
  
 	root@mysqldb 18:57:  [(none)]>  select version();
 	+------------+
@@ -373,9 +374,7 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	没有遇到死锁.
 	
 2.4 环境4 --innodb_autoinc_lock_mode=2, 事务隔离级别为RR可重复读
- select version();
- show global variables like '%innodb_autoinc_lock_mode%';
- show global variables like '%isolation%';
+
   
 	root@mysqldb 18:57:  [(none)]>  select version();
 	+------------+
@@ -406,6 +405,7 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	事务1(重建表的语句的批量迁移语句)                  事务2(业务的插入语句)
 		
 	begin;	                                           begin;
+	
 	INSERT LOW_PRIORITY IGNORE INTO `t_new` (`id`, `c`, `d`) SELECT `id`, `c`, `d` from t WHERE ((`id` >= '1')) AND ((`id` <= '500000')) LOCK IN SHARE MODE;
 
 
@@ -420,12 +420,14 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	没有遇到死锁.
 	
 
-3.1 环境1
+3.1 环境1 --innodb_autoinc_lock_mode=1, 事务隔离级别为RC读已提交
+
 	show global variables like '%innodb_autoinc_lock_mode%';
 	 select version();
 	 select @@global.TRANSACTION_isolation;
 	 select @@session.TRANSACTION_isolation;
-	root@mysqldb 14:37:  [db3]> show global variables like '%innodb_autoinc_lock_mode%';
+	 
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -433,7 +435,7 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	+--------------------------+-------+
 	1 row in set (0.22 sec)
 
-	root@mysqldb 14:20:  [db3]> select version();
+	mysql> select version();
 	+-----------+
 	| version() |
 	+-----------+
@@ -441,7 +443,7 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	+-----------+
 	1 row in set (0.09 sec)
 
-	root@mysqldb 14:20:  [db3]> select @@global.TRANSACTION_isolation;
+	mysql> select @@global.TRANSACTION_isolation;
 	+--------------------------------+
 	| @@global.TRANSACTION_isolation |
 	+--------------------------------+
@@ -449,7 +451,7 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	+--------------------------------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 14:21:  [db3]> select @@session.TRANSACTION_isolation;
+	mysql> select @@session.TRANSACTION_isolation;
 	+---------------------------------+
 	| @@session.TRANSACTION_isolation |
 	+---------------------------------+
@@ -471,11 +473,10 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	没有遇到死锁.															
  
 			
---------------------------------------以上的都经过测试了.
 
-2.2 环境2
-	
-	root@mysqldb 15:25:  [sbtest]> show global variables like '%innodb_autoinc_lock_mode%'
+3.2 环境2 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读	
+
+	mysql> show global variables like '%innodb_autoinc_lock_mode%'
 
 	+--------------------------+-------+
 	| Variable_name            | Value |
@@ -484,7 +485,7 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	+--------------------------+-------+
 	1 row in set (0.01 sec)
 
-	root@mysqldb 15:39:  [sbtest]>  select version();
+	mysql>  select version();
 	+-----------+
 	| version() |
 	+-----------+
@@ -492,7 +493,7 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	+-----------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 15:39:  [sbtest]>  select @@global.TRANSACTION_isolation;
+	mysql>  select @@global.TRANSACTION_isolation;
 	+--------------------------------+
 	| @@global.TRANSACTION_isolation |
 	+--------------------------------+
@@ -500,7 +501,7 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	+--------------------------------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 15:39:  [sbtest]>  select @@session.TRANSACTION_isolation;
+	mysql>  select @@session.TRANSACTION_isolation;
 	+---------------------------------+
 	| @@session.TRANSACTION_isolation |
 	+---------------------------------+
@@ -519,7 +520,7 @@ TRANSACTION 166084112   TRANSACTION 166084117
 															
 	INSERT INTO `t` (`c`, `d`) VALUES ('600001', '600001');
 
-	root@mysqldb 14:55:  [db3]> select * from t order by id desc limit 1;
+	mysql> select * from t order by id desc limit 1;
 	+--------+--------+--------+
 	| id     | c      | d      |
 	+--------+--------+--------+
@@ -529,15 +530,18 @@ TRANSACTION 166084112   TRANSACTION 166084117
 	
 	
 3. 小结
+
 	1. 事务回滚, 导致自增ID不是连续的
-	2. 在 MySQL 5.7.22 和 MySQL 8.0.18环境下, 事务隔离级别为RC, 使用pt-osc批量迁移数据+通过触发器迁移增量数据在参数 innodb_autoinc_lock_mode=2 下是会产生死锁, 不过不是基于自增锁模式的死锁, 而是基于主键行锁模式的死锁
+	
+	2. 在 MySQL 5.7.22 和 MySQL 8.0.19环境下, 事务隔离级别为RC, 使用pt-osc批量迁移数据+通过触发器迁移增量数据在参数 innodb_autoinc_lock_mode=2 下是会产生死锁, 不过不是基于自增锁模式的死锁, 而是基于主键行锁模式的死锁
+	
 	3. 在 MySQL 5.7.22环境下, 事务隔离级别为RC或者RR, 使用pt-osc批量迁移数据+通过触发器迁移增量数据在参数 innodb_autoinc_lock_mode=1 下是会产生死锁, 是基于自增锁模式的死锁
 			
-https://www.cnblogs.com/JiangLe/p/6362770.html  MySQL innodb_autoinc_lock_mode 详解
 
-39：自增主键不是连续的原因-自增主键为什么不是连续的？
-
-
+4. 相关参考	
+		
+	https://www.cnblogs.com/JiangLe/p/6362770.html  MySQL innodb_autoinc_lock_mode 详解
+	39：自增主键不是连续的原因-自增主键为什么不是连续的？
 
 
 思考：插入auto_increment字段的值指定ID和不指定ID的区别
