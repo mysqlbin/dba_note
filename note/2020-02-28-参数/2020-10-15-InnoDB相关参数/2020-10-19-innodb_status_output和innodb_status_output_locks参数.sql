@@ -14,11 +14,14 @@ innodb_status_output_locks
 	默认为关闭状态
 	set global innodb_status_output_locks=ON;
 	https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_status_output_locks
-
+	
+	
+	
 
 其它相关参考
 	https://blog.csdn.net/hangxing_2015/article/details/52586335  InnoDB monitor被莫名开启的问题分析
 	https://www.jianshu.com/p/21c8510f2217      Innodb: 自动开启打印show engine status到err日志
+	https://www.cnblogs.com/wangdong/p/9235249.html  查看锁信息（开启InnoDB监控）
 	
 小结
 	在排查问题的时候，当需要 show engine innodb status的定期信息，可以把 innodb_status_output、innodb_status_output_locks 这两个参数开启。
@@ -41,7 +44,7 @@ InnoDB监控相关的两个参数
     Lock Monitor开启关闭方法如下：
 		注意开启前必须先开启innodb_status_output，而关闭时只需要直接关闭innodb_status_output_locks，如果关闭了innodb_status_output，那么Standard Monitor也会被一同关闭。
 
-    	set GLOBALinnodb_status_output=ON;
+    	set GLOBAL innodb_status_output=ON;
 		
     	set GLOBAL innodb_status_output_locks=ON;
 
@@ -60,7 +63,7 @@ InnoDB监控相关的两个参数
 			TRANSACTIONS
 			------------
 			Trx id counter 281474977958482
-			Purge done for trx's n:o < 281474977958481 undo n:o < 0 state: running but idle
+			Purge done for trxs n:o < 281474977958481 undo n:o < 0 state: running but idle
 			History list length 43
 			LIST OF TRANSACTIONS FOR EACH SESSION:
 			---TRANSACTION 421674540919072, not started

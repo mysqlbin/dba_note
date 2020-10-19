@@ -41,7 +41,7 @@
 		参考笔记：《23-从库的SQL线程.sql》
 		解决这种延迟的方式：
 			1. 从库不需要开启log_slave_updates参数
-			2. innodb_flush_log_at_trx_commit 设置为2
+			2. innodb_flush_log_at_trx_commit 可以设置为2
 			3. 启用并行复制 
 		
 			参数						配置

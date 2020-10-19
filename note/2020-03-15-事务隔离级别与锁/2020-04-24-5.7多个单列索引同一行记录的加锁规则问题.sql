@@ -101,9 +101,7 @@
 			  trx_is_read_only: 0
 	trx_autocommit_non_locking: 0
 	2 rows in set (0.00 sec)
-
-	ERROR: 
-	No query specified
+	
 
 	mysql> select * from information_schema.innodb_locks\G;
 	*************************** 1. row ***************************
@@ -130,8 +128,6 @@
 	  lock_data: 1  --被加锁的 row data ， ID = 1 这行记录
 	2 rows in set, 1 warning (0.00 sec)
 
-	ERROR: 
-	No query specified
 
 	mysql> select * from information_schema.innodb_lock_waits\G;
 	*************************** 1. row ***************************
@@ -141,8 +137,6 @@
 	 blocking_lock_id: 5244524:2070:3:2
 	1 row in set, 1 warning (0.00 sec)
 
-	ERROR: 
-	No query specified
 
 	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 	+--------------+-------------+-----------------------------------------+-------------------+--------------------+
@@ -226,8 +220,6 @@
 	trx_autocommit_non_locking: 0
 	2 rows in set (0.00 sec)
 
-	ERROR: 
-	No query specified
 
 	mysql> select * from information_schema.innodb_locks\G;
 	*************************** 1. row ***************************
@@ -255,7 +247,6 @@
 	2 rows in set, 1 warning (0.00 sec)
 
 
-
 	mysql> select * from information_schema.innodb_lock_waits\G;
 	*************************** 1. row ***************************
 	requesting_trx_id: 5244530
@@ -265,7 +256,6 @@
 	1 row in set, 1 warning (0.00 sec)
 
 
-
 	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 	+--------------+-------------+-----------------------------------------+-------------------+--------------------+
 	| locked_index | locked_type | waiting_query                           | waiting_lock_mode | blocking_lock_mode |
@@ -273,7 +263,6 @@
 	| PRIMARY      | RECORD      | UPDATE t1 SET status = 5 WHERE status=0 | X                 | X                  |
 	+--------------+-------------+-----------------------------------------+-------------------+--------------------+
 	1 row in set, 3 warnings (0.00 sec)
-
 
 
 	session A "select * from t1 where order_no='123456' for update; " 语句的加锁范围：
