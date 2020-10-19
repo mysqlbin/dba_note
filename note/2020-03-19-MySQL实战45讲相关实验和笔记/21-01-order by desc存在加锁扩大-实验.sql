@@ -101,7 +101,9 @@
 	加锁范围: primary: gap lock: (10,15) + primary: next-key lock: (5,10] + primary: next-key lock: (0,5]
 	如果是普通索引c, 加锁范围: c: gap lock: (10,15) + c: next-key lock: (5,10] + c: next-key lock: (0,5]
 	
+	
 4.1.4 唯一索引范围非等值查询(不等号条件里的等值查询)--没有order by desc
+
 	起点降级, 尾点正常
 	
 	session A					session A		
@@ -185,6 +187,7 @@
 		5 rows in set (0.00 sec)
 
 4.2.6 非唯一索引范围等值查询--order by desc --这个例子不好理解
+	
 	起点降级, 尾点延伸
 	mysql> select c,id from t order by c asc;
 	+------+----+
@@ -224,14 +227,11 @@
 	| ENGINE_LOCK_ID                          | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE              | LOCK_STATUS | LOCK_DATA |
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
 	| 139859108160672:1303:139859033405624    |                869665 |      2056 | t           | NULL       | TABLE     | IX                     | GRANTED     | NULL      |
-
 	| 139859108160672:246:5:4:139859033402584 |                869665 |      2056 | t           | c          | RECORD    | X,GAP,INSERT_INTENTION | WAITING     | 10, 10    |
 
 	| 139859108158928:1303:139859033393640    |       421334084869584 |      2054 | t           | NULL       | TABLE     | IS                     | GRANTED     | NULL      |
 	| 139859108158928:246:5:7:139859033390712 |       421334084869584 |      2054 | t           | c          | RECORD    | S,GAP                  | GRANTED     | 25, 25    |
-
 	| 139859108158928:246:5:4:139859033391056 |       421334084869584 |      2054 | t           | c          | RECORD    | S                      | GRANTED     | 10, 10    |
-
 	| 139859108158928:246:5:5:139859033391056 |       421334084869584 |      2054 | t           | c          | RECORD    | S                      | GRANTED     | 15, 15    |
 	| 139859108158928:246:5:6:139859033391056 |       421334084869584 |      2054 | t           | c          | RECORD    | S                      | GRANTED     | 20, 20    |
 	| 139859108158928:246:4:5:139859033391400 |       421334084869584 |      2054 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP          | GRANTED     | 15        |
@@ -239,7 +239,7 @@
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
 	9 rows in set (0.00 sec)
 
-	root@mysqldb 18:23:  [(none)]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 	+--------------+-------------+-----------------------------+------------------------+--------------------+
 	| locked_index | locked_type | waiting_query               | waiting_lock_mode      | blocking_lock_mode |
 	+--------------+-------------+-----------------------------+------------------------+--------------------+
@@ -249,6 +249,7 @@
 
 
 4.2.6 非唯一索引范围等值查询--没有order by desc
+	
 	起点降级, 尾点延伸，跟 8.0.18 之前的 唯一索引范围 bug 一样。
 
 	mysql> select c,id from t order by c asc;
@@ -299,7 +300,7 @@
 		6 rows in set (0.00 sec)
 	
 	T1
-		root@mysqldb 21:44:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 		+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
 		| ENGINE_LOCK_ID                          | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE              | LOCK_STATUS | LOCK_DATA |
 		+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
@@ -314,7 +315,7 @@
 		+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
 		8 rows in set (0.00 sec)
 
-		root@mysqldb 21:44:  [(none)]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 		+--------------+-------------+--------------------------------+------------------------+--------------------+
 		| locked_index | locked_type | waiting_query                  | waiting_lock_mode      | blocking_lock_mode |
 		+--------------+-------------+--------------------------------+------------------------+--------------------+
@@ -324,7 +325,7 @@
 
 
 	T2
-		root@mysqldb 21:44:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 		+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 		| ENGINE_LOCK_ID                          | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
 		+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
@@ -343,7 +344,7 @@
 		+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 		8 rows in set (0.00 sec)
 
-		root@mysqldb 21:49:  [(none)]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 		+--------------+-------------+-------------------------------+-------------------+--------------------+
 		| locked_index | locked_type | waiting_query                 | waiting_lock_mode | blocking_lock_mode |
 		+--------------+-------------+-------------------------------+-------------------+--------------------+

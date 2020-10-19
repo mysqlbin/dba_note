@@ -7,13 +7,13 @@
 
 1. set-gtid-purged=AUTO 
 
-	shell> /usr/bin/mysqldump -uroot -p$--single-transaction --master-data=2 -R -E -B  niuniuh5_db  > niuniuh5_db_20200310_185007.dump
+	shell> /usr/bin/mysqldump -uroot -p$ --single-transaction --master-data=2 -R -E -B  aiuaiuh8_db  > aiuaiuh8_db_20200310_185007.dump
 
 
 	shell> head -40 niuniu_db_20200310_185007.dump
 	-- MySQL dump 10.13  Distrib 5.7.26, for Linux (x86_64)
 	--
-	-- Host: localhost    Database: niuniuh5_db
+	-- Host: localhost    Database: aiuaiuh8_db
 	-- ------------------------------------------------------
 	-- Server version	5.7.26-log
 
@@ -44,23 +44,23 @@
 	-- CHANGE MASTER TO MASTER_LOG_FILE='mysql-bin.000233', MASTER_LOG_POS=314582450;
 
 	--
-	-- Current Database: `niuniuh5_db`
+	-- Current Database: `aiuaiuh8_db`
 	--
 
-	CREATE DATABASE /*!32312 IF NOT EXISTS*/ `niuniuh5_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+	CREATE DATABASE /*!32312 IF NOT EXISTS*/ `aiuaiuh8_db` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
 
-	USE `niuniuh5_db`;
+	USE `aiuaiuh8_db`;
 
 
 2. set-gtid-purged=OFF 
 
-	shell> /usr/bin/mysqldump -uroot -p${Password} --single-transaction --master-data=2 --set-gtid-purged=OFF -B niuniuh5_db --tables table_web_clubmemberproxy table_clubmemberAppLine |gzip  >  ${BAK_PATH}niuniuh5_db_2tables_${DATE}.dump.gz
+	shell> /usr/bin/mysqldump -uroot -p${Password} --single-transaction --master-data=2 --set-gtid-purged=OFF -B aiuaiuh8_db --tables table_web_clubmemberproxy table_clubmemberAppLine |gzip  >  ${BAK_PATH}aiuaiuh8_db_2tables_${DATE}.dump.gz
 
 
-	shell> head -30 niuniuh5_db_2tables_20200314_060001.dump
+	shell> head -30 aiuaiuh8_db_2tables_20200314_060001.dump
 	-- MySQL dump 10.13  Distrib 5.7.26, for Linux (x86_64)
 	--
-	-- Host: localhost    Database: niuniuh5_db
+	-- Host: localhost    Database: aiuaiuh8_db
 	-- ------------------------------------------------------
 	-- Server version	5.7.26-log
 

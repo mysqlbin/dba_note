@@ -65,430 +65,417 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 
 
 4.1.1 唯一索引等值查询间隙锁
-CREATE TABLE `t` (
-  `id` int(11) NOT NULL,
-  `c` int(11) DEFAULT NULL,
-  `d` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `c` (`c`)
-) ENGINE=InnoDB;
-insert into t values(0,0,0),(5,5,5),(10,10,10),(15,15,15),(20,20,20),(25,25,25);
+	CREATE TABLE `t` (
+	  `id` int(11) NOT NULL,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `c` (`c`)
+	) ENGINE=InnoDB;
+	insert into t values(0,0,0),(5,5,5),(10,10,10),(15,15,15),(20,20,20),(25,25,25);
 
 
-session A                                       session B                                       session C
- begin;
-update t set d=d+1 where id=7;
-												insert into t values(6,6,6); 
-												(Blocked)
-																						 T1 
-																						 
-												insert into t values(4,4,4);
-												(Query OK)
-												
-												insert into t values(8,8,8); 
-												(Blocked)
-																						update t set d=d+1 where id=10;
-																						(Query OK)
-																						
+	session A                                       session B                                       session C
+	 begin;
+	update t set d=d+1 where id=7;
+													insert into t values(6,6,6); 
+													(Blocked)
+																							 T1 
+																							 
+													insert into t values(4,4,4);
+													(Query OK)
+													
+													insert into t values(8,8,8); 
+													(Blocked)
+																							update t set d=d+1 where id=10;
+																							(Query OK)
+																							
 
-T1
-mysql> select * from information_schema.innodb_locks\G;
-*************************** 1. row ***************************
-    lock_id: 276792809:2081:3:4
-lock_trx_id: 276792809
-  lock_mode: X,GAP
-  lock_type: RECORD
- lock_table: `audit_db`.`t`
- lock_index: PRIMARY
- lock_space: 2081
-  lock_page: 3
-   lock_rec: 4
-  lock_data: 10
-  
-*************************** 2. row ***************************
-    lock_id: 276792807:2081:3:4
-lock_trx_id: 276792807
-  lock_mode: X,GAP
-  lock_type: RECORD
- lock_table: `audit_db`.`t`
- lock_index: PRIMARY
- lock_space: 2081
-  lock_page: 3
-   lock_rec: 4
-  lock_data: 10
-2 rows in set, 1 warning (0.00 sec)
+	T1
+	mysql> select * from information_schema.innodb_locks\G;
+	*************************** 1. row ***************************
+		lock_id: 276792809:2081:3:4
+	lock_trx_id: 276792809
+	  lock_mode: X,GAP
+	  lock_type: RECORD
+	 lock_table: `audit_db`.`t`
+	 lock_index: PRIMARY
+	 lock_space: 2081
+	  lock_page: 3
+	   lock_rec: 4
+	  lock_data: 10
+	  
+	*************************** 2. row ***************************
+		lock_id: 276792807:2081:3:4
+	lock_trx_id: 276792807
+	  lock_mode: X,GAP
+	  lock_type: RECORD
+	 lock_table: `audit_db`.`t`
+	 lock_index: PRIMARY
+	 lock_space: 2081
+	  lock_page: 3
+	   lock_rec: 4
+	  lock_data: 10
+	2 rows in set, 1 warning (0.00 sec)
 
-ERROR: 
-No query specified
 
-mysql> select * from information_schema.innodb_lock_waits\G;
-*************************** 1. row ***************************
-requesting_trx_id: 276792809
-requested_lock_id: 276792809:2081:3:4
-  blocking_trx_id: 276792807
- blocking_lock_id: 276792807:2081:3:4
-1 row in set, 1 warning (0.00 sec)
+	mysql> select * from information_schema.innodb_lock_waits\G;
+	*************************** 1. row ***************************
+	requesting_trx_id: 276792809
+	requested_lock_id: 276792809:2081:3:4
+	  blocking_trx_id: 276792807
+	 blocking_lock_id: 276792807:2081:3:4
+	1 row in set, 1 warning (0.00 sec)
 
-ERROR: 
-No query specified
-
-mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
-+--------------+-------------+-----------------------------+-------------------+--------------------+
-| locked_index | locked_type | waiting_query               | waiting_lock_mode | blocking_lock_mode |
-+--------------+-------------+-----------------------------+-------------------+--------------------+
-| PRIMARY      | RECORD      | insert into t values(6,6,6) | X,GAP             | X,GAP              |
-+--------------+-------------+-----------------------------+-------------------+--------------------+
-1 row in set, 3 warnings (0.00 sec)
+	
+	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+	+--------------+-------------+-----------------------------+-------------------+--------------------+
+	| locked_index | locked_type | waiting_query               | waiting_lock_mode | blocking_lock_mode |
+	+--------------+-------------+-----------------------------+-------------------+--------------------+
+	| PRIMARY      | RECORD      | insert into t values(6,6,6) | X,GAP             | X,GAP              |
+	+--------------+-------------+-----------------------------+-------------------+--------------------+
+	1 row in set, 3 warnings (0.00 sec)
 
 
 	
 4.1.2 主键索引范围锁																								
-session A                                  session B                session C                     session D                                                                                                   
-begin;
-select * from t where id>=10 and id<11 for update;
+	session A                                  session B                session C                     session D                                                                                                   
+	begin;
+	select * from t where id>=10 and id<11 for update;
 
-											#insert into t values(8,8,8);
-											(Query OK)
-											insert into t values(11,11,11);
-											(Blocked)
-											
-																									T1
-																	update t set d=d+1 where id=10;
-																	(Blocked)
-																																																																										update t set d=d+1 where id=15;
-																																																																										(Blocked)
-																																																																										
+												#insert into t values(8,8,8);
+												(Query OK)
+												insert into t values(11,11,11);
+												(Blocked)
+												
+																										T1
+																		update t set d=d+1 where id=10;
+																		(Blocked)
+																																																																											update t set d=d+1 where id=15;
+																																																																											(Blocked)
+																																																																											
 
 
-T1
-	mysql> select * from information_schema.innodb_locks\G;
-	*************************** 1. row ***************************
-		lock_id: 276792781:2081:3:5
-	lock_trx_id: 276792781
-	  lock_mode: X,GAP
-	  lock_type: RECORD
-	 lock_table: `audit_db`.`t`
-	 lock_index: PRIMARY
-	 lock_space: 2081
-	  lock_page: 3
-	   lock_rec: 5
-	  lock_data: 15
-	*************************** 2. row ***************************
-		lock_id: 276792778:2081:3:5
-	lock_trx_id: 276792778
-	  lock_mode: X
-	  lock_type: RECORD
-	 lock_table: `audit_db`.`t`
-	 lock_index: PRIMARY
-	 lock_space: 2081
-	  lock_page: 3
-	   lock_rec: 5
-	  lock_data: 15
-	2 rows in set, 1 warning (0.00 sec)
+	T1
+		mysql> select * from information_schema.innodb_locks\G;
+		*************************** 1. row ***************************
+			lock_id: 276792781:2081:3:5
+		lock_trx_id: 276792781
+		  lock_mode: X,GAP
+		  lock_type: RECORD
+		 lock_table: `audit_db`.`t`
+		 lock_index: PRIMARY
+		 lock_space: 2081
+		  lock_page: 3
+		   lock_rec: 5
+		  lock_data: 15
+		*************************** 2. row ***************************
+			lock_id: 276792778:2081:3:5
+		lock_trx_id: 276792778
+		  lock_mode: X
+		  lock_type: RECORD
+		 lock_table: `audit_db`.`t`
+		 lock_index: PRIMARY
+		 lock_space: 2081
+		  lock_page: 3
+		   lock_rec: 5
+		  lock_data: 15
+		2 rows in set, 1 warning (0.00 sec)
 
-	ERROR: 
-	No query specified
+		mysql> select * from information_schema.innodb_lock_waits\G;
+		*************************** 1. row ***************************
+		requesting_trx_id: 276792781
+		requested_lock_id: 276792781:2081:3:5
+		  blocking_trx_id: 276792778
+		 blocking_lock_id: 276792778:2081:3:5
+		1 row in set, 1 warning (0.00 sec)
 
-	mysql> select * from information_schema.innodb_lock_waits\G;
-	*************************** 1. row ***************************
-	requesting_trx_id: 276792781
-	requested_lock_id: 276792781:2081:3:5
-	  blocking_trx_id: 276792778
-	 blocking_lock_id: 276792778:2081:3:5
-	1 row in set, 1 warning (0.00 sec)
-
-	ERROR: 
-	No query specified
-
-	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
-	+--------------+-------------+--------------------------------+-------------------+--------------------+
-	| locked_index | locked_type | waiting_query                  | waiting_lock_mode | blocking_lock_mode |
-	+--------------+-------------+--------------------------------+-------------------+--------------------+
-	| PRIMARY      | RECORD      | insert into t values(11,11,11) | X,GAP             | X                  |
-	+--------------+-------------+--------------------------------+-------------------+--------------------+
-	1 row in set, 3 warnings (0.00 sec)
+		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+		+--------------+-------------+--------------------------------+-------------------+--------------------+
+		| locked_index | locked_type | waiting_query                  | waiting_lock_mode | blocking_lock_mode |
+		+--------------+-------------+--------------------------------+-------------------+--------------------+
+		| PRIMARY      | RECORD      | insert into t values(11,11,11) | X,GAP             | X                  |
+		+--------------+-------------+--------------------------------+-------------------+--------------------+
+		1 row in set, 3 warnings (0.00 sec)
 
 																																																										
 4.1.3 唯一索引范围 bug： 
 尾点延伸  
-session A                                        session B                                     session B                                                                                                                                                                        
-begin;
-select * from t where id>10 and id<=15 for update;
-+----+------+------+
-| id | c    | d    |
-+----+------+------+
-| 15 |   15 |   15 |
-+----+------+------+
-1 row in set (0.00 sec)
+	session A                                        session B                                     session B                                                                                                                                                                        
+	begin;
+	select * from t where id>10 and id<=15 for update;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	| 15 |   15 |   15 |
+	+----+------+------+
+	1 row in set (0.00 sec)
 
-												update t set d=d+1 where id=20;
-												（Blocked）  
-																								T1
-T1																											
-	mysql> select * from information_schema.innodb_locks\G;
-	*************************** 1. row ***************************
-		lock_id: 276792769:2081:3:6
-	lock_trx_id: 276792769
-	  lock_mode: X
-	  lock_type: RECORD
-	 lock_table: `audit_db`.`t`
-	 lock_index: PRIMARY
-	 lock_space: 2081
-	  lock_page: 3
-	   lock_rec: 6
-	  lock_data: 20
-	*************************** 2. row ***************************
-		lock_id: 276792766:2081:3:6
-	lock_trx_id: 276792766
-	  lock_mode: X
-	  lock_type: RECORD
-	 lock_table: `audit_db`.`t`
-	 lock_index: PRIMARY
-	 lock_space: 2081
-	  lock_page: 3
-	   lock_rec: 6
-	  lock_data: 20
-	2 rows in set, 1 warning (0.02 sec)
+													update t set d=d+1 where id=20;
+													（Blocked）  
+																									T1
+	T1																											
+		mysql> select * from information_schema.innodb_locks\G;
+		*************************** 1. row ***************************
+			lock_id: 276792769:2081:3:6
+		lock_trx_id: 276792769
+		  lock_mode: X
+		  lock_type: RECORD
+		 lock_table: `audit_db`.`t`
+		 lock_index: PRIMARY
+		 lock_space: 2081
+		  lock_page: 3
+		   lock_rec: 6
+		  lock_data: 20
+		*************************** 2. row ***************************
+			lock_id: 276792766:2081:3:6
+		lock_trx_id: 276792766
+		  lock_mode: X
+		  lock_type: RECORD
+		 lock_table: `audit_db`.`t`
+		 lock_index: PRIMARY
+		 lock_space: 2081
+		  lock_page: 3
+		   lock_rec: 6
+		  lock_data: 20
+		2 rows in set, 1 warning (0.02 sec)
 
-	ERROR: 
-	No query specified
+		ERROR: 
+		No query specified
 
-	mysql> select * from information_schema.innodb_lock_waits\G;
-	*************************** 1. row ***************************
-	requesting_trx_id: 276792769
-	requested_lock_id: 276792769:2081:3:6
-	  blocking_trx_id: 276792766
-	 blocking_lock_id: 276792766:2081:3:6
-	1 row in set, 1 warning (0.00 sec)
+		mysql> select * from information_schema.innodb_lock_waits\G;
+		*************************** 1. row ***************************
+		requesting_trx_id: 276792769
+		requested_lock_id: 276792769:2081:3:6
+		  blocking_trx_id: 276792766
+		 blocking_lock_id: 276792766:2081:3:6
+		1 row in set, 1 warning (0.00 sec)
 
-	ERROR: 
-	No query specified
+		ERROR: 
+		No query specified
 
-	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
-	+--------------+-------------+--------------------------------+-------------------+--------------------+
-	| locked_index | locked_type | waiting_query                  | waiting_lock_mode | blocking_lock_mode |
-	+--------------+-------------+--------------------------------+-------------------+--------------------+
-	| PRIMARY      | RECORD      | update t set d=d+1 where id=20 | X                 | X                  |
-	+--------------+-------------+--------------------------------+-------------------+--------------------+
-	1 row in set, 3 warnings (0.04 sec)
+		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+		+--------------+-------------+--------------------------------+-------------------+--------------------+
+		| locked_index | locked_type | waiting_query                  | waiting_lock_mode | blocking_lock_mode |
+		+--------------+-------------+--------------------------------+-------------------+--------------------+
+		| PRIMARY      | RECORD      | update t set d=d+1 where id=20 | X                 | X                  |
+		+--------------+-------------+--------------------------------+-------------------+--------------------+
+		1 row in set, 3 warnings (0.04 sec)
 
-													
+														
 
 4.2.1 非唯一索引等值锁
          覆盖索引，因为不需要访问主键索引，所以不对主键索引加锁    
- session A                                        session B                                       session C                             session D
- begin;
- select id from t where c=5 lock in share mode;
- 如果查询语句是 select id from t where c=5 lock in share mode; 呢？
+	 session A                                        session B                                       session C                             session D
+	 begin;
+	 select id from t where c=5 lock in share mode;
+	 如果查询语句是 select id from t where c=5 lock in share mode; 呢？
 
-                                                        update t set d=d+1 where id=5;
-                                                        (Query OK)
-																									insert into t values(7,7,7); 
-																									(Blocked)
-T1
-																																			insert into t values(2,2,2);
-																																			(Blocked)
+															update t set d=d+1 where id=5;
+															(Query OK)
+																										insert into t values(7,7,7); 
+																										(Blocked)
+	T1
+																																				insert into t values(2,2,2);
+																																				(Blocked)
 
-T2
-
-
-T1
-	mysql> select * from information_schema.innodb_locks\G;
-	*************************** 1. row ***************************
-		lock_id: 276792871:2081:4:4
-	lock_trx_id: 276792871
-	  lock_mode: X,GAP
-	  lock_type: RECORD
-	 lock_table: `audit_db`.`t`
-	 lock_index: c
-	 lock_space: 2081
-	  lock_page: 4
-	   lock_rec: 4
-	  lock_data: 10, 10
-	*************************** 2. row ***************************
-		lock_id: 421269807599696:2081:4:4
-	lock_trx_id: 421269807599696
-	  lock_mode: S,GAP
-	  lock_type: RECORD
-	 lock_table: `audit_db`.`t`
-	 lock_index: c
-	 lock_space: 2081
-	  lock_page: 4
-	   lock_rec: 4
-	  lock_data: 10, 10
-	2 rows in set, 1 warning (0.00 sec)
-
-	ERROR: 
-	No query specified
-
-	mysql> select * from information_schema.innodb_lock_waits\G;
-	*************************** 1. row ***************************
-	requesting_trx_id: 276792871
-	requested_lock_id: 276792871:2081:4:4
-	  blocking_trx_id: 421269807599696
-	 blocking_lock_id: 421269807599696:2081:4:4
-	1 row in set, 1 warning (0.00 sec)
-
-	ERROR: 
-	No query specified
-
-	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
-	+--------------+-------------+-----------------------------+-------------------+--------------------+
-	| locked_index | locked_type | waiting_query               | waiting_lock_mode | blocking_lock_mode |
-	+--------------+-------------+-----------------------------+-------------------+--------------------+
-	| c            | RECORD      | insert into t values(7,7,7) | X,GAP             | S,GAP              |
-	+--------------+-------------+-----------------------------+-------------------+--------------------+
-	1 row in set, 3 warnings (0.00 sec)
+	T2
 
 
-T2
-	mysql> select * from information_schema.innodb_locks\G;
-	*************************** 1. row ***************************
-		lock_id: 276792874:2081:4:3
-	lock_trx_id: 276792874
-	  lock_mode: X,GAP
-	  lock_type: RECORD
-	 lock_table: `audit_db`.`t`
-	 lock_index: c
-	 lock_space: 2081
-	  lock_page: 4
-	   lock_rec: 3
-	  lock_data: 5, 5
-	  
-	*************************** 2. row ***************************
-		lock_id: 421269807599696:2081:4:3
-	lock_trx_id: 421269807599696
-	  lock_mode: S
-	  lock_type: RECORD
-	 lock_table: `audit_db`.`t`
-	 lock_index: c
-	 lock_space: 2081
-	  lock_page: 4
-	   lock_rec: 3
-	  lock_data: 5, 5
-	2 rows in set, 1 warning (0.00 sec)
+	T1
+		mysql> select * from information_schema.innodb_locks\G;
+		*************************** 1. row ***************************
+			lock_id: 276792871:2081:4:4
+		lock_trx_id: 276792871
+		  lock_mode: X,GAP
+		  lock_type: RECORD
+		 lock_table: `audit_db`.`t`
+		 lock_index: c
+		 lock_space: 2081
+		  lock_page: 4
+		   lock_rec: 4
+		  lock_data: 10, 10
+		*************************** 2. row ***************************
+			lock_id: 421269807599696:2081:4:4
+		lock_trx_id: 421269807599696
+		  lock_mode: S,GAP
+		  lock_type: RECORD
+		 lock_table: `audit_db`.`t`
+		 lock_index: c
+		 lock_space: 2081
+		  lock_page: 4
+		   lock_rec: 4
+		  lock_data: 10, 10
+		2 rows in set, 1 warning (0.00 sec)
 
-	ERROR: 
-	No query specified
 
-	mysql> select * from information_schema.innodb_lock_waits\G;
-	*************************** 1. row ***************************
-	requesting_trx_id: 276792874
-	requested_lock_id: 276792874:2081:4:3
-	  blocking_trx_id: 421269807599696
-	 blocking_lock_id: 421269807599696:2081:4:3
-	1 row in set, 1 warning (0.00 sec)
+		mysql> select * from information_schema.innodb_lock_waits\G;
+		*************************** 1. row ***************************
+		requesting_trx_id: 276792871
+		requested_lock_id: 276792871:2081:4:4
+		  blocking_trx_id: 421269807599696
+		 blocking_lock_id: 421269807599696:2081:4:4
+		1 row in set, 1 warning (0.00 sec)
 
-	ERROR: 
-	No query specified
 
-	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
-	+--------------+-------------+-----------------------------+-------------------+--------------------+
-	| locked_index | locked_type | waiting_query               | waiting_lock_mode | blocking_lock_mode |
-	+--------------+-------------+-----------------------------+-------------------+--------------------+
-	| c            | RECORD      | insert into t values(2,2,2) | X,GAP             | S                  |
-	+--------------+-------------+-----------------------------+-------------------+--------------------+
-	1 row in set, 3 warnings (0.00 sec)
+
+		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+		+--------------+-------------+-----------------------------+-------------------+--------------------+
+		| locked_index | locked_type | waiting_query               | waiting_lock_mode | blocking_lock_mode |
+		+--------------+-------------+-----------------------------+-------------------+--------------------+
+		| c            | RECORD      | insert into t values(7,7,7) | X,GAP             | S,GAP              |
+		+--------------+-------------+-----------------------------+-------------------+--------------------+
+		1 row in set, 3 warnings (0.00 sec)
+
+
+	T2
+		mysql> select * from information_schema.innodb_locks\G;
+		*************************** 1. row ***************************
+			lock_id: 276792874:2081:4:3
+		lock_trx_id: 276792874
+		  lock_mode: X,GAP
+		  lock_type: RECORD
+		 lock_table: `audit_db`.`t`
+		 lock_index: c
+		 lock_space: 2081
+		  lock_page: 4
+		   lock_rec: 3
+		  lock_data: 5, 5
+		  
+		*************************** 2. row ***************************
+			lock_id: 421269807599696:2081:4:3
+		lock_trx_id: 421269807599696
+		  lock_mode: S
+		  lock_type: RECORD
+		 lock_table: `audit_db`.`t`
+		 lock_index: c
+		 lock_space: 2081
+		  lock_page: 4
+		   lock_rec: 3
+		  lock_data: 5, 5
+		2 rows in set, 1 warning (0.00 sec)
+
+		ERROR: 
+		No query specified
+
+		mysql> select * from information_schema.innodb_lock_waits\G;
+		*************************** 1. row ***************************
+		requesting_trx_id: 276792874
+		requested_lock_id: 276792874:2081:4:3
+		  blocking_trx_id: 421269807599696
+		 blocking_lock_id: 421269807599696:2081:4:3
+		1 row in set, 1 warning (0.00 sec)
+
+		ERROR: 
+		No query specified
+
+		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+		+--------------+-------------+-----------------------------+-------------------+--------------------+
+		| locked_index | locked_type | waiting_query               | waiting_lock_mode | blocking_lock_mode |
+		+--------------+-------------+-----------------------------+-------------------+--------------------+
+		| c            | RECORD      | insert into t values(2,2,2) | X,GAP             | S                  |
+		+--------------+-------------+-----------------------------+-------------------+--------------------+
+		1 row in set, 3 warnings (0.00 sec)
 
 
 																																						
 4.2.5 非唯一索引上等值查询-Gap lock死锁： 
 
-session A                                                       session B                                      
-begin;
-select id from t where c=10 lock in share mode;
-                                                                update t set d=d+1 where c=10;
-                                                               （Blocked）
-insert into t values(8,8,8);
-（Blocked）
-                                                                 ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
+	session A                                                       session B                                      
+	begin;
+	select id from t where c=10 lock in share mode;
+																	update t set d=d+1 where c=10;
+																   （Blocked）
+	insert into t values(8,8,8);
+	（Blocked）
+																	 ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
 
-2019-08-14T23:40:20.146575+08:00 133 [Note] InnoDB: Transactions deadlock detected, dumping detailed information.
-2019-08-14T23:40:20.146692+08:00 133 [Note] InnoDB: 
-*** (1) TRANSACTION:
+	2019-08-14T23:40:20.146575+08:00 133 [Note] InnoDB: Transactions deadlock detected, dumping detailed information.
+	2019-08-14T23:40:20.146692+08:00 133 [Note] InnoDB: 
+	*** (1) TRANSACTION:
 
-TRANSACTION 281474976710744, ACTIVE 7 sec starting index read
-mysql tables in use 1, locked 1
-LOCK WAIT 2 lock struct(s), heap size 1136, 1 row lock(s)
-MySQL thread id 128, OS thread handle 140220117522176, query id 4048 192.168.0.54 root updating
-update t set d=d+1 where c=10
-2019-08-14T23:40:20.146768+08:00 133 [Note] InnoDB: *** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+	TRANSACTION 281474976710744, ACTIVE 7 sec starting index read
+	mysql tables in use 1, locked 1
+	LOCK WAIT 2 lock struct(s), heap size 1136, 1 row lock(s)
+	MySQL thread id 128, OS thread handle 140220117522176, query id 4048 192.168.0.54 root updating
+	update t set d=d+1 where c=10
+	2019-08-14T23:40:20.146768+08:00 133 [Note] InnoDB: *** (1) WAITING FOR THIS LOCK TO BE GRANTED:
 
-RECORD LOCKS space id 4383 page no 4 n bits 80 index c of table `db1`.`t` trx id 281474976710744 lock_mode X waiting
-Record lock, heap no 4 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
- 0: len 4; hex 8000000a; asc     ;;
- 1: len 4; hex 8000000a; asc     ;;
+	RECORD LOCKS space id 4383 page no 4 n bits 80 index c of table `db1`.`t` trx id 281474976710744 lock_mode X waiting
+	Record lock, heap no 4 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+	 0: len 4; hex 8000000a; asc     ;;
+	 1: len 4; hex 8000000a; asc     ;;
 
-2019-08-14T23:40:20.146837+08:00 133 [Note] InnoDB: *** (2) TRANSACTION:
+	2019-08-14T23:40:20.146837+08:00 133 [Note] InnoDB: *** (2) TRANSACTION:
 
-TRANSACTION 281474976710743, ACTIVE 27 sec inserting
-mysql tables in use 1, locked 1
-5 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1
-MySQL thread id 133, OS thread handle 140220113262336, query id 4049 192.168.0.54 root update
-insert into t values(8,8,8)
-2019-08-14T23:40:20.146859+08:00 133 [Note] InnoDB: *** (2) HOLDS THE LOCK(S):
+	TRANSACTION 281474976710743, ACTIVE 27 sec inserting
+	mysql tables in use 1, locked 1
+	5 lock struct(s), heap size 1136, 3 row lock(s), undo log entries 1
+	MySQL thread id 133, OS thread handle 140220113262336, query id 4049 192.168.0.54 root update
+	insert into t values(8,8,8)
+	2019-08-14T23:40:20.146859+08:00 133 [Note] InnoDB: *** (2) HOLDS THE LOCK(S):
 
-RECORD LOCKS space id 4383 page no 4 n bits 80 index c of table `db1`.`t` trx id 281474976710743 lock mode S
-Record lock, heap no 4 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
- 0: len 4; hex 8000000a; asc     ;;
- 1: len 4; hex 8000000a; asc     ;;
+	RECORD LOCKS space id 4383 page no 4 n bits 80 index c of table `db1`.`t` trx id 281474976710743 lock mode S
+	Record lock, heap no 4 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+	 0: len 4; hex 8000000a; asc     ;;
+	 1: len 4; hex 8000000a; asc     ;;
 
-2019-08-14T23:40:20.146911+08:00 133 [Note] InnoDB: *** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+	2019-08-14T23:40:20.146911+08:00 133 [Note] InnoDB: *** (2) WAITING FOR THIS LOCK TO BE GRANTED:
 
-RECORD LOCKS space id 4383 page no 4 n bits 80 index c of table `db1`.`t` trx id 281474976710743 lock_mode X locks gap before rec insert intention waiting
-Record lock, heap no 4 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
-
-
+	RECORD LOCKS space id 4383 page no 4 n bits 80 index c of table `db1`.`t` trx id 281474976710743 lock_mode X locks gap before rec insert intention waiting
+	Record lock, heap no 4 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
 
 
- 0: len 4; hex 8000000a; asc     ;;
- 1: len 4; hex 8000000a; asc     ;;
-
-2019-08-14T23:40:20.146972+08:00 133 [Note] InnoDB: *** WE ROLL BACK TRANSACTION (1)
 
 
-4.2.6
- 非唯一索引范围查询&order by
+	 0: len 4; hex 8000000a; asc     ;;
+	 1: len 4; hex 8000000a; asc     ;;
+
+	2019-08-14T23:40:20.146972+08:00 133 [Note] InnoDB: *** WE ROLL BACK TRANSACTION (1)
+
+
+4.2.6 非唯一索引范围查询&order by
+非唯一索引范围查询&order by
  
-session A									  session B									
-begin;
-select * from t where c>=15 and c<=20 order
-by c desc lock in share mode; 
+	session A									  session B									
+	begin;
+	select * from t where c>=15 and c<=20 order
+	by c desc lock in share mode; 
 
-											  insert into t values(6,6,6);
+												  insert into t values(6,6,6);
 
-由于是 order by c desc，第一个要定位的是索引 c 上 最右边 的c=20 的行，所以会加上间隙锁 c：gap lock: (20,25) 和 c: next-key lock (15,20]。
-在索引 c 上向左遍历，要扫描到 c=10 才停下来，所以 next-key lock 会加到 (5,10]，这正是阻塞 session B 的 insert 语句的原因。
-在扫描过程中，c=20、c=15、c=10 这三行都存在值，由于是 select *，所以会在主键 id 上加三个行锁。
+	由于是 order by c desc，第一个要定位的是索引 c 上 最右边 的c=20 的行，所以会加上间隙锁 c：gap lock: (20,25) 和 c: next-key lock (15,20]。
+	在索引 c 上向左遍历，要扫描到 c=10 才停下来，所以 next-key lock 会加到 (5,10]，这正是阻塞 session B 的 insert 语句的原因。
+	在扫描过程中，c=20、c=15、c=10 这三行都存在值，由于是 select *，所以会在主键 id 上加三个行锁。
 
 
-session A持有的锁：
-c：gap lock: (20,25) + c: next-key lock (15,20] + c: next-key lock (10,15] + c: next-key lock (5, 10]
-PRIMARY: record lock: [20] + PRIMARY: record lock: [15] + PRIMARY: record lock: [10]
- 
+	session A持有的锁：
+	c：gap lock: (20,25) + c: next-key lock (15,20] + c: next-key lock (10,15] + c: next-key lock (5, 10]
+	PRIMARY: record lock: [20] + PRIMARY: record lock: [15] + PRIMARY: record lock: [10]
+	 
 
-c:Next-Key Lock:((c=5,id=5) 到 (c=10,id=10)]  + c:Gap Lock:((c=10,id=10) 到 (c=15,id=15))
-PRIMARY: record lock: [10] + PRIMARY: record lock: [30] 即 RIMARY:X Lock:10 + PRIMARY:X Lock:30
+	c:Next-Key Lock:((c=5,id=5) 到 (c=10,id=10)]  + c:Gap Lock:((c=10,id=10) 到 (c=15,id=15))
+	PRIMARY: record lock: [10] + PRIMARY: record lock: [30] 即 RIMARY:X Lock:10 + PRIMARY:X Lock:30
 
-		 
-mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
-+--------------+-------------+-----------------------------+-------------------+--------------------+
-| locked_index | locked_type | waiting_query               | waiting_lock_mode | blocking_lock_mode |
-+--------------+-------------+-----------------------------+-------------------+--------------------+
-| c            | RECORD      | insert into t values(6,6,6) | X,GAP             | S                  |
-+--------------+-------------+-----------------------------+-------------------+--------------------+
-1 row in set, 3 warnings (0.05 sec)
-											  
----TRANSACTION 5711946, ACTIVE 5 sec inserting
-mysql tables in use 1, locked 1
-LOCK WAIT 2 lock struct(s), heap size 1136, 1 row lock(s), undo log entries 1
-MySQL thread id 22, OS thread handle 140048616134400, query id 113 env 192.168.1.27 root update
-insert into t values(6,6,6)
-------- TRX HAS BEEN WAITING 5 SEC FOR THIS LOCK TO BE GRANTED:
-RECORD LOCKS space id 119 page no 4 n bits 80 index c of table `zst`.`t` trx id 5711946 lock_mode X locks gap before rec insert intention waiting
-Record lock, heap no 4 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
- 0: len 4; hex 8000000a; asc     ;;
- 1: len 4; hex 8000000a; asc     ;;
+			 
+	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+	+--------------+-------------+-----------------------------+-------------------+--------------------+
+	| locked_index | locked_type | waiting_query               | waiting_lock_mode | blocking_lock_mode |
+	+--------------+-------------+-----------------------------+-------------------+--------------------+
+	| c            | RECORD      | insert into t values(6,6,6) | X,GAP             | S                  |
+	+--------------+-------------+-----------------------------+-------------------+--------------------+
+	1 row in set, 3 warnings (0.05 sec)
+												  
+	---TRANSACTION 5711946, ACTIVE 5 sec inserting
+	mysql tables in use 1, locked 1
+	LOCK WAIT 2 lock struct(s), heap size 1136, 1 row lock(s), undo log entries 1
+	MySQL thread id 22, OS thread handle 140048616134400, query id 113 env 192.168.1.27 root update
+	insert into t values(6,6,6)
+	------- TRX HAS BEEN WAITING 5 SEC FOR THIS LOCK TO BE GRANTED:
+	RECORD LOCKS space id 119 page no 4 n bits 80 index c of table `zst`.`t` trx id 5711946 lock_mode X locks gap before rec insert intention waiting
+	Record lock, heap no 4 PHYSICAL RECORD: n_fields 2; compact format; info bits 0
+	 0: len 4; hex 8000000a; asc     ;;
+	 1: len 4; hex 8000000a; asc     ;;
 
  
  

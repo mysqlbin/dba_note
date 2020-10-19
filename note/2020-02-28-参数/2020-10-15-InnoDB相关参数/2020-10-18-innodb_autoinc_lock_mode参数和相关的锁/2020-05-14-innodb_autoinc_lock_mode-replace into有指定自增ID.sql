@@ -10,7 +10,8 @@
 
 3. MySQL 8.0.19
 	3.1 环境1 --innodb_autoinc_lock_mode=1, 事务隔离级别为RC读已提交
-	3.2 环境2
+	3.2 环境2 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读	
+
 	
 4. 小结
 
@@ -423,9 +424,9 @@
 3.1 环境1 --innodb_autoinc_lock_mode=1, 事务隔离级别为RC读已提交
 
 	show global variables like '%innodb_autoinc_lock_mode%';
-	 select version();
-	 select @@global.TRANSACTION_isolation;
-	 select @@session.TRANSACTION_isolation;
+	select version();
+	select @@global.TRANSACTION_isolation;
+	select @@session.TRANSACTION_isolation;
 	 
 	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
@@ -468,10 +469,8 @@
 														replace INTO `t_new` (`id`, `c`, `d`) VALUES ('500001', '500001', '500001');   --插入新表
 														commit;
 														
-	(query OK)
-																											
-	没有遇到死锁.															
- 
+														
+	
 			
 
 3.2 环境2 --innodb_autoinc_lock_mode=1, 事务隔离级别为RR可重复读	

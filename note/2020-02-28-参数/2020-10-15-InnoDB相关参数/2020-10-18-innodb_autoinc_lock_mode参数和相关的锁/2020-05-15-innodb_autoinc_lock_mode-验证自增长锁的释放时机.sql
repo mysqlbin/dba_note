@@ -219,7 +219,7 @@
 
 2.2 环境2 --innodb_autoinc_lock_mode=1, 事务隔离级别为RC读已提交
 	
-	root@mysqldb 18:06:  [(none)]> show global variables like '%innodb_autoinc_lock_mode%';
+	mysql> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
 	| Variable_name            | Value |
 	+--------------------------+-------+
@@ -227,7 +227,7 @@
 	+--------------------------+-------+
 	1 row in set (0.00 sec)
 
-	root@mysqldb 18:06:  [(none)]> show global variables like '%isolation%';
+	mysql> show global variables like '%isolation%';
 	+-----------------------+----------------+
 	| Variable_name         | Value          |
 	+-----------------------+----------------+
@@ -236,7 +236,7 @@
 	+-----------------------+----------------+
 	2 rows in set (0.00 sec)
 
-	root@mysqldb 18:06:  [sbtest]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="t";
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="t";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
@@ -244,15 +244,14 @@
 	|         500001 |
 	+----------------+
 	2 rows in set (0.00 sec)
-
-	root@mysqldb 18:06:  [sbtest]> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
+	
+	mysql> SELECT AUTO_INCREMENT FROM information_schema.tables WHERE table_name="_t_new";
 	+----------------+
 	| AUTO_INCREMENT |
 	+----------------+
 	|              1 |
 	+----------------+
 	1 row in set (0.00 sec)
-
 
 
 	session A             session B

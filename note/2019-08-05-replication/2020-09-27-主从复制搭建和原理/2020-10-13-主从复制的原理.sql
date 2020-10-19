@@ -52,8 +52,10 @@
 			sync_relay_log				默认，10000
 			sync_relay_log_info			默认，10000
 			
-			
-		
+	
+	可以利用IO_Thread、SQL_thread来做各种数据的恢复操作。
+	
+	
 2. 主从复制原理
 	
 	1、主库上有数据改变然后写入 binlog event, dump 线程 读取 event 和 发送 event 给从库的 IO 线程（master会为每个slave创建一个dump线程，在主库执行 show processlist；就可以看到）

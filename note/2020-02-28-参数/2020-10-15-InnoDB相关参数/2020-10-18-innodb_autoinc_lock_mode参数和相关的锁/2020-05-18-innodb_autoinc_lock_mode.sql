@@ -1,14 +1,5 @@
 
 
-
-对所有的insert-like 自增长值的产生使用互斥量机制完成，性能最高，并发插入可能导致自增值不连续，可能会导致Statement 的 Replication 出现不一致，使用该模式，需要用 Row Replication的模式。
-
-缺点：只能保证唯一，不能保证递增和连续。持有、读取和修改、释放、执行SQL
-
-建议修改成2，对于批量的insert可以提升性能
-
-
-
 1. 初始化表结构、数据、环境 
 2. innodb_autoinc_lock_mode=2
 3. innodb_autoinc_lock_mode=1
@@ -119,8 +110,10 @@
 4. 小结
 
 	innodb_autoinc_lock_mode=1 和 innodb_autoinc_lock_mode=2 ：
+	
 		通过 insert into t2 select t1 插入速度一样，只是说当innodb_autoinc_lock_mode=2，自增锁是在申请完成之后就释放，不需要等语句执行完成才释放自增锁，释放自增锁之后不会阻塞对表的插入语句，从而提升了性能。
-		
+	
+	使用场景：类似于通过pt-osc工具做在线DDL时，当innodb_autoinc_lock_mode=2， 可以大大降低死锁发生的概率。
 		
 
 	

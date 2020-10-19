@@ -39,7 +39,7 @@
 			select @@session.transaction_isolation;
 			select version();
 			
-			root@mysqldb 15:25:  [sbtest]> select @@global.transaction_isolation;
+			mysql> select @@global.transaction_isolation;
 			+--------------------------------+
 			| @@global.transaction_isolation |
 			+--------------------------------+
@@ -47,7 +47,7 @@
 			+--------------------------------+
 			1 row in set (0.00 sec)
 
-			root@mysqldb 15:25:  [sbtest]> select @@session.transaction_isolation;
+			mysql> select @@session.transaction_isolation;
 			+---------------------------------+
 			| @@session.transaction_isolation |
 			+---------------------------------+
@@ -55,7 +55,7 @@
 			+---------------------------------+
 			1 row in set (0.00 sec)
 
-			root@mysqldb 15:25:  [sbtest]> select version();
+			mysql> select version();
 			+-----------+
 			| version() |
 			+-----------+
@@ -123,7 +123,7 @@
 			2 rows in set (0.00 sec)
 			
 		T1时刻持有的锁	
-			root@mysqldb 03:56:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+			mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 			+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 			| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
 			+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
@@ -191,7 +191,7 @@
 			2 rows in set (0.00 sec)
 
 			
-			root@mysqldb 15:47:  [(none)]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
+			mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
 			
 			*************************** 1. row ***************************
 				  locked_index: c
@@ -427,7 +427,7 @@
 				2 rows in set (0.00 sec)
 
 
-				root@mysqldb 18:57:  [(none)]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
+				mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits\G;
 				*************************** 1. row ***************************
 					  locked_index: c
 					   locked_type: RECORD
