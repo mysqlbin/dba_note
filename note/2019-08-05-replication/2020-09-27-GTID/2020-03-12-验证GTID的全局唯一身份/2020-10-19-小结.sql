@@ -2,7 +2,7 @@
 验证了同一个事务在 master-binary-log、slave-binary-log、relay-log 中记录的位点是不一样的，但是记录的GTID是一样的, 同时说明了GTID在整个复制中是全局唯一的。
 
 
-在从库执行 show master status 命令，Executed_Gtid_Set的值显示的是主库的。
+在从库执行 show master status 命令，Executed_Gtid_Set的值显示的是主库的信息。
 
 master
 	mysql> show master status\G;

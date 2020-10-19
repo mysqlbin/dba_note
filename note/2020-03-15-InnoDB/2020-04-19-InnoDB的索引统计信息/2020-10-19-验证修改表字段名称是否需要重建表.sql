@@ -25,6 +25,13 @@
 	  KEY `idx_tEndTime` (`tEndTime`)
 	) ENGINE=InnoDB AUTO_INCREMENT=14471002 DEFAULT CHARSET=utf8mb4 COMMENT='）';
 
+	mysql> select version();
+	+------------+
+	| version()  |
+	+------------+
+	| 5.7.22-log |
+	+------------+
+	1 row in set (0.00 sec)
 
 
 
@@ -149,6 +156,6 @@
 
 
 5. 小结
-	修改表字段名称并不会重建表。
+	修改表字段名称并不会重建表，只是修改了 .frm 表结构文件。
 	
 	
