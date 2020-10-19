@@ -3,11 +3,11 @@
 
 31：误删数据
 
-
 吴老师的公开课
 
 binlog 注册
 
+自己对GTID的理解
 
 
 https://dev.mysql.com/doc/refman/5.7/en/start-slave.html

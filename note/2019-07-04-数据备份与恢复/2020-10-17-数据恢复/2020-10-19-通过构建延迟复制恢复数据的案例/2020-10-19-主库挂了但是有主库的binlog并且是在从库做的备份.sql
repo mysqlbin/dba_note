@@ -298,6 +298,7 @@
 6. 各个节点的状态
 	
 	master:
+	
 		mysql> show master status\G;
 		*************************** 1. row ***************************
 					 File: mysql-bin.000006
@@ -306,8 +307,25 @@
 		 Binlog_Ignore_DB: 
 		Executed_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:1-60
 		1 row in set (0.00 sec)
-	
+			
+		mysql> show global variables like '%gtid%';
+		+----------------------------------+-------------------------------------------+
+		| Variable_name                    | Value                                     |
+		+----------------------------------+-------------------------------------------+
+		| binlog_gtid_simple_recovery      | ON                                        |
+		| enforce_gtid_consistency         | ON                                        |
+		| gtid_executed                    | 9e520b78-013c-11eb-a84c-0800271bf591:1-67 |
+		| gtid_executed_compression_period | 1000                                      |
+		| gtid_mode                        | ON                                        |
+		| gtid_owned                       |                                           |
+		| gtid_purged                      |                                           |
+		| session_track_gtids              | OFF                                       |
+		+----------------------------------+-------------------------------------------+
+		8 rows in set (0.01 sec)
+
+
 	slave1:
+	
 		mysql> show master status\G;
 		*************************** 1. row ***************************
 					 File: mysql-bin.000001
@@ -316,8 +334,25 @@
 		 Binlog_Ignore_DB: 
 		Executed_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:1-67
 		1 row in set (0.00 sec)
-			
+
+		mysql> show global variables like '%gtid%';
+		+----------------------------------+-------------------------------------------+
+		| Variable_name                    | Value                                     |
+		+----------------------------------+-------------------------------------------+
+		| binlog_gtid_simple_recovery      | ON                                        |
+		| enforce_gtid_consistency         | ON                                        |
+		| gtid_executed                    | 9e520b78-013c-11eb-a84c-0800271bf591:1-67 |
+		| gtid_executed_compression_period | 1000                                      |
+		| gtid_mode                        | ON                                        |
+		| gtid_owned                       |                                           |
+		| gtid_purged                      | 9e520b78-013c-11eb-a84c-0800271bf591:1-67 |
+		| session_track_gtids              | OFF                                       |
+		+----------------------------------+-------------------------------------------+
+		8 rows in set (0.01 sec)
+
+	
 	new_slave:
+	
 		mysql> show master status\G;
 		*************************** 1. row ***************************
 					 File: mysql-bin.000001
@@ -340,6 +375,20 @@
 		+----+----+------+---------------------+
 		6 rows in set (0.00 sec)
 
+		mysql> show global variables like '%gtid%';
+		+----------------------------------+-------------------------------------------+
+		| Variable_name                    | Value                                     |
+		+----------------------------------+-------------------------------------------+
+		| binlog_gtid_simple_recovery      | ON                                        |
+		| enforce_gtid_consistency         | ON                                        |
+		| gtid_executed                    | 9e520b78-013c-11eb-a84c-0800271bf591:1-67 |
+		| gtid_executed_compression_period | 1000                                      |
+		| gtid_mode                        | ON                                        |
+		| gtid_owned                       |                                           |
+		| gtid_purged                      | 9e520b78-013c-11eb-a84c-0800271bf591:1-57 |
+		| session_track_gtids              | OFF                                       |
+		+----------------------------------+-------------------------------------------+
+		8 rows in set (0.00 sec)
 
 
 7. 小结
