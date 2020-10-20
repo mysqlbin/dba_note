@@ -48,12 +48,12 @@
 	2.5 判断是否需要切换和清理  relay log
 		如果发现 relay log 已满， 则需要进行切换。
 		如果这个 evnet 并不是事务的结束，那么是不能切换的，因此常规情况下  relay log 和 binary log 一样是不能跨事务的
-		参数 recovery_relay_log = 0 并且从库异常重启的场景下 relay log 可能出现跨事务的情况：
+		参数 relay_log_recovery = 0 并且从库异常重启的场景下 relay log 可能出现跨事务的情况：
 			1. gtid auto_position mode 模式下可能会出现 partial transaction, 会造成额外的回滚操作
 			2. position mode           模式下会继续发送事务余下的部分的 event 
 			
 		in a group 就代表在一个事务中
-		recovery_relay_log = on:
+		relay_log_recovery = on:
 			如果读取完了一个非当前 relay log 的 event 会进行清理流程
 			如果读取完了当前 relay log， 则不能清理，会等待 IO 线程的唤醒，如果是 MTS 等待唤醒期间还需要进行 MTS 的检查点 
 			
@@ -62,7 +62,7 @@
 	2.7 进行 partial transaction 的恢复
 		下面两种情况可能出现这种情况：
 			1. gtid auto_position mode 模式下如果 IO 线程出现重连，dump 线程会根据 gtid set 进行重新定位，重发部分已经发送过的 event 
-			2. gtid auto_position mode 模式下如果 从库异常重启，并且 recovery_relay_log = 0 的情况下，dump 线程会根据 gtid 进行重新定位，重发部分已经发送过的 event.
+			2. gtid auto_position mode 模式下如果 从库异常重启，并且 relay_log_recovery = 0 的情况下，dump 线程会根据 gtid 进行重新定位，重发部分已经发送过的 event.
 			
 		这两种情况下由于一个事务可能包含部分重叠的 event ，就涉及到回滚操作
 		对于  MTS 环境来讲是由协调线程进行回滚

@@ -8,7 +8,7 @@
 5. mysql.gtid_executed 表
 	5.1 GTID的两种持久化介质	
 	5.2 验证主库修改 mysql.gtid_executed 的时机
-	 
+6. 小结相关
 
 1. GTID的作用
 	基本概念： 
@@ -312,48 +312,12 @@
 			链接：https://www.jianshu.com/p/905d7e89a305
 
 	
+6. 小结相关
+
+	Retrieved_Gtid_Set: 已经接收完成的GTID集合
+	Executed_Gtid_Set:  已经执行的GTID集合, 在当前实例上执行过的GTID集合;
+						实际上包含了所有记录到binlog中的事务。所以，设置set sql_log_bin=0后执行的事务不会生成binlog 事件，也不会生成GTID相关的信息.
+							-- 参考笔记 <2020-10-15-在线搭建主从复制同时观察执行GTID_PURGED会修改的信息和备份文件中记录SQL_LOG_BIN为0是否生成本地数据库的GTID.sql>
+						
 	
-	
--------------------------------------------------------------------------------------------------------
-	
-gtid_executed (执行过的所有GTID)
-在当前实例上执行过的GTID集合; 实际上包含了所有记录到binlog中的事务。所以，设置set sql_log_bin=0后执行的事务不会生成binlog 事件，也不会被记录到gtid_executed中。
-
-执行 RESET MASTER 可以将该变量置空。reset master命令除了完成上述功能还会清理binlog，重新初始化binlog从序号1开始。
-
-
-https://www.jianshu.com/p/905d7e89a305  Mysql 5.7 Gtid内部学习(五) mysql.gtid_executed表/gtid_executed变量/gtid_purged变量的更改时机
-
-
-
-root@mysqldb 17:09:  [(none)]> show global variables  like '%gtid%';
-+----------------------------------+------------------------------------------------+
-| Variable_name                    | Value                                          |
-+----------------------------------+------------------------------------------------+
-| binlog_gtid_simple_recovery      | ON                                             |
-| enforce_gtid_consistency         | ON                                             |
-| gtid_executed                    | 7af746a1-5c2d-11ea-bc75-00163e08b460:1-1487595 |
-| gtid_executed_compression_period | 1000                                           |
-| gtid_mode                        | ON                                             |
-| gtid_owned                       |                                                |
-| gtid_purged                      | 7af746a1-5c2d-11ea-bc75-00163e08b460:1         |
-| session_track_gtids              | OFF                                            |
-+----------------------------------+------------------------------------------------+
-8 rows in set (0.00 sec)
-
-
-root@mysqldb 17:09:  [(none)]> select * from mysql.gtid_executed;
-+--------------------------------------+----------------+--------------+
-| source_uuid                          | interval_start | interval_end |
-+--------------------------------------+----------------+--------------+
-| 7af746a1-5c2d-11ea-bc75-00163e08b460 |              1 |      1486985 |
-| 7af746a1-5c2d-11ea-bc75-00163e08b460 |        1486986 |      1487459 |
-+--------------------------------------+----------------+--------------+
-2 rows in set (0.00 sec)
-
-
-[root@voice ~]# cat /mydata/mysql/mysql3306/data/auto.cnf 
-[auto]
-server-uuid=7af746a1-5c2d-11ea-bc75-00163e08b460
-
 

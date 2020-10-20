@@ -13,8 +13,8 @@
 	3. sync_master_info
 	4. sync_relay_log_info
 	5. sync_relay_log
-	6. recovery_relay_log
-6. 结合 recovery_relay_log 参数了解从库的恢复流程
+	6. relay_log_recovery
+6. 结合 relay_log_recovery 参数了解从库的恢复流程
 
 
 1. 正常的stop slave流程
@@ -227,16 +227,16 @@
 		代表 IO 线程写入多少个 event 到 relay log 后进行一次 relay log 的 sync
 		设置为 1 会严重的影响性能
 		
-	6. recovery_relay_log
+	6. relay_log_recovery
 		这个参数的作用极为重要，默认值为 10000
-		recovery_relay_log = on : 
+		relay_log_recovery = on : 
 			其基本理念就是从 从库 执行到的位置重新拉取 event 重新执行（即 依赖于 slave_relay_log_info 表中的信息）, 而不考虑现有的 relay log 、 retrieved_gtid_set 和 slave_master_info 中的信息,这样虽然增加了一部分带宽消耗但是弱化了 relay log 、 retrieved_gtid_set 和 slave_master_info  的作用, 是提高从库性能的基础.
 			同时在 MTS 模式下还会影响 MTS 恢复的时机.
 		# 理解了.	
 			
-6. 结合 recovery_relay_log 参数了解从库的恢复流程
-	recovery_relay_log 的作用是非常大的, 主要作用如下:
-		6.1 recovery_relay_log = 1 
+6. 结合 relay_log_recovery 参数了解从库的恢复流程
+	relay_log_recovery 的作用是非常大的, 主要作用如下:
+		6.1 relay_log_recovery = 1 
 			不需要初始化 retrieved_gtid_set , 因此避免了扫描 relay log. 这个很容易观察到, 设置 '--skip-slave-start' 后重启MySQL 实例观察  show slave status 命令中的 retrieved_gtid_set 是否有值就可以了, 如下:
 		
 				Retrieved_Gtid_Set: 
@@ -257,9 +257,9 @@
 			
 			# 理解了.
 			
-		6.2 MTS 下 recovery_relay_log = 1 
+		6.2 MTS 下 relay_log_recovery = 1 
 		
-		6.3 单 SQL 线程 下 recovery_relay_log = 1
+		6.3 单 SQL 线程 下 relay_log_recovery = 1
 			非常简单暴力, 直接使用 'rli' ('rli' 是 slave_relay_log_info 的内存结构 ) 的  Master_log_name 和 Master_log_pos  覆盖 'mi' ('mi' 是 slave_master_info 的内存结构) 的  Master_log_name 和 Master_log_pos , 然后将 'rli' 的 Relay_log_name  和 Relay_log_pos 重置到最新 relay log的位置; 言外之意就是老的 relay log 和 slave_master_info 表的信息不用管了, 从执行到的位置重新拉取 event 重新执行就好了, 这样一定能够保证正确性.
 			
 			# 理解了

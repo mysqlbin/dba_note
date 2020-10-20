@@ -5,6 +5,8 @@
 3. 一个事务日志主备同步的完整过程       
 4. 3个线程处于空闲的状态  
 5. 主从复制原理的3个关键字
+6. 主从延迟的原因和对应的解决方案
+
 
 1. 先介绍主从复制三个线程的作用
 
@@ -36,21 +38,11 @@
 	
 		即 读取中转日志，解析出日志里的命令，并执行。
 	
-		SQL 线程是单线程，意味着每次只能应用一个event, 这也是高并发下从库延迟的重要因素。
-		主库并发高、TPS高，就会导致备库消费中转日志（relay log）的速度，比主库生产 binlog 的速度要慢， 从而出现严重的主备延迟问题。
+
+
 		参考笔记：《23-从库的SQL线程.sql》
-		解决这种延迟的方式：
-			1. 从库不需要开启log_slave_updates参数
-			2. innodb_flush_log_at_trx_commit 可以设置为2
-			3. 启用并行复制 
 		
-			参数						配置
-			master_info_repository		table
-			relay_log_info_repository	table
-			recovery_relay_log			on
-			sync_master_info			默认，10000
-			sync_relay_log				默认，10000
-			sync_relay_log_info			默认，10000
+		
 			
 	
 	可以利用IO_Thread、SQL_thread来做各种数据的恢复操作。
@@ -114,4 +106,40 @@
 	接收、写入
 	读取、应用
 	
+	
+6. 主从延迟的原因和对应的解决方案
+	
+	1. 主库并发高、TPS高造成的主从延迟
+		主库并发高、TPS高, 并且由于从库的SQL线程是单线程, 意味着每次只能应用一个event, 就会导致备库消费中转日志（relay log）的速度，比主库生产 binlog 的速度要慢， 从而出现严重的主备延迟问题。
+		-- 	MySQL 基于逻辑的需要等待事务或 DDL 执行完，产生逻辑日志再同步到从机上，所以主从复制的延时问题会比较严重。
+		对应的解决方案: 
+			1. 关闭log_slave_updates，同时innodb_flush_log_at_trx_commit 设置为2表示 redo只需要写入到操作系统层面事务就完成，几乎没有延迟了。
+			2. 使用基于行的并行复制 
+	
+	2. 大事务造成的主从延迟
+		大事务分为两类:
+			1. DML大事务
+			2. DDL大事务
+		
+		DML大事务对应的解决方案:
+			把大事务拆分成小事务来执行并且DML操作要用到索引
+			
+		DDL大事务对应的解决方案:
+			使用gh-ost和pt-osc来完成对表的添加/删除字段和添加索引操作
+			可以用8.0.12版本支持快速加列
+		
+	3. 表没有主键造成的延迟
+		
+		
+	4. 从库参数设置不合理造成的延迟
+		主要是 sync_relay_log 这个 relay log 刷盘的参数, 因为sync_relay_log设置为1会导致大量relay log刷盘操作。
+		关闭log_slave_updates，同时innodb_flush_log_at_trx_commit 设置为2
+				
+		参数						配置
+		master_info_repository		table
+		relay_log_info_repository	table
+		relay_log_recovery			on
+		sync_master_info			默认，10000
+		sync_relay_log				默认，10000
+		sync_relay_log_info			默认，10000
 		
