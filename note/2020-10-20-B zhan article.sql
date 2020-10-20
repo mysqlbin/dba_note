@@ -7,7 +7,8 @@ https://mp.weixin.qq.com/s/1IhFCnE-x41S_s-VwtsYPg  大话MySQL之爱恨情仇
 
 
 https://mp.weixin.qq.com/s/NLSvcAa06JNE22n8HXsqdw   第一期回顾：现在是不是升级 MySQL 8.0 的好时机？
-
+	快速加列的特性很赞，对于大表添加字段，可以秒级完成，但是要注意的是，快速加列也是需要申请MDL写锁的。
+	
 https://mp.weixin.qq.com/s/IK2WGK5JWLWRC4HN53sY_w   第二期回顾：MySQL DBA 职业生涯发展规划，35 岁到底会不会失业？
 	MySQL 基于逻辑的需要等待事务或 DDL 执行完，产生逻辑日志再同步到从机上，所以主从复制的延时问题会比较严重。
 	

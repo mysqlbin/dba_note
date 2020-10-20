@@ -44,3 +44,14 @@ insert buffer的效果 = merges / (insert + delete mark + delete) =  3254 / (396
 mysql> set global innodb_change_buffer_max_size=5;
 Query OK, 0 rows affected (0.00 sec)
 set global innodb_change_buffer_max_size=5;
+
+
+InnoDB存储引擎可以对 DML 操作-----INSERT DELETE UPDATE操作都进行缓冲, 他们分别是:
+Insert Buffer、Delete Buffer、Purge Buffer
+
+innodb_change_buffer_max_size=25
+表示change buffer的大小最多只能占用 buffer pool 的25%.
+(change buffer用的是 buffer pool中的内存)
+
+innodb_change_buffering = all 
+表示缓存所有操作
