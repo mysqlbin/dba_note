@@ -1,0 +1,637 @@
+2020-10-21 12:01:27 INFO starting gh-ost 1.1.0
+2020-10-21 12:01:27 INFO Migrating `consistency_db`.`t_20201021`
+2020-10-21 12:01:27 INFO connection validated on 192.168.1.10:3306
+2020-10-21 12:01:27 INFO User has ALL privileges
+2020-10-21 12:01:27 INFO binary logs validated on 192.168.1.10:3306
+2020-10-21 12:01:27 INFO Inspector initiated on db-a:3306, version 5.7.26-log
+2020-10-21 12:01:27 INFO Table found. Engine=InnoDB
+2020-10-21 12:01:28 INFO Estimated number of rows via EXPLAIN: 14659130
+2020-10-21 12:01:28 INFO Recursively searching for replication master
+2020-10-21 12:01:28 INFO Master found to be db-a:3306
+2020-10-21 12:01:28 INFO log_slave_updates validated on 192.168.1.10:3306
+2020-10-21 12:01:28 INFO connection validated on 192.168.1.10:3306
+2020-10-21 12:01:28 INFO Connecting binlog streamer at mysql-bin.000260:103640318
+[2020/10/21 12:01:28] [info] binlogsyncer.go:133 create BinlogSyncer with config {99999 mysql 192.168.1.10 3306 temp_test    false false <nil> false UTC true 0 0s 0s 0 false}
+[2020/10/21 12:01:28] [info] binlogsyncer.go:354 begin to sync binlog from position (mysql-bin.000260, 103640318)
+[2020/10/21 12:01:28] [info] binlogsyncer.go:203 register slave for master server 192.168.1.10:3306
+[2020/10/21 12:01:28] [info] binlogsyncer.go:723 rotate to (mysql-bin.000260, 103640318)
+2020-10-21 12:01:28 INFO rotate to next log from mysql-bin.000260:0 to mysql-bin.000260
+2020-10-21 12:01:28 INFO connection validated on 192.168.1.10:3306
+2020-10-21 12:01:28 INFO connection validated on 192.168.1.10:3306
+2020-10-21 12:01:28 INFO will use time_zone='SYSTEM' on applier
+2020-10-21 12:01:28 INFO Examining table structure on applier
+2020-10-21 12:01:28 INFO Applier initiated on db-a:3306, version 5.7.26-log
+2020-10-21 12:01:28 INFO Dropping table `consistency_db`.`_t_20201021_ghc`
+2020-10-21 12:01:28 INFO Table dropped
+2020-10-21 12:01:28 INFO Creating changelog table `consistency_db`.`_t_20201021_ghc`
+2020-10-21 12:01:28 INFO Changelog table created
+2020-10-21 12:01:28 INFO Creating ghost table `consistency_db`.`_t_20201021_gho`
+2020-10-21 12:01:28 INFO Ghost table created
+2020-10-21 12:01:28 INFO Altering ghost table `consistency_db`.`_t_20201021_gho`
+2020-10-21 12:01:28 INFO Ghost table altered
+2020-10-21 12:01:28 INFO Intercepted changelog state GhostTableMigrated
+2020-10-21 12:01:28 INFO Created postpone-cut-over-flag-file: /tmp/ghost.postpone.flag
+2020-10-21 12:01:28 INFO Waiting for ghost table to be migrated. Current lag is 0s
+2020-10-21 12:01:28 INFO Handled changelog state GhostTableMigrated
+2020-10-21 12:01:28 INFO Chosen shared unique key is PRIMARY
+2020-10-21 12:01:28 INFO Shared columns are id,name,age,ismale,id_card,test1,test2,createTime
+2020-10-21 12:01:28 INFO Listening on unix socket file: /tmp/gh-ost.consistency_db.t_20201021.sock
+2020-10-21 12:01:28 INFO Migration min values: [1]
+2020-10-21 12:01:28 INFO Migration max values: [15000000]
+2020-10-21 12:01:28 INFO Waiting for first throttle metrics to be collected
+2020-10-21 12:01:28 INFO First throttle metrics collected
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 0/14659130 0.0%; Applied: 0; Backlog: 0/1000; Time: 0s(total), 0s(copy); streamer: mysql-bin.000260:103643384; Lag: 0.01s, State: migrating; ETA: N/A
+Copy: 0/14659130 0.0%; Applied: 0; Backlog: 0/1000; Time: 1s(total), 1s(copy); streamer: mysql-bin.000260:103644961; Lag: 0.01s, State: migrating; ETA: N/A
+Copy: 27500/14659130 0.2%; Applied: 0; Backlog: 0/1000; Time: 2s(total), 2s(copy); streamer: mysql-bin.000260:112682311; Lag: 0.01s, State: migrating; ETA: 17m47s
+Copy: 55000/14659130 0.4%; Applied: 0; Backlog: 0/1000; Time: 3s(total), 3s(copy); streamer: mysql-bin.000260:121719657; Lag: 1.01s, State: migrating; ETA: 13m18s
+Copy: 88000/14659130 0.6%; Applied: 0; Backlog: 0/1000; Time: 4s(total), 4s(copy); streamer: mysql-bin.000260:132564152; Lag: 1.01s, State: migrating; ETA: 11m3s
+Copy: 115500/14659130 0.8%; Applied: 0; Backlog: 0/1000; Time: 5s(total), 5s(copy); streamer: mysql-bin.000260:141601504; Lag: 1.01s, State: migrating; ETA: 10m30s
+Copy: 143000/14659130 1.0%; Applied: 0; Backlog: 0/1000; Time: 6s(total), 6s(copy); streamer: mysql-bin.000260:150638869; Lag: 1.01s, State: migrating; ETA: 10m9s
+Copy: 176000/14659130 1.2%; Applied: 0; Backlog: 0/1000; Time: 7s(total), 7s(copy); streamer: mysql-bin.000260:161483386; Lag: 0.01s, State: migrating; ETA: 9m36s
+Copy: 203500/14659130 1.4%; Applied: 0; Backlog: 0/1000; Time: 8s(total), 8s(copy); streamer: mysql-bin.000260:170520747; Lag: 0.01s, State: migrating; ETA: 9m28s
+Copy: 231000/14659130 1.6%; Applied: 0; Backlog: 0/1000; Time: 9s(total), 9s(copy); streamer: mysql-bin.000260:179558109; Lag: 0.01s, State: migrating; ETA: 9m22s
+Copy: 258500/14659130 1.8%; Applied: 0; Backlog: 0/1000; Time: 10s(total), 10s(copy); streamer: mysql-bin.000260:188595472; Lag: 0.01s, State: migrating; ETA: 9m17s
+Copy: 286000/14659130 2.0%; Applied: 0; Backlog: 0/1000; Time: 11s(total), 11s(copy); streamer: mysql-bin.000260:197632839; Lag: 1.01s, State: migrating; ETA: 9m13s
+Copy: 313500/14659130 2.1%; Applied: 0; Backlog: 0/1000; Time: 12s(total), 12s(copy); streamer: mysql-bin.000260:206670206; Lag: 1.01s, State: migrating; ETA: 9m9s
+Copy: 341000/14659130 2.3%; Applied: 0; Backlog: 0/1000; Time: 13s(total), 13s(copy); streamer: mysql-bin.000260:215707571; Lag: 1.01s, State: migrating; ETA: 9m6s
+Copy: 368500/14659130 2.5%; Applied: 0; Backlog: 0/1000; Time: 14s(total), 14s(copy); streamer: mysql-bin.000260:224744936; Lag: 1.01s, State: migrating; ETA: 9m3s
+Copy: 396000/14659130 2.7%; Applied: 0; Backlog: 0/1000; Time: 15s(total), 15s(copy); streamer: mysql-bin.000260:233782299; Lag: 1.01s, State: migrating; ETA: 9m0s
+Copy: 423500/14659130 2.9%; Applied: 0; Backlog: 0/1000; Time: 16s(total), 16s(copy); streamer: mysql-bin.000260:242794322; Lag: 1.01s, State: migrating; ETA: 8m58s
+Copy: 445500/14659130 3.0%; Applied: 0; Backlog: 0/1000; Time: 17s(total), 17s(copy); streamer: mysql-bin.000260:250049876; Lag: 1.01s, State: migrating; ETA: 9m2s
+Copy: 473000/14659130 3.2%; Applied: 0; Backlog: 0/1000; Time: 18s(total), 18s(copy); streamer: mysql-bin.000260:259087241; Lag: 1.01s, State: migrating; ETA: 9m0s
+Copy: 500500/14659130 3.4%; Applied: 0; Backlog: 0/1000; Time: 19s(total), 19s(copy); streamer: mysql-bin.000260:268124606; Lag: 1.01s, State: migrating; ETA: 8m57s
+Copy: 528000/14659130 3.6%; Applied: 0; Backlog: 0/1000; Time: 20s(total), 20s(copy); streamer: mysql-bin.000260:277161973; Lag: 1.01s, State: migrating; ETA: 8m55s
+Copy: 555500/14659130 3.8%; Applied: 0; Backlog: 0/1000; Time: 21s(total), 21s(copy); streamer: mysql-bin.000260:286199338; Lag: 0.01s, State: migrating; ETA: 8m53s
+Copy: 583000/14659130 4.0%; Applied: 0; Backlog: 0/1000; Time: 22s(total), 22s(copy); streamer: mysql-bin.000260:293782651; Lag: 1.01s, State: migrating; ETA: 8m51s
+Copy: 605000/14659130 4.1%; Applied: 0; Backlog: 0/1000; Time: 23s(total), 23s(copy); streamer: mysql-bin.000260:302466241; Lag: 1.01s, State: migrating; ETA: 8m54s
+Copy: 632500/14659130 4.3%; Applied: 0; Backlog: 0/1000; Time: 24s(total), 24s(copy); streamer: mysql-bin.000260:311504287; Lag: 1.01s, State: migrating; ETA: 8m52s
+Copy: 660000/14659130 4.5%; Applied: 0; Backlog: 0/1000; Time: 25s(total), 25s(copy); streamer: mysql-bin.000260:320541656; Lag: 0.01s, State: migrating; ETA: 8m50s
+Copy: 682000/14659130 4.7%; Applied: 0; Backlog: 0/1000; Time: 26s(total), 26s(copy); streamer: mysql-bin.000260:327771871; Lag: 1.01s, State: migrating; ETA: 8m52s
+Copy: 704000/14659130 4.8%; Applied: 0; Backlog: 0/1000; Time: 27s(total), 27s(copy); streamer: mysql-bin.000260:335002086; Lag: 1.01s, State: migrating; ETA: 8m55s
+Copy: 731500/14659130 5.0%; Applied: 0; Backlog: 0/1000; Time: 28s(total), 28s(copy); streamer: mysql-bin.000260:344039455; Lag: 0.01s, State: migrating; ETA: 8m53s
+Copy: 753500/14659130 5.1%; Applied: 0; Backlog: 0/1000; Time: 29s(total), 29s(copy); streamer: mysql-bin.000260:351269670; Lag: 1.01s, State: migrating; ETA: 8m55s
+Copy: 781000/14659130 5.3%; Applied: 0; Backlog: 0/1000; Time: 30s(total), 30s(copy); streamer: mysql-bin.000260:360309745; Lag: 0.01s, State: migrating; ETA: 8m53s
+Copy: 803000/14659130 5.5%; Applied: 0; Backlog: 0/1000; Time: 31s(total), 31s(copy); streamer: mysql-bin.000260:367539959; Lag: 1.01s, State: migrating; ETA: 8m55s
+Copy: 830500/14659130 5.7%; Applied: 0; Backlog: 0/1000; Time: 32s(total), 32s(copy); streamer: mysql-bin.000260:376577328; Lag: 0.01s, State: migrating; ETA: 8m52s
+Copy: 852500/14659130 5.8%; Applied: 0; Backlog: 0/1000; Time: 33s(total), 33s(copy); streamer: mysql-bin.000260:383807543; Lag: 1.01s, State: migrating; ETA: 8m54s
+Copy: 880000/14659130 6.0%; Applied: 0; Backlog: 0/1000; Time: 34s(total), 34s(copy); streamer: mysql-bin.000260:392844912; Lag: 0.01s, State: migrating; ETA: 8m52s
+Copy: 902000/14659130 6.2%; Applied: 0; Backlog: 0/1000; Time: 35s(total), 35s(copy); streamer: mysql-bin.000260:400075127; Lag: 1.01s, State: migrating; ETA: 8m53s
+Copy: 929500/14659130 6.3%; Applied: 0; Backlog: 0/1000; Time: 36s(total), 36s(copy); streamer: mysql-bin.000260:409112496; Lag: 0.01s, State: migrating; ETA: 8m51s
+Copy: 951500/14659130 6.5%; Applied: 0; Backlog: 0/1000; Time: 37s(total), 37s(copy); streamer: mysql-bin.000260:416342711; Lag: 1.01s, State: migrating; ETA: 8m53s
+Copy: 979000/14659130 6.7%; Applied: 0; Backlog: 0/1000; Time: 38s(total), 38s(copy); streamer: mysql-bin.000260:425380080; Lag: 1.01s, State: migrating; ETA: 8m51s
+Copy: 1006500/14659130 6.9%; Applied: 0; Backlog: 0/1000; Time: 39s(total), 39s(copy); streamer: mysql-bin.000260:434417454; Lag: 0.01s, State: migrating; ETA: 8m49s
+Copy: 1034000/14659130 7.1%; Applied: 0; Backlog: 0/1000; Time: 41s(total), 40s(copy); streamer: mysql-bin.000260:442345646; Lag: 1.01s, State: migrating; ETA: 8m47s
+Copy: 1056000/14659130 7.2%; Applied: 0; Backlog: 0/1000; Time: 41s(total), 41s(copy); streamer: mysql-bin.000260:450685067; Lag: 1.01s, State: migrating; ETA: 8m48s
+Copy: 1083500/14659130 7.4%; Applied: 0; Backlog: 0/1000; Time: 42s(total), 42s(copy); streamer: mysql-bin.000260:459722452; Lag: 1.01s, State: migrating; ETA: 8m46s
+Copy: 1111000/14659130 7.6%; Applied: 0; Backlog: 0/1000; Time: 43s(total), 43s(copy); streamer: mysql-bin.000260:468759838; Lag: 1.01s, State: migrating; ETA: 8m44s
+Copy: 1138500/14659130 7.8%; Applied: 0; Backlog: 0/1000; Time: 44s(total), 44s(copy); streamer: mysql-bin.000260:477797224; Lag: 0.01s, State: migrating; ETA: 8m42s
+Copy: 1166000/14659130 8.0%; Applied: 0; Backlog: 0/1000; Time: 45s(total), 45s(copy); streamer: mysql-bin.000260:485520141; Lag: 1.01s, State: migrating; ETA: 8m40s
+Copy: 1188000/14659130 8.1%; Applied: 0; Backlog: 0/1000; Time: 46s(total), 46s(copy); streamer: mysql-bin.000260:494064839; Lag: 0.01s, State: migrating; ETA: 8m41s
+Copy: 1215500/14659130 8.3%; Applied: 0; Backlog: 0/1000; Time: 47s(total), 47s(copy); streamer: mysql-bin.000260:503102225; Lag: 0.01s, State: migrating; ETA: 8m39s
+Copy: 1243000/14659130 8.5%; Applied: 0; Backlog: 0/1000; Time: 48s(total), 48s(copy); streamer: mysql-bin.000260:510759454; Lag: 0.02s, State: migrating; ETA: 8m38s
+Copy: 1265000/14659130 8.6%; Applied: 0; Backlog: 0/1000; Time: 49s(total), 49s(copy); streamer: mysql-bin.000260:519369840; Lag: 0.01s, State: migrating; ETA: 8m38s
+Copy: 1292500/14659130 8.8%; Applied: 0; Backlog: 0/1000; Time: 50s(total), 50s(copy); streamer: mysql-bin.000260:528407224; Lag: 0.01s, State: migrating; ETA: 8m37s
+Copy: 1314500/14659130 9.0%; Applied: 0; Backlog: 0/1000; Time: 51s(total), 51s(copy); streamer: mysql-bin.000260:535637452; Lag: 0.01s, State: migrating; ETA: 8m37s
+Copy: 1342000/14659130 9.2%; Applied: 0; Backlog: 0/1000; Time: 53s(total), 52s(copy); streamer: mysql-bin.000260:543294681; Lag: 1.01s, State: migrating; ETA: 8m36s
+Copy: 1364000/14659130 9.3%; Applied: 0; Backlog: 0/1000; Time: 53s(total), 53s(copy); streamer: mysql-bin.000260:551905067; Lag: 0.01s, State: migrating; ETA: 8m36s
+Copy: 1391500/14659130 9.5%; Applied: 0; Backlog: 0/1000; Time: 54s(total), 54s(copy); streamer: mysql-bin.000260:560942453; Lag: 0.01s, State: migrating; ETA: 8m34s
+Copy: 1413500/14659130 9.6%; Applied: 0; Backlog: 0/1000; Time: 55s(total), 55s(copy); streamer: mysql-bin.000260:568172004; Lag: 1.01s, State: migrating; ETA: 8m35s
+Copy: 1441000/14659130 9.8%; Applied: 0; Backlog: 0/1000; Time: 56s(total), 56s(copy); streamer: mysql-bin.000260:577210068; Lag: 0.01s, State: migrating; ETA: 8m33s
+Copy: 1463000/14659130 10.0%; Applied: 0; Backlog: 0/1000; Time: 57s(total), 57s(copy); streamer: mysql-bin.000260:584440297; Lag: 0.01s, State: migrating; ETA: 8m34s
+Copy: 1485000/14659130 10.1%; Applied: 0; Backlog: 0/1000; Time: 58s(total), 58s(copy); streamer: mysql-bin.000260:591670528; Lag: 1.01s, State: migrating; ETA: 8m34s
+Copy: 1512500/14659130 10.3%; Applied: 0; Backlog: 0/1000; Time: 59s(total), 59s(copy); streamer: mysql-bin.000260:600288446; Lag: 0.01s, State: migrating; ETA: 8m32s
+Copy: 1534500/14659130 10.5%; Applied: 0; Backlog: 0/1000; Time: 1m0s(total), 1m0s(copy); streamer: mysql-bin.000260:607938147; Lag: 1.01s, State: migrating; ETA: 8m33s
+Copy: 1655500/14659130 11.3%; Applied: 0; Backlog: 0/1000; Time: 1m5s(total), 1m5s(copy); streamer: mysql-bin.000260:645920132; Lag: 1.01s, State: migrating; ETA: 8m30s
+Copy: 1776500/14659130 12.1%; Applied: 0; Backlog: 0/1000; Time: 1m10s(total), 1m10s(copy); streamer: mysql-bin.000260:687464815; Lag: 0.02s, State: migrating; ETA: 8m27s
+Copy: 1892000/14659130 12.9%; Applied: 0; Backlog: 0/1000; Time: 1m15s(total), 1m15s(copy); streamer: mysql-bin.000260:725419433; Lag: 1.01s, State: migrating; ETA: 8m26s
+Copy: 2013000/14659130 13.7%; Applied: 0; Backlog: 0/1000; Time: 1m20s(total), 1m20s(copy); streamer: mysql-bin.000260:765181206; Lag: 0.01s, State: migrating; ETA: 8m22s
+Copy: 2134000/14659130 14.6%; Applied: 0; Backlog: 0/1000; Time: 1m25s(total), 1m25s(copy); streamer: mysql-bin.000260:804942983; Lag: 0.01s, State: migrating; ETA: 8m18s
+Copy: 2255000/14659130 15.4%; Applied: 0; Backlog: 0/1000; Time: 1m30s(total), 1m30s(copy); streamer: mysql-bin.000260:844708610; Lag: 1.01s, State: migrating; ETA: 8m15s
+Copy: 2376000/14659130 16.2%; Applied: 0; Backlog: 0/1000; Time: 1m35s(total), 1m35s(copy); streamer: mysql-bin.000260:884469706; Lag: 1.01s, State: migrating; ETA: 8m11s
+Copy: 2497000/14659130 17.0%; Applied: 0; Backlog: 0/1000; Time: 1m40s(total), 1m40s(copy); streamer: mysql-bin.000260:924234868; Lag: 1.01s, State: migrating; ETA: 8m7s
+Copy: 2618000/14659130 17.9%; Applied: 0; Backlog: 0/1000; Time: 1m45s(total), 1m45s(copy); streamer: mysql-bin.000260:963996643; Lag: 1.01s, State: migrating; ETA: 8m2s
+Copy: 2739000/14659130 18.7%; Applied: 0; Backlog: 0/1000; Time: 1m50s(total), 1m50s(copy); streamer: mysql-bin.000260:1003758418; Lag: 1.01s, State: migrating; ETA: 7m58s
+Copy: 2838000/14659130 19.4%; Applied: 0; Backlog: 0/1000; Time: 1m55s(total), 1m54s(copy); streamer: mysql-bin.000260:1034820407; Lag: 1.01s, State: migrating; ETA: 7m54s
+Copy: 2860000/14659130 19.5%; Applied: 0; Backlog: 0/1000; Time: 1m55s(total), 1m55s(copy); streamer: mysql-bin.000260:1043521126; Lag: 0.01s, State: migrating; ETA: 7m54s
+[2020/10/21 12:03:27] [info] binlogsyncer.go:723 rotate to (mysql-bin.000261, 4)
+[2020/10/21 12:03:27] [info] binlogsyncer.go:723 rotate to (mysql-bin.000261, 4)
+2020-10-21 12:03:27 INFO rotate to next log from mysql-bin.000261:1074245811 to mysql-bin.000261
+2020-10-21 12:03:27 INFO rotate to next log from mysql-bin.000261:0 to mysql-bin.000261
+Copy: 2975500/14659130 20.3%; Applied: 0; Backlog: 0/1000; Time: 2m0s(total), 2m0s(copy); streamer: mysql-bin.000261:7230176; Lag: 0.01s, State: migrating; ETA: 7m51s
+Copy: 3091000/14659130 21.1%; Applied: 0; Backlog: 0/1000; Time: 2m5s(total), 2m5s(copy); streamer: mysql-bin.000261:45184784; Lag: 1.01s, State: migrating; ETA: 7m47s
+Copy: 3206500/14659130 21.9%; Applied: 0; Backlog: 0/1000; Time: 2m10s(total), 2m10s(copy); streamer: mysql-bin.000261:83142106; Lag: 0.01s, State: migrating; ETA: 7m44s
+Copy: 3316500/14659130 22.6%; Applied: 0; Backlog: 0/1000; Time: 2m15s(total), 2m15s(copy); streamer: mysql-bin.000261:119289564; Lag: 1.01s, State: migrating; ETA: 7m41s
+Copy: 3432000/14659130 23.4%; Applied: 0; Backlog: 0/1000; Time: 2m20s(total), 2m20s(copy); streamer: mysql-bin.000261:157244184; Lag: 1.01s, State: migrating; ETA: 7m38s
+Copy: 3547500/14659130 24.2%; Applied: 0; Backlog: 0/1000; Time: 2m25s(total), 2m25s(copy); streamer: mysql-bin.000261:195198801; Lag: 1.01s, State: migrating; ETA: 7m34s
+Copy: 3619000/14659130 24.7%; Applied: 0; Backlog: 0/1000; Time: 2m30s(total), 2m30s(copy); streamer: mysql-bin.000261:218695487; Lag: 1.01s, State: migrating; ETA: 7m37s
+Copy: 3646500/14659130 24.9%; Applied: 0; Backlog: 0/1000; Time: 2m35s(total), 2m35s(copy); streamer: mysql-bin.000261:227735595; Lag: 1.02s, State: migrating; ETA: 7m48s
+Copy: 3685000/14659130 25.1%; Applied: 0; Backlog: 0/1000; Time: 2m40s(total), 2m40s(copy); streamer: mysql-bin.000261:240390695; Lag: 1.01s, State: migrating; ETA: 7m56s
+Copy: 3740000/14659130 25.5%; Applied: 0; Backlog: 0/1000; Time: 2m45s(total), 2m45s(copy); streamer: mysql-bin.000261:258469291; Lag: 0.01s, State: migrating; ETA: 8m1s
+Copy: 3806000/14659130 26.0%; Applied: 0; Backlog: 0/1000; Time: 2m50s(total), 2m50s(copy); streamer: mysql-bin.000261:280159493; Lag: 1.01s, State: migrating; ETA: 8m4s
+Copy: 3877500/14659130 26.5%; Applied: 0; Backlog: 0/1000; Time: 2m55s(total), 2m55s(copy); streamer: mysql-bin.000261:303656851; Lag: 1.01s, State: migrating; ETA: 8m6s
+Copy: 3949000/14659130 26.9%; Applied: 0; Backlog: 0/1000; Time: 3m0s(total), 3m0s(copy); streamer: mysql-bin.000261:327153535; Lag: 1.01s, State: migrating; ETA: 8m8s
+Copy: 4345000/14659130 29.6%; Applied: 0; Backlog: 0/1000; Time: 3m30s(total), 3m30s(copy); streamer: mysql-bin.000261:456956531; Lag: 0.01s, State: migrating; ETA: 8m18s
+Copy: 5472500/14659130 37.3%; Applied: 0; Backlog: 0/1000; Time: 5m0s(total), 5m0s(copy); streamer: mysql-bin.000261:827831077; Lag: 1.01s, State: migrating; ETA: 8m23s
+Copy: 5824500/14659130 39.7%; Applied: 0; Backlog: 0/1000; Time: 5m30s(total), 5m30s(copy); streamer: mysql-bin.000261:943514182; Lag: 1.01s, State: migrating; ETA: 8m20s
+[2020/10/21 12:07:27] [info] binlogsyncer.go:723 rotate to (mysql-bin.000262, 4)
+[2020/10/21 12:07:27] [info] binlogsyncer.go:723 rotate to (mysql-bin.000262, 4)
+2020-10-21 12:07:27 INFO rotate to next log from mysql-bin.000262:1075456591 to mysql-bin.000262
+2020-10-21 12:07:27 INFO rotate to next log from mysql-bin.000262:0 to mysql-bin.000262
+Copy: 6242500/14659130 42.6%; Applied: 0; Backlog: 0/1000; Time: 6m0s(total), 6m0s(copy); streamer: mysql-bin.000262:5425729; Lag: 1.01s, State: migrating; ETA: 8m5s
+Copy: 6545000/14659130 44.6%; Applied: 0; Backlog: 0/1000; Time: 6m30s(total), 6m30s(copy); streamer: mysql-bin.000262:104839948; Lag: 1.01s, State: migrating; ETA: 8m3s
+Copy: 6842000/14659130 46.7%; Applied: 0; Backlog: 0/1000; Time: 7m0s(total), 7m0s(copy); streamer: mysql-bin.000262:202450392; Lag: 1.01s, State: migrating; ETA: 7m59s
+Copy: 7221500/14659130 49.3%; Applied: 0; Backlog: 0/1000; Time: 7m30s(total), 7m30s(copy); streamer: mysql-bin.000262:327168609; Lag: 1.01s, State: migrating; ETA: 7m43s
+Copy: 7491000/14659130 51.1%; Applied: 0; Backlog: 0/1000; Time: 8m0s(total), 8m0s(copy); streamer: mysql-bin.000262:415431228; Lag: 1.01s, State: migrating; ETA: 7m39s
+Copy: 7804500/14659130 53.2%; Applied: 0; Backlog: 0/1000; Time: 8m30s(total), 8m30s(copy); streamer: mysql-bin.000262:518775873; Lag: 1.01s, State: migrating; ETA: 7m27s
+Copy: 8096000/14659130 55.2%; Applied: 0; Backlog: 0/1000; Time: 9m0s(total), 9m0s(copy); streamer: mysql-bin.000262:614579116; Lag: 1.01s, State: migrating; ETA: 7m17s
+Copy: 8360000/14659130 57.0%; Applied: 0; Backlog: 0/1000; Time: 9m30s(total), 9m30s(copy); streamer: mysql-bin.000262:701347024; Lag: 1.01s, State: migrating; ETA: 7m9s
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 8712000/14659130 59.4%; Applied: 0; Backlog: 0/1000; Time: 10m0s(total), 10m0s(copy); streamer: mysql-bin.000262:817029047; Lag: 1.01s, State: migrating; ETA: 6m49s
+Copy: 8948500/14659130 61.0%; Applied: 0; Backlog: 0/1000; Time: 10m30s(total), 10m30s(copy); streamer: mysql-bin.000262:894760760; Lag: 1.01s, State: migrating; ETA: 6m42s
+Copy: 9306000/14659130 63.5%; Applied: 0; Backlog: 0/1000; Time: 11m0s(total), 11m0s(copy); streamer: mysql-bin.000262:1012249949; Lag: 1.01s, State: migrating; ETA: 6m19s
+[2020/10/21 12:12:55] [info] binlogsyncer.go:723 rotate to (mysql-bin.000263, 4)
+[2020/10/21 12:12:55] [info] binlogsyncer.go:723 rotate to (mysql-bin.000263, 4)
+2020-10-21 12:12:55 INFO rotate to next log from mysql-bin.000263:1075520821 to mysql-bin.000263
+2020-10-21 12:12:55 INFO rotate to next log from mysql-bin.000263:0 to mysql-bin.000263
+Copy: 9526000/14659130 65.0%; Applied: 0; Backlog: 0/1000; Time: 11m30s(total), 11m30s(copy); streamer: mysql-bin.000263:9038022; Lag: 1.01s, State: migrating; ETA: 6m11s
+Copy: 9889000/14659130 67.5%; Applied: 0; Backlog: 0/1000; Time: 12m0s(total), 12m0s(copy); streamer: mysql-bin.000263:128333668; Lag: 1.01s, State: migrating; ETA: 5m47s
+Copy: 10109000/14659130 69.0%; Applied: 0; Backlog: 0/1000; Time: 12m30s(total), 12m30s(copy); streamer: mysql-bin.000263:200643971; Lag: 1.01s, State: migrating; ETA: 5m37s
+Copy: 10450000/14659130 71.3%; Applied: 0; Backlog: 0/1000; Time: 13m0s(total), 13m0s(copy); streamer: mysql-bin.000263:312711856; Lag: 1.01s, State: migrating; ETA: 5m14s
+Copy: 10642500/14659130 72.6%; Applied: 0; Backlog: 0/1000; Time: 13m30s(total), 13m29s(copy); streamer: mysql-bin.000263:375986169; Lag: 1.01s, State: migrating; ETA: 5m5s
+Copy: 11000000/14659130 75.0%; Applied: 0; Backlog: 0/1000; Time: 14m0s(total), 14m0s(copy); streamer: mysql-bin.000263:493476859; Lag: 1.01s, State: migrating; ETA: 4m39s
+Copy: 11187000/14659130 76.3%; Applied: 0; Backlog: 0/1000; Time: 14m30s(total), 14m30s(copy); streamer: mysql-bin.000263:554944956; Lag: 1.01s, State: migrating; ETA: 4m30s
+Copy: 11533500/14659130 78.7%; Applied: 0; Backlog: 0/1000; Time: 15m0s(total), 15m0s(copy); streamer: mysql-bin.000263:668819329; Lag: 1.01s, State: migrating; ETA: 4m3s
+Copy: 11704000/14659130 79.8%; Applied: 0; Backlog: 0/1000; Time: 15m30s(total), 15m30s(copy); streamer: mysql-bin.000263:724865665; Lag: 1.01s, State: migrating; ETA: 3m54s
+Copy: 12017500/14659130 82.0%; Applied: 0; Backlog: 0/1000; Time: 16m0s(total), 16m0s(copy); streamer: mysql-bin.000263:827897756; Lag: 1.01s, State: migrating; ETA: 3m31s
+Copy: 12237500/14659130 83.5%; Applied: 0; Backlog: 0/1000; Time: 16m30s(total), 16m30s(copy); streamer: mysql-bin.000263:900208135; Lag: 1.01s, State: migrating; ETA: 3m15s
+Copy: 12457500/14659130 85.0%; Applied: 0; Backlog: 0/1000; Time: 16m55s(total), 16m55s(copy); streamer: mysql-bin.000263:972513095; Lag: 1.01s, State: migrating; ETA: 2m59s
+Copy: 12507000/14659130 85.3%; Applied: 0; Backlog: 0/1000; Time: 17m0s(total), 17m0s(copy); streamer: mysql-bin.000263:988784571; Lag: 0.01s, State: migrating; ETA: 2m55s
+Copy: 12551000/14659130 85.6%; Applied: 0; Backlog: 0/1000; Time: 17m5s(total), 17m5s(copy); streamer: mysql-bin.000263:1003246178; Lag: 1.01s, State: migrating; ETA: 2m52s
+Copy: 12600500/14659130 86.0%; Applied: 0; Backlog: 0/1000; Time: 17m10s(total), 17m10s(copy); streamer: mysql-bin.000263:1019515361; Lag: 1.01s, State: migrating; ETA: 2m48s
+Copy: 12655500/14659130 86.3%; Applied: 0; Backlog: 0/1000; Time: 17m15s(total), 17m15s(copy); streamer: mysql-bin.000263:1037591294; Lag: 0.01s, State: migrating; ETA: 2m43s
+Copy: 12699500/14659130 86.6%; Applied: 0; Backlog: 0/1000; Time: 17m20s(total), 17m20s(copy); streamer: mysql-bin.000263:1052052226; Lag: 1.01s, State: migrating; ETA: 2m40s
+Copy: 12749000/14659130 87.0%; Applied: 0; Backlog: 0/1000; Time: 17m25s(total), 17m25s(copy); streamer: mysql-bin.000263:1068321677; Lag: 1.01s, State: migrating; ETA: 2m36s
+[2020/10/21 12:18:55] [info] binlogsyncer.go:723 rotate to (mysql-bin.000264, 4)
+[2020/10/21 12:18:55] [info] binlogsyncer.go:723 rotate to (mysql-bin.000264, 4)
+2020-10-21 12:18:55 INFO rotate to next log from mysql-bin.000264:1073745503 to mysql-bin.000264
+2020-10-21 12:18:55 INFO rotate to next log from mysql-bin.000264:0 to mysql-bin.000264
+Copy: 12776500/14659130 87.2%; Applied: 0; Backlog: 0/1000; Time: 17m30s(total), 17m30s(copy); streamer: mysql-bin.000264:3615870; Lag: 1.01s, State: migrating; ETA: 2m34s
+Copy: 12798500/14659130 87.3%; Applied: 0; Backlog: 0/1000; Time: 17m35s(total), 17m35s(copy); streamer: mysql-bin.000264:10851536; Lag: 1.01s, State: migrating; ETA: 2m33s
+Copy: 12815000/14659130 87.4%; Applied: 0; Backlog: 0/1000; Time: 17m40s(total), 17m40s(copy); streamer: mysql-bin.000264:16278177; Lag: 1.01s, State: migrating; ETA: 2m32s
+Copy: 12837000/14659130 87.6%; Applied: 0; Backlog: 0/1000; Time: 17m45s(total), 17m45s(copy); streamer: mysql-bin.000264:23511140; Lag: 1.01s, State: migrating; ETA: 2m31s
+Copy: 12875500/14659130 87.8%; Applied: 0; Backlog: 0/1000; Time: 17m50s(total), 17m50s(copy); streamer: mysql-bin.000264:36165589; Lag: 1.01s, State: migrating; ETA: 2m28s
+Copy: 12919500/14659130 88.1%; Applied: 0; Backlog: 0/1000; Time: 17m55s(total), 17m55s(copy); streamer: mysql-bin.000264:50627198; Lag: 1.01s, State: migrating; ETA: 2m24s
+Copy: 12969000/14659130 88.5%; Applied: 0; Backlog: 0/1000; Time: 18m0s(total), 18m0s(copy); streamer: mysql-bin.000264:66895967; Lag: 1.01s, State: migrating; ETA: 2m20s
+Copy: 13018500/14659130 88.8%; Applied: 0; Backlog: 0/1000; Time: 18m5s(total), 18m5s(copy); streamer: mysql-bin.000264:83164732; Lag: 1.01s, State: migrating; ETA: 2m16s
+Copy: 13068000/14659130 89.1%; Applied: 0; Backlog: 0/1000; Time: 18m10s(total), 18m10s(copy); streamer: mysql-bin.000264:99436205; Lag: 1.01s, State: migrating; ETA: 2m12s
+Copy: 13117500/14659130 89.5%; Applied: 0; Backlog: 0/1000; Time: 18m15s(total), 18m15s(copy); streamer: mysql-bin.000264:115704974; Lag: 1.01s, State: migrating; ETA: 2m8s
+Copy: 13161500/14659130 89.8%; Applied: 0; Backlog: 0/1000; Time: 18m20s(total), 18m20s(copy); streamer: mysql-bin.000264:130166583; Lag: 1.01s, State: migrating; ETA: 2m5s
+Copy: 13205500/14659130 90.1%; Applied: 0; Backlog: 0/1000; Time: 18m25s(total), 18m25s(copy); streamer: mysql-bin.000264:144628189; Lag: 1.01s, State: migrating; ETA: 2m1s
+Copy: 13260500/14659130 90.5%; Applied: 0; Backlog: 0/1000; Time: 18m30s(total), 18m30s(copy); streamer: mysql-bin.000264:162704118; Lag: 1.01s, State: migrating; ETA: 1m57s
+Copy: 13304500/14659130 90.8%; Applied: 0; Backlog: 0/1000; Time: 18m35s(total), 18m35s(copy); streamer: mysql-bin.000264:177166358; Lag: 1.01s, State: migrating; ETA: 1m53s
+Copy: 13343000/14659130 91.0%; Applied: 0; Backlog: 0/1000; Time: 18m40s(total), 18m40s(copy); streamer: mysql-bin.000264:189824195; Lag: 1.01s, State: migrating; ETA: 1m50s
+Copy: 13370500/14659130 91.2%; Applied: 0; Backlog: 0/1000; Time: 18m45s(total), 18m45s(copy); streamer: mysql-bin.000264:198863646; Lag: 1.01s, State: migrating; ETA: 1m48s
+Copy: 13392500/14659130 91.4%; Applied: 0; Backlog: 0/1000; Time: 18m50s(total), 18m50s(copy); streamer: mysql-bin.000264:206096616; Lag: 1.01s, State: migrating; ETA: 1m46s
+Copy: 13414500/14659130 91.5%; Applied: 0; Backlog: 0/1000; Time: 18m55s(total), 18m55s(copy); streamer: mysql-bin.000264:213329587; Lag: 1.01s, State: migrating; ETA: 1m45s
+Copy: 13442000/14659130 91.7%; Applied: 0; Backlog: 0/1000; Time: 19m0s(total), 19m0s(copy); streamer: mysql-bin.000264:222370396; Lag: 1.01s, State: migrating; ETA: 1m43s
+Copy: 13469500/14659130 91.9%; Applied: 0; Backlog: 0/1000; Time: 19m5s(total), 19m5s(copy); streamer: mysql-bin.000264:231410523; Lag: 1.01s, State: migrating; ETA: 1m41s
+Copy: 13513500/14659130 92.2%; Applied: 0; Backlog: 0/1000; Time: 19m10s(total), 19m10s(copy); streamer: mysql-bin.000264:245871866; Lag: 1.01s, State: migrating; ETA: 1m37s
+Copy: 13557500/14659130 92.5%; Applied: 0; Backlog: 0/1000; Time: 19m15s(total), 19m15s(copy); streamer: mysql-bin.000264:260336179; Lag: 1.01s, State: migrating; ETA: 1m33s
+Copy: 13607000/14659130 92.8%; Applied: 0; Backlog: 0/1000; Time: 19m20s(total), 19m20s(copy); streamer: mysql-bin.000264:276604950; Lag: 1.02s, State: migrating; ETA: 1m29s
+Copy: 13651000/14659130 93.1%; Applied: 0; Backlog: 0/1000; Time: 19m25s(total), 19m25s(copy); streamer: mysql-bin.000264:291066555; Lag: 1.01s, State: migrating; ETA: 1m26s
+Copy: 13700500/14659130 93.5%; Applied: 0; Backlog: 0/1000; Time: 19m30s(total), 19m30s(copy); streamer: mysql-bin.000264:307335320; Lag: 1.01s, State: migrating; ETA: 1m21s
+Copy: 13739000/14659130 93.7%; Applied: 0; Backlog: 0/1000; Time: 19m35s(total), 19m35s(copy); streamer: mysql-bin.000264:319989771; Lag: 1.01s, State: migrating; ETA: 1m18s
+Copy: 13783000/14659130 94.0%; Applied: 0; Backlog: 0/1000; Time: 19m40s(total), 19m40s(copy); streamer: mysql-bin.000264:334451382; Lag: 1.01s, State: migrating; ETA: 1m15s
+Copy: 13827000/14659130 94.3%; Applied: 0; Backlog: 0/1000; Time: 19m45s(total), 19m45s(copy); streamer: mysql-bin.000264:348915696; Lag: 1.01s, State: migrating; ETA: 1m11s
+Copy: 13876500/14659130 94.7%; Applied: 0; Backlog: 0/1000; Time: 19m50s(total), 19m50s(copy); streamer: mysql-bin.000264:365184454; Lag: 1.01s, State: migrating; ETA: 1m7s
+Copy: 13915000/14659130 94.9%; Applied: 0; Backlog: 0/1000; Time: 19m55s(total), 19m55s(copy); streamer: mysql-bin.000264:377838903; Lag: 1.01s, State: migrating; ETA: 1m3s
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 13953500/14659130 95.2%; Applied: 0; Backlog: 0/1000; Time: 20m0s(total), 20m0s(copy); streamer: mysql-bin.000264:390493352; Lag: 1.01s, State: migrating; ETA: 1m0s
+Copy: 13964500/14659130 95.3%; Applied: 0; Backlog: 0/1000; Time: 20m2s(total), 20m2s(copy); streamer: mysql-bin.000264:394109963; Lag: 1.01s, State: migrating; ETA: 59s
+Copy: 13970000/14659130 95.3%; Applied: 0; Backlog: 0/1000; Time: 20m3s(total), 20m3s(copy); streamer: mysql-bin.000264:395918734; Lag: 1.01s, State: migrating; ETA: 59s
+Copy: 13970000/14659130 95.3%; Applied: 0; Backlog: 0/1000; Time: 20m4s(total), 20m4s(copy); streamer: mysql-bin.000264:395920345; Lag: 1.01s, State: migrating; ETA: 59s
+Copy: 13975500/14659130 95.3%; Applied: 0; Backlog: 0/1000; Time: 20m5s(total), 20m5s(copy); streamer: mysql-bin.000264:397729116; Lag: 1.01s, State: migrating; ETA: 58s
+Copy: 13981000/14659130 95.4%; Applied: 0; Backlog: 0/1000; Time: 20m6s(total), 20m6s(copy); streamer: mysql-bin.000264:399537887; Lag: 1.01s, State: migrating; ETA: 58s
+Copy: 13986500/14659130 95.4%; Applied: 0; Backlog: 0/1000; Time: 20m7s(total), 20m7s(copy); streamer: mysql-bin.000264:401346658; Lag: 1.01s, State: migrating; ETA: 58s
+Copy: 13992000/14659130 95.4%; Applied: 0; Backlog: 0/1000; Time: 20m8s(total), 20m8s(copy); streamer: mysql-bin.000264:403155429; Lag: 1.01s, State: migrating; ETA: 57s
+Copy: 13997500/14659130 95.5%; Applied: 0; Backlog: 0/1000; Time: 20m9s(total), 20m9s(copy); streamer: mysql-bin.000264:404964200; Lag: 1.01s, State: migrating; ETA: 57s
+Copy: 14003000/14659130 95.5%; Applied: 0; Backlog: 0/1000; Time: 20m10s(total), 20m10s(copy); streamer: mysql-bin.000264:406772971; Lag: 1.01s, State: migrating; ETA: 56s
+Copy: 14008500/14659130 95.6%; Applied: 0; Backlog: 0/1000; Time: 20m11s(total), 20m11s(copy); streamer: mysql-bin.000264:408581746; Lag: 1.01s, State: migrating; ETA: 56s
+Copy: 14008500/14659130 95.6%; Applied: 0; Backlog: 0/1000; Time: 20m12s(total), 20m12s(copy); streamer: mysql-bin.000264:408583361; Lag: 1.03s, State: migrating; ETA: 56s
+Copy: 14014000/14659130 95.6%; Applied: 0; Backlog: 0/1000; Time: 20m13s(total), 20m13s(copy); streamer: mysql-bin.000264:410392136; Lag: 1.01s, State: migrating; ETA: 55s
+Copy: 14019500/14659130 95.6%; Applied: 0; Backlog: 0/1000; Time: 20m14s(total), 20m14s(copy); streamer: mysql-bin.000264:412200911; Lag: 1.01s, State: migrating; ETA: 55s
+Copy: 14025000/14659130 95.7%; Applied: 0; Backlog: 0/1000; Time: 20m15s(total), 20m15s(copy); streamer: mysql-bin.000264:414009684; Lag: 1.01s, State: migrating; ETA: 54s
+Copy: 14030500/14659130 95.7%; Applied: 0; Backlog: 0/1000; Time: 20m16s(total), 20m16s(copy); streamer: mysql-bin.000264:415818458; Lag: 1.01s, State: migrating; ETA: 54s
+Copy: 14036000/14659130 95.7%; Applied: 0; Backlog: 0/1000; Time: 20m17s(total), 20m17s(copy); streamer: mysql-bin.000264:417627911; Lag: 1.01s, State: migrating; ETA: 54s
+Copy: 14041500/14659130 95.8%; Applied: 0; Backlog: 0/1000; Time: 20m18s(total), 20m18s(copy); streamer: mysql-bin.000264:419437037; Lag: 1.01s, State: migrating; ETA: 53s
+Copy: 14047000/14659130 95.8%; Applied: 0; Backlog: 0/1000; Time: 20m19s(total), 20m19s(copy); streamer: mysql-bin.000264:421247491; Lag: 1.01s, State: migrating; ETA: 53s
+Copy: 14047000/14659130 95.8%; Applied: 0; Backlog: 0/1000; Time: 20m20s(total), 20m20s(copy); streamer: mysql-bin.000264:421249104; Lag: 1.01s, State: migrating; ETA: 53s
+Copy: 14052500/14659130 95.9%; Applied: 0; Backlog: 0/1000; Time: 20m21s(total), 20m21s(copy); streamer: mysql-bin.000264:423058556; Lag: 1.01s, State: migrating; ETA: 52s
+Copy: 14058000/14659130 95.9%; Applied: 0; Backlog: 0/1000; Time: 20m22s(total), 20m22s(copy); streamer: mysql-bin.000264:424866653; Lag: 1.01s, State: migrating; ETA: 52s
+Copy: 14063500/14659130 95.9%; Applied: 0; Backlog: 0/1000; Time: 20m23s(total), 20m23s(copy); streamer: mysql-bin.000264:426675428; Lag: 1.01s, State: migrating; ETA: 51s
+Copy: 14069000/14659130 96.0%; Applied: 0; Backlog: 0/1000; Time: 20m24s(total), 20m24s(copy); streamer: mysql-bin.000264:428484881; Lag: 0.01s, State: migrating; ETA: 51s
+Copy: 14074500/14659130 96.0%; Applied: 0; Backlog: 0/1000; Time: 20m25s(total), 20m25s(copy); streamer: mysql-bin.000264:430292978; Lag: 1.01s, State: migrating; ETA: 50s
+Copy: 14080000/14659130 96.0%; Applied: 0; Backlog: 0/1000; Time: 20m26s(total), 20m26s(copy); streamer: mysql-bin.000264:432101753; Lag: 1.01s, State: migrating; ETA: 50s
+Copy: 14091000/14659130 96.1%; Applied: 0; Backlog: 0/1000; Time: 20m27s(total), 20m27s(copy); streamer: mysql-bin.000264:435717688; Lag: 1.01s, State: migrating; ETA: 49s
+Copy: 14096500/14659130 96.2%; Applied: 0; Backlog: 0/1000; Time: 20m28s(total), 20m28s(copy); streamer: mysql-bin.000264:437527141; Lag: 1.01s, State: migrating; ETA: 49s
+Copy: 14107500/14659130 96.2%; Applied: 0; Backlog: 0/1000; Time: 20m29s(total), 20m29s(copy); streamer: mysql-bin.000264:441142398; Lag: 1.01s, State: migrating; ETA: 48s
+Copy: 14113000/14659130 96.3%; Applied: 0; Backlog: 0/1000; Time: 20m30s(total), 20m30s(copy); streamer: mysql-bin.000264:442951849; Lag: 1.01s, State: migrating; ETA: 47s
+Copy: 14124000/14659130 96.3%; Applied: 0; Backlog: 0/1000; Time: 20m31s(total), 20m31s(copy); streamer: mysql-bin.000264:446567783; Lag: 0.02s, State: migrating; ETA: 46s
+Copy: 14129500/14659130 96.4%; Applied: 0; Backlog: 0/1000; Time: 20m32s(total), 20m32s(copy); streamer: mysql-bin.000264:448376558; Lag: 0.01s, State: migrating; ETA: 46s
+Copy: 14140500/14659130 96.5%; Applied: 0; Backlog: 0/1000; Time: 20m33s(total), 20m33s(copy); streamer: mysql-bin.000264:451992493; Lag: 0.01s, State: migrating; ETA: 45s
+Copy: 14151500/14659130 96.5%; Applied: 0; Backlog: 0/1000; Time: 20m34s(total), 20m34s(copy); streamer: mysql-bin.000264:455608426; Lag: 0.01s, State: migrating; ETA: 44s
+Copy: 14157000/14659130 96.6%; Applied: 0; Backlog: 0/1000; Time: 20m35s(total), 20m35s(copy); streamer: mysql-bin.000264:457416523; Lag: 1.01s, State: migrating; ETA: 43s
+Copy: 14168000/14659130 96.6%; Applied: 0; Backlog: 0/1000; Time: 20m36s(total), 20m36s(copy); streamer: mysql-bin.000264:461033135; Lag: 0.01s, State: migrating; ETA: 42s
+Copy: 14173500/14659130 96.7%; Applied: 0; Backlog: 0/1000; Time: 20m37s(total), 20m37s(copy); streamer: mysql-bin.000264:462841910; Lag: 0.01s, State: migrating; ETA: 42s
+Copy: 14184500/14659130 96.8%; Applied: 0; Backlog: 0/1000; Time: 20m38s(total), 20m38s(copy); streamer: mysql-bin.000264:466457845; Lag: 0.01s, State: migrating; ETA: 41s
+Copy: 14195500/14659130 96.8%; Applied: 0; Backlog: 0/1000; Time: 20m39s(total), 20m39s(copy); streamer: mysql-bin.000264:470073780; Lag: 0.01s, State: migrating; ETA: 40s
+Copy: 14201000/14659130 96.9%; Applied: 0; Backlog: 0/1000; Time: 20m40s(total), 20m40s(copy); streamer: mysql-bin.000264:471881877; Lag: 1.01s, State: migrating; ETA: 40s
+Copy: 14212000/14659130 96.9%; Applied: 0; Backlog: 0/1000; Time: 20m41s(total), 20m41s(copy); streamer: mysql-bin.000264:475498490; Lag: 0.01s, State: migrating; ETA: 39s
+Copy: 14223000/14659130 97.0%; Applied: 0; Backlog: 0/1000; Time: 20m42s(total), 20m42s(copy); streamer: mysql-bin.000264:479114423; Lag: 0.01s, State: migrating; ETA: 38s
+Copy: 14228500/14659130 97.1%; Applied: 0; Backlog: 0/1000; Time: 20m43s(total), 20m43s(copy); streamer: mysql-bin.000264:480922520; Lag: 1.01s, State: migrating; ETA: 37s
+Copy: 14239500/14659130 97.1%; Applied: 0; Backlog: 0/1000; Time: 20m44s(total), 20m44s(copy); streamer: mysql-bin.000264:484539129; Lag: 1.01s, State: migrating; ETA: 36s
+Copy: 14250500/14659130 97.2%; Applied: 0; Backlog: 0/1000; Time: 20m45s(total), 20m45s(copy); streamer: mysql-bin.000264:488155064; Lag: 0.01s, State: migrating; ETA: 35s
+Copy: 14261500/14659130 97.3%; Applied: 0; Backlog: 0/1000; Time: 20m46s(total), 20m46s(copy); streamer: mysql-bin.000264:491770321; Lag: 1.01s, State: migrating; ETA: 34s
+Copy: 14272500/14659130 97.4%; Applied: 0; Backlog: 0/1000; Time: 20m47s(total), 20m47s(copy); streamer: mysql-bin.000264:495386934; Lag: 1.01s, State: migrating; ETA: 33s
+Copy: 14283500/14659130 97.4%; Applied: 0; Backlog: 0/1000; Time: 20m48s(total), 20m48s(copy); streamer: mysql-bin.000264:499002191; Lag: 1.01s, State: migrating; ETA: 32s
+Copy: 14283500/14659130 97.4%; Applied: 0; Backlog: 0/1000; Time: 20m49s(total), 20m49s(copy); streamer: mysql-bin.000264:499004482; Lag: 0.01s, State: migrating; ETA: 32s
+Copy: 14294500/14659130 97.5%; Applied: 0; Backlog: 0/1000; Time: 20m50s(total), 20m50s(copy); streamer: mysql-bin.000264:502463699; Lag: 0.01s, State: migrating; ETA: 31s
+Copy: 14300000/14659130 97.6%; Applied: 0; Backlog: 0/1000; Time: 20m51s(total), 20m51s(copy); streamer: mysql-bin.000264:504431899; Lag: 0.01s, State: migrating; ETA: 31s
+Copy: 14311000/14659130 97.6%; Applied: 0; Backlog: 0/1000; Time: 20m52s(total), 20m52s(copy); streamer: mysql-bin.000264:508047834; Lag: 1.01s, State: migrating; ETA: 30s
+Copy: 14322000/14659130 97.7%; Applied: 0; Backlog: 0/1000; Time: 20m53s(total), 20m53s(copy); streamer: mysql-bin.000264:511663769; Lag: 0.01s, State: migrating; ETA: 29s
+Copy: 14327500/14659130 97.7%; Applied: 0; Backlog: 0/1000; Time: 20m54s(total), 20m54s(copy); streamer: mysql-bin.000264:513471866; Lag: 1.01s, State: migrating; ETA: 29s
+Copy: 14338500/14659130 97.8%; Applied: 0; Backlog: 0/1000; Time: 20m55s(total), 20m55s(copy); streamer: mysql-bin.000264:517088479; Lag: 0.01s, State: migrating; ETA: 28s
+Copy: 14344000/14659130 97.9%; Applied: 0; Backlog: 0/1000; Time: 20m56s(total), 20m56s(copy); streamer: mysql-bin.000264:518897254; Lag: 1.01s, State: migrating; ETA: 27s
+Copy: 14355000/14659130 97.9%; Applied: 0; Backlog: 0/1000; Time: 20m57s(total), 20m57s(copy); streamer: mysql-bin.000264:522513189; Lag: 1.01s, State: migrating; ETA: 26s
+Copy: 14360500/14659130 98.0%; Applied: 0; Backlog: 0/1000; Time: 20m58s(total), 20m58s(copy); streamer: mysql-bin.000264:524321962; Lag: 1.01s, State: migrating; ETA: 26s
+Copy: 14371500/14659130 98.0%; Applied: 0; Backlog: 0/1000; Time: 20m59s(total), 20m59s(copy); streamer: mysql-bin.000264:527937219; Lag: 1.01s, State: migrating; ETA: 25s
+Copy: 14382500/14659130 98.1%; Applied: 0; Backlog: 0/1000; Time: 21m0s(total), 21m0s(copy); streamer: mysql-bin.000264:531553151; Lag: 1.01s, State: migrating; ETA: 24s
+Copy: 14388000/14659130 98.2%; Applied: 0; Backlog: 0/1000; Time: 21m1s(total), 21m1s(copy); streamer: mysql-bin.000264:533361921; Lag: 1.01s, State: migrating; ETA: 23s
+Copy: 14399000/14659130 98.2%; Applied: 0; Backlog: 0/1000; Time: 21m2s(total), 21m2s(copy); streamer: mysql-bin.000264:536895711; Lag: 1.01s, State: migrating; ETA: 22s
+Copy: 14404500/14659130 98.3%; Applied: 0; Backlog: 0/1000; Time: 21m3s(total), 21m3s(copy); streamer: mysql-bin.000264:538787301; Lag: 0.01s, State: migrating; ETA: 22s
+Copy: 14415500/14659130 98.3%; Applied: 0; Backlog: 0/1000; Time: 21m4s(total), 21m4s(copy); streamer: mysql-bin.000264:542403232; Lag: 1.01s, State: migrating; ETA: 21s
+Copy: 14421000/14659130 98.4%; Applied: 0; Backlog: 0/1000; Time: 21m5s(total), 21m5s(copy); streamer: mysql-bin.000264:544211325; Lag: 1.01s, State: migrating; ETA: 20s
+Copy: 14432000/14659130 98.5%; Applied: 0; Backlog: 0/1000; Time: 21m6s(total), 21m6s(copy); streamer: mysql-bin.000264:547827934; Lag: 1.01s, State: migrating; ETA: 19s
+Copy: 14437500/14659130 98.5%; Applied: 0; Backlog: 0/1000; Time: 21m7s(total), 21m7s(copy); streamer: mysql-bin.000264:549636705; Lag: 0.01s, State: migrating; ETA: 19s
+Copy: 14448500/14659130 98.6%; Applied: 0; Backlog: 0/1000; Time: 21m8s(total), 21m8s(copy); streamer: mysql-bin.000264:553252636; Lag: 1.01s, State: migrating; ETA: 18s
+Copy: 14454000/14659130 98.6%; Applied: 0; Backlog: 0/1000; Time: 21m9s(total), 21m9s(copy); streamer: mysql-bin.000264:555061821; Lag: 0.01s, State: migrating; ETA: 18s
+Copy: 14465000/14659130 98.7%; Applied: 0; Backlog: 0/1000; Time: 21m10s(total), 21m10s(copy); streamer: mysql-bin.000264:558677074; Lag: 1.01s, State: migrating; ETA: 17s
+Copy: 14476000/14659130 98.8%; Applied: 0; Backlog: 0/1000; Time: 21m11s(total), 21m11s(copy); streamer: mysql-bin.000264:562293009; Lag: 1.01s, State: migrating; ETA: 16s
+Copy: 14481500/14659130 98.8%; Applied: 0; Backlog: 0/1000; Time: 21m12s(total), 21m12s(copy); streamer: mysql-bin.000264:564101782; Lag: 1.01s, State: migrating; ETA: 15s
+Copy: 14492500/14659130 98.9%; Applied: 0; Backlog: 0/1000; Time: 21m13s(total), 21m13s(copy); streamer: mysql-bin.000264:567717716; Lag: 1.01s, State: migrating; ETA: 14s
+Copy: 14498000/14659130 98.9%; Applied: 0; Backlog: 0/1000; Time: 21m14s(total), 21m14s(copy); streamer: mysql-bin.000264:569526491; Lag: 1.01s, State: migrating; ETA: 14s
+Copy: 14509000/14659130 99.0%; Applied: 0; Backlog: 0/1000; Time: 21m15s(total), 21m15s(copy); streamer: mysql-bin.000264:573142426; Lag: 1.01s, State: migrating; ETA: 13s
+Copy: 14514500/14659130 99.0%; Applied: 0; Backlog: 0/1000; Time: 21m16s(total), 21m16s(copy); streamer: mysql-bin.000264:574951201; Lag: 1.01s, State: migrating; ETA: 12s
+Copy: 14525500/14659130 99.1%; Applied: 0; Backlog: 0/1000; Time: 21m17s(total), 21m17s(copy); streamer: mysql-bin.000264:578567136; Lag: 1.01s, State: migrating; ETA: 11s
+Copy: 14531000/14659130 99.1%; Applied: 0; Backlog: 0/1000; Time: 21m18s(total), 21m18s(copy); streamer: mysql-bin.000264:580376589; Lag: 1.01s, State: migrating; ETA: 11s
+Copy: 14536500/14659130 99.2%; Applied: 0; Backlog: 0/1000; Time: 21m19s(total), 21m19s(copy); streamer: mysql-bin.000264:582185364; Lag: 0.01s, State: migrating; ETA: 10s
+Copy: 14547500/14659130 99.2%; Applied: 0; Backlog: 0/1000; Time: 21m20s(total), 21m20s(copy); streamer: mysql-bin.000264:585800621; Lag: 1.01s, State: migrating; ETA: 9s
+Copy: 14553000/14659130 99.3%; Applied: 0; Backlog: 0/1000; Time: 21m21s(total), 21m21s(copy); streamer: mysql-bin.000264:587609394; Lag: 1.01s, State: migrating; ETA: 9s
+Copy: 14558500/14659130 99.3%; Applied: 0; Backlog: 0/1000; Time: 21m22s(total), 21m22s(copy); streamer: mysql-bin.000264:589418167; Lag: 1.01s, State: migrating; ETA: 8s
+Copy: 14564000/14659130 99.4%; Applied: 0; Backlog: 0/1000; Time: 21m23s(total), 21m23s(copy); streamer: mysql-bin.000264:591226938; Lag: 1.01s, State: migrating; ETA: 8s
+Copy: 14569500/14659130 99.4%; Applied: 0; Backlog: 0/1000; Time: 21m24s(total), 21m24s(copy); streamer: mysql-bin.000264:593036398; Lag: 1.01s, State: migrating; ETA: 7s
+Copy: 14575000/14659130 99.4%; Applied: 0; Backlog: 0/1000; Time: 21m25s(total), 21m25s(copy); streamer: mysql-bin.000264:594847869; Lag: 0.01s, State: migrating; ETA: 7s
+Copy: 14580500/14659130 99.5%; Applied: 0; Backlog: 0/1000; Time: 21m26s(total), 21m26s(copy); streamer: mysql-bin.000264:596655964; Lag: 0.01s, State: migrating; ETA: 6s
+Copy: 14586000/14659130 99.5%; Applied: 0; Backlog: 0/1000; Time: 21m27s(total), 21m27s(copy); streamer: mysql-bin.000264:598464737; Lag: 1.01s, State: migrating; ETA: 6s
+Copy: 14591500/14659130 99.5%; Applied: 0; Backlog: 0/1000; Time: 21m28s(total), 21m28s(copy); streamer: mysql-bin.000264:600273510; Lag: 1.01s, State: migrating; ETA: 5s
+Copy: 14597000/14659130 99.6%; Applied: 0; Backlog: 0/1000; Time: 21m29s(total), 21m29s(copy); streamer: mysql-bin.000264:602082961; Lag: 1.01s, State: migrating; ETA: 5s
+Copy: 14602500/14659130 99.6%; Applied: 0; Backlog: 0/1000; Time: 21m30s(total), 21m30s(copy); streamer: mysql-bin.000264:603891056; Lag: 1.01s, State: migrating; ETA: 5s
+Copy: 14608000/14659130 99.7%; Applied: 0; Backlog: 0/1000; Time: 21m31s(total), 21m31s(copy); streamer: mysql-bin.000264:605699829; Lag: 1.01s, State: migrating; ETA: 4s
+Copy: 14613500/14659130 99.7%; Applied: 0; Backlog: 0/1000; Time: 21m32s(total), 21m32s(copy); streamer: mysql-bin.000264:607508600; Lag: 1.01s, State: migrating; ETA: 4s
+Copy: 14619000/14659130 99.7%; Applied: 0; Backlog: 0/1000; Time: 21m33s(total), 21m33s(copy); streamer: mysql-bin.000264:609317372; Lag: 1.01s, State: migrating; ETA: 3s
+Copy: 14624500/14659130 99.8%; Applied: 0; Backlog: 0/1000; Time: 21m34s(total), 21m34s(copy); streamer: mysql-bin.000264:611126143; Lag: 1.01s, State: migrating; ETA: 3s
+Copy: 14630000/14659130 99.8%; Applied: 0; Backlog: 0/1000; Time: 21m35s(total), 21m35s(copy); streamer: mysql-bin.000264:612934915; Lag: 1.01s, State: migrating; ETA: 2s
+Copy: 14635500/14659130 99.8%; Applied: 0; Backlog: 0/1000; Time: 21m36s(total), 21m36s(copy); streamer: mysql-bin.000264:614743688; Lag: 1.01s, State: migrating; ETA: 2s
+Copy: 14641000/14659130 99.9%; Applied: 0; Backlog: 0/1000; Time: 21m37s(total), 21m37s(copy); streamer: mysql-bin.000264:616552461; Lag: 1.01s, State: migrating; ETA: 1s
+Copy: 14646500/14659130 99.9%; Applied: 0; Backlog: 0/1000; Time: 21m38s(total), 21m38s(copy); streamer: mysql-bin.000264:618361234; Lag: 1.01s, State: migrating; ETA: 1s
+Copy: 14652000/14659130 100.0%; Applied: 0; Backlog: 0/1000; Time: 21m39s(total), 21m39s(copy); streamer: mysql-bin.000264:620170682; Lag: 0.01s, State: migrating; ETA: 0s
+Copy: 14657500/14659130 100.0%; Applied: 0; Backlog: 0/1000; Time: 21m40s(total), 21m40s(copy); streamer: mysql-bin.000264:621978779; Lag: 1.02s, State: migrating; ETA: 0s
+Copy: 14657500/14659130 100.0%; Applied: 0; Backlog: 0/1000; Time: 21m41s(total), 21m41s(copy); streamer: mysql-bin.000264:621980394; Lag: 1.01s, State: migrating; ETA: 0s
+Copy: 14789500/14659130 100.9%; Applied: 0; Backlog: 0/1000; Time: 22m0s(total), 22m0s(copy); streamer: mysql-bin.000264:665369433; Lag: 0.01s, State: migrating; ETA: due
+2020-10-21 12:23:53 INFO Row copy complete
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 22m26s(total), 22m25s(copy); streamer: mysql-bin.000264:734068309; Lag: 1.01s, State: migrating; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 22m30s(total), 22m25s(copy); streamer: mysql-bin.000264:734559823; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 22m35s(total), 22m25s(copy); streamer: mysql-bin.000264:734564166; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 22m40s(total), 22m25s(copy); streamer: mysql-bin.000264:734568512; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 22m45s(total), 22m25s(copy); streamer: mysql-bin.000264:734572861; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 22m50s(total), 22m25s(copy); streamer: mysql-bin.000264:734577201; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 22m55s(total), 22m25s(copy); streamer: mysql-bin.000264:734581550; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 23m0s(total), 22m25s(copy); streamer: mysql-bin.000264:734585899; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 23m5s(total), 22m25s(copy); streamer: mysql-bin.000264:734592954; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 23m10s(total), 22m25s(copy); streamer: mysql-bin.000264:734597712; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 23m15s(total), 22m25s(copy); streamer: mysql-bin.000264:734602058; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 23m20s(total), 22m25s(copy); streamer: mysql-bin.000264:734606407; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 23m25s(total), 22m25s(copy); streamer: mysql-bin.000264:734610756; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 23m30s(total), 22m25s(copy); streamer: mysql-bin.000264:734615105; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 24m0s(total), 22m25s(copy); streamer: mysql-bin.000264:734639736; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 24m30s(total), 22m25s(copy); streamer: mysql-bin.000264:734663737; Lag: 1.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 25m0s(total), 22m25s(copy); streamer: mysql-bin.000264:734687735; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 25m30s(total), 22m25s(copy); streamer: mysql-bin.000264:734712139; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 26m0s(total), 22m25s(copy); streamer: mysql-bin.000264:734736131; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 26m30s(total), 22m25s(copy); streamer: mysql-bin.000264:734760131; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 27m0s(total), 22m25s(copy); streamer: mysql-bin.000264:734784131; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 27m30s(total), 22m25s(copy); streamer: mysql-bin.000264:734808541; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 28m0s(total), 22m25s(copy); streamer: mysql-bin.000264:734833231; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 28m30s(total), 22m25s(copy); streamer: mysql-bin.000264:734854515; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 29m0s(total), 22m25s(copy); streamer: mysql-bin.000264:734879142; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 29m30s(total), 22m25s(copy); streamer: mysql-bin.000264:734903556; Lag: 0.01s, State: postponing cut-over; ETA: due
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 30m0s(total), 22m25s(copy); streamer: mysql-bin.000264:734927553; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 30m30s(total), 22m25s(copy); streamer: mysql-bin.000264:734951552; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 31m0s(total), 22m25s(copy); streamer: mysql-bin.000264:734975541; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 31m30s(total), 22m25s(copy); streamer: mysql-bin.000264:734999945; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 32m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735023949; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 32m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735047942; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 33m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735071940; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 33m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735096347; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 34m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735118266; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 34m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735142265; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 35m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735166269; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 35m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735190688; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 36m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735214680; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 36m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735238685; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 37m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735262686; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 37m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735287087; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 38m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735311091; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 38m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735335087; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 39m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735359705; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 39m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735381404; Lag: 0.01s, State: postponing cut-over; ETA: due
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 40m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735405400; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 40m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735429401; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 41m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735453396; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 41m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735477797; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 42m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735501798; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 42m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735525780; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 43m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735549772; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 43m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735574187; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 44m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735598809; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 44m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735622804; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 45m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735644097; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 45m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735668513; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 46m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735692496; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 46m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735716501; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 47m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735741325; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 47m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735765738; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 48m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735789742; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 48m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735813736; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 49m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735838922; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 49m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735863335; Lag: 0.01s, State: postponing cut-over; ETA: due
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 50m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735887333; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 50m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735908624; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 51m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735932601; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 51m30s(total), 22m25s(copy); streamer: mysql-bin.000264:735957002; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 52m0s(total), 22m25s(copy); streamer: mysql-bin.000264:735980988; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 52m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736004981; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 53m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736028970; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 53m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736053386; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 54m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736078013; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 54m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736102002; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 55m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736125995; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 55m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736150399; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 56m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736171680; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 56m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736195685; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 57m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736219683; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 57m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736244084; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 58m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736268791; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 58m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736292787; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 59m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736317965; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 59m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736342373; Lag: 0.01s, State: postponing cut-over; ETA: due
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h0m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736366376; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h0m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736390371; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h1m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736414365; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h1m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736436078; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h2m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736460078; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h2m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736484076; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h3m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736508073; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h3m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736532488; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h4m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736557117; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h4m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736581106; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h5m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736605109; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h5m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736629512; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h6m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736653512; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h6m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736677492; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h7m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736698784; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h7m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736723196; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h8m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736747196; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h8m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736771203; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h9m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736795835; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h9m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736820244; Lag: 0.01s, State: postponing cut-over; ETA: due
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h10m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736844251; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h10m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736868250; Lag: 1.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h11m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736892252; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h11m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736916663; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h12m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736940665; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h12m30s(total), 22m25s(copy); streamer: mysql-bin.000264:736961957; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h13m0s(total), 22m25s(copy); streamer: mysql-bin.000264:736985959; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h13m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737010364; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h14m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737034999; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h14m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737059555; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h15m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737083566; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h15m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737107980; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h16m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737132808; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h16m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737156808; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h17m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737180807; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h17m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737205219; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h18m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737226509; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h18m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737250503; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h19m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737275140; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h19m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737300114; Lag: 0.01s, State: postponing cut-over; ETA: due
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h20m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737324110; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h20m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737348110; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h21m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737372118; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h21m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737396541; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h22m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737420534; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h22m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737444540; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h23m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737468542; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h23m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737490230; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h24m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737514861; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h24m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737538861; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h25m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737562863; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h25m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737587277; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h26m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737611285; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h26m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737635291; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h27m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737659284; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h27m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737683695; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h28m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737708409; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h28m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737732412; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h29m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737754335; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h29m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737779303; Lag: 0.01s, State: postponing cut-over; ETA: due
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h30m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737803300; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h30m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737827296; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h31m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737851301; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h31m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737875709; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h32m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737899687; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h32m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737923687; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h33m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737947689; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h33m30s(total), 22m25s(copy); streamer: mysql-bin.000264:737972109; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h34m0s(total), 22m25s(copy); streamer: mysql-bin.000264:737996746; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h34m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738018041; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h35m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738042043; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h35m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738066451; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h36m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738091013; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h36m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738115013; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h37m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738139021; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h37m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738163435; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h38m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738187422; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h38m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738211423; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h39m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738236050; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h39m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738260470; Lag: 0.01s, State: postponing cut-over; ETA: due
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h40m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738281764; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h40m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738305770; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h41m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738329758; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h41m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738354168; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h42m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738378167; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h42m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738402170; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h43m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738426172; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h43m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738450566; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h44m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738475199; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h44m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738499203; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h45m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738524036; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h45m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738545745; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h46m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738569747; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h46m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738593750; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h47m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738617749; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h47m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738642163; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h48m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738666162; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h48m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738690144; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h49m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738714773; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h49m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738739195; Lag: 0.01s, State: postponing cut-over; ETA: due
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h50m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738763200; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h50m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738787206; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h51m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738808500; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h51m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738832920; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h52m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738856922; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h52m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738880925; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h53m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738904918; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h53m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738929335; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h54m0s(total), 22m25s(copy); streamer: mysql-bin.000264:738953955; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h54m30s(total), 22m25s(copy); streamer: mysql-bin.000264:738977957; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h55m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739001948; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h55m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739026361; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h56m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739050360; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h56m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739071643; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h57m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739095645; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h57m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739120047; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h58m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739144758; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h58m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739168758; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h59m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739193392; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 1h59m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739218357; Lag: 0.01s, State: postponing cut-over; ETA: due
+# Migrating `consistency_db`.`t_20201021`; Ghost table is `consistency_db`.`_t_20201021_gho`
+# Migrating db-a:3306; inspecting db-a:3306; executing on db-a
+# Migration started at Wed Oct 21 12:01:27 +0800 2020
+# chunk-size: 5500; max-lag-millis: 1500ms; dml-batch-size: 10; max-load: Threads_running=20; critical-load: Threads_running=50; nice-ratio: 0.000000
+# throttle-additional-flag-file: /tmp/gh-ost.throttle 
+# postpone-cut-over-flag-file: /tmp/ghost.postpone.flag [set]
+# panic-flag-file: /tmp/ghost.panic.flag
+# Serving on unix socket: /tmp/gh-ost.consistency_db.t_20201021.sock
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h0m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739242368; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h0m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739266366; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h1m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739290366; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h1m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739314787; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h2m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739336082; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h2m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739360072; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h3m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739384065; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h3m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739408474; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h4m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739433103; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h4m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739457110; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h5m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739481107; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h5m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739505528; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h6m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739530085; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h6m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739554071; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h7m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739578077; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h7m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739599776; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h8m0s(total), 22m25s(copy); streamer: mysql-bin.000264:739623777; Lag: 0.01s, State: postponing cut-over; ETA: due
+Copy: 15000000/15000000 100.0%; Applied: 0; Backlog: 0/1000; Time: 2h8m30s(total), 22m25s(copy); streamer: mysql-bin.000264:739647773; Lag: 0.01s, State: postponing cut-over; ETA: due

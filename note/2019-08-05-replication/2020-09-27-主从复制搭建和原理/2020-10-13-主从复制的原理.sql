@@ -113,7 +113,7 @@
 		主库并发高、TPS高, 并且由于从库的SQL线程是单线程, 意味着每次只能应用一个event, 就会导致备库消费中转日志（relay log）的速度，比主库生产 binlog 的速度要慢， 从而出现严重的主备延迟问题。
 		-- 	MySQL 基于逻辑的需要等待事务或 DDL 执行完，产生逻辑日志再同步到从机上，所以主从复制的延时问题会比较严重。
 		对应的解决方案: 
-			1. 关闭log_slave_updates，同时innodb_flush_log_at_trx_commit 设置为2表示 redo只需要写入到操作系统层面事务就完成，几乎没有延迟了。
+			1. 关闭log_slave_updates，同时innodb_flush_log_at_trx_commit 设置为2表示 redo只需要写入到操作系统的page chche 事务就完成，几乎没有延迟了。
 			2. 使用基于行的并行复制 
 	
 	2. 大事务造成的主从延迟
@@ -143,3 +143,11 @@
 		sync_relay_log				默认，10000
 		sync_relay_log_info			默认，10000
 		
+	5. 网络正常的情况下, 主要是SQL线程的延迟.
+	
+	6. 占用IO资源的日志
+		redo log刷盘
+		binlog刷盘 --如果开启记录binlog的功能 
+		relay log刷盘
+		
+	

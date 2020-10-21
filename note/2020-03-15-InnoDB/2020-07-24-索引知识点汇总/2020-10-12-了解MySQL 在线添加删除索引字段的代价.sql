@@ -532,7 +532,7 @@ https://dev.mysql.com/doc/refman/5.7/en/innodb-online-ddl-operations.html
 https://www.cnblogs.com/YangJiaXin/p/10828244.html
 
 
-虽然pt-osc和gh-ost比 online DDL 慢一倍左右，但是对于主从延迟很小。
+虽然pt-osc和gh-ost比 online DDL 慢一倍左右, 从库参数设置合理, 主从延迟会很小。
 
 慢的原因：pt-osc和gh-ost需要写binlog和redo。
 
