@@ -70,6 +70,6 @@ DELIMITER ;
 
 
 
--- 验证了 query event 实际记录了 DDL语句的执行时间。
+-- exec_time=41：验证了 query event 实际记录了 DDL语句的执行时间。
 
 

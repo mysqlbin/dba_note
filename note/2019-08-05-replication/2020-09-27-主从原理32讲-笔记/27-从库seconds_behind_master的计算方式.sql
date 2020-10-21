@@ -81,10 +81,6 @@
 
 		1 row in set (0.00 sec)
 
-		ERROR: 
-		No query specified
-
-
 
 		2. 手动修改从库系统时间
 			[root@kp05 ~]# date
@@ -120,8 +116,7 @@
 						Auto_Position: 1
 		1 row in set (0.01 sec)
 
-		ERROR: 
-		No query specified
+
 
 		mysql> show slave status\G;
 		*************************** 1. row ***************************
