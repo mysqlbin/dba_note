@@ -175,6 +175,7 @@
 	slave:
 		Seconds_Behind_Master: 47
 	-- 验证了DML大事务造成的延迟，其延迟不会从0开始增加，而是直接从主库执行了多久开始。比如主库执行这个事务耗时20秒，那么延迟就从20开始，这是因为query event中没有准确的执行时间，可以参考第8节和第27节。
+	-- 从库的延迟时间就从DML事务在主库执行的耗时开始。
 	-- 说明了 Seconds_Behind_Master 不是完全准确.
 	
 	
@@ -882,6 +883,8 @@ Successfully altered `consistency_db`.`t_20201021`.
 			Seconds_Behind_Master: 47
 		-- 验证了DML大事务造成的延迟，其延迟不会从0开始增加，而是直接从主库执行了多久开始。比如主库执行这个事务耗时20秒，那么延迟就从20开始，这是因为query event中没有准确的执行时间，可以参考第8节和第27节。
 		-- 说明了 Seconds_Behind_Master 不是完全准确.
+		
+		-- 验证下DDL的延迟？
 		
 	7.2 两者的执行耗时
 		pt-osc：耗时22分22秒

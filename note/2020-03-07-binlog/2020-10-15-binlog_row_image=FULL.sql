@@ -163,7 +163,8 @@
 2.6 DDL
 	
 	alter table t add column b int(11) default null after a;
-	
+		--这里没有记录这个DDL的执行时间，所以和binlog中 exec_time 没有对应上，不方便理解。
+		
 	root@mysqldb 20:29:  [(none)]> show binlog events in 'mysql-bin.000010';
 	+------------------+-----+----------------+-----------+-------------+----------------------------------------------------------------------------+
 	| Log_name         | Pos | Event_type     | Server_id | End_log_pos | Info                                                                       |
@@ -188,4 +189,5 @@
 
 	mysqlbinlog -v  --start-position=194 mysql-bin.000008 > v.sql
 	
+
 
