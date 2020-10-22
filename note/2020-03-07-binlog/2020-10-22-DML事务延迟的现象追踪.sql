@@ -755,3 +755,83 @@ Master_SSL_Verify_Server_Cert: No
                  Channel_Name: 
            Master_TLS_Version: 
 1 row in set (0.00 sec)
+
+
+
+从库相关参数
+	mysql> show global variables like '%master_info_repository%';
+	+------------------------+-------+
+	| Variable_name          | Value |
+	+------------------------+-------+
+	| master_info_repository | TABLE |
+	+------------------------+-------+
+	1 row in set (0.00 sec)
+
+	mysql> show global variables like '%relay_log_info_repository%';
+	+---------------------------+-------+
+	| Variable_name             | Value |
+	+---------------------------+-------+
+	| relay_log_info_repository | TABLE |
+	+---------------------------+-------+
+	1 row in set (0.00 sec)
+
+	mysql> show global variables like '%relay_log_recovery%';
+	+--------------------+-------+
+	| Variable_name      | Value |
+	+--------------------+-------+
+	| relay_log_recovery | ON    |
+	+--------------------+-------+
+	1 row in set (0.01 sec)
+
+	mysql> show global variables like '%sync_master_info%';
+	+------------------+-------+
+	| Variable_name    | Value |
+	+------------------+-------+
+	| sync_master_info | 10000 |
+	+------------------+-------+
+	1 row in set (0.00 sec)
+
+	mysql> show global variables like '%sync_relay_log%';
+	+---------------------+-------+
+	| Variable_name       | Value |
+	+---------------------+-------+
+	| sync_relay_log      | 10000 |
+	| sync_relay_log_info | 10000 |
+	+---------------------+-------+
+	2 rows in set (0.00 sec)
+
+	mysql> show global variables like '%sync_relay_log_info%';
+	+---------------------+-------+
+	| Variable_name       | Value |
+	+---------------------+-------+
+	| sync_relay_log_info | 10000 |
+	+---------------------+-------+
+	1 row in set (0.01 sec)
+
+	mysql> show global variables like '%updates%';
+	+-----------------------------------------+-------+
+	| Variable_name                           | Value |
+	+-----------------------------------------+-------+
+	| binlog_direct_non_transactional_updates | OFF   |
+	| log_slave_updates                       | OFF   |
+	| low_priority_updates                    | OFF   |
+	| sql_safe_updates                        | OFF   |
+	+-----------------------------------------+-------+
+	4 rows in set (0.00 sec)
+
+	mysql> show global variables like '%innodb_flush_log_at_trx_commit%';
+	+--------------------------------+-------+
+	| Variable_name                  | Value |
+	+--------------------------------+-------+
+	| innodb_flush_log_at_trx_commit | 1     |
+	+--------------------------------+-------+
+	1 row in set (0.00 sec)
+
+	mysql> show global variables like '%sync_binlog%';
+	+---------------+-------+
+	| Variable_name | Value |
+	+---------------+-------+
+	| sync_binlog   | 1     |
+	+---------------+-------+
+	1 row in set (0.00 sec)
+
