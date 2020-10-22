@@ -2,7 +2,8 @@
 1. 初始化表结构和数据
 2. 执行DDL和查看对应的binlog 
 3. 简单追踪延迟情况 
-
+4. 小结
+5. 从库相关参数
 
 1. 初始化表结构和数据
 	CREATE TABLE `t_20201021` (
@@ -182,39 +183,6 @@
 				 Master_Info_File: mysql.slave_master_info
 						SQL_Delay: 0
 			  SQL_Remaining_Delay: NULL
-		  Slave_SQL_Running_State: creating table
-		..........................................................................
-			   Retrieved_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:79-105
-				Executed_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:1-104,
-	9f50ba55-0141-11eb-98ab-0800270c8f40:1
-					Auto_Position: 1
-		..........................................................................
-	1 row in set (0.00 sec)
-
-	 mysql> show slave status\G;
-	*************************** 1. row ***************************
-				   Slave_IO_State: Waiting for master to send event
-					  Master_Host: 192.168.0.201
-					  Master_User: rpl
-					  Master_Port: 3306
-					Connect_Retry: 60
-				  Master_Log_File: mysql-bin.000013
-			  Read_Master_Log_Pos: 604
-				   Relay_Log_File: localhost-relay-bin.000033
-					Relay_Log_Pos: 612
-			Relay_Master_Log_File: mysql-bin.000013
-				 Slave_IO_Running: Yes
-				Slave_SQL_Running: Yes
-		..........................................................................
-			  Exec_Master_Log_Pos: 399
-		..........................................................................
-			Seconds_Behind_Master: 6
-		..........................................................................
-				 Master_Server_Id: 330607
-					  Master_UUID: 9e520b78-013c-11eb-a84c-0800271bf591
-				 Master_Info_File: mysql.slave_master_info
-						SQL_Delay: 0
-			  SQL_Remaining_Delay: NULL
 		  Slave_SQL_Running_State: altering table
 		..........................................................................
 			   Retrieved_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:79-105
@@ -294,13 +262,21 @@
 	1 row in set (0.00 sec)
 
 
-	-- DDL 在从库执行完成 ，Seconds_Behind_Master的值从22跌为0.
 	-- 假设从库执行耗时22秒，那么Seconds_Behind_Master的值会依次增加到22，然后再跌为0.
 
 	从服务器时间 - (query_event header中timestamp的时间 + 本DDL在主库执行的时间(exec_time)) - 主从服务器时间差
 
 	
-从库相关参数
+4. 小结
+
+	DDL的延迟现象：假设DDL在主库执行需要15秒，从库的延迟从0开始，当DDL在从库执行完成需要22秒，那么seconds_behind_master的依次增加到22秒，然后再跌为0.
+		-- 经过实验和理论，算是理解了。
+		
+	从服务器时间 - (本DDL在从库的执行时间 + 本DDL在主库执行的时间(exec_time)) - 主从服务器时间差
+		
+	
+	
+5. 从库相关参数
 	mysql> show global variables like '%master_info_repository%';
 	+------------------------+-------+
 	| Variable_name          | Value |

@@ -402,9 +402,20 @@ mysql> select * from t_20201019 limit 1;
 
 
 
+因为是1主2从的架构，所以对每个从库的错误解决都有做笔记
+	2020-10-22-Online DDL之后从库报表结构不存在的报错.sql 和 2020-10-22-Online DDL之后从库报表结构不存在的报错-02.sql  
+	2020-10-22-Online DDL之后从库报表结构不存在的报错.sql：
+		测试删除DDL生成的临时文件：
 
+			[root@localhost test_db]# rm \#sql-233c_b.frm 
+			rm：是否删除普通文件 "#sql-233c_b.frm"？y
+			[root@localhost test_db]# rm \#sql-ib69-600475077.ibd 
+			rm：是否删除普通文件 "#sql-ib69-600475077.ibd"？y
 
+		DB没有内存溢出所以进程没有被 kill 
+		
+	2020-10-22-Online DDL之后从库报表结构不存在的报错-02.sql： 
+		没有删除DDL生成的临时文件 并且 DB因为内存溢出所以进程被kill。
 
-
-
-
+		
+		

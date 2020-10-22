@@ -599,7 +599,7 @@ mysql> show slave status\G;
 			如果发生这种情况，请尝试以下步骤解决问题：
 		Create a matching .frm file in some other database directory and copy it to the database directory where the orphan table is located.
 			在其他一些数据库目录中创建一个匹配的.frm文件，并将其复制到孤立表所在的数据库目录中。
-
+			-- 的例子就是这么干的。
 		Issue DROP TABLE for the original table. That should successfully drop the table and InnoDB should print a warning to the error log that the .ibd file was missing.
 			发出原始表的DROP TABLE。 那应该成功删除该表，并且InnoDB应该在错误日志中显示一个警告，指出.ibd文件丢失。
 
