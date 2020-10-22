@@ -139,11 +139,16 @@ mysql> show slave status\G;
 	2020-10-22T03:08:33.825632Z 0 [Note] /usr/local/mysql/bin/mysqld: ready for connections.
 	Version: '5.7.22-log'  socket: '/home/mysql/3306/data/3306.sock'  port: 3306  MySQL Community Server (GPL)
 	2020-10-22T03:08:33.861987Z 3 [Note] Event Scheduler: scheduler thread started with id 3
+	
+	-- 重点日志
 	2020-10-22T03:08:34.573145Z 2 [Warning] InnoDB: Table test_db/t_20201021 contains 9 user defined columns in InnoDB, but 8 columns in MySQL. Please check INFORMATION_SCHEMA.INNODB_SYS_COLUMNS and http://dev.mysql.com/doc/refman/5.7/en/innodb-troubleshooting.html for how to resolve the issue.
+	
 	2020-10-22T03:08:34.573172Z 2 [Warning] InnoDB: Cannot open table test_db/t_20201021 from the internal data dictionary of InnoDB though the .frm file for the table exists. Please refer to http://dev.mysql.com/doc/refman/5.7/en/innodb-troubleshooting.html for how to resolve the issue.
 	2020-10-22T03:08:34.573221Z 2 [ERROR] Slave SQL for channel '': Error 'Table 'test_db.t_20201021' doesn't exist' on query. Default database: 'test_db'. Query: 'alter table t_20201021 add column b int(11) default null', Error_code: 1146
 	2020-10-22T03:08:34.768203Z 2 [Warning] Slave: Table 'test_db.t_20201021' doesn't exist Error_code: 1146
 	2020-10-22T03:08:34.768229Z 2 [ERROR] Error running query, slave SQL thread aborted. Fix the problem, and restart the slave SQL thread with "SLAVE START". We stopped at log 'mysql-bin.000011' position 194
+	
+	-- 重点日志
 	2020-10-22T03:42:50.517843Z 5 [Note] InnoDB: Table `test_db`.`t_20201021` is corrupted. Please drop the table and recreate it
 	2020-10-22T03:42:50.517876Z 5 [Warning] InnoDB: Cannot open table test_db/t_20201021 from the internal data dictionary of InnoDB though the .frm file for the table exists. Please refer to http://dev.mysql.com/doc/refman/5.7/en/innodb-troubleshooting.html for how to resolve the issue.
 	2020-10-22T03:55:16.812644Z 1 [Note] Slave I/O thread killed while reading event for channel ''
@@ -599,7 +604,7 @@ mysql> show slave status\G;
 			如果发生这种情况，请尝试以下步骤解决问题：
 		Create a matching .frm file in some other database directory and copy it to the database directory where the orphan table is located.
 			在其他一些数据库目录中创建一个匹配的.frm文件，并将其复制到孤立表所在的数据库目录中。
-			-- 的例子就是这么干的。
+			-- 本案例就是这么干的。
 		Issue DROP TABLE for the original table. That should successfully drop the table and InnoDB should print a warning to the error log that the .ibd file was missing.
 			发出原始表的DROP TABLE。 那应该成功删除该表，并且InnoDB应该在错误日志中显示一个警告，指出.ibd文件丢失。
 
