@@ -355,7 +355,7 @@
 				 Master_Info_File: mysql.slave_master_info
 						SQL_Delay: 0
 			  SQL_Remaining_Delay: NULL
-		  Slave_SQL_Running_State: System lock
+		  Slave_SQL_Running_State: System lock                 -- 正在应用relay log
 		..........................................................................
 			   Retrieved_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:79-110
 				Executed_Gtid_Set: 9e520b78-013c-11eb-a84c-0800271bf591:1-109,
@@ -443,6 +443,8 @@
 	-- 验证了DML大事务造成的延迟，其延迟不会从0开始增加，而是直接从主库执行了多久开始。比如主库执行这个事务耗时20秒，那么延迟就从20开始，这是因为query event中没有准确的执行时间，可以参考第8节和第27节。	
 	
 	-- 本案例主库执行耗时13秒，那么从库的延迟就从13秒开始，假设从库执行这个事务耗时15秒，那么此时的Seconds_Behind_Master值大概为28，然后降为0.
+	
+	-- DDL造成从库延迟的seconds_behind_master的值是准确的，而DML大事务成从库延迟的seconds_behind_master的值是不准确的，因为DDL的query event 准确记录了DDL执行的耗时 
 	
 	其它实验案例参考：《2020-10-21-pt-osc和gh-ost在1主2从的一些实践对比》
 	
