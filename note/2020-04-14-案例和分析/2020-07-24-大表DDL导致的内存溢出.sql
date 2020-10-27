@@ -38,7 +38,7 @@
 	Swap:            0B          0B          0B
 
 
-
+innodb_buffer_pool_size 设置太大，再加上server层使用的内存，导致内存超过系统上限被oom。
 
 
 

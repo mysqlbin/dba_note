@@ -1,6 +1,17 @@
-  
-  
-master
+
+1. master执行DDL
+2. show slave status
+3. 错误日志 
+4. 表结构恢复
+	4.1 方式1-尝试表空间传输恢复
+	4.2 方式2-测试删除DDL生成的临时文件
+	4.3 方式3-尝试在从库生成跟原表一样的frm表结构文件
+	4.4 方式4-从主库把frm表结构拷贝到从库并修改用户组和用户
+5. 相关参考
+
+
+1. master执行DDL
+
 	
 	mysql> flush logs;
 	Query OK, 0 rows affected (0.02 sec)
@@ -56,11 +67,7 @@ master
 
 
 
-
-
-
-
-
+2. show slave status
 mysql> show slave status\G;
 
 *************************** 1. row ***************************
@@ -129,7 +136,7 @@ mysql> show slave status\G;
 
 
 
-错误日志： 
+3. 错误日志 
 	2020-10-22T03:08:32.252034Z 0 [Warning] Neither --relay-log nor --relay-log-index were used; so replication may break when this MySQL server acts as a slave and has his hostname changed!! Please use '--relay-log=localhost-relay-bin' to avoid this problem.
 	2020-10-22T03:08:32.353483Z 0 [Warning] Recovery from master pos 4 and file mysql-bin.000011 for channel ''. Previous relay log pos and relay log file had been set to 241, ./localhost-relay-bin.000015 respectively.
 	2020-10-22T03:08:32.620426Z 1 [Warning] Storing MySQL user name or password information in the master info repository is not secure and is therefore not recommended. Please consider using the USER and PASSWORD connection options for START SLAVE; see the 'START SLAVE Syntax' in the MySQL Manual for more information.
@@ -184,14 +191,14 @@ mysql> show slave status\G;
 	-rw-r-----. 1 mysql mysql      8804 10月  4 13:44 t_20201021.frm
 	-rw-r-----. 1 mysql mysql 889192448 10月 22 11:05 t_20201021.ibd
 
+4. 表结构恢复
 
-
-尝试表空间传输恢复：
+4.1 方式1-尝试表空间传输恢复
 	mysql> create table t_20201021_new like t_20201021;
 	ERROR 1146 (42S02): Table 'test_db.t_20201021' doesn t exist
 
 
-测试删除DDL生成的临时文件：
+4.2 方式2-测试删除DDL生成的临时文件
 
 	[root@localhost test_db]# rm \#sql-233c_b.frm 
 	rm：是否删除普通文件 "#sql-233c_b.frm"？y
@@ -242,7 +249,7 @@ mysql> show slave status\G;
 
 
 
-尝试在从库生成跟原表一样的frm表结构文件
+4.3 方式3-尝试在从库生成跟原表一样的frm表结构文件
 	
 	[root@localhost test_db]# ll
 	总用量 868496
@@ -306,7 +313,7 @@ mysql> show slave status\G;
 
 
 
-从主库把frm表结构拷贝到从库并修改用户组和用户
+4.4 方式4-从主库把frm表结构拷贝到从库并修改用户组和用户
 	
 	[root@localhost test_db]# chown -R mysql:mysql t_20201021.frm
 	[root@localhost test_db]# ll
@@ -595,7 +602,7 @@ mysql> show slave status\G;
 
 
 
-相关参考：
+5. 相关参考
 
 	http://dev.mysql.com/doc/refman/5.7/en/innodb-troubleshooting.html
 	https://dev.mysql.com/doc/refman/5.7/en/innodb-troubleshooting-datadict.htmlIf 

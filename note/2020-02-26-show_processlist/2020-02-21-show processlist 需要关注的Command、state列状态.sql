@@ -179,6 +179,7 @@
 		
 	
 4. 相关参考
+
 	https://www.cnblogs.com/zping/p/11002275.html    MySQL线程状态详解
 	高性能MySQL 第3版 第207页
     https://dev.mysql.com/doc/refman/5.7/en/general-thread-states.html
