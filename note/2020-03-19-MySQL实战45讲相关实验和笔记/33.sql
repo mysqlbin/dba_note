@@ -1,40 +1,40 @@
 
 
-net_buffer         -- server端
-socket send buffer -- 操作系统层
-socket receive buffer -- 客户端
 
-把记录写到 net_buffer 中，当net_buffer达到16KB, 就调用网络接口 socket send buffer 把数据发送给客户端
-此时客户端负责接收
+1. 读取数据和发送数据的流程
+	MySQL的查询结果发送给客户端的流程
+	net_buffer         -- server端
+	socket send buffer -- 操作系统层
+	socket receive buffer -- 客户端
 
-网络接口 socket send buffer 写满，暂停读数据的流程
-	这时候会进入等待： show processlist.state 字段显示 Writing to net/Sending to client; 直到网络栈重新可写，再继续发送。
-	发送函数会返回 EAGAIN (eagain)或 WSAEWOULDBLOCK(wsaewouldblock)
+	把记录写到 net_buffer 中，当net_buffer达到16KB, 就调用网络接口 socket send buffer 把数据发送给客户端
 
-	Sending to client
-	
-		表示 仅当一个线程处于 等待客户端接收结果 的状态，才会显示 Sending to client；
-		
-		State 的值一直处于 Sending to client，就表示服务器端的网络栈（socket send buffer）写满了，这是一个需要优化的点；
-		
-		多个线程处于 Sending to client 状态的解决办法：
-			1. 优化查询结果，并评估这么多的返回结果是否合理；
-			2. 快速减少处于这个状态的线程，可以将 net_buffer_length 参数设置为一个更大的值。
-				--这里还不理解。
-				net_buffer_length 的最大值是 1G，这个值比 socket send buffer大（一般是几M）
-				比如假设一个业务，他的平均查询结果都是10M （当然这个业务有有问题，最终是要通过业务解决）
-				但是如果我把 net_buffer_length 改成10M，就不会有“Sending to client” 的情况。虽然网络栈还是慢慢发的，但是那些没发完的都缓存在net_buffer中，对于执行器来说，都是“已经写出去了”。
 				
 				
-MySQL对于查询数据的处理思路是 边读边发 的，如果客户端接收慢，会导致MySQL server端的结果发送不出去，事务执行耗时会变长。
+2. InnoDB对应LRU算法的改进
 
+	传统的LRU算法：
+		最晚访问的放在LRU链表的最前面，最早访问的放在LRU链表的最后面
+		当有一个新的数据页需要读入内存中并且此时内存没有空闲页可以用，那么会淘汰一个尾部的数据页，这个新的数据页会写入到LRU链表的最前面。
+		
+	传统LRU算法存在的问题：
+		会把LRU链表的数据全部淘汰出去； 
+		假设 innodb_buffer_pool_size=10GB, 某个大表的数量为30GB，当触发大表的全表扫描，会把LRU链表的数据全部淘汰出去；
+		
+	InnDB对LRU算法的优化
+		把LRU链表分为 young区域 和 old区域，young区域 占5/8的大小， old区域占 3/8 的大小
+		当需要把数据页读入内存中，会先写入 old区域的头部， 如果这个数据页在 old区域停留时间超过1秒再次被访问，那么就会加入 young 链表的头部
+		这个1秒的阀值由参数innodb_old_blocks_time控制
 
-
-InnoDB改进的LRU算法，如果遇到连续两次的全表扫描，会不会就把young区的3/5给覆盖掉了？因为两次扫描时间间隔会超过一秒？
-	会的。
-	
-	
-还有是 innodb_buffer_pool_size 设置太大，再加上server层使用的内存，导致内存超过系统上限被oom。
+		假设 innodb_buffer_pool_size=10GB, 某个大表的数量为30GB，当触发大表的全表扫描，会依次写入到 old区域的头部； 
+		当全表扫描顺序访问old区域中同一个数据页的记录，数据页没有超过1秒再次被访问，所以数据页不会移动到 young区域的头部。
+		
+			
+		
+3. OOM
+	innodb_buffer_pool_size 设置太大，再加上server层使用的内存，导致内存超过系统上限被oom。
 	-- 这个是自己有遇到过的。
+
 	
 	
+
