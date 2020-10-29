@@ -146,7 +146,13 @@
 		MySQL从库show processlist出现system lock的原因以及解决方法有哪些？
 
 	
+		Slave_SQL_Running_State: System lock                 -- 正在应用relay log
+			参考笔记: <2020-10-22-DML事务在从库延迟的现象追踪.sql>
+		
+	
 	13. opening_table 
+	
+	
 	
 	
 3. Show proceslist时发现大量的sleep，有什么风险吗，该如何处理？

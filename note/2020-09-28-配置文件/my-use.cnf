@@ -73,6 +73,9 @@ expire_logs_days = 7
 master_info_repository=TABLE
 relay_log_info_repository=TABLE
 
+gtid_mode = on
+enforce_gtid_consistency = 1
+
 
 #不区分大小写
 lower_case_table_names = 1

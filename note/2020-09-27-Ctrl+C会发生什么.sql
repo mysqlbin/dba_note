@@ -1,4 +1,13 @@
 
+
+
+mysql> delete from table_aaaaaaaaaaaaaaaaaaaaaa limit 10000;
+^CCtrl-C -- sending "KILL QUERY 107317" to server ...
+Ctrl-C -- query aborted.
+ERROR 1317 (70100): Query execution was interrupted
+
+
+
 普通查询下使用
 
 	mysql> show processlist;
@@ -7,10 +16,10 @@
 	+----+-----------------+---------------------+-----------------+---------+------+-----------------------------+------------------+
 	|  1 | event_scheduler | localhost           | NULL            | Daemon  | 2007 | Waiting for next activation | NULL             |
 	|  3 | root            | localhost           | NULL            | Query   |    0 | starting                    | show processlist |
-	|  4 | root            | localhost           | bak_niuniuh5_db | Sleep   |    5 |                             | NULL             |
-	|  6 | ljb_user        | 192.168.0.218:53852 | bak_niuniuh5_db | Sleep   |   61 |                             | NULL             |
-	|  7 | ljb_user        | 192.168.0.218:53855 | bak_niuniuh5_db | Sleep   |   59 |                             | NULL             |
-	|  8 | ljb_user        | 192.168.0.218:53859 | bak_niuniuh5_db | Sleep   |   35 |                             | NULL             |
+	|  4 | root            | localhost           | bak_aiuaiuh9_db | Sleep   |    5 |                             | NULL             |
+	|  6 | ljb_user        | 192.168.0.218:53852 | bak_aiuaiuh9_db | Sleep   |   61 |                             | NULL             |
+	|  7 | ljb_user        | 192.168.0.218:53855 | bak_aiuaiuh9_db | Sleep   |   59 |                             | NULL             |
+	|  8 | ljb_user        | 192.168.0.218:53859 | bak_aiuaiuh9_db | Sleep   |   35 |                             | NULL             |
 	+----+-----------------+---------------------+-----------------+---------+------+-----------------------------+------------------+
 	6 rows in set (0.00 sec)
 
@@ -59,10 +68,10 @@
 						+----+-----------------+---------------------+-----------------+---------+------+-----------------------------+------------------+
 						|  1 | event_scheduler | localhost           | NULL            | Daemon  | 2146 | Waiting for next activation | NULL             |
 						|  3 | root            | localhost           | NULL            | Query   |    0 | starting                    | show processlist |
-						|  4 | root            | localhost           | bak_niuniuh5_db | Sleep   |  109 |                             | NULL             |
-						|  6 | ljb_user        | 192.168.0.218:53852 | bak_niuniuh5_db | Sleep   |  200 |                             | NULL             |
-						|  7 | ljb_user        | 192.168.0.218:53855 | bak_niuniuh5_db | Sleep   |  198 |                             | NULL             |
-						|  8 | ljb_user        | 192.168.0.218:53859 | bak_niuniuh5_db | Sleep   |  174 |                             | NULL             |
+						|  4 | root            | localhost           | bak_aiuaiuh9_db | Sleep   |  109 |                             | NULL             |
+						|  6 | ljb_user        | 192.168.0.218:53852 | bak_aiuaiuh9_db | Sleep   |  200 |                             | NULL             |
+						|  7 | ljb_user        | 192.168.0.218:53855 | bak_aiuaiuh9_db | Sleep   |  198 |                             | NULL             |
+						|  8 | ljb_user        | 192.168.0.218:53859 | bak_aiuaiuh9_db | Sleep   |  174 |                             | NULL             |
 						+----+-----------------+---------------------+-----------------+---------+------+-----------------------------+------------------+
 						6 rows in set (0.00 sec)
 						
@@ -86,9 +95,9 @@ DML事务下使用
 	|  1 | event_scheduler | localhost           | NULL            | Daemon  | 4499 | Waiting for next activation | NULL             |
 	|  3 | root            | localhost           | NULL            | Query   |    0 | starting                    | show processlist |
 	|  4 | root            | localhost           | test_db         | Sleep   |   12 |                             | NULL             |
-	|  6 | ljb_user        | 192.168.0.218:53852 | bak_niuniuh5_db | Sleep   | 2553 |                             | NULL             |
-	|  7 | ljb_user        | 192.168.0.218:53855 | bak_niuniuh5_db | Sleep   | 2551 |                             | NULL             |
-	|  8 | ljb_user        | 192.168.0.218:53859 | bak_niuniuh5_db | Sleep   | 2527 |                             | NULL             |
+	|  6 | ljb_user        | 192.168.0.218:53852 | bak_aiuaiuh9_db | Sleep   | 2553 |                             | NULL             |
+	|  7 | ljb_user        | 192.168.0.218:53855 | bak_aiuaiuh9_db | Sleep   | 2551 |                             | NULL             |
+	|  8 | ljb_user        | 192.168.0.218:53859 | bak_aiuaiuh9_db | Sleep   | 2527 |                             | NULL             |
 	| 11 | ljb_user        | 192.168.0.218:54719 | test_db         | Sleep   |   71 |                             | NULL             |
 	| 12 | ljb_user        | 192.168.0.218:54720 | test_db         | Sleep   |   76 |                             | NULL             |
 	| 13 | ljb_user        | 192.168.0.218:54721 | test_db         | Sleep   |   73 |                             | NULL             |
@@ -133,9 +142,9 @@ DML事务下使用
 		+----+-----------------+---------------------+-----------------+---------+------+-----------------------------+------------------+
 		|  1 | event_scheduler | localhost           | NULL            | Daemon  | 4721 | Waiting for next activation | NULL             |
 		|  3 | root            | localhost           | NULL            | Query   |    0 | starting                    | show processlist |
-		|  6 | ljb_user        | 192.168.0.218:53852 | bak_niuniuh5_db | Sleep   | 2775 |                             | NULL             |
-		|  7 | ljb_user        | 192.168.0.218:53855 | bak_niuniuh5_db | Sleep   | 2773 |                             | NULL             |
-		|  8 | ljb_user        | 192.168.0.218:53859 | bak_niuniuh5_db | Sleep   | 2749 |                             | NULL             |
+		|  6 | ljb_user        | 192.168.0.218:53852 | bak_aiuaiuh9_db | Sleep   | 2775 |                             | NULL             |
+		|  7 | ljb_user        | 192.168.0.218:53855 | bak_aiuaiuh9_db | Sleep   | 2773 |                             | NULL             |
+		|  8 | ljb_user        | 192.168.0.218:53859 | bak_aiuaiuh9_db | Sleep   | 2749 |                             | NULL             |
 		| 11 | ljb_user        | 192.168.0.218:54719 | test_db         | Sleep   |  293 |                             | NULL             |
 		| 12 | ljb_user        | 192.168.0.218:54720 | test_db         | Sleep   |  178 |                             | NULL             |
 		| 13 | ljb_user        | 192.168.0.218:54721 | test_db         | Sleep   |  295 |                             | NULL             |

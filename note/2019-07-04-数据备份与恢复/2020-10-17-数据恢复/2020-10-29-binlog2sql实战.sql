@@ -1,6 +1,15 @@
 
-GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'binlog2sql'@'192.168.0.%' IDENTIFIED BY '123456abc';
 
+https://github.com/danfengcao/binlog2sql
+
+
+
+create user 'binlog2sql'@'%' identified by '123456';
+GRANT SELECT, REPLICATION SLAVE, REPLICATION CLIENT ON *.* TO 'binlog2sql'@'192.168.0.%' with grant option;
+	
+	
+	
+	
 python3 binlog2sql.py -h192.168.0.54 -P3306 -ubinlog2sql -p'123456abc' -dsql_db -tt1 --start-file='mysql-bin.000063' --start-datetime='2019-04-12 02:00:00' --stop-datetime='2018-04-12 17:10:00'
 python3 binlog2sql.py --flashback -h192.168.0.54 -P3306 -ubinlog2sql -p'123456abc' -dsql_db -tt1 --start-file='mysql-bin.000063' --start-datetime='2019-04-12 02:00:00'  -B > rollback.sql | cat
 
