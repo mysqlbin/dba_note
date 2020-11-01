@@ -8,7 +8,9 @@
 		The settings might not be optimal. (flushed=3507 and evicted=0, during the time.) 	
 		
 		因为脏页刷盘需要占用IO资源，此时IO资源不足，导致脏页的刷盘操作拉长了。
-		
+	
+	需要验证下，ftwrl 锁是否会造成 脏页刷新会变长？
+	
 		
 1. 是什么: 
 	用于告诉 InnoDB 所在主机磁盘的IO能力, 这样InnoDB才能知道需要全力刷脏页的时候， 可以刷多快

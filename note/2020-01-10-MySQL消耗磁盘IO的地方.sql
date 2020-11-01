@@ -20,10 +20,12 @@ MySQL中主要的IO读写包括：
 	Redo写操作
 
 	InnoDB数据页的写操作(脏页刷盘)
-
-	InnoDB数据页的Double Write
-
+	
 	InnoDB数据页的读操作
+	
+	InnoDB数据页的Double Write的持久化
+	
+	change buffer 的持久化
 	
 	
 	InnoDB的读写信息可以从information_schema.innodb_metrics中查询到。
