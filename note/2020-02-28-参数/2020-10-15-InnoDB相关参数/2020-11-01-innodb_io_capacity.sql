@@ -1,5 +1,15 @@
 
+0. 遇到一个场景，
 
+	
+	在单机实例上进行逻辑备份期间，导致磁盘IO利用率达到了100%，此时的错误日志有如下提示：
+	
+		[Note] InnoDB: page_cleaner: 1000ms intended loop took 8351ms. 
+		The settings might not be optimal. (flushed=3507 and evicted=0, during the time.) 	
+		
+		因为脏页刷盘需要占用IO资源，此时IO资源不足，导致脏页的刷盘操作拉长了。
+		
+		
 1. 是什么: 
 	用于告诉 InnoDB 所在主机磁盘的IO能力, 这样InnoDB才能知道需要全力刷脏页的时候， 可以刷多快
 	
@@ -7,6 +17,7 @@
 
 
 2. 工作机制: 
+
 	InnDB有后台线程(page cleaner)在不断地做 Flush（刷新脏页到磁盘） 操作, 影响这个操作频率的就是 innodb_io_capacity 参数）
 	innodb_io_capacity越大，一次刷新的脏页的数量也就越大，在SSD的场景下，由于IO能力大大增强，所以 innodb_io_capacity需要调高
 	但是对于普通机械磁盘，由于其随机IO的IOPS最多也就是300，所以 innodb_io_capacity设置过大，反而会造成磁盘IO不均匀。
@@ -60,6 +71,7 @@
 			n_flushed_list  这个是从刷新列表中刷新的页数，也就是脏页数，也就是日志中flushed=3507 的值
 		
 		原因:
+			
 			磁盘IO能力太差 同时 innodb_io_capacity参数设置太高, 导致刷脏页的时间所需要时间比实际时间长
 				
 		解决办法:
@@ -99,7 +111,7 @@
 
 		说明
 
-		n_flushed_lru  表示从lru 列表尾部刷新的页数
+		n_flushed_lru 表示从lru 列表尾部刷新的页数
 
 		n_flushed_list  这个是从刷新列表中刷新的页数，也就是脏页数，也就是日志中flushed=2002 的值
 		n_flushed_list  这个是从刷新列表中刷新的页数，也就是脏页数，也就是日志中flushed=200 的值
