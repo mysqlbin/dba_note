@@ -13,8 +13,7 @@ mysql> select id FROM `table_league_club_game_score_total` WHere `nClubID` = 10 
 4 rows in set (0.00 sec)
 
 
-
-mysql> select min(id), max(id) FROM `table_league_club_game_score_total` WHere `nClubID` = 10 AND `nPlayerID` = 10 and  tStartTime>= '2020-11-02 00:00:00' order by ID DESC limit 3;
+mysql> select min(id), max(id) FROM `table_league_club_game_score_total` WHere `nClubID` = 10 AND `nPlayerID` = 10 and  tStartTime>= '2020-11-02 00:00:00' order by ID DESC;
 +---------+---------+
 | min(id) | max(id) |
 +---------+---------+
@@ -24,7 +23,7 @@ mysql> select min(id), max(id) FROM `table_league_club_game_score_total` WHere `
 
 
 
-mysql> select min(id), max(id) FROM `table_league_club_game_score_total` WHere `nClubID` = 10 AND `nPlayerID` = 10 and  tStartTime>= '2020-11-02 00:00:00' order by ID DESC;
+mysql> select min(id), max(id) FROM `table_league_club_game_score_total` WHere `nClubID` = 10 AND `nPlayerID` = 10 and  tStartTime>= '2020-11-02 00:00:00' order by ID DESC limit 3;
 +---------+---------+
 | min(id) | max(id) |
 +---------+---------+
@@ -52,3 +51,6 @@ LIMIT：    LIMIT子句是最后执行的
 
 相关参考
 	https://www.cnblogs.com/hyhy904/p/11072377.html   mysql踩坑记录之limit和sum函数混合使用问题
+	
+	
+	

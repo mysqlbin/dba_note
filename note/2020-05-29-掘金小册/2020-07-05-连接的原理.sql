@@ -1,7 +1,21 @@
 
 1. 连接原理
-1.1 连接的本质 
-1.2 连接过程简介
+	1.1 连接的本质 
+	1.2 连接过程简介
+	
+2. 内连接和外连接
+	2.1 表结构和数据初始化
+	2.2 左(外)连接的语法
+	2.3 右(外)连接的语法
+	2.4 内连接的语法
+	2.5 小结
+	2.6 内连接/左连接/右连接的结果集对比 
+
+
+3. 连接的原理
+	3.1 嵌套循环连接（Nested-Loop Join）
+	3.2 基于块的嵌套循环连接（Block Nested-Loop Join）	
+
 
 
 1. 连接原理
@@ -169,7 +183,7 @@
 		想把每个学生的考试成绩都查询出来就需要进行两表连接了（因为score中没有姓名信息，所以不能单纯只查询score表）。
 		连接过程就是从student表中取出记录，在score表中查找number相同的成绩记录，所以过滤条件就是 student.number = socre.number，整个查询语句就是这样：
 		
-		root@localhost [db3]>SELECT s1.number, s1.name, s2.subject, s2.score FROM student AS s1, score AS s2 WHERE s1.number = s2.number;
+		mysql>SELECT s1.number, s1.name, s2.subject, s2.score FROM student AS s1, score AS s2 WHERE s1.number = s2.number;
 		+----------+-----------+-----------------------------+-------+
 		| number   | name      | subject                     | score |
 		+----------+-----------+-----------------------------+-------+
@@ -205,8 +219,8 @@
 	
 	一般情况下，我们都把只涉及单表的过滤条件放到WHERE子句中，把涉及两表的过滤条件都放到ON子句中，我们也一般把放到ON子句中的过滤条件也称之为连接条件。
 
-2.2 左（外）连接的语法
-	左（外）连接的语法还是挺简单的，比如我们要把t1表和t2表进行左外连接查询可以这么写：
+2.2 左(外)连接的语法
+	左(外)连接的语法还是挺简单的，比如我们要把t1表和t2表进行左外连接查询可以这么写：
 		SELECT * FROM t1 LEFT [OUTER] JOIN t2 ON 连接条件 [WHERE 普通过滤条件];
 	
 	其中中括号里的OUTER单词是可以省略的。	
@@ -236,7 +250,7 @@
 		
 	从结果集中可以看出来，虽然史珍香并没有对应的成绩记录，但是由于采用的是连接类型为左（外）连接，所以仍然把她放到了结果集中，只不过在对应的成绩记录的各列使用NULL值填充而已。
 
-2.3 右（外）连接的语法
+2.3 右(外)连接的语法
 	右（外）连接和左（外）连接的原理是一样一样的，语法也只是把LEFT换成RIGHT而已：
 
 	SELECT * FROM t1 RIGHT [OUTER] JOIN t2 ON 连接条件 [WHERE 普通过滤条件];
@@ -273,7 +287,7 @@
 
 2.6 内连接/左连接/右连接的结果集对比 
 
-	root@localhost [db3]>SELECT * FROM t1 INNER JOIN t2 ON t1.m1 = t2.m2;
+	mysql> SELECT * FROM t1 INNER JOIN t2 ON t1.m1 = t2.m2;
 	+------+------+------+------+
 	| m1   | n1   | m2   | n2   |
 	+------+------+------+------+
@@ -282,7 +296,7 @@
 	+------+------+------+------+
 	2 rows in set (0.00 sec)
 
-	root@localhost [db3]> SELECT * FROM t1 LEFT JOIN t2 ON t1.m1 = t2.m2;
+	mysql> SELECT * FROM t1 LEFT JOIN t2 ON t1.m1 = t2.m2;
 	+------+------+------+------+
 	| m1   | n1   | m2   | n2   |
 	+------+------+------+------+
@@ -292,8 +306,8 @@
 	+------+------+------+------+
 	3 rows in set (0.00 sec)
 
-	root@localhost [db3]>
-	root@localhost [db3]>SELECT * FROM t1 RIGHT JOIN t2 ON t1.m1 = t2.m2;
+	
+	mysql>SELECT * FROM t1 RIGHT JOIN t2 ON t1.m1 = t2.m2;
 	+------+------+------+------+
 	| m1   | n1   | m2   | n2   |
 	+------+------+------+------+
@@ -336,4 +350,6 @@
 
 
 
-select STRAIGHT_JOIN	
+	select STRAIGHT_JOIN
+
+	
