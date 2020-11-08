@@ -207,7 +207,7 @@ mysql> select * from t1 straight_join t2  ON t1.a=t2.a where t1.c=10 and t2.d=10
 
 初步结论：
 	join查询中，被驱动表如果有where条件列，那么不需要根据被驱动表的连接列和where条件列建立组合索引。
-	
+	-- 理解正确。
 	
 	
 
