@@ -124,7 +124,21 @@
 
 	查看16制信息
 		hexdump -C -v mytest.ibd > mytest.txt
-		 
+		
+		/*
+		a
+		bb
+		bb
+		ccc
+		a bb bb ccc
+		  Offset: 00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 	
+		00000000: 61 0D 0A 62 62 0D 0A 62 62 0D 0A 63 63 63 0D 0A    a..bb..bb..ccc..
+		00000010: 61 20 62 62 20 62 62 20 63 63 63                   a.bb.bb.ccc
+		
+		a 	61
+		bb 	62 62
+		ccc 63 63 63 
+		*/		
 		 
 		0000c070  73 75 70 72 65 6d 75 6d  03 02 01 00 00 00 10 00  |supremum........|
 		0000c080  2c 00 00 00 00 02 00 00  00 00 57 37 49 a6 00 00  |,.........W7I...|
@@ -144,7 +158,7 @@
 			00 00 00 57 37 49			# 事务ID, 占用 6 byte
 			a6 00 00 01 1c 01 10		# 回滚指针, 占用 7 byte
 			61							# 列1数据'a', 字符a, VARCHAR(10), 1个字符只占用了1Byte
-			62							# 列2数据'bb' 字符bb, VARCHAR(10), 2个字符只占用了2Byte
+			62 62						# 列2数据'bb' 字符bb, VARCHAR(10), 2个字符只占用了2Byte
 			62 62 20 20 20 20 20 20 20 20  # 列3数据'bb'，字符22，CHAR(10)，2个字符依旧占用了 10Byte; 固定长度 CHAR 字段在未能完全占用其长度空间时，会用 0X20 来进行填充。  
 
 			63 63 63	 				# 列4数据'ccc', 字符ccc，VARCHAR(10)，3个字符只占用了3Byte
@@ -293,7 +307,8 @@
 		
 		表空间有1个数据页节点 B-tree Node, 另外有4个未压缩的二进制大对象页 Uncompressed BLOB Page, 在这些页中才真正存放了 65532 bytes 的数据
 		
-		行记录的前 768 bytes 在 page offset=3 的页中，但由于 65532>8098 即大于单行记录最大长度，所以将剩余数据放在了溢出页，即page offset=4、page offset=5、page offset=6、page offset=7 的这4个页中
+		行记录的前 768 bytes 在 page offset=3 的页中，但由于 65532>8098 即大于单行记录最大长度，所以将剩余数据放在了溢出页
+			即page offset=4、page offset=5、page offset=6、page offset=7 的这4个页中
 
 		
 		16进制信息	
@@ -383,7 +398,7 @@
 		Uncompressed BLOB Page: 1
 		
 		
-		表空间有1个数据页节点 B-tree Node, 另外有1个未压缩的二进制大对象页 Uncompressed BLOB Page, 在这些页中才真正存放了 9000 byte 的数据
+		表空间有1个数据页节点 B-tree Node, 另外有1个未压缩的二进制大对象页 Uncompressed BLOB Page, 在这些页中才真正存放了 9000 byte 的数据; 
 		行记录的前 768 byte 在page offset=3的页中，但由于9000>8098>行记录最大长度，所以将剩余数据放在了溢出页，即page offset=4的页中
 
 		
