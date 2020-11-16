@@ -14,6 +14,14 @@ MySQL 大字段溢出导致数据回写失败
 	估计是 innodb_strict_mode=OFF 的场景下才会出现
 	
 
+select 8089/27;
+root@localhost [(none)]>select 8089/27;
++----------+
+| 8089/27  |
++----------+
+| 299.5926 |
++----------+
+1 row in set (0.00 sec)
 
 
 
@@ -157,56 +165,114 @@ innodb_strict_mode
 	-- char(255)，定义类型，
 	
 	VARCHAR
-	CREATE TABLE t5 (
-	   c1 VARCHAR(255),c2 VARCHAR(255),c3 VARCHAR(255),
-	   c4 VARCHAR(255),c5 VARCHAR(255),c6 VARCHAR(255),
-	   c7 VARCHAR(255),c8 VARCHAR(255),c9 VARCHAR(255),
-	   c10 VARCHAR(255),c11 VARCHAR(255),c12 VARCHAR(255),
-	   c13 VARCHAR(255),c14 VARCHAR(255),c15 VARCHAR(255),
-	   c16 VARCHAR(255),c17 VARCHAR(255),c18 VARCHAR(255),
-	   c19 VARCHAR(255),c20 VARCHAR(255),c21 VARCHAR(255),
-	   c22 VARCHAR(255),c23 VARCHAR(255),c24 VARCHAR(255),
-	   c25 VARCHAR(255),c26 VARCHAR(255),c27 VARCHAR(255),
-	   c28 VARCHAR(255),c29 VARCHAR(255),c30 VARCHAR(255),
-	   c31 VARCHAR(255),c32 VARCHAR(255),c33 VARCHAR(255)
-	   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
-	Query OK, 0 rows affected (0.02 sec)
+		CREATE TABLE t5 (
+		   c1 VARCHAR(255),c2 VARCHAR(255),c3 VARCHAR(255),
+		   c4 VARCHAR(255),c5 VARCHAR(255),c6 VARCHAR(255),
+		   c7 VARCHAR(255),c8 VARCHAR(255),c9 VARCHAR(255),
+		   c10 VARCHAR(255),c11 VARCHAR(255),c12 VARCHAR(255),
+		   c13 VARCHAR(255),c14 VARCHAR(255),c15 VARCHAR(255),
+		   c16 VARCHAR(255),c17 VARCHAR(255),c18 VARCHAR(255),
+		   c19 VARCHAR(255),c20 VARCHAR(255),c21 VARCHAR(255),
+		   c22 VARCHAR(255),c23 VARCHAR(255),c24 VARCHAR(255),
+		   c25 VARCHAR(255),c26 VARCHAR(255),c27 VARCHAR(255),
+		   c28 VARCHAR(255),c29 VARCHAR(255),c30 VARCHAR(255),
+		   c31 VARCHAR(255),c32 VARCHAR(255),c33 VARCHAR(255)
+		   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
+		Query OK, 0 rows affected (0.02 sec)
 
 	
 	CHAR
-	CREATE TABLE t4 (
-	   c1 CHAR(255),c2 CHAR(255),c3 CHAR(255),
-	   c4 CHAR(255),c5 CHAR(255),c6 CHAR(255),
-	   c7 CHAR(255),c8 CHAR(255),c9 CHAR(255),
-	   c10 CHAR(255),c11 CHAR(255),c12 CHAR(255),
-	   c13 CHAR(255),c14 CHAR(255),c15 CHAR(255),
-	   c16 CHAR(255),c17 CHAR(255),c18 CHAR(255),
-	   c19 CHAR(255),c20 CHAR(255),c21 CHAR(255),
-	   c22 CHAR(255),c23 CHAR(255),c24 CHAR(255),
-	   c25 CHAR(255),c26 CHAR(255),c27 CHAR(255),
-	   c28 CHAR(255),c29 CHAR(255),c30 CHAR(255)
-	   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
-	Query OK, 0 rows affected (0.02 sec)
+		CREATE TABLE t4 (
+		   c1 CHAR(255),c2 CHAR(255),c3 CHAR(255),
+		   c4 CHAR(255),c5 CHAR(255),c6 CHAR(255),
+		   c7 CHAR(255),c8 CHAR(255),c9 CHAR(255),
+		   c10 CHAR(255),c11 CHAR(255),c12 CHAR(255),
+		   c13 CHAR(255),c14 CHAR(255),c15 CHAR(255),
+		   c16 CHAR(255),c17 CHAR(255),c18 CHAR(255),
+		   c19 CHAR(255),c20 CHAR(255),c21 CHAR(255),
+		   c22 CHAR(255),c23 CHAR(255),c24 CHAR(255),
+		   c25 CHAR(255),c26 CHAR(255),c27 CHAR(255),
+		   c28 CHAR(255),c29 CHAR(255),c30 CHAR(255)
+		   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
+		Query OK, 0 rows affected (0.02 sec)
 
-  
-	drop table if exists table_20201115;
-	CREATE TABLE `table_20201115` (
-		`ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-		`a` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-		`b` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-		`c` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-		`d` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-		`e` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-		`f` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-		`g` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-		PRIMARY KEY (`ID`)
-	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=Compact;
-	Query OK, 0 rows affected (0.20 sec)
-	
-	-- 这里 select 2000*8=16000, 明显大于 8126， 为什么没有提示 Row size too large (> 8126) 
-	
-	
+	varchar(2000)
+		drop table if exists table_20201115;
+		CREATE TABLE `table_20201115` (
+			`ID` bigint(20) unsigned NOT NULL COMMENT '索引',
+			`a` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
+			`b` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
+			`c` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
+			`d` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
+			`e` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
+			`f` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
+			`g` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
+			PRIMARY KEY (`ID`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=Compact;
+		Query OK, 0 rows affected (0.20 sec)
+		
+		-- 这里 select 2000*8=16000, 明显大于 8126， 为什么没有提示 Row size too large (> 8126) 
+		-- 这里还不理解
 
+3. InnoDB表最多可以建立多少个字段	
+	
+3.1 验证行格式为Compact在不同的字符集下分别可以建立多个字段
+
+	制造相关数据
+		CREATE TABLE `table_20201116` (
+		  `id` int(10) unsigned NOT NULL,
+		  PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+		DROP PROCEDURE IF EXISTS insertbatch_20201116;
+		CREATE PROCEDURE insertbatch_20201116()
+		BEGIN
+		DECLARE i INT;
+		  SET i=1;
+			start transaction;
+		  WHILE(i<=2000) DO
+			INSERT INTO table_20201116(id)VALUES(i);
+			SET i=i+1; 
+		  END WHILE;
+			commit;
+		END;
+
+
+		call insertbatch_20201116();
+
+		select concat("field_", i, "VARCHAR(20) NOT NULL,") table_20201116 from limit 242;
+
+
+	utf8mb4、Compact
+		197个 varchar(20) 字段
+		
+	utf8、Compact
+		197个 varchar(20) 字段
+		
+	latin1、Compact
+		385个 varchar(20) 字段
+
+		
+3.2 验证行格式为Dynamic在不同的字符集下分别可以建立多个字段
+
+	utf8mb4、Dynamic
+		197个 varchar(20) 字段
+		
+	utf8、Dynamic
+		197个 varchar(20) 字段
+		
+	latin1、Compact
+		385个 varchar(20) 字段
+		
+		
+3.3 TEXT
+	同时我们也进行了测试，的确可以创建有且仅含有 196 个 TEXT 字段的表。
+	
+3.4 blob
+
+
+	
 小结	
 	先在Server层判断表结构定义的字符长度是否大于 65535 字节，不超过，则执行到InnoDB存储引擎层，
 	接着判断长度是否大于 8126 字节，小于则建表成功;
@@ -243,6 +309,7 @@ innodb_strict_mode
 		
 
 
+------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------
 	
