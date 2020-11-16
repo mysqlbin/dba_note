@@ -92,7 +92,6 @@ mysql> select * from t2;
 
 
 
-
 insert into t values(null, 1,1);
 insert into t values(null, 2,2);
 insert into t values(null, 3,3);
@@ -100,6 +99,9 @@ insert into t values(null, 4,4);
 create table t2 like t;
 insert into t2(c,d) select c,d from t;
 insert into t2 values(null, 5,5);
+
+
+
 
 
 	
