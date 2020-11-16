@@ -7,7 +7,7 @@ https://mp.weixin.qq.com/s/_Emepy6IUgS6NbQcUC60rg     MySQL的一个表最多可
 
 
 	
-768个字节
+768个字节 = 0.75KB
 16KB = 16384
 
 MySQL 大字段溢出导致数据回写失败
