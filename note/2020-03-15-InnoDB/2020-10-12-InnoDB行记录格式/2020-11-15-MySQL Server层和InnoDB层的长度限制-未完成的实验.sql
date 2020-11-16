@@ -3,6 +3,8 @@ https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
 https://mp.weixin.qq.com/s/w3ij101jzDlbu93i5J7uQg               故障分析 | MySQL TEXT 字段的限制
 https://mp.weixin.qq.com/s/_aAZ2jTlw6ymCQ092qYkww        技术分享 | MySQL 字段长度限制的计算方法
 
+https://mp.weixin.qq.com/s/_Emepy6IUgS6NbQcUC60rg     MySQL的一个表最多可以有多少个字段
+
 
 	
 768个字节
