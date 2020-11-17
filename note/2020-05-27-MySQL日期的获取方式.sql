@@ -37,3 +37,4 @@ SELECT (DATEDIFF('2020-08-17','2020-05-26'));  = 83，还没有到90天的数据
  
 
 
+DATE_ADD(curdate(),interval -day(curdate())+1 day);  -- 获取本月第一天

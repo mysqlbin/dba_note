@@ -1,6 +1,5 @@
 drop table if exists table_20201116_04;
 CREATE TABLE `table_20201116_04` (
-
 field_1 VARCHAR(20) NOT NULL,
 field_2 VARCHAR(20) NOT NULL,
 field_3 VARCHAR(20) NOT NULL,
@@ -200,3 +199,51 @@ field_196 VARCHAR(20) NOT NULL,
 field_197 VARCHAR(20) NOT NULL,
 field_198 VARCHAR(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.
+
+
+utf8字符集下的varchar(20)  相等于 varchar(60)，超过40个字节，那么就按40个字节;
+	197字段的计算
+		mysql> select 197*40;
+		+--------+
+		| 197*40 |
+		+--------+
+		|   7880 |
+		+--------+
+		1 row in set (0.00 sec)
+
+		
+		mysql> select 197*40+197+5+6+6+7;
+		+--------------------+
+		| 197*40+197+5+6+6+7 |
+		+--------------------+
+		|               8101 |
+		+--------------------+
+		1 row in set (0.00 sec)
+
+			+197 表示 占用 变长列表长度为 197个byte
+			+5 	 表示 占用 额外的头信息 5个byte
+			+6 	 表示 rowid 占用 6个byte
+			+6 	 表示 事务ID 占用 6个byte
+			+7 	 表示 回滚指针 占用 7个byte
+		8101 > 8126 ：创建成功
+		
+	198字段的计算		
+		mysql> select 198*40;
+		+--------+
+		| 198*40 |
+		+--------+
+		|   7920 |
+		+--------+
+		1 row in set (0.00 sec)
+		
+		mysql> select 198*40+197+5+6+6+7;
+		+--------------------+
+		| 198*40+197+5+6+6+7 |
+		+--------------------+
+		|               8141 |
+		+--------------------+
+		1 row in set (0.00 sec)
+		
+		8141 > 8126 ：创建失败
+	-- 这里可以对应上.

@@ -4,7 +4,9 @@ https://mp.weixin.qq.com/s/w3ij101jzDlbu93i5J7uQg               故障分析 | M
 https://mp.weixin.qq.com/s/_aAZ2jTlw6ymCQ092qYkww        技术分享 | MySQL 字段长度限制的计算方法
 
 https://mp.weixin.qq.com/s/_Emepy6IUgS6NbQcUC60rg     MySQL的一个表最多可以有多少个字段
-
+	-- 读懂了这篇文章，就可以解决我的疑问; 好文
+	-- https://mp.weixin.qq.com/s/tNA_-_MoYt1fJT0icyKbMg       MVCC原理探究及MySQL源码实现分析   这篇文章也是他的
+	-- 花了这么多时间，就要弄清楚来; 
 
 	
 768个字节 = 0.75KB
@@ -163,8 +165,38 @@ innodb_strict_mode
 	
 	
 	单行定义的长度：SELECT 255*33=8415 字符(字节), 因为这里的字符集为 latin1，所以1个字符=1个字节
+	-- select 33*40=1320;
 	
-	-- char(255)，定义类型，
+	原因：
+		MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+		列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
+		对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
+		
+		CHAR(255) 大于 40，按40个byte来算: select 40*33=1320;  总长度 1320 < 8126, 创建表成功;
+		
+		-- 这里又不对应不上了;
+		-- CHAR 定长类型不是这么算的。
+		
+	CHAR(255) 31个
+		CREATE TABLE t4 (
+		   c1 CHAR(255),c2 CHAR(255),c3 CHAR(255),
+		   c4 CHAR(255),c5 CHAR(255),c6 CHAR(255),
+		   c7 CHAR(255),c8 CHAR(255),c9 CHAR(255),
+		   c10 CHAR(255),c11 CHAR(255),c12 CHAR(255),
+		   c13 CHAR(255),c14 CHAR(255),c15 CHAR(255),
+		   c16 CHAR(255),c17 CHAR(255),c18 CHAR(255),
+		   c19 CHAR(255),c20 CHAR(255),c21 CHAR(255),
+		   c22 CHAR(255),c23 CHAR(255),c24 CHAR(255),
+		   c25 CHAR(255),c26 CHAR(255),c27 CHAR(255),
+		   c28 CHAR(255),c29 CHAR(255),c30 CHAR(255),
+		   c31 CHAR(255)
+		   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
+		Query OK, 0 rows affected (0.02 sec)
+		
+		select 255*31=7905; 总长度 7905 < 8126, 创建表成功;
+		select 255*32=8160; 总长度 8160 < 8126, 创建表失败;
+		
+	----------------------------------------------------------------------------
 	
 	VARCHAR
 		CREATE TABLE t5 (
@@ -181,22 +213,14 @@ innodb_strict_mode
 		   c31 VARCHAR(255),c32 VARCHAR(255),c33 VARCHAR(255)
 		   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
 		Query OK, 0 rows affected (0.02 sec)
+		
+		MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+		列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
+		对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
+		
+		VARCHAR(255) 大于 40，按40个byte来算: select 40*33=1320;  总长度 1320 < 8126, 创建表成功;
+		-- 这里可以对应上.
 
-	
-	CHAR
-		CREATE TABLE t4 (
-		   c1 CHAR(255),c2 CHAR(255),c3 CHAR(255),
-		   c4 CHAR(255),c5 CHAR(255),c6 CHAR(255),
-		   c7 CHAR(255),c8 CHAR(255),c9 CHAR(255),
-		   c10 CHAR(255),c11 CHAR(255),c12 CHAR(255),
-		   c13 CHAR(255),c14 CHAR(255),c15 CHAR(255),
-		   c16 CHAR(255),c17 CHAR(255),c18 CHAR(255),
-		   c19 CHAR(255),c20 CHAR(255),c21 CHAR(255),
-		   c22 CHAR(255),c23 CHAR(255),c24 CHAR(255),
-		   c25 CHAR(255),c26 CHAR(255),c27 CHAR(255),
-		   c28 CHAR(255),c29 CHAR(255),c30 CHAR(255)
-		   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
-		Query OK, 0 rows affected (0.02 sec)
 
 	varchar(2000)
 		drop table if exists table_20201115;
@@ -213,9 +237,25 @@ innodb_strict_mode
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=Compact;
 		Query OK, 0 rows affected (0.20 sec)
 		
-		-- 这里 select 2000*8=16000, 明显大于 8126， 为什么没有提示 Row size too large (> 8126) 
+		-- 这里 select 2000*7=14000, 明显大于 8126， 为什么没有提示 Row size too large (> 8126) 
 		-- 这里还不理解
-
+		
+		原因：
+			MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+			列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
+			对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
+			
+			varchar(2000) 大于 40，按40个byte来算: select 40*7=28;  总长度 28 < 8126, 创建表成功;
+				
+			-- 这里可以对应上
+			-- 理解了。**************
+			
+			https://mp.weixin.qq.com/s/_Emepy6IUgS6NbQcUC60rg     MySQL的一个表最多可以有多少个字段
+			这篇文章写得真好; 
+			
+			
+	-- InnoDB层的长度限制的计算方式：跟字符集有关系，跟定长或者变长类型也有关系
+	
 3. InnoDB表最多可以建立多少个字段	
 	
 3.1 验证行格式为Compact在不同的字符集下分别可以建立多个字段
@@ -243,8 +283,8 @@ innodb_strict_mode
 
 		call insertbatch_20201116();
 
-		select concat("field_", i, "VARCHAR(20) NOT NULL,") table_20201116 from limit 242;
-
+		select concat("field_", id, "VARCHAR(20) NOT NULL,")  from table_20201116 limit 242;
+		select concat("field_", ID, " ", "text,")  from table_20201116 limit 198;
 
 	utf8mb4、Compact
 		197个 varchar(20) 字段
@@ -274,6 +314,17 @@ innodb_strict_mode
 3.4 blob
 
 
+
+https://dev.mysql.com/doc/refman/5.7/en/storage-requirements.html
+
+https://www.cnblogs.com/usual2013blog/p/3747644.html  MySQL TEXT数据类型的最大长度
+
+2的32次方是多少
+	4294967296 byte = 4GB
+	
+2的32次方是多少
+	65536 byte = 64KB
+	
 	
 小结	
 	先在Server层判断表结构定义的字符长度是否大于 65535 字节，不超过，则执行到InnoDB存储引擎层，
@@ -411,6 +462,10 @@ blob
 	1 row in set (0.00 sec)
 
 
+
+问题：
+	2个字段溢出，2个字段都有对应的 20字节的指针保留在行记录中吗
+	
 
 text blog 各自可以存储多少字节的数据
 

@@ -386,6 +386,49 @@ field_381 VARCHAR(20) NOT NULL,
 field_382 VARCHAR(20) NOT NULL,
 field_383 VARCHAR(20) NOT NULL,
 field_384 VARCHAR(20) NOT NULL,
-field_385 VARCHAR(20) NOT NULL
+field_385 VARCHAR(20) NOT NULL,
+field_386 VARCHAR(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=Compact;
 
+[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
+
+
+latin1字符集下VARCHAR(20) 小于 40个字节，因此根据自己实际占用的长度来做计算
+	385字段的计算
+		mysql> select 385*20;
+		+--------+
+		| 385*20 |
+		+--------+
+		|   7700 |
+		+--------+
+		1 row in set (0.00 sec)
+		
+		mysql> select 385*20+385+5+6+6+7;
+		+--------------------+
+		| 385*20+385+5+6+6+7 |
+		+--------------------+
+		|               8109 |
+		+--------------------+
+		1 row in set (0.00 sec)
+
+		8109 < 8126 ：创建成功
+
+	386字段的计算
+		mysql> select 386*20;
+		+--------+
+		| 386*20 |
+		+--------+
+		|   7720 |
+		+--------+
+		1 row in set (0.00 sec)
+		mysql> select 386*20+385+5+6+6+7;
+		+--------------------+
+		| 386*20+385+5+6+6+7 |
+		+--------------------+
+		|               8129 |
+		+--------------------+
+		1 row in set (0.00 sec)
+
+		8129 > 8126 ：创建失败
+		
+	-- 这里可以对应上.
