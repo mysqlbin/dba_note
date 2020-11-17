@@ -1,41 +1,29 @@
 
-https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
-https://mp.weixin.qq.com/s/w3ij101jzDlbu93i5J7uQg               故障分析 | MySQL TEXT 字段的限制
-https://mp.weixin.qq.com/s/_aAZ2jTlw6ymCQ092qYkww        技术分享 | MySQL 字段长度限制的计算方法
-
-https://mp.weixin.qq.com/s/_Emepy6IUgS6NbQcUC60rg     MySQL的一个表最多可以有多少个字段
-	-- 读懂了这篇文章，就可以解决我的疑问; 好文
-	-- https://mp.weixin.qq.com/s/tNA_-_MoYt1fJT0icyKbMg       MVCC原理探究及MySQL源码实现分析   这篇文章也是他的
-	-- 花了这么多时间，就要弄清楚来; 
-
-	
-768个字节 = 0.75KB
-16KB = 16384
-
-MySQL 大字段溢出导致数据回写失败
-	Row size too large (> 8126). Changing some ... ... 。
-	这个怎么复现
-	估计是 innodb_strict_mode=OFF 的场景下才会出现
-	
-
-select 8089/27;
-root@localhost [(none)]>select 8089/27;
-+----------+
-| 8089/27  |
-+----------+
-| 299.5926 |
-+----------+
-1 row in set (0.00 sec)
-
-
-
-innodb_strict_mode
-
 1. MySQL Server 的长度限制	
 	1.1 Compact、utf8mb4
 	1.2 Compact、utf8
 	1.3 Compact、latin1
 	
+2. InnoDB层的长度限制
+	2.1 COMPACT、latin1	
+
+3. InnoDB表最多可以建立多少个字段	
+	3.1 验证行格式为Compact在不同的字符集下分别可以建立多个字段
+	3.2 验证行格式为Dynamic在不同的字符集下分别可以建立多个字段
+	3.3 utf8、Compact、TEXT
+	3.4 utf8、Compact、blob
+	3.5 utf8、Compact、longtext
+4. 小结			
+5. 行溢出
+6. text和blog字段的其它测试
+	6.1 text
+	6.2 blob
+7. 问题
+8. 相关参考
+	
+
+1. MySQL Server 的长度限制	
+
 	1.1 Compact、utf8mb4
 		
 		CREATE TABLE `table_20201115` (
@@ -256,6 +244,7 @@ innodb_strict_mode
 			
 	-- InnoDB层的长度限制的计算方式：跟字符集有关系，跟定长或者变长类型也有关系
 	
+	
 3. InnoDB表最多可以建立多少个字段	
 	
 3.1 验证行格式为Compact在不同的字符集下分别可以建立多个字段
@@ -306,32 +295,27 @@ innodb_strict_mode
 		
 	latin1、Compact
 		385个 varchar(20) 字段
+	
+	-- Dynamic和Compact行记录格式，两者可以建立字段的个数没差别;	
 		
-		
-3.3 TEXT
-	同时我们也进行了测试，的确可以创建有且仅含有 196 个 TEXT 字段的表。
+3.3 utf8、Compact、TEXT
+	的确可以创建有且仅含有 196 个 TEXT 字段的表。
 	
-3.4 blob
-
-
-
-https://dev.mysql.com/doc/refman/5.7/en/storage-requirements.html
-
-https://www.cnblogs.com/usual2013blog/p/3747644.html  MySQL TEXT数据类型的最大长度
-
-2的32次方是多少
-	4294967296 byte = 4GB
+3.4 utf8、Compact、blob
+	的确可以创建有且仅含有 196 个 blob 字段的表。
 	
-2的32次方是多少
-	65536 byte = 64KB
+3.5 utf8、Compact、longtext
+	的确可以创建有且仅含有 196 个 longtext 字段的表。
+
+
+
 	
-	
-小结	
+4. 小结	
 	先在Server层判断表结构定义的字符长度是否大于 65535 字节，不超过，则执行到InnoDB存储引擎层，
 	接着判断长度是否大于 8126 字节，小于则建表成功;
 	
 
-行溢出
+5. 行溢出
 	CREATE TABLE `table_20201115` (
 		`ID` bigint(20) unsigned NOT NULL COMMENT '索引',
 		`a` varchar(16381) DEFAULT NULL COMMENT '牌型详情',
@@ -351,40 +335,11 @@ https://www.cnblogs.com/usual2013blog/p/3747644.html  MySQL TEXT数据类型的�
 	+---------+
 	1 row in set (0.00 sec)
 
-	
-	mysql> select 16381/8;
-	+-----------+
-	| 16381/8   |
-	+-----------+
-	| 2047.6250 |
-	+-----------+
-	1 row in set (0.00 sec)
-		
-
-
-------------------------------------------------------------------------------------
 
 ------------------------------------------------------------------------------------
 	
-	root@localhost [test2_db]>show create table table_20201115\G;
-	*************************** 1. row ***************************
-		   Table: table_20201115
-	Create Table: CREATE TABLE `table_20201115` (
-	  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引',
-	  `a` varchar(5000) DEFAULT NULL COMMENT '牌型详情',
-	  `b` varchar(5000) DEFAULT NULL COMMENT '牌型详情',
-	  `c` varchar(5000) DEFAULT NULL COMMENT '牌型详情',
-	  `d` varchar(5000) DEFAULT NULL COMMENT '牌型详情',
-	  PRIMARY KEY (`ID`)
-	) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT
-	1 row in set (0.00 sec)
-
-	INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',5000),REPEAT('a',5000),REPEAT('a',5000),REPEAT('a',5000);
-	Query OK, 1 row affected (0.03 sec)
-	Records: 1  Duplicates: 0  Warnings: 0
-
-text
-
+6. text和blog字段的其它测试
+6.1 text
 	drop table if exists table_20201115;
 	CREATE TABLE `table_20201115` (
 	  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引',
@@ -412,7 +367,7 @@ text
 	Records: 1  Duplicates: 0  Warnings: 0
 
 
-blob
+6.2 blob
 	
 	drop table if exists table_20201115;
 	CREATE TABLE `table_20201115` (
@@ -463,19 +418,29 @@ blob
 
 
 
-问题：
-	2个字段溢出，2个字段都有对应的 20字节的指针保留在行记录中吗
+7. 问题
+	1. 2个字段溢出，2个字段都有对应的 20字节的指针保留在行记录中吗
 	
+	2. MySQL 大字段溢出导致数据回写失败
+	Row size too large (> 8126). Changing some ... ... 。
+	这个怎么复现
+	估计是 innodb_strict_mode=OFF 的场景下才会出现
+	
+	3. 参数innodb_strict_mode
+	
+	4. text、blog、longtext 各自可以存储多少字节的数据
+		参考笔记：《2020-11-17-text文本型》
+	
+8. 相关参考
+	https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
+	https://mp.weixin.qq.com/s/w3ij101jzDlbu93i5J7uQg           故障分析 | MySQL TEXT 字段的限制
+	https://mp.weixin.qq.com/s/_aAZ2jTlw6ymCQ092qYkww        	技术分享 | MySQL 字段长度限制的计算方法
 
-text blog 各自可以存储多少字节的数据
+	https://mp.weixin.qq.com/s/_Emepy6IUgS6NbQcUC60rg     MySQL的一个表最多可以有多少个字段
+		-- 读懂了这篇文章，就可以解决我的疑问; 好文
+		-- https://mp.weixin.qq.com/s/tNA_-_MoYt1fJT0icyKbMg       MVCC原理探究及MySQL源码实现分析   这篇文章也是他的
+		-- 花了这么多时间，就要弄清楚来; 
 
 
-root@localhost [(none)]>SELECT 65532/2;
-+------------+
-| 65532/2    |
-+------------+
-| 32766.0000 |
-+------------+
-1 row in set (0.00 sec)
 
 
