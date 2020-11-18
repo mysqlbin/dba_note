@@ -21,6 +21,7 @@
 	6.2 blob
 7. 问题
 8. 相关参考
+9. 在线修改行记录格式为Compact
 	
 
 1. MySQL Server 的长度限制	
@@ -395,7 +396,7 @@
 	  PRIMARY KEY (`ID`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;	
 	
-	mysql>show create table table_20201115\G;
+	mysql> show create table table_20201115\G;
 	*************************** 1. row ***************************
 		   Table: table_20201115
 	Create Table: CREATE TABLE `table_20201115` (
@@ -408,11 +409,11 @@
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT
 	1 row in set (0.00 sec)
 
-	root@localhost [test2_db]>INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',100000),REPEAT('b',100000),REPEAT('c',100000),REPEAT('d',100000);
+	mysql> INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',100000),REPEAT('b',100000),REPEAT('c',100000),REPEAT('d',100000);
 	ERROR 1406 (22001): Data too long for column 'a' at row 1
 
 
-	root@localhost [test2_db]>INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',50000),REPEAT('b',50000),REPEAT('c',50000),REPEAT('d',50000);
+	mysql> INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',50000),REPEAT('b',50000),REPEAT('c',50000),REPEAT('d',50000);
 	Query OK, 1 row affected (0.06 sec)
 	Records: 1  Duplicates: 0  Warnings: 0
 		
@@ -424,7 +425,7 @@
 	Query OK, 1 row affected (0.08 sec)
 	Records: 1  Duplicates: 0  Warnings: 0
 	
-	root@localhost [test2_db]>select length(a) from table_20201115 limit 1;
+	mysql> select length(a) from table_20201115 limit 1;
 	+-----------+
 	| length(a) |
 	+-----------+
@@ -433,12 +434,7 @@
 	1 row in set (0.00 sec)
 
 
-Dynamic和Compact行记录格式的区别：
-	大字段列的溢出，Compact行记录格式存储大列字段列的前768个字节和20个字节的指针，指针的作用：用于指向溢出的数据页中;
-	大字段列的溢出，Dynamin行记录格式只存储20个字节的指针，指针的作用：用于指向溢出的数据页中;  --完成溢出的方式。
 
-
-	
 7. 问题
 	
 	1. 2个字段溢出，2个字段都有对应的 20字节的指针保留在行记录中吗
@@ -459,18 +455,17 @@ Dynamic和Compact行记录格式的区别：
 	4. text、blob、longtext 各自可以存储多少字节的数据
 		参考笔记：《2020-11-17-text文本型》
 		
-	5. 
+	5. 理解某篇文章通过修改row_format=dynamic解决插入数据报错问题
 	
 		https://blog.opskumu.com/mysql-blob.html
 			修改参数：
 				innodb_file_format=BARRACUDA
 				row_format=dynamic
 				
-				-- 参考笔记：《2020-11-18-insert出现8126的错误-latin1 varchar(100) dynamic.sql》
+				
 				
 		按照这种算法，查询之前某个出问题的用户 Blob 字段占用为 7602 「表中有 48 个 blob 字段」，加上其它的占用超过 8kB 就导致 了 Row size too large (> 8126). Changing some ... ... 。
 		-- 这里理解了。
-		-- 没有行溢出，但是单行的长度大于8126，Compact和Dynamic都一样报错
 		-- Compact的行溢出：Compact行记录格式的多个字段行溢出，每个字段存储 767+20 字节在数据页中，超过一定数量(10字段都溢出)，报错....
 			mysql> select 8098/(767+20);
 			+---------------+
@@ -480,11 +475,15 @@ Dynamic和Compact行记录格式的区别：
 			+---------------+
 			1 row in set (0.00 sec)
 		
-		--这种场景下，行记录格式改为  dynamic， 10个字段都溢出，每个字段存储 20 字节的指针在数据页中，不会报错。
+		-- 这种场景下，行记录格式改为  dynamic， 10个字段都溢出，每个字段存储 20 字节的指针在数据页中，不会报错。
+		-- 没有行溢出，但是单行的长度大于8126，Compact和Dynamic都一样报错
+			-- 参考笔记：《2020-11-18-insert出现8126的错误-latin1 varchar(100) Compact.sql》和 《2020-11-18-insert出现8126的错误-latin1 varchar(100) dynamic.sql》
 		
-		
-		
-		
+	6. 关于参数值的修改
+
+		SET GLOBAL innodb_file_format=BARRACUDA;  --修改之后，ROW_FORMAT=Compact是不是不生效了？
+		ALTER TABLE `t_role_90`  ROW_FORMAT=DYNAMIC;  -- 会重建表吗？ 根据原理，是重建表。
+	
 8. 相关参考
 	https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
 	https://mp.weixin.qq.com/s/w3ij101jzDlbu93i5J7uQg           故障分析 | MySQL TEXT 字段的限制
@@ -502,3 +501,93 @@ Dynamic和Compact行记录格式的区别：
 把一个知识点搞懂，比用4天时间看不同的内容强太多; 
 
 
+
+
+9. 在线修改行记录格式为Compact
+
+	mysql> select version();
+	+------------+
+	| version()  |
+	+------------+
+	| 5.7.22-log |
+	+------------+
+	1 row in set (0.00 sec)
+
+	mysql> show global variables like '%file_format%';  
+	+--------------------------+-----------+
+	| Variable_name            | Value     |
+	+--------------------------+-----------+
+	| innodb_file_format       | Barracuda |
+	| innodb_file_format_check | ON        |
+	| innodb_file_format_max   | Barracuda |
+	+--------------------------+-----------+
+	3 rows in set (0.00 sec)
+
+	mysql> set global innodb_file_format=Antelope;
+	Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+	mysql> show global variables like '%file_format%';                                                                                                                                                                                              
+	+--------------------------+-----------+
+	| Variable_name            | Value     |
+	+--------------------------+-----------+
+	| innodb_file_format       | Antelope  |
+	| innodb_file_format_check | ON        |
+	| innodb_file_format_max   | Barracuda |
+	+--------------------------+-----------+
+	3 rows in set (0.01 sec)
+	
+	mysql> show global variables like '%innodb_default_row_format%';     
+	+---------------------------+---------+
+	| Variable_name             | Value   |
+	+---------------------------+---------+
+	| innodb_default_row_format | dynamic |
+	+---------------------------+---------+
+	1 row in set (0.01 sec)
+
+	mysql> select ROW_FORMAT from information_schema.tables where TABLE_SCHEMA='test_db' and  TABLE_NAME='t_20201019';
+	+------------+
+	| ROW_FORMAT |
+	+------------+
+	| Dynamic    |
+	+------------+
+	1 row in set (0.00 sec)
+	
+	mysql> ALTER TABLE t_20201019 ROW_FORMAT=Compact;
+	Query OK, 0 rows affected (0.07 sec)
+	Records: 0  Duplicates: 0  Warnings: 0
+
+	mysql> select ROW_FORMAT from information_schema.tables where TABLE_SCHEMA='test_db' and  TABLE_NAME='t_20201019';
+	+------------+
+	| ROW_FORMAT |
+	+------------+
+	| Compact    |
+	+------------+
+	1 row in set (0.00 sec)
+
+------------------------------------------------------------------------------------------------------------------
+	原有表的行记录格式还是Dynamic
+		mysql> select ROW_FORMAT from information_schema.tables where TABLE_SCHEMA='test_db' and  TABLE_NAME='table_20201116';
+		+------------+
+		| ROW_FORMAT |
+		+------------+
+		| Dynamic    |
+		+------------+
+		1 row in set (0.00 sec)
+
+		mysql> show create table table_20201116;
+		+----------------+-----------------------------------------------------------------------------------------------------------------------------+
+		| Table          | Create Table                                                                                                                |
+		+----------------+-----------------------------------------------------------------------------------------------------------------------------+
+		| table_20201116 | CREATE TABLE `table_20201116` (
+		  `id` int(10) unsigned NOT NULL,
+		  PRIMARY KEY (`id`)
+		) ENGINE=InnoDB DEFAULT CHARSET=utf8 |
+		+----------------+-----------------------------------------------------------------------------------------------------------------------------+
+		1 row in set (0.00 sec)
+
+		mysql> INSERT INTO `test_db`.`table_20201116` (`id`) VALUES ('2001');
+		Query OK, 1 row affected (0.01 sec)
+
+
+	注意，如果要修改现有表的行模式为compressed或dynamic，必须先将文件格式设置成 Barracuda：set global innodb_file_format=Barracuda；
+	再用 ALTER TABLE tablename ROW_FORMAT=dynamic；去修改才能生效，否则修改无效却无提示。
