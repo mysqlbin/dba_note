@@ -621,6 +621,7 @@
 				在400M左右可以理解，因为 8k * 48849 = 400M
 				B-tree Node: 11957
 				Uncompressed BLOB Page: NO
+				
 			t_long 的表：
 				由于独享48849个Uncompressed BLOB Page，严重浪费空间
 				B-tree Node: 168

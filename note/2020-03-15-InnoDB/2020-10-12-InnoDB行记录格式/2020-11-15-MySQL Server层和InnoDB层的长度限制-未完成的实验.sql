@@ -13,6 +13,7 @@
 	3.3 utf8、Compact、TEXT
 	3.4 utf8、Compact、blob
 	3.5 utf8、Compact、longtext
+	
 4. 小结			
 5. 行溢出
 6. text和blog字段的其它测试
@@ -274,6 +275,10 @@
 
 		select concat("field_", id, "VARCHAR(20) NOT NULL,")  from table_20201116 limit 242;
 		select concat("field_", ID, " ", "text,")  from table_20201116 limit 198;
+		
+		select concat("field_", id, "VARCHAR(8) NOT NULL,")  from table_20201116 limit 242;
+
+
 
 	utf8mb4、Compact
 		197个 varchar(20) 字段
@@ -308,13 +313,22 @@
 	的确可以创建有且仅含有 196 个 longtext 字段的表。
 
 
-
-	
 4. 小结	
-	先在Server层判断表结构定义的字符长度是否大于 65535 字节，不超过，则执行到InnoDB存储引擎层，
-	接着判断长度是否大于 8126 字节，小于则建表成功;
-	
+	1. 先在Server层判断表结构定义的字符长度是否大于 65535 字节，不超过，则执行到InnoDB存储引擎层，
+		接着判断字段长度是否大于 8126 字节，小于则建表成功;
+		
+	2. 数据插入的时候，没有行溢出的场景下，单记录的长度小于8098字节，则插入成功; 
+		否则，插入失败;
+		
+	3. other
 
+		MySQL对于一行记录的单个字段的数据长度和整行的数据长度的处理方式是不一样的
+		单个字段的数据长度大于8098个字节才会行溢出; 
+		数据插入的时候，没有行溢出的场景下，单记录的长度小于8098字节，则插入成功; 
+		
+	-- 可以做为案例来讲解...
+	
+	
 5. 行溢出
 	CREATE TABLE `table_20201115` (
 		`ID` bigint(20) unsigned NOT NULL COMMENT '索引',
@@ -335,7 +349,9 @@
 	+---------+
 	1 row in set (0.00 sec)
 
-
+	-- 单个字段的数据长度大于8198个字节才会行溢出; 
+	
+	
 ------------------------------------------------------------------------------------
 	
 6. text和blog字段的其它测试
@@ -361,7 +377,7 @@
 
 	INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',100000),REPEAT('b',100000),REPEAT('c',100000),REPEAT('d',100000);
 	ERROR 1406 (22001): Data too long for column 'a' at row 1
-
+	
 	INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',50000),REPEAT('b',50000),REPEAT('c',50000),REPEAT('d',50000);
 	Query OK, 1 row affected (0.09 sec)
 	Records: 1  Duplicates: 0  Warnings: 0
@@ -378,8 +394,8 @@
 	  `d` blob COMMENT '牌型详情',
 	  PRIMARY KEY (`ID`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;	
-
-	root@localhost [test2_db]>show create table table_20201115\G;
+	
+	mysql>show create table table_20201115\G;
 	*************************** 1. row ***************************
 		   Table: table_20201115
 	Create Table: CREATE TABLE `table_20201115` (
@@ -417,20 +433,58 @@
 	1 row in set (0.00 sec)
 
 
+Dynamic和Compact行记录格式的区别：
+	大字段列的溢出，Compact行记录格式存储大列字段列的前768个字节和20个字节的指针，指针的作用：用于指向溢出的数据页中;
+	大字段列的溢出，Dynamin行记录格式只存储20个字节的指针，指针的作用：用于指向溢出的数据页中;  --完成溢出的方式。
 
-7. 问题
-	1. 2个字段溢出，2个字段都有对应的 20字节的指针保留在行记录中吗
+
 	
+7. 问题
+	
+	1. 2个字段溢出，2个字段都有对应的 20字节的指针保留在行记录中吗
+		1. 首先，要明白，有这种可能吗
+			可以验证下
+			答：是的。
+			参考笔记：《2020-11-18-行溢出的进阶.sql》
+			
 	2. MySQL 大字段溢出导致数据回写失败
-	Row size too large (> 8126). Changing some ... ... 。
-	这个怎么复现
-	估计是 innodb_strict_mode=OFF 的场景下才会出现
+		Row size too large (> 8126). Changing some ... ... 。
+		这个怎么复现
+		估计是 innodb_strict_mode=OFF 的场景下才会出现
+		-- 复现了，参考笔记：《2020-11-18-insert出现8126的错误-latin1 varchar(100) Compact.sql》和 《2020-11-18-insert出现8126的错误-latin1 varchar(100) dynamic.sql》
 	
 	3. 参数innodb_strict_mode
-	
-	4. text、blog、longtext 各自可以存储多少字节的数据
+		参考笔记：《2020-11-18-innodb_strict_mode.sql》
+		
+	4. text、blob、longtext 各自可以存储多少字节的数据
 		参考笔记：《2020-11-17-text文本型》
+		
+	5. 
 	
+		https://blog.opskumu.com/mysql-blob.html
+			修改参数：
+				innodb_file_format=BARRACUDA
+				row_format=dynamic
+				
+				-- 参考笔记：《2020-11-18-insert出现8126的错误-latin1 varchar(100) dynamic.sql》
+				
+		按照这种算法，查询之前某个出问题的用户 Blob 字段占用为 7602 「表中有 48 个 blob 字段」，加上其它的占用超过 8kB 就导致 了 Row size too large (> 8126). Changing some ... ... 。
+		-- 这里理解了。
+		-- 没有行溢出，但是单行的长度大于8126，Compact和Dynamic都一样报错
+		-- Compact的行溢出：Compact行记录格式的多个字段行溢出，每个字段存储 767+20 字节在数据页中，超过一定数量(10字段都溢出)，报错....
+			mysql> select 8098/(767+20);
+			+---------------+
+			| 8098/(767+20) |
+			+---------------+
+			|       10.2897 |
+			+---------------+
+			1 row in set (0.00 sec)
+		
+		--这种场景下，行记录格式改为  dynamic， 10个字段都溢出，每个字段存储 20 字节的指针在数据页中，不会报错。
+		
+		
+		
+		
 8. 相关参考
 	https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
 	https://mp.weixin.qq.com/s/w3ij101jzDlbu93i5J7uQg           故障分析 | MySQL TEXT 字段的限制
@@ -442,5 +496,9 @@
 		-- 花了这么多时间，就要弄清楚来; 
 
 
+
+
+利用空闲时间，一个知识点花了4天的时间，可以，
+把一个知识点搞懂，比用4天时间看不同的内容强太多; 
 
 

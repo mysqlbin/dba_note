@@ -80,7 +80,7 @@
 		"name" : "mysqlbin",
 		"age" : 28,
 		"addresses_list" : [
-			{ "country": "china", "city": 'shenzhen', "detail": '车公庙100号', "phone": 13202095158 },
+			{ "country": "china", "city": 'shenzhen', "detail": '车公庙100号', "phone": 13202096168 },
 			{ "country": "china", "city": 'guangzhou', "detail": '车公庙101号', "phone": 13202095159 }
 		]
 		})
@@ -96,7 +96,7 @@
 					"country" : "china",
 					"city" : "shenzhen",
 					"detail" : "车公庙100号",
-					"phone" : 13202095158
+					"phone" : 13202096168
 				},
 				{
 					"country" : "china",
@@ -119,7 +119,7 @@
 	"name" : "mysqlbin",
 	"age" : 28,
 	"addresses_list" : 
-		{ "country": "china", "city": 'shenzhen', "detail": '车公庙100号', "phone": 13202095158 },
+		{ "country": "china", "city": 'shenzhen', "detail": '车公庙100号', "phone": 13202096168 },
 		{ "country": "china", "city": 'guangzhou', "detail": '车公庙101号', "phone": 13202095159 }
 	})
 	
