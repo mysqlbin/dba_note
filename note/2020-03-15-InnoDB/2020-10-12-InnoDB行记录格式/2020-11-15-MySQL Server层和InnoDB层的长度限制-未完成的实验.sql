@@ -30,19 +30,19 @@
 		
 		CREATE TABLE `table_20201115` (
 		  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-		  `a` varchar(20000) DEFAULT NULL COMMENT '牌型详情',
-		  `b` varchar(20000) NOT NULL DEFAULT '' COMMENT '玩家的手牌',
-		  `c` varchar(20000) NOT NULL DEFAULT '' COMMENT '玩家的手牌',
-		  `d` varchar(20000) NOT NULL DEFAULT '' COMMENT '玩家的手牌',
+		  `a` varchar(20000) DEFAULT NULL COMMENT '...',
+		  `b` varchar(20000) NOT NULL DEFAULT '' COMMENT '...',
+		  `c` varchar(20000) NOT NULL DEFAULT '' COMMENT '...',
+		  `d` varchar(20000) NOT NULL DEFAULT '' COMMENT '...',
 		  PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=Compact;
 		ERROR 1074 (42000): Column length too big for column 'a' (max = 16383); use BLOB or TEXT instead
-	
+		
 		-- utf8mb4下，ID为bigint unsigned类型，varchar字段的字符数不能大于 16383
 
 		CREATE TABLE `table_20201115` (
 		  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-		  `a` varchar(16382) DEFAULT NULL COMMENT '牌型详情',
+		  `a` varchar(16382) DEFAULT NULL COMMENT '...',
 		  PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=Compact;
 		ERROR 1074 (42000): Column length too big for column 'a' (max = 16383); use BLOB or TEXT instead
@@ -50,18 +50,26 @@
 		
 		CREATE TABLE `table_20201115` (
 			`ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-			`a` varchar(16381) DEFAULT NULL COMMENT '牌型详情',
+			`a` varchar(16381) DEFAULT NULL COMMENT '...',
 			PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=Compact;
 		Query OK, 0 rows affected (0.07 sec)
 			
 		-- utf8mb4下，ID为bigint unsigned类型，varchar字段的字符数可以小于等于 16381
 		
+		mysql>select  16381*4;
+		+---------+
+		| 16381*4 |
+		+---------+
+		|   65524 |
+		+---------+
+		1 row in set (0.01 sec)
+		
 	1.2 Compact、utf8
 
 		CREATE TABLE `table_20201115` (
 		  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-		  `a` varchar(21845) DEFAULT NULL COMMENT '牌型详情',
+		  `a` varchar(21845) DEFAULT NULL COMMENT '...',
 		  PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;
 		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
@@ -69,7 +77,7 @@
 
 		CREATE TABLE `table_20201115` (
 		  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-		  `a` varchar(21844) DEFAULT NULL COMMENT '牌型详情',
+		  `a` varchar(21844) DEFAULT NULL COMMENT '...',
 		  PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;
 		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
@@ -77,7 +85,7 @@
 		
 		CREATE TABLE `table_20201115` (
 		  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-		  `a` varchar(21842) DEFAULT NULL COMMENT '牌型详情',
+		  `a` varchar(21842) DEFAULT NULL COMMENT '...',
 		  PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;
 		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
@@ -85,22 +93,38 @@
 
 		CREATE TABLE `table_20201115` (
 			`ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-			`a` varchar(21841) DEFAULT NULL COMMENT '牌型详情',
+			`a` varchar(21841) DEFAULT NULL COMMENT '...',
 			PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;
 		Query OK, 0 rows affected (0.07 sec)
 
 		-- utf8字符集下，ID为bigint unsigned类型，varchar字段的字符数可以小于等于 21841
+		mysql> select 21841*3;
+		+---------+
+		| 21841*3 |
+		+---------+
+		|   65523 |
+		+---------+
+		1 row in set (0.00 sec)
 		
+		mysql>select 21841-16381;
+		+-------------+
+		| 21841-16381 |
+		+-------------+
+		|        5460 |
+		+-------------+
+		1 row in set (0.00 sec)
+		
+		utf8 比 utf8mb4 可以多存储 大约 5460个字符。
 		
 	1.3 Compact、latin1
 
 		CREATE TABLE `table_20201115` (
 		  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-		  `a` varchar(20000) DEFAULT NULL COMMENT '牌型详情',
-		  `b` varchar(20000) NOT NULL DEFAULT '' COMMENT '玩家的手牌',
-		  `c` varchar(20000) NOT NULL DEFAULT '' COMMENT '玩家的手牌',
-		  `d` varchar(20000) NOT NULL DEFAULT '' COMMENT '玩家的手牌',
+		  `a` varchar(20000) DEFAULT NULL COMMENT '...',
+		  `b` varchar(20000) NOT NULL DEFAULT '' COMMENT '...',
+		  `c` varchar(20000) NOT NULL DEFAULT '' COMMENT '...',
+		  `d` varchar(20000) NOT NULL DEFAULT '' COMMENT '...',
 		  PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=Compact;
 		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
@@ -109,7 +133,7 @@
 		drop table if exists table_20201115;
 		CREATE TABLE `table_20201115` (
 		  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-		  `a` varchar(65532) DEFAULT NULL COMMENT '牌型详情',
+		  `a` varchar(65532) DEFAULT NULL COMMENT '...',
 		  PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=Compact;
 		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
@@ -117,7 +141,7 @@
 		drop table if exists table_20201115;
 		CREATE TABLE `table_20201115` (
 			  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-			  `a` varchar(65525) DEFAULT NULL COMMENT '牌型详情',
+			  `a` varchar(65525) DEFAULT NULL COMMENT '...',
 			  PRIMARY KEY (`ID`)
 			) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=Compact;
 		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
@@ -126,7 +150,7 @@
 		drop table if exists table_20201115;
 		CREATE TABLE `table_20201115` (
 		  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-		  `a` varchar(65524) DEFAULT NULL COMMENT '牌型详情',
+		  `a` varchar(65524) DEFAULT NULL COMMENT '...',
 		  PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=latin1 ROW_FORMAT=Compact;
 		Query OK, 0 rows affected (0.06 sec)
@@ -216,13 +240,13 @@
 		drop table if exists table_20201115;
 		CREATE TABLE `table_20201115` (
 			`ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-			`a` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-			`b` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-			`c` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-			`d` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-			`e` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-			`f` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
-			`g` varchar(2000) DEFAULT NULL COMMENT '牌型详情',
+			`a` varchar(2000) DEFAULT NULL COMMENT '...',
+			`b` varchar(2000) DEFAULT NULL COMMENT '...',
+			`c` varchar(2000) DEFAULT NULL COMMENT '...',
+			`d` varchar(2000) DEFAULT NULL COMMENT '...',
+			`e` varchar(2000) DEFAULT NULL COMMENT '...',
+			`f` varchar(2000) DEFAULT NULL COMMENT '...',
+			`g` varchar(2000) DEFAULT NULL COMMENT '...',
 			PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=Compact;
 		Query OK, 0 rows affected (0.20 sec)
@@ -241,7 +265,7 @@
 			-- 理解了。**************
 			
 			https://mp.weixin.qq.com/s/_Emepy6IUgS6NbQcUC60rg     MySQL的一个表最多可以有多少个字段
-			这篇文章写得真好; 
+			-- 这篇文章写得真好; 
 			
 			
 	-- InnoDB层的长度限制的计算方式：跟字符集有关系，跟定长或者变长类型也有关系
@@ -318,22 +342,26 @@
 	1. 先在Server层判断表结构定义的字符长度是否大于 65535 字节，不超过，则执行到InnoDB存储引擎层，
 		接着判断字段长度是否大于 8126 字节，小于则建表成功;
 		
-	2. 数据插入的时候，没有行溢出的场景下，单记录的长度小于8098字节，则插入成功; 
+	2. 数据插入的时候，没有行溢出的场景下，单行记录的长度（行内保留的字节数）小于8098字节，则插入成功; 
 		否则，插入失败;
-		
+	
 	3. other
 
 		MySQL对于一行记录的单个字段的数据长度和整行的数据长度的处理方式是不一样的
 		单个字段的数据长度大于8098个字节才会行溢出; 
 		数据插入的时候，没有行溢出的场景下，单记录的长度小于8098字节，则插入成功; 
 		
-	-- 可以做为案例来讲解...
+	-- 可以做为案例来讲解，体现了自己对行记录格式的深入研究...
 	
 	
+	利用空闲时间，一个知识点花了4天的时间，可以，
+	把一个知识点搞懂，比用4天时间看不同的内容强太多; 
+
+
 5. 行溢出
 	CREATE TABLE `table_20201115` (
 		`ID` bigint(20) unsigned NOT NULL COMMENT '索引',
-		`a` varchar(16381) DEFAULT NULL COMMENT '牌型详情',
+		`a` varchar(16381) DEFAULT NULL COMMENT '...',
 		PRIMARY KEY (`ID`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=Compact;
 	Query OK, 0 rows affected (0.07 sec)
@@ -350,7 +378,7 @@
 	+---------+
 	1 row in set (0.00 sec)
 
-	-- 单个字段的数据长度大于8198个字节才会行溢出; 
+	-- 单个字段的实际数据长度大于8098个字节才会行溢出; 
 	
 	
 ------------------------------------------------------------------------------------
@@ -360,10 +388,10 @@
 	drop table if exists table_20201115;
 	CREATE TABLE `table_20201115` (
 	  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引',
-	  `a` text COMMENT '牌型详情',
-	  `b` text COMMENT '牌型详情',
-	  `c` text COMMENT '牌型详情',
-	  `d` text COMMENT '牌型详情',
+	  `a` text COMMENT '...',
+	  `b` text COMMENT '...',
+	  `c` text COMMENT '...',
+	  `d` text COMMENT '...',
 	  PRIMARY KEY (`ID`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;	
 
@@ -389,10 +417,10 @@
 	drop table if exists table_20201115;
 	CREATE TABLE `table_20201115` (
 	  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引',
-	  `a` blob COMMENT '牌型详情',
-	  `b` blob COMMENT '牌型详情',
-	  `c` blob COMMENT '牌型详情',
-	  `d` blob COMMENT '牌型详情',
+	  `a` blob COMMENT '...',
+	  `b` blob COMMENT '...',
+	  `c` blob COMMENT '...',
+	  `d` blob COMMENT '...',
 	  PRIMARY KEY (`ID`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;	
 	
@@ -401,10 +429,10 @@
 		   Table: table_20201115
 	Create Table: CREATE TABLE `table_20201115` (
 	  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引',
-	  `a` blob COMMENT '牌型详情',
-	  `b` blob COMMENT '牌型详情',
-	  `c` blob COMMENT '牌型详情',
-	  `d` blob COMMENT '牌型详情',
+	  `a` blob COMMENT '...',
+	  `b` blob COMMENT '...',
+	  `c` blob COMMENT '...',
+	  `d` blob COMMENT '...',
 	  PRIMARY KEY (`ID`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=COMPACT
 	1 row in set (0.00 sec)
@@ -461,15 +489,13 @@
 			修改参数：
 				innodb_file_format=BARRACUDA
 				row_format=dynamic
-				
-				
-				
+		
 		按照这种算法，查询之前某个出问题的用户 Blob 字段占用为 7602 「表中有 48 个 blob 字段」，加上其它的占用超过 8kB 就导致 了 Row size too large (> 8126). Changing some ... ... 。
 		-- 这里理解了。
-		-- Compact的行溢出：Compact行记录格式的多个字段行溢出，每个字段存储 767+20 字节在数据页中，超过一定数量(10字段都溢出)，报错....
-			mysql> select 8098/(767+20);
+		-- Compact的行溢出：Compact行记录格式的多个字段行溢出，每个字段存储 768+20 字节在数据页中，超过一定数量(10字段都溢出)，报错....
+			mysql> select 8098/(768+20);
 			+---------------+
-			| 8098/(767+20) |
+			| 8098/(768+20) |
 			+---------------+
 			|       10.2897 |
 			+---------------+
@@ -493,15 +519,6 @@
 		-- 读懂了这篇文章，就可以解决我的疑问; 好文
 		-- https://mp.weixin.qq.com/s/tNA_-_MoYt1fJT0icyKbMg       MVCC原理探究及MySQL源码实现分析   这篇文章也是他的
 		-- 花了这么多时间，就要弄清楚来; 
-
-
-
-
-利用空闲时间，一个知识点花了4天的时间，可以，
-把一个知识点搞懂，比用4天时间看不同的内容强太多; 
-
-
-
 
 9. 在线修改行记录格式为Compact
 
