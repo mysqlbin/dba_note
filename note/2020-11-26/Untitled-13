@@ -1,0 +1,476 @@
+*** Log file does not exist: /var/log/airflow/task_logs/mysql2hdfs_newcluster/video_tag/2020-11-18T16:01:00+00:00/1.log
+*** Fetching from: http://data-hdphysical-master1.ubj2e.tangdou-inc.com:8793/log/mysql2hdfs_newcluster/video_tag/2020-11-18T16:01:00+00:00/1.log
+
+[2020-11-20 00:32:34,859] {models.py:1350} INFO - Dependencies all met for <TaskInstance: mysql2hdfs_newcluster.video_tag 2020-11-18T16:01:00+00:00 [queued]>
+[2020-11-20 00:32:34,876] {models.py:1350} INFO - Dependencies all met for <TaskInstance: mysql2hdfs_newcluster.video_tag 2020-11-18T16:01:00+00:00 [queued]>
+[2020-11-20 00:32:34,876] {models.py:1562} INFO - 
+--------------------------------------------------------------------------------
+Starting attempt 1 of 9
+--------------------------------------------------------------------------------
+
+[2020-11-20 00:32:34,898] {models.py:1584} INFO - Executing <Task(SubDagOperator): video_tag> on 2020-11-18T16:01:00+00:00
+[2020-11-20 00:32:34,899] {base_task_runner.py:124} INFO - Running: ['bash', '-c', 'sudo -E -H -u hadoop airflow run mysql2hdfs_newcluster video_tag 2020-11-18T16:01:00+00:00 --job_id 1427123 --raw -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py --cfg_path /tmp/tmpkchffcv7']
+[2020-11-20 00:32:35,477] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag [2020-11-20 00:32:35,477] {settings.py:174} INFO - setting.configure_orm(): Using pool settings. pool_size=5, pool_recycle=1800
+[2020-11-20 00:32:36,104] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag [2020-11-20 00:32:36,103] {__init__.py:51} INFO - Using executor CeleryExecutor
+[2020-11-20 00:32:36,281] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag [2020-11-20 00:32:36,281] {models.py:257} INFO - Filling up the DagBag from /data/airflow/workflow/dags/dag_mysql2hdfs_newcluster.py
+[2020-11-20 00:32:36,873] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag [2020-11-20 00:32:36,872] {cli.py:492} INFO - Running <TaskInstance: mysql2hdfs_newcluster.video_tag 2020-11-18T16:01:00+00:00 [running]> on host data-hdphysical-master1.ubj2e.tangdou-inc.com
+[2020-11-20 00:32:39,858] {logging_mixin.py:95} INFO - [2020-11-20 00:32:39,856] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_00 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:39,901] {logging_mixin.py:95} INFO - [2020-11-20 00:32:39,901] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_01 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:39,942] {logging_mixin.py:95} INFO - [2020-11-20 00:32:39,942] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_02 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:39,985] {logging_mixin.py:95} INFO - [2020-11-20 00:32:39,985] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_03 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,030] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,029] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_04 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,076] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,075] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_05 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,117] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,117] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_06 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,158] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,158] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_07 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,202] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,201] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_08 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,241] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,241] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_09 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,286] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,286] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_0a 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,326] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,326] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_0b 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,370] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,370] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_0c 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,424] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,424] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_0d 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,475] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,475] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_0e 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,519] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,519] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_0f 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,563] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,563] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_10 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,609] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,609] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_11 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,656] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,656] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_12 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,700] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,700] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_13 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,745] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,745] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_14 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,791] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,791] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_15 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,848] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,847] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_16 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,896] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,896] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_17 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,939] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,939] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_18 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:40,975] {logging_mixin.py:95} INFO - [2020-11-20 00:32:40,975] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_19 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,016] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,016] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_1a 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,060] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,060] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_1b 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,109] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,108] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_1c 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,155] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,154] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_1d 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,201] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,201] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_1e 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,240] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,240] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_1f 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,293] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,292] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_20 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,337] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,337] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_21 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,379] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,378] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_22 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,425] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,425] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_23 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,467] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,467] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_24 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,509] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,509] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_25 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,552] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,552] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_26 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,595] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,595] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_27 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,643] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,642] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_28 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,691] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,691] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_29 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,740] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,740] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_2a 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,782] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,781] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_2b 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,824] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,824] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_2c 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,865] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,865] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_2d 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,907] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,907] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_2e 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,949] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,949] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_2f 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:41,988] {logging_mixin.py:95} INFO - [2020-11-20 00:32:41,987] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_30 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,026] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,026] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_31 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,063] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,063] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_32 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,105] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,104] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_33 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,145] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,145] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_34 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,184] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,183] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_35 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,222] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,222] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_36 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,261] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,261] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_37 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,300] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,300] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_38 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,341] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,341] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_39 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,381] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,381] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_3a 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,439] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,439] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_3b 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,479] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,479] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_3c 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,520] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,520] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_3d 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,568] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,567] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_3e 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,613] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,612] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_3f 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,652] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,652] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_40 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,695] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,695] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_41 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,734] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,734] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_42 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,776] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,776] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_43 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,820] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,819] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_44 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,863] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,863] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_45 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,904] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,904] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_46 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,949] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,949] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_47 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:42,994] {logging_mixin.py:95} INFO - [2020-11-20 00:32:42,993] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_48 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,041] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,041] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_49 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,084] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,084] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_4a 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,127] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,126] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_4b 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,168] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,167] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_4c 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,212] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,212] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_4d 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,257] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,256] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_4e 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,302] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,302] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_4f 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,352] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,352] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_50 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,398] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,398] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_51 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,441] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,441] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_52 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,486] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,486] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_53 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,527] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,527] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_54 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,570] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,570] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_55 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,612] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,612] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_56 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,654] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,654] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_57 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,696] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,696] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_58 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,741] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,741] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_59 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,786] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,786] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_5a 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,831] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,830] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_5b 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,874] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,874] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_5c 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,917] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,917] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_5d 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:43,960] {logging_mixin.py:95} INFO - [2020-11-20 00:32:43,960] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_5e 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,008] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,008] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_5f 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,056] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,055] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_60 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,153] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,153] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_61 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,184] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,184] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_62 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,220] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,220] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_63 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,262] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,262] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_64 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,308] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,308] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_65 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,357] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,356] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_66 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,401] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,401] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_67 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,442] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,442] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_68 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,487] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,487] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_69 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,532] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,531] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_6a 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,576] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,575] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_6b 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,625] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,625] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_6c 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,670] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,669] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_6d 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,714] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,714] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_6e 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,758] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,757] {base_executor.py:56} INFO - Adding to queue: airflow run mysql2hdfs_newcluster.video_tag video_tag_6f 2020-11-18T16:01:00+00:00 --local -sd DAGS_FOLDER/dags/dag_mysql2hdfs_newcluster.py
+
+[2020-11-20 00:32:44,778] {models.py:1751} ERROR - This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (_mysql_exceptions.OperationalError) (1213, 'Deadlock found when trying to get lock; try restarting transaction') [SQL: 'UPDATE task_instance SET state=%s WHERE task_instance.task_id = %s AND task_instance.dag_id = %s AND task_instance.execution_date = %s'] [parameters: ('queued', 'video_tag_6f', 'mysql2hdfs_newcluster.video_tag', datetime.datetime(2020, 11, 18, 16, 1, tzinfo=datetime.timezone.utc))]
+Traceback (most recent call last):
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 1182, in _execute_context
+    context)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/default.py", line 470, in do_execute
+    cursor.execute(statement, parameters)
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 250, in execute
+    self.errorhandler(self, exc, value)
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+    raise errorvalue
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 247, in execute
+    res = self._query(query)
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 412, in _query
+    rowcount = self._do_query(q)
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 375, in _do_query
+    db.query(q)
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/connections.py", line 276, in query
+    _mysql.connection.query(self, query)
+_mysql_exceptions.OperationalError: (1213, 'Deadlock found when trying to get lock; try restarting transaction')
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/jobs.py", line 2525, in _execute
+    session=session)
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/utils/db.py", line 70, in wrapper
+    return func(*args, **kwargs)
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/jobs.py", line 2479, in _execute_for_run_dates
+    session=session)
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/utils/db.py", line 70, in wrapper
+    return func(*args, **kwargs)
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/jobs.py", line 2343, in _process_backfill_task_instances
+    session.commit()
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 927, in commit
+    self.transaction.commit()
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 467, in commit
+    self._prepare_impl()
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 447, in _prepare_impl
+    self.session.flush()
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 2209, in flush
+    self._flush(objects)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 2329, in _flush
+    transaction.rollback(_capture_exception=True)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/util/langhelpers.py", line 66, in __exit__
+    compat.reraise(exc_type, exc_value, exc_tb)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/util/compat.py", line 187, in reraise
+    raise value
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 2293, in _flush
+    flush_context.execute()
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/unitofwork.py", line 389, in execute
+    rec.execute(self)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/unitofwork.py", line 548, in execute
+    uow
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/persistence.py", line 177, in save_obj
+    mapper, table, update)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/persistence.py", line 737, in _emit_update_statements
+    execute(statement, multiparams)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 945, in execute
+    return meth(self, multiparams, params)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/sql/elements.py", line 263, in _execute_on_connection
+    return connection._execute_clauseelement(self, multiparams, params)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 1053, in _execute_clauseelement
+    compiled_sql, distilled_params
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 1189, in _execute_context
+    context)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 1402, in _handle_dbapi_exception
+    exc_info
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/util/compat.py", line 203, in raise_from_cause
+    reraise(type(exception), exception, tb=exc_tb, cause=cause)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/util/compat.py", line 186, in reraise
+    raise value.with_traceback(tb)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 1182, in _execute_context
+    context)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/default.py", line 470, in do_execute
+    cursor.execute(statement, parameters)
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 250, in execute
+    self.errorhandler(self, exc, value)
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+    raise errorvalue
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 247, in execute
+    res = self._query(query)
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 412, in _query
+    rowcount = self._do_query(q)
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 375, in _do_query
+    db.query(q)
+  File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/connections.py", line 276, in query
+    _mysql.connection.query(self, query)
+sqlalchemy.exc.OperationalError: (_mysql_exceptions.OperationalError) (1213, 'Deadlock found when trying to get lock; try restarting transaction') [SQL: 'UPDATE task_instance SET state=%s WHERE task_instance.task_id = %s AND task_instance.dag_id = %s AND task_instance.execution_date = %s'] [parameters: ('queued', 'video_tag_6f', 'mysql2hdfs_newcluster.video_tag', datetime.datetime(2020, 11, 18, 16, 1, tzinfo=datetime.timezone.utc))]
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/models.py", line 1648, in _run_raw_task
+    result = task_copy.execute(context=context)
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/operators/subdag_operator.py", line 103, in execute
+    executor=self.executor)
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/models.py", line 4120, in run
+    job.run()
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/jobs.py", line 201, in run
+    self._execute()
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/utils/db.py", line 74, in wrapper
+    return func(*args, **kwargs)
+  File "/opt/airflow/lib/python3.6/site-packages/airflow/jobs.py", line 2543, in _execute
+    session.commit()
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 927, in commit
+    self.transaction.commit()
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 465, in commit
+    self._assert_active(prepared_ok=True)
+  File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 276, in _assert_active
+    % self._rollback_exception
+sqlalchemy.exc.InvalidRequestError: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (_mysql_exceptions.OperationalError) (1213, 'Deadlock found when trying to get lock; try restarting transaction') [SQL: 'UPDATE task_instance SET state=%s WHERE task_instance.task_id = %s AND task_instance.dag_id = %s AND task_instance.execution_date = %s'] [parameters: ('queued', 'video_tag_6f', 'mysql2hdfs_newcluster.video_tag', datetime.datetime(2020, 11, 18, 16, 1, tzinfo=datetime.timezone.utc))]
+[2020-11-20 00:32:44,791] {models.py:1771} INFO - Marking task as UP_FOR_RETRY
+[2020-11-20 00:32:44,841] {logging_mixin.py:95} INFO - [2020-11-20 00:32:44,839] {jobs.py:2679} WARNING - State of this instance has been externally set to up_for_retry. Taking the poison pill.
+
+[2020-11-20 00:32:44,850] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag Traceback (most recent call last):
+[2020-11-20 00:32:44,850] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 1182, in _execute_context
+[2020-11-20 00:32:44,851] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     context)
+[2020-11-20 00:32:44,851] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/default.py", line 470, in do_execute
+[2020-11-20 00:32:44,851] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     cursor.execute(statement, parameters)
+[2020-11-20 00:32:44,851] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 250, in execute
+[2020-11-20 00:32:44,851] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     self.errorhandler(self, exc, value)
+[2020-11-20 00:32:44,851] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+[2020-11-20 00:32:44,851] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     raise errorvalue
+[2020-11-20 00:32:44,852] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 247, in execute
+[2020-11-20 00:32:44,852] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     res = self._query(query)
+[2020-11-20 00:32:44,852] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 412, in _query
+[2020-11-20 00:32:44,852] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     rowcount = self._do_query(q)
+[2020-11-20 00:32:44,852] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 375, in _do_query
+[2020-11-20 00:32:44,852] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     db.query(q)
+[2020-11-20 00:32:44,853] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/connections.py", line 276, in query
+[2020-11-20 00:32:44,853] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     _mysql.connection.query(self, query)
+[2020-11-20 00:32:44,853] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag _mysql_exceptions.OperationalError: (1213, 'Deadlock found when trying to get lock; try restarting transaction')
+[2020-11-20 00:32:44,853] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag 
+[2020-11-20 00:32:44,853] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag The above exception was the direct cause of the following exception:
+[2020-11-20 00:32:44,853] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag 
+[2020-11-20 00:32:44,853] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag Traceback (most recent call last):
+[2020-11-20 00:32:44,854] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/jobs.py", line 2525, in _execute
+[2020-11-20 00:32:44,854] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     session=session)
+[2020-11-20 00:32:44,854] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/utils/db.py", line 70, in wrapper
+[2020-11-20 00:32:44,854] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     return func(*args, **kwargs)
+[2020-11-20 00:32:44,854] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/jobs.py", line 2479, in _execute_for_run_dates
+[2020-11-20 00:32:44,854] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     session=session)
+[2020-11-20 00:32:44,854] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/utils/db.py", line 70, in wrapper
+[2020-11-20 00:32:44,855] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     return func(*args, **kwargs)
+[2020-11-20 00:32:44,855] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/jobs.py", line 2343, in _process_backfill_task_instances
+[2020-11-20 00:32:44,855] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     session.commit()
+[2020-11-20 00:32:44,855] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 927, in commit
+[2020-11-20 00:32:44,855] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     self.transaction.commit()
+[2020-11-20 00:32:44,855] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 467, in commit
+[2020-11-20 00:32:44,855] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     self._prepare_impl()
+[2020-11-20 00:32:44,856] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 447, in _prepare_impl
+[2020-11-20 00:32:44,856] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     self.session.flush()
+[2020-11-20 00:32:44,856] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 2209, in flush
+[2020-11-20 00:32:44,856] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     self._flush(objects)
+[2020-11-20 00:32:44,856] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 2329, in _flush
+[2020-11-20 00:32:44,856] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     transaction.rollback(_capture_exception=True)
+[2020-11-20 00:32:44,857] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/util/langhelpers.py", line 66, in __exit__
+[2020-11-20 00:32:44,857] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     compat.reraise(exc_type, exc_value, exc_tb)
+[2020-11-20 00:32:44,857] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/util/compat.py", line 187, in reraise
+[2020-11-20 00:32:44,857] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     raise value
+[2020-11-20 00:32:44,857] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 2293, in _flush
+[2020-11-20 00:32:44,857] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     flush_context.execute()
+[2020-11-20 00:32:44,857] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/unitofwork.py", line 389, in execute
+[2020-11-20 00:32:44,858] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     rec.execute(self)
+[2020-11-20 00:32:44,858] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/unitofwork.py", line 548, in execute
+[2020-11-20 00:32:44,858] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     uow
+[2020-11-20 00:32:44,858] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/persistence.py", line 177, in save_obj
+[2020-11-20 00:32:44,858] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     mapper, table, update)
+[2020-11-20 00:32:44,858] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/persistence.py", line 737, in _emit_update_statements
+[2020-11-20 00:32:44,858] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     execute(statement, multiparams)
+[2020-11-20 00:32:44,859] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 945, in execute
+[2020-11-20 00:32:44,859] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     return meth(self, multiparams, params)
+[2020-11-20 00:32:44,859] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/sql/elements.py", line 263, in _execute_on_connection
+[2020-11-20 00:32:44,859] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     return connection._execute_clauseelement(self, multiparams, params)
+[2020-11-20 00:32:44,859] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 1053, in _execute_clauseelement
+[2020-11-20 00:32:44,859] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     compiled_sql, distilled_params
+[2020-11-20 00:32:44,859] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 1189, in _execute_context
+[2020-11-20 00:32:44,860] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     context)
+[2020-11-20 00:32:44,860] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 1402, in _handle_dbapi_exception
+[2020-11-20 00:32:44,860] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     exc_info
+[2020-11-20 00:32:44,860] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/util/compat.py", line 203, in raise_from_cause
+[2020-11-20 00:32:44,860] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     reraise(type(exception), exception, tb=exc_tb, cause=cause)
+[2020-11-20 00:32:44,860] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/util/compat.py", line 186, in reraise
+[2020-11-20 00:32:44,860] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     raise value.with_traceback(tb)
+[2020-11-20 00:32:44,861] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/base.py", line 1182, in _execute_context
+[2020-11-20 00:32:44,861] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     context)
+[2020-11-20 00:32:44,861] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/engine/default.py", line 470, in do_execute
+[2020-11-20 00:32:44,861] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     cursor.execute(statement, parameters)
+[2020-11-20 00:32:44,861] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 250, in execute
+[2020-11-20 00:32:44,861] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     self.errorhandler(self, exc, value)
+[2020-11-20 00:32:44,861] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/connections.py", line 50, in defaulterrorhandler
+[2020-11-20 00:32:44,862] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     raise errorvalue
+[2020-11-20 00:32:44,862] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 247, in execute
+[2020-11-20 00:32:44,862] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     res = self._query(query)
+[2020-11-20 00:32:44,862] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 412, in _query
+[2020-11-20 00:32:44,862] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     rowcount = self._do_query(q)
+[2020-11-20 00:32:44,862] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/cursors.py", line 375, in _do_query
+[2020-11-20 00:32:44,863] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     db.query(q)
+[2020-11-20 00:32:44,863] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/MySQLdb/connections.py", line 276, in query
+[2020-11-20 00:32:44,863] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     _mysql.connection.query(self, query)
+[2020-11-20 00:32:44,863] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag sqlalchemy.exc.OperationalError: (_mysql_exceptions.OperationalError) (1213, 'Deadlock found when trying to get lock; try restarting transaction') [SQL: 'UPDATE task_instance SET state=%s WHERE task_instance.task_id = %s AND task_instance.dag_id = %s AND task_instance.execution_date = %s'] [parameters: ('queued', 'video_tag_6f', 'mysql2hdfs_newcluster.video_tag', datetime.datetime(2020, 11, 18, 16, 1, tzinfo=datetime.timezone.utc))]
+[2020-11-20 00:32:44,863] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag 
+[2020-11-20 00:32:44,863] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag During handling of the above exception, another exception occurred:
+[2020-11-20 00:32:44,863] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag 
+[2020-11-20 00:32:44,863] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag Traceback (most recent call last):
+[2020-11-20 00:32:44,864] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/usr/bin/airflow", line 32, in <module>
+[2020-11-20 00:32:44,864] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     args.func(args)
+[2020-11-20 00:32:44,864] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/utils/cli.py", line 74, in wrapper
+[2020-11-20 00:32:44,864] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     return f(*args, **kwargs)
+[2020-11-20 00:32:44,864] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/bin/cli.py", line 498, in run
+[2020-11-20 00:32:44,864] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     _run(args, dag, ti)
+[2020-11-20 00:32:44,864] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/bin/cli.py", line 402, in _run
+[2020-11-20 00:32:44,865] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     pool=args.pool,
+[2020-11-20 00:32:44,865] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/utils/db.py", line 74, in wrapper
+[2020-11-20 00:32:44,865] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     return func(*args, **kwargs)
+[2020-11-20 00:32:44,865] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/models.py", line 1648, in _run_raw_task
+[2020-11-20 00:32:44,865] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     result = task_copy.execute(context=context)
+[2020-11-20 00:32:44,865] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/operators/subdag_operator.py", line 103, in execute
+[2020-11-20 00:32:44,865] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     executor=self.executor)
+[2020-11-20 00:32:44,866] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/models.py", line 4120, in run
+[2020-11-20 00:32:44,866] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     job.run()
+[2020-11-20 00:32:44,866] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/jobs.py", line 201, in run
+[2020-11-20 00:32:44,866] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     self._execute()
+[2020-11-20 00:32:44,866] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/utils/db.py", line 74, in wrapper
+[2020-11-20 00:32:44,866] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     return func(*args, **kwargs)
+[2020-11-20 00:32:44,866] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/airflow/jobs.py", line 2543, in _execute
+[2020-11-20 00:32:44,867] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     session.commit()
+[2020-11-20 00:32:44,867] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 927, in commit
+[2020-11-20 00:32:44,867] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     self.transaction.commit()
+[2020-11-20 00:32:44,867] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 465, in commit
+[2020-11-20 00:32:44,867] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     self._assert_active(prepared_ok=True)
+[2020-11-20 00:32:44,867] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag   File "/opt/airflow/lib/python3.6/site-packages/sqlalchemy/orm/session.py", line 276, in _assert_active
+[2020-11-20 00:32:44,867] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag     % self._rollback_exception
+[2020-11-20 00:32:44,868] {base_task_runner.py:107} INFO - Job 1427123: Subtask video_tag sqlalchemy.exc.InvalidRequestError: This Session's transaction has been rolled back due to a previous exception during flush. To begin a new transaction with this Session, first issue Session.rollback(). Original exception was: (_mysql_exceptions.OperationalError) (1213, 'Deadlock found when trying to get lock; try restarting transaction') [SQL: 'UPDATE task_instance SET state=%s WHERE task_instance.task_id = %s AND task_instance.dag_id = %s AND task_instance.execution_date = %s'] [parameters: ('queued', 'video_tag_6f', 'mysql2hdfs_newcluster.video_tag', datetime.datetime(2020, 11, 18, 16, 1, tzinfo=datetime.timezone.utc))]
+[2020-11-20 00:32:44,997] {helpers.py:240} INFO - Sending Signals.SIGTERM to GPID 31101
+[2020-11-20 00:32:45,118] {helpers.py:240} INFO - Sending Signals.SIGTERM to GPID 31101

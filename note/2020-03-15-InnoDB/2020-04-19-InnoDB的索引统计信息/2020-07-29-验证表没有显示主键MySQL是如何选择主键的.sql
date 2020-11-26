@@ -127,6 +127,8 @@
 	
 	4. 如果没显示的主键，也没有唯一非NULL的索引，那么会选择6个字节的 DB_ROW_ID 成为聚集索引
 	
+	5. 用这个语句就可以看InnoDB是如何选择主键的，并且可以看到二级索引后面存储的是主键。
+		select * from mysql.innodb_index_stats  where database_name='test_db' and table_name = 'task_instance';
 
 6. 相关参考
 
