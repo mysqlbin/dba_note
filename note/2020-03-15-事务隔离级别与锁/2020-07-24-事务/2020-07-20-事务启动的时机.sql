@@ -16,6 +16,8 @@ root@mysqldb 14:33:  [base_db]> select version();
 	2.2 案例2
 	2.3 案例3
 
+3. 小结
+
 1. RR隔离级别
 1.1 案例1
 	start transaction with consistent snapshot; 
@@ -334,4 +336,4 @@ root@mysqldb 14:33:  [base_db]> select version();
 			1 row in set (0.01 sec)
 
 
-
+3. 小结
