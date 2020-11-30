@@ -1,7 +1,9 @@
 
+alter user 'root'@'%' identified by '123456abc';
 
+grant all privileges on *.* to 'root'@'%' identified by '123456abc';
 
-
+update user set authentication_string=password('123456abc') where user='root' and host='%';
 
 https://www.cnblogs.com/wdrain/p/11527455.html  mysql5.7 忘记root密码处理
 

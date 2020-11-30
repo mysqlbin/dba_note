@@ -186,7 +186,7 @@ select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOC
 
 			begin;		
 			update t1 set status=1 where id=1;
-			-- 看看这里是否会锁住 idx_status 的记录
+			-- 看看这里是否会锁住 idx_status 的记录？ 会的。
 	T1
 								select * from t1 where status=0 for update;						
 
@@ -310,6 +310,7 @@ select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOC
 		| 139773755733152:1085:139773670930376   |                  4644 |        69 | t1          | NULL       | TABLE     | IX            | GRANTED     | NULL      |
 		| 139773755733152:28:6:2:139773670927336 |                  4644 |        69 | t1          | idx_status | RECORD    | X             | WAITING     | 0, 1      |
 		| 139773755730536:1085:139773670912440   |                  4639 |        66 | t1          | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+		
 		| 139773755730536:28:4:2:139773670909400 |                  4639 |        66 | t1          | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 1         |
 		| 139773755730536:28:6:2:139773670909744 |                  4639 |        69 | t1          | idx_status | RECORD    | X,REC_NOT_GAP | GRANTED     | 0, 1      |
 		+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
