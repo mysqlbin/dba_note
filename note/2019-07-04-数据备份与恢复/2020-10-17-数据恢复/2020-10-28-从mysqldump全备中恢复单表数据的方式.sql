@@ -45,3 +45,52 @@
 	
 	
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+create  database niuniuh5_db DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
+
+create user 'recovery_user_0111'@'%' identified by '123456abc';
+grant all privileges on niuniuh5_db.table_club_game_cfg to 'recovery_user_0111'@'%' with grant option;
+	
+mysql -f -urecovery_user_0111 -p123456abc niuniuh5_db <  niuniuh5_db_20210107_060001.dump
+
+
+
+
+root@mysqldb 17:06:  [(none)]> drop database niuniuh5_db;
+ERROR 1010 (HY000): Error dropping database (can't rmdir './niuniuh5_db/', errno: 17)
+
+[root@localhost niuniuh5_db]# pwd
+/home/mysql/mysql3306/data/niuniuh5_db
+
+root@mysqldb 17:06:  [(none)]> drop database niuniuh5_db;
+Query OK, 0 rows affected (0.04 sec)
+
+	
+	
+	
+	

@@ -8,3 +8,7 @@
 	
 	https://github.com/ClickHouse/ClickHouse/pull/10851
 	
+	
+	https://mp.weixin.qq.com/s/2CzggQdHvBGX1-yCBz-1Bg  基于开源应用快速构建HTAP系统
+	
+	https://mp.weixin.qq.com/s?__biz=MjM5NzAzMTY4NQ==&mid=2653933490&idx=1&sn=241293f4dce3e37f704033fbba7be310&scene=21#wechat_redirect  ClickHouse性能测试

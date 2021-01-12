@@ -11,7 +11,7 @@ ZONE="Asia/Shanghai"
 UTC=false                          #设置为false，硬件时钟不于utc时间一致
 ARC=false
 2、ln -sf /usr/share/zoneinfo/Asia/Shanghai    /etc/localtime    #linux的时区设置为上海
-3、ntpdate asia.pool.ntp.org    #对准时间，需要先安装ntp服务器 yum install ntp
+3、ntpdate asia.pool.ntp.org    #对准时间，需要先安装ntp服务器 yum install ntpdate
 4、/sbin/hwclock --systohc   #设置硬件时间和系统时间一致并校准
 
 至此，linux系统时间和计算机硬件时间都是cst时间了，并且为上海时区。

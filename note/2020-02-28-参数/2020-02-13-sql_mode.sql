@@ -1029,17 +1029,13 @@
 				3 rows in set (0.00 sec)
 		
 			对InnoDB表插入3条数据，其中，第3条数据是空字符串，与定义的int类型不匹配。
-				drop table t_1602;
 				create table t_1602 (c1 int) engine=InnoDB;
 				set session sql_mode='STRICT_TRANS_TABLES';
 				insert into t_1602 values (1),(2),('');
 				show warnings;
 				select * from t_1602;
 			
-				root@mysqldb 01:43:  [db1]> 
-				root@mysqldb 01:43:  [db1]> drop table t_1602;
-				Query OK, 0 rows affected (0.00 sec)
-
+			
 				root@mysqldb 01:43:  [db1]> create table t_1602 (c1 int) engine=InnoDB;
 				Query OK, 0 rows affected (0.03 sec)
 
