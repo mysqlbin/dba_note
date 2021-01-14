@@ -4,10 +4,12 @@ cd $DIR
 
 
 :<<EOF
-
+1. 安装工具pt-query-digest
+2. 授权
 create  database monitor_db DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
 create user 'slow_monitor'@'%' identified by 'abc123456';
 grant insert,delete,update,select on monitor_db.* to 'slow_monitor'@'%' with grant option;
+3. 导入 '收集慢日志的2个表.sql' 
 
 EOF
 
@@ -22,6 +24,8 @@ monitor_db_database="monitor_db"
 
 #实例慢日志位置
 slowquery_file="/mydata/mysql/mysql3306/data/slow.log"
+
+#pt-query-digest的
 pt_query_digest="/usr/bin/pt-query-digest"
 
 #实例连接信息
