@@ -42,6 +42,8 @@
 
 		mongorestore --host "1"  -u "admin" -p "admin123456" --authenticationDatabase "admin" -d aiuaiuh5_modb --gzip --dir='/home/dba2/20200615/aiuaiuh5_modb' 	
 		
+		
+		mongorestore --host "10.31.76.149"  -u "admin" -p "admina801fc3" --authenticationDatabase "admin" -d niuniuh5_db --gzip --dir='/home/dba2/niuniu_h520210125/niuniu_h5' 	
 
 生产实践		
 	> show dbs

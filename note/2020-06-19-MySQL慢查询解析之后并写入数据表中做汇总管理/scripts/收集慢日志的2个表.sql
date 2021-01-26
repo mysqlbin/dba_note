@@ -105,8 +105,9 @@ CREATE TABLE `mysql_slow_query_review_history` (
   `Bytes_stddev` float DEFAULT NULL,
   `Bytes_median` float DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `checksum` (`checksum`,`ts_min`,`ts_max`),
-  KEY `idx_hostname_max_ts_min` (`hostname_max`,`ts_min`)
+  UNIQUE KEY `checksum` (`checksum`),
+  KEY `idx_hostname_max` (`hostname_max`),
+  KEY `idx_ts_min` (`ts_min`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
