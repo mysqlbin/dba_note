@@ -199,3 +199,7 @@ tail 命令，可以快速的看最后的多少行。
 https://www.jianshu.com/p/6873e34d3b19  Linux（tar）压缩解压文件到指定目录
 
 
+https://www.cnblogs.com/xuebing26/p/11555084.html    linux下查找文件中某字符串出现的行数以及该行的前后N行
+
+
+

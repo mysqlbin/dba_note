@@ -151,7 +151,7 @@
 
 4. 小结
 	
-	MySQL的参数explicit_defaults_for_timestamp  默认是OFF.
+	MySQL的参数 explicit_defaults_for_timestamp  默认是OFF.
 	explicit_defaults_for_timestamp 变量会直接影响表结构，也就是说explicit_defaults_for_timestamp的作用时间  --遇到了。
 
 

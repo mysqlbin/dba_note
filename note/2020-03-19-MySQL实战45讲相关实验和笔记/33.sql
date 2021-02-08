@@ -20,6 +20,7 @@
 	传统LRU算法存在的问题：
 		会把LRU链表的数据全部淘汰出去； 
 		假设 innodb_buffer_pool_size=10GB, 某个大表的数量为30GB，当触发大表的全表扫描，会把LRU链表的数据全部淘汰出去；
+		此时内存命中率很低，执行DML和SELECT语句会很慢。
 		
 	InnDB对LRU算法的优化
 		把LRU链表分为 young区域 和 old区域，young区域 占5/8的大小， old区域占 3/8 的大小
@@ -32,7 +33,7 @@
 			
 		
 3. OOM
-	innodb_buffer_pool_size 设置太大，再加上server层使用的内存，导致内存超过系统上限被oom。
+	innodb_buffer_pool_size 设置太大，再加上server层使用的内存，导致内存超过系统上限被OOM。
 	-- 这个是自己有遇到过的。
 
 	

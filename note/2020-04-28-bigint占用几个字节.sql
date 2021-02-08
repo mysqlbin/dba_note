@@ -56,3 +56,7 @@ root@mysqldb 18:30:  [sbtest]> SELECT  table_schema,table_name,round((data_lengt
 
 经过测试，当该表达到1亿行记录，物理大小为3GB。
 
+1亿个纯主键记录，物理大小为3GB, 具有一定的参考价值。
+
+
+

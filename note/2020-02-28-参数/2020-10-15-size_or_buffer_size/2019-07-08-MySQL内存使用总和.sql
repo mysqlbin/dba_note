@@ -39,7 +39,7 @@ mysql 内存结构 ：
 
 		+thread_cache_size -- 线程缓存，降低多次反复打开线程开销
 
-		+net_buffer_length -- 线程持连接缓冲以及读取结果缓冲
+		+net_buffer_length -- 线程池连接缓冲以及读取结果缓冲
 
 		+bulk_insert_buffer_size ) -- MyISAM表批量写入数据缓冲
 

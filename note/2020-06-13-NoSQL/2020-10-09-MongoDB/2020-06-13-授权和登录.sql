@@ -185,3 +185,14 @@
 	
 	
 	mongo -host 192.168.1.31 -u abc_user -p app123456 --authenticationDatabase sbtest_db
+	
+	
+	
+	use admin
+	db.dropUser('abc_user')
+	db.dropUser('web_user')
+	
+	
+	db.addUser('tank2','111')
+	
+	
