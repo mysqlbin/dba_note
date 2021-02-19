@@ -34,7 +34,7 @@ CREATE TABLE `t` (
 -- Dumping data for table `t`
 --
 
-LOCK TABLES `t` WRITE;
+LOCK TABLES `t` WRITE;   -- 保证数据导入的一致性
 /*!40000 ALTER TABLE `t` DISABLE KEYS */;
 INSERT INTO `t` VALUES (1,1,1),(3,3,3);
 /*!40000 ALTER TABLE `t` ENABLE KEYS */;

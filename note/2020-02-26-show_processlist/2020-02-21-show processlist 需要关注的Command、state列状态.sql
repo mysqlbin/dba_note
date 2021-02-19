@@ -81,28 +81,48 @@
 	1. Sending data：
 
 		这表示多种情况：
-
 			1. 线程可能在多个状态之间传送数据
-
 			2. 在生成结果集
-
 			3. 在向客户端返回数据；
 
+        是什么：-- by丁奇
+            表示语句正在执行，其中有两种正在执行的情况：
+                1. 正在向客户端发送/返回数据；
+                2. 可能是处于 执行器 过程中的任意阶段；
+        	
 		官方文档： 
 
 			Sending data 表示在读取以及处理行数据以及发送数据到客户端；
-
 			https://dev.mysql.com/doc/refman/5.7/en/general-thread-states.html
 
-
+		
+		7. 执行器：
+		 1. 先判断对表有没有执行/操作权限
+		 2. 如果没有权限，返回权限的错误
+				mysql> select * from T where ID=10;
+				ERROR 1142 (42000): SELECT command denied to user 'b'@'localhost' for table 'T' 
+		 3. 如果有权限，打开表继续执行
+		 4. 调用存储引擎接口：   
+			打开表的时候，执行器就会根据表的引擎定义，去使用这个引擎提供的接口。
+			比如我们这个例子中的表 T 中，ID 字段没有索引，那么执行器的执行流程如下所示：
+				1. 调用 InnoDB 引擎接口取这个表的第一行，判断 ID 值是不是 10，如果不是则跳过，如果是则将这行存在结果集中；
+				2. 调用引擎接口取 下一行，重复相同的判断逻辑，直到取到这个表的最后一行。
+				3. 执行器将上述遍历过程中所有满足条件的行组成的记录集作为结果集返回给客户端。
+				4. 这个语句执行完成
+				 
+		执行器的作用：操作引擎，返回结果
+	
+	
 	2. Sending to client：
 
-		表示线程处于 "等待客户端接收结果" 的状态；
+		表示线程处于 等待客户端接收结果 的状态；
 
-	
+		《2021-02-08-Writing to net-Sending data和Sending to client》
+		
+		
 	3. Creating sort index，当前的SELECT需要用到临时表进行order by，建议加索引
 		
-		Creating sort index 表示需要用到临时表进行order by
+		Creating sort index 表示需要用到临时表进行order by辅助排序
 
 	4. Creating tmp table，建议创建适当的索引，少用UNION,VIEW,SUBQUERY
 

@@ -3,7 +3,7 @@
 mycat_user@mysqldb 05:07:  [mycat_db]> show global variables like 'interactive_timeout';
 ERROR 2013 (HY000): Lost connection to MySQL server during query
 mycat_user@mysqldb 06:45:  [mycat_db]> show global variables like 'wait_timeout';
-ERROR 2006 (HY000): MySQL server has gone away
+ERROR 2006 (HY000): MySQL server has gone away    -- 建立新的连接
 No connection. Trying to reconnect...
 Connection id:    3
 Current database: mycat_db

@@ -49,7 +49,11 @@
 		root@mysqldb 10:43:  [sbtest]> show global variables like '%innodb_locks_unsafe_for_binlog%';
 		Empty set (0.00 sec)
 	
-	
+	5. myisam存储引擎模块
+		show global VARIABLES like '%myisam%'
+		
+		
+		
 3. 事务隔离级别参数
 	root@mysqldb 10:59:  [zst]> select version();
 	+-----------+
