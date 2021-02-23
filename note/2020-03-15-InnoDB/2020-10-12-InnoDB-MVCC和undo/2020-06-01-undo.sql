@@ -74,11 +74,19 @@ undo的回滚跟 binlog2sql 一样:
 			
 	完成Undo log写入后，构建新的回滚段指针并返回（trx_undo_build_roll_ptr），回滚段指针包括undo log所在的回滚段id、日志所在的page no、以及page内的偏移量，需要记录到聚集索引记录中。
 	
-	对于insert和delete，undo中会记录键值，delete操作只是标记删除(delete mark)记录。
+	对于insert和delete，undo中会记录主键值，delete操作只是标记删除(delete mark)记录。
 	
-	对于update，如果是原地更新，undo中会记录键值和老值。
+	对于update，如果是原地更新，undo中会记录主键值和老值。
 	
-	update如果是通过delete+insert方式进行的，则undo中记录键值，不需记录老值; 其中delete也是标记删除记录。
+	update如果是通过delete+insert方式进行的，则undo中记录主键值(方便查找这一行记录)，不需记录老值; 其中delete也是标记删除记录。
+		-- 回滚的时候，清除删除标识就行了。
+		
+		
+	undo中保存行记录主键的作用：
+	方便查找同一行记录，加速回滚和MVCC中回溯查找旧版本的数据
+		每条记录在更新的时候都会同时记录一条回滚操作
+		每条行记录上面都有一个指针 DATA_ROLL_PTR，指向最近的 UNDO 记录
+
 	
 	对于update操作有原地更新和delete+insert两种，那么怎么区分undo记录使用的哪种方式呢？
 	 

@@ -102,7 +102,7 @@
 		
 	4.4 构建行的多版本回溯查找数据
 		
-		update 是原地更新的, 所以 undo 存储的是 键值和老值, 所以 undo 不需要存储 c2 的值.
+		update 是原地更新的, 所以 undo 存储的是 主键值和老值, 所以 undo 不需要存储 c2 的值.
 		
 		1. insert into t1 values(1,1,'a');
 				
@@ -200,8 +200,9 @@
 
 
 8. 思考
-	m_up_limit_id: 2，这里理解不对吧，应该为 m_up_limit_id: 0；
+	m_up_limit_id: 2，m_up_limit_id的值为2感觉不对，应该为 m_up_limit_id: 0；
 	后期有时间的话，反馈一下。
+	
 	
 	
 

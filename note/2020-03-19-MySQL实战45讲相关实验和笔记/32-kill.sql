@@ -3,8 +3,8 @@
 
 
 MySQL 的两个 kill 命令：
- kill query thread_id: 表示终止这个线程中正在执行的语句；
- kill [connection] thread_id: 表示断开这个线程的连接，如果这个线程有语句正在执行，要先停止正在执行的语句。
+	kill query thread_id: 表示终止这个线程中正在执行的语句；
+	kill [connection] thread_id: 表示断开这个线程的连接，如果这个线程有语句正在执行，要先停止正在执行的语句。
 
  
  
@@ -283,3 +283,159 @@ owners.
 Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
 	
 	
+	
+------------------------------------------------------------------------------------------------------------------------------
+	
+kill 1个大事务的线程会发生什么
+	终止当前语句和回滚事务的关系？
+	update t_20201023 set age=0;
+	-- 更新语句执行到一半，触发 kill 线程
+
+
+	root@mysqldb 17:01:  [test_db]> select * from t1;
+	+----+-----+---------------------+
+	| ID | age | tEndTime            |
+	+----+-----+---------------------+
+	|  2 |   2 | 2020-07-13 14:23:57 |
+	|  3 |   3 | 2020-07-13 14:24:00 |
+	|  4 |   4 | 2020-07-13 14:24:03 |
+	|  5 |   5 | 2020-07-13 14:24:05 |
+	|  6 |   6 | 2020-07-13 14:24:08 |
+	|  7 |   7 | 2020-07-13 14:24:11 |
+	|  8 |   1 | 2020-07-13 14:41:43 |
+	| 10 |   1 | 2020-07-13 14:41:43 |
+	+----+-----+---------------------+
+	8 rows in set (0.00 sec)
+
+
+	begin;
+	delete from t1 where ID=2;
+	update t_20201023 set age=0;
+
+
+	root@mysqldb 17:03:  [test_db]> show processlist;
+	+-----+-----------------+---------------------+-------------+---------+------+-----------------------------+-----------------------------+
+	| Id  | User            | Host                | db          | Command | Time | State                       | Info                        |
+	+-----+-----------------+---------------------+-------------+---------+------+-----------------------------+-----------------------------+
+	|   1 | event_scheduler | localhost           | NULL        | Daemon  |    0 | Waiting for next activation | NULL                        |
+	| 376 | root            | 192.168.0.220:59296 | NULL        | Sleep   |  565 |                             | NULL                        |
+	| 377 | root            | 192.168.0.220:59297 | niuniuh5_db | Sleep   |  564 |                             | NULL                        |
+	| 378 | root            | 192.168.0.220:59298 | test_db     | Sleep   |  199 |                             | NULL                        |
+	| 379 | root            | 192.168.0.220:59303 | test_db     | Sleep   |  306 |                             | NULL                        |
+	| 381 | root            | 192.168.0.220:59304 | test_db     | Sleep   |  537 |                             | NULL                        |
+	| 382 | root            | 192.168.0.220:59307 | test_db     | Sleep   |  525 |                             | NULL                        |
+	| 383 | root            | 192.168.0.220:59308 | test_db     | Sleep   |  327 |                             | NULL                        |
+	| 385 | root            | localhost           | NULL        | Sleep   |  101 |                             | NULL                        |
+	| 386 | root            | localhost           | test_db     | Query   |    0 | starting                    | show processlist            |
+	| 391 | root            | 192.168.0.220:59392 | test_db     | Sleep   |  199 |                             | NULL                        |
+	| 396 | root            | localhost           | test_db     | Query   |    3 | updating                    | update t_20201023 set age=0 |
+	+-----+-----------------+---------------------+-------------+---------+------+-----------------------------+-----------------------------+
+	12 rows in set (0.00 sec)
+
+
+	root@mysqldb 17:03:  [(none)]> kill 396;
+	Query OK, 0 rows affected (0.00 sec)
+
+
+	root@mysqldb 17:05:  [(none)]> select * from information_schema.innodb_trx\G;
+	*************************** 1. row ***************************
+						trx_id: 6192960
+					 trx_state: ROLLING BACK
+				   trx_started: 2021-02-22 17:04:57
+		 trx_requested_lock_id: NULL
+			  trx_wait_started: NULL
+					trx_weight: 365534
+		   trx_mysql_thread_id: 396
+					 trx_query: update t_20201023 set age=0
+		   trx_operation_state: rollback of SQL statement
+			 trx_tables_in_use: 1
+			 trx_tables_locked: 2
+			  trx_lock_structs: 9379
+		 trx_lock_memory_bytes: 909520
+			   trx_rows_locked: 656284
+			 trx_rows_modified: 356155
+	   trx_concurrency_tickets: 0
+		   trx_isolation_level: REPEATABLE READ
+			 trx_unique_checks: 1
+		trx_foreign_key_checks: 1
+	trx_last_foreign_key_error: NULL
+	 trx_adaptive_hash_latched: 0
+	 trx_adaptive_hash_timeout: 0
+			  trx_is_read_only: 0
+	trx_autocommit_non_locking: 0
+	1 row in set (0.00 sec)
+
+
+	root@mysqldb 17:05:  [test_db]> select * from t1;
+	ERROR 2006 (HY000): MySQL server has gone away
+	No connection. Trying to reconnect...
+	Connection id:    404
+	Current database: test_db
+
+	+----+-----+---------------------+
+	| ID | age | tEndTime            |
+	+----+-----+---------------------+
+	|  2 |   2 | 2020-07-13 14:23:57 |
+	|  3 |   3 | 2020-07-13 14:24:00 |
+	|  4 |   4 | 2020-07-13 14:24:03 |
+	|  5 |   5 | 2020-07-13 14:24:05 |
+	|  6 |   6 | 2020-07-13 14:24:08 |
+	|  7 |   7 | 2020-07-13 14:24:11 |
+	|  8 |   1 | 2020-07-13 14:41:43 |
+	| 10 |   1 | 2020-07-13 14:41:43 |
+	+----+-----+---------------------+
+	8 rows in set (0.01 sec)
+
+
+----------------------------------------------------------------------------------------------------------------------
+
+kill query 1个大事务
+
+	root@mysqldb 17:18:  [test_db]> update t_20201023 set age=0;
+
+
+	root@mysqldb 17:10:  [test_db]> show processlist;
+	+-----+-----------------+---------------------+-------------+---------+------+-----------------------------+-----------------------------+
+	| Id  | User            | Host                | db          | Command | Time | State                       | Info                        |
+	+-----+-----------------+---------------------+-------------+---------+------+-----------------------------+-----------------------------+
+	|   1 | event_scheduler | localhost           | NULL        | Daemon  |   55 | Waiting for next activation | NULL                        |
+	| 376 | root            | 192.168.0.220:59296 | NULL        | Sleep   | 1400 |                             | NULL                        |
+	| 377 | root            | 192.168.0.220:59297 | niuniuh5_db | Sleep   | 1399 |                             | NULL                        |
+	| 378 | root            | 192.168.0.220:59298 | test_db     | Sleep   | 1034 |                             | NULL                        |
+	| 379 | root            | 192.168.0.220:59303 | test_db     | Sleep   | 1141 |                             | NULL                        |
+	| 381 | root            | 192.168.0.220:59304 | test_db     | Sleep   | 1372 |                             | NULL                        |
+	| 382 | root            | 192.168.0.220:59307 | test_db     | Sleep   | 1360 |                             | NULL                        |
+	| 383 | root            | 192.168.0.220:59308 | test_db     | Sleep   | 1162 |                             | NULL                        |
+	| 385 | root            | localhost           | NULL        | Sleep   |  516 |                             | NULL                        |
+	| 386 | root            | localhost           | test_db     | Query   |    0 | starting                    | show processlist            |
+	| 391 | root            | 192.168.0.220:59392 | test_db     | Sleep   | 1034 |                             | NULL                        |
+	| 419 | root            | localhost           | test_db     | Query   |    2 | updating                    | update t_20201023 set age=0 |
+	+-----+-----------------+---------------------+-------------+---------+------+-----------------------------+-----------------------------+
+	12 rows in set (0.00 sec)
+
+	root@mysqldb 17:18:  [test_db]> kill query 419;
+	Query OK, 0 rows affected (0.00 sec)
+
+	root@mysqldb 17:19:  [test_db]> show processlist;
+	+-----+-----------------+---------------------+-------------+---------+------+-----------------------------+------------------+
+	| Id  | User            | Host                | db          | Command | Time | State                       | Info             |
+	+-----+-----------------+---------------------+-------------+---------+------+-----------------------------+------------------+
+	|   1 | event_scheduler | localhost           | NULL        | Daemon  |   30 | Waiting for next activation | NULL             |
+	| 376 | root            | 192.168.0.220:59296 | NULL        | Sleep   | 1495 |                             | NULL             |
+	| 377 | root            | 192.168.0.220:59297 | niuniuh5_db | Sleep   | 1494 |                             | NULL             |
+	| 378 | root            | 192.168.0.220:59298 | test_db     | Sleep   | 1129 |                             | NULL             |
+	| 379 | root            | 192.168.0.220:59303 | test_db     | Sleep   | 1236 |                             | NULL             |
+	| 381 | root            | 192.168.0.220:59304 | test_db     | Sleep   | 1467 |                             | NULL             |
+	| 382 | root            | 192.168.0.220:59307 | test_db     | Sleep   | 1455 |                             | NULL             |
+	| 383 | root            | 192.168.0.220:59308 | test_db     | Sleep   | 1257 |                             | NULL             |
+	| 385 | root            | localhost           | NULL        | Sleep   |  611 |                             | NULL             |
+	| 386 | root            | localhost           | test_db     | Query   |    0 | starting                    | show processlist |
+	| 391 | root            | 192.168.0.220:59392 | test_db     | Sleep   | 1129 |                             | NULL             |
+	| 419 | root            | localhost           | test_db     | Sleep   |   97 |                             | NULL             |
+	+-----+-----------------+---------------------+-------------+---------+------+-----------------------------+------------------+
+	12 rows in set (0.00 sec)
+
+
+	root@mysqldb 17:18:  [test_db]> update t_20201023 set age=0;
+	ERROR 1317 (70100): Query execution was interrupted
+

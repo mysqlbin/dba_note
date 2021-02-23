@@ -177,8 +177,20 @@
 	CreateTime <  ISODate('2020-07-02 04:00:00') and tEndTime < '2020-07-01 15:12:33'
 
 	db.table_clubgamelog.find({'$and': [ {'CreateTime': {'$lt': ISODate('2020-07-02 04:00:00')}},  {'tEndTime': {'$lt': '2020-07-01 15:12:33'}} ] })
-
 	
+	repl_set:SECONDARY> db.table_report_log.find({"nplayerid" : 126213}).sort({"_id":-1}).limit(1)
+	{ "_id" : ObjectId("5feff5e09cea903206aad573"), "CreateTime" : ISODate("2021-01-02T04:26:08Z"), "mark" : "", "nplayerid" : 126213, "tag" : "errorexception", "val" : 0 }
+	-- 组合查询
+	repl_set:SECONDARY> db.table_report_log.find({'$and': [ {'CreateTime': {'$gt': ISODate('2021-01-02T03:00:00Z')}},  {'nplayerid': 126213} ] })
+	{ "_id" : ObjectId("5feff5e09cea903206aad573"), "CreateTime" : ISODate("2021-01-02T04:26:08Z"), "mark" : "", "nplayerid" : 126213, "tag" : "errorexception", "val" : 0 }
+	
+		table_report_log    mongo 这个表里，查找 
+
+		1：nPlayerID = 234143 and CreateTime > 20210220 以后的数据
+
+		2：nPlayerID = 189288 and CreateTime > 20210217 以后的数据
+
+
 10. 查询最后一个文档
 	db.table_clubgamelog.find().sort({"_id":-1}).limit(1)
 	db.table_clubgamescorerobotdetail.find().sort({"_id":-1}).limit(1)

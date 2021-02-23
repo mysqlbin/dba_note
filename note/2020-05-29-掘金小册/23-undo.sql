@@ -1,7 +1,6 @@
 
 
 
-
 mysql> SELECT * FROM information_schema.innodb_sys_tables WHERE name = 'xiaohaizi/undo_demo';
 
 
