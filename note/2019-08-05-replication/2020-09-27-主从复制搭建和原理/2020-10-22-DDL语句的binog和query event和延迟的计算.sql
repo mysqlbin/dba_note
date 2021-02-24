@@ -270,7 +270,7 @@
 4. 小结
 
 	DDL的延迟现象：假设DDL在主库执行需要15秒，从库的延迟从0开始，当DDL在从库执行完成需要22秒，那么seconds_behind_master的依次增加到22秒，然后再跌为0.
-		-- 经过实验和理论，算是理解了。
+		-- 经过实验和理论，算是理解了。(自己做实验的结论)
 		-- 事务在主库执行写binlog完成才把binlog event 发给从库，延迟就是从从库接收完成binlog event并写入 relay log 开始
 		-- DDL造成从库延迟的seconds_behind_master的值是准确的，而DML大事务成从库延迟的seconds_behind_master的值是不准确的，因为DDL的query event 准确记录了DDL执行的耗时 
 		

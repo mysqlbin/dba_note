@@ -8,7 +8,9 @@
 6. 验证添加列之后是否会修改索引的统计信息
 7. 验证 analyze table 命令是否会修改.ibd文件
 8. 小结
-	
+9. 相关参考
+10. 思考
+
 1. 环境	
 	CREATE TABLE `sbtest2` (
 	  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -250,6 +252,9 @@
 		Records: 0  Duplicates: 0  Warnings: 0
 		
 			索引大小：1.34 GB (1,437,417,472)
+			-- 删除二级索引，看来也是打了删除标记。
+			-- 删除二级索引，直接把二级索引这一棵B+树删除。
+				
 			mysql> analyze table t1;
 			+--------------------------------------------+---------+----------+----------+
 			| Table                                      | Op      | Msg_type | Msg_text |
@@ -365,7 +370,7 @@
 		-rw-r----- 1 mysql mysql      8656 Sep 12 19:20 #sql-9e3_24.frm
 		-rw-r----- 1 mysql mysql  62914560 Sep 12 19:20 #sql-ib305-654917964.ibd
 
-	-- 添加字段会重建表，修改的是主键索引，因为主键索引的叶子存储的是整行记录。
+	-- 添加字段会重建表，加字段是加在主键索引上，因为主键索引的叶子存储的是整行记录。
 	
 
 5. 删除字段
@@ -513,39 +518,37 @@
 
 
 8. 小结
-
+	添加/删除索引 属于Online DDL
 	添加/删除索引不会重建表，也不会修改索引的统计信息，添加索引会在 innodb_index_stats中产生新增索引的信息。
 	analyze table 命令并不会修改 .ibd文件，只是更新了索引的统计信息，所以执行速度很快。
 	
-	
+	是否会造成从库延迟?
 	
 ---------------------------------------------------------------------------------------
 
+9. 相关参考
+
+	https://dev.mysql.com/doc/refman/5.7/en/create-index.html
+
+	https://dev.mysql.com/doc/refman/5.7/en/innodb-online-ddl.html
+
+	https://dev.mysql.com/doc/refman/5.7/en/innodb-online-ddl-operations.html
+
+	https://www.cnblogs.com/YangJiaXin/p/10828244.html
 
 
-https://dev.mysql.com/doc/refman/5.7/en/create-index.html
-
-https://dev.mysql.com/doc/refman/5.7/en/innodb-online-ddl.html
-
-https://dev.mysql.com/doc/refman/5.7/en/innodb-online-ddl-operations.html
-
-https://www.cnblogs.com/YangJiaXin/p/10828244.html
-
-
-虽然pt-osc和gh-ost比 online DDL 慢一倍左右, 从库参数设置合理, 主从延迟会很小。
-
-慢的原因：pt-osc和gh-ost需要写binlog和redo。
-
-
-
+10. 思考
+	1. 在线操作索引，不需要重建表，工作原理是怎么样的？
+		答：MySQL建立二级索引的工作机制：扫描主键索引的记录，根据 (c,id) 二级索引字段的值生成一棵B+树。
+	
+	2. 为什么删除索引耗时很短？
+		大表上删除索引，也基本上都是秒删。
+		原理：？
+		
+---------------------------------------------------------------------------------------
+		
 ALTER TABLE tbl_name ADD PRIMARY KEY (column), ALGORITHM=INPLACE, LOCK=NONE;
 
-
-思考：
-	在线操作索引，不需要重建表，工作原理是怎么样的？
-	
-	
-	
 The LOCK clause is useful for fine-tuning the degree of concurrent access to the table. The ALGORITHM clause is primarily intended for performance comparisons and as a fallback to the older table-copying behavior in case you encounter any issues. For example:
 	LOCK子句可用于微调对表的并发访问程度。 ALGORITHM子句主要用于性能比较，并在遇到任何问题时作为对较早的表复制行为的后备。 例如：
 		

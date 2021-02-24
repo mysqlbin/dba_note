@@ -875,13 +875,14 @@ Successfully altered `consistency_db`.`t_20201021`.
 	
 	
 7. 一些收获和小结
+	
 	7.1 验证了一个从库延迟是从主库执行完成DML的时长开始的观点
 		mysql> call idata();
 		Query OK, 0 rows affected (47.09 sec)
 		
 		slave:
 			Seconds_Behind_Master: 47
-		-- 验证了DML大事务造成的延迟，其延迟不会从0开始增加，而是直接从主库执行了多久开始。比如主库执行这个事务耗时20秒，那么延迟就从20开始，这是因为query event中没有准确的执行时间，可以参考第8节和第27节。
+		-- 验证了DML大事务造成的延迟，其延迟不会从0开始增加，而是直接从主库执行了多久开始。比如主库执行这个事务耗时20秒，那么延迟就从20开始，从库执行耗时30秒，那么此时延迟为50，这是因为query event中没有准确的执行时间，可以参考第8节和第27节。
 		-- 说明了 Seconds_Behind_Master 不是完全准确.
 		
 		-- 未完成：验证下DDL的延迟

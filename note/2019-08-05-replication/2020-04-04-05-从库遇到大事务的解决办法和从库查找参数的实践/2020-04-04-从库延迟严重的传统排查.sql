@@ -181,11 +181,8 @@
 					 Channel_Name: 
 			   Master_TLS_Version: 
 	1 row in set (0.00 sec)
-
-	ERROR: 
-	No query specified
-
-
+	
+	
 	 root@localhost [(none)]>select * from information_schema.innodb_trx\G;
 	*************************** 1. row ***************************
 						trx_id: 5887537
@@ -217,7 +214,7 @@
 	
 4. sql_thread卡在哪里
 	
-	1. 根据 Master_Log_File: mysql-bin.000017,  end_log_pos 50398187  ; 这个去主库上去解析binlog
+	1. 根据 Master_Log_File: mysql-bin.000017,  Exec_Master_Log_Pos/end_log_pos 50398187  ; 这个去主库上去解析binlog
 		[root@env27 logs]# mysqlbinlog -vv --base64-output=decode-rows --stop-position=50398187 mysql-bin.000017 > 1.sql
 
 
@@ -225,8 +222,11 @@
 
 		[root@env29 data]# mysqlbinlog -vv --base64-output=decode-rows --start-position=50398400 relay-bin.000042 > 2.sq
 
-	3. select * from information_schema.innodb_trx\G; 看看能否看到正在执行的SQL语句状态。
-
+	3. select * from information_schema.innodb_trx\G; --查看长事务执行的状态。
+	
+	4. 查看主库的慢日志
+	
+	
 5. 解决办法，添加索引
 
 	主库
@@ -261,9 +261,6 @@
 		1 row in set (0.00 sec)
 			
 			
-			
-
-	
 6. 重要步骤
 	1. select * from information_schema.innodb_trx\G;
 		
