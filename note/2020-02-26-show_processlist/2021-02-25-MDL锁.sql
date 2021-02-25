@@ -4,6 +4,7 @@
 3. 对MDL锁的处理
 4. 参数lock_wait_timeout=10下的MDL锁超时
 5. 小结
+6. 相关参考
 
 
 1. 初始化表结构和数据
@@ -55,7 +56,7 @@
 	所有对表的增删改查操作都需要先申请MDL读锁, 就都被锁住, 等于这个表现在完成不可读写了.
 	如果是热点表，应用有太多的连接进来连接这个表，数据库的连接数被爆满。
 	
-	
+	******************************************************
 	mysql> select * from sys.schema_table_lock_waits\G;
 	*************************** 1. row ***************************
 				   object_schema: test_db
@@ -70,7 +71,7 @@
 	 waiting_query_rows_affected: 0
 	 waiting_query_rows_examined: 0
 			  blocking_thread_id: 34151
-					blocking_pid: 34118    -- 查获加MDL写锁的线程 id，也就是造成阻塞的 process id。
+					blocking_pid: 34118    -- 查获加MDL写锁的线程 id，也就是造成阻塞的 thread id。
 				blocking_account: root@localhost
 			  blocking_lock_type: SHARED_UPGRADABLE
 		  blocking_lock_duration: TRANSACTION
@@ -264,5 +265,8 @@
 		select * from information_schema.INNODB_TRX\G;
 
 
+6. 相关参考
+	https://www.cnblogs.com/ivictor/p/9460147.html  MySQL 5.7中如何定位DDL被阻塞的问题
 
+	
  

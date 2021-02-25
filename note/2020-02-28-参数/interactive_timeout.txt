@@ -1,3 +1,0 @@
-服务器在关闭之前等待交互式连接上的活动的秒数。
-2018-04-19T20:16:45.615038Z 9 [Note] Aborted connection 9 to db: 'channels_c' user: 'root' host: 'localhost' (Got timeout reading communication packets)
-

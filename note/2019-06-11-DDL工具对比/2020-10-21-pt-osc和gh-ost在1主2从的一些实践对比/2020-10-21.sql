@@ -23,7 +23,7 @@
 	8. 部分general_log日志
 		8.1 pt-osc
 		8.2 gh-ost	
-		
+	9. 5.7 Online DDL的执行耗时	
 
 0. 环境
 
@@ -908,6 +908,7 @@ Successfully altered `consistency_db`.`t_20201021`.
 		slave1从库开启了记录binlog功能也就是开启了参数 log_slave_updates，尽管设置sync_binlog=1000，但是binlog刷盘占用的IO资源还是挺多的，同时也是造成主从延迟的重要因素。
 		
 	7.5 主库的CPU负载和IO负载
+		
 		load：1.8, CPU利用率：60%, IO利用率：80%, IO等待：20% 。
 		
 		可以看到，gh-ost或者pt-osc 主要占用的是IO资源，所以还是要在业务低峰期执行，此时对业务的影响最小。
@@ -1162,5 +1163,147 @@ Successfully altered `consistency_db`.`t_20201021`.
 
 		-- 每次迁移 select 10883029-10876974 = 6499 记录。
 		
-		
-drop user 'temp_test'@'%';
+
+9. 5.7 Online DDL的执行耗时	
+	
+	双1配置
+	
+	CREATE TABLE `t_20201021` (
+	  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
+	  `name` varchar(32) NOT NULL DEFAULT '',
+	  `age` int(11) NOT NULL DEFAULT '0',
+	  `ismale` tinyint(1) NOT NULL DEFAULT '0',
+	  `id_card` varchar(32) NOT NULL DEFAULT '',
+	  `test1` text,
+	  `test2` text,
+	  `createTime` timestamp(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) COMMENT '开始时间',
+	  PRIMARY KEY (`id`),
+	  KEY `idx_age` (`age`),
+	  KEY `idx_name` (`name`),
+	  KEY `idx_card` (`id_card`),
+	  KEY `idx_createTime` (`createTime`)
+	) ENGINE=InnoDB AUTO_INCREMENT=15000001 DEFAULT CHARSET=utf8mb4;
+
+
+	mysql> alter table consistency_db.t_20201021 add column test3 varchar(30) not null default '';
+	Query OK, 0 rows affected (13 min 36.54 sec)
+	Records: 0  Duplicates: 0  Warnings: 0
+
+	
+	shell> top
+	top - 15:08:52 up 1036 days, 57 min,  4 users,  load average: 1.18, 0.66, 0.30
+	Tasks: 119 total,   1 running, 118 sleeping,   0 stopped,   0 zombie
+	%Cpu0  : 22.9 us,  7.2 sy,  0.0 ni, 50.3 id, 18.5 wa,  0.0 hi,  1.0 si,  0.0 st
+	%Cpu1  : 39.0 us,  7.0 sy,  0.0 ni, 48.3 id,  5.7 wa,  0.0 hi,  0.0 si,  0.0 st
+	%Cpu2  :  2.7 us,  2.7 sy,  0.0 ni, 93.9 id,  0.7 wa,  0.0 hi,  0.0 si,  0.0 st
+	%Cpu3  :  4.7 us,  2.4 sy,  0.0 ni, 91.9 id,  1.0 wa,  0.0 hi,  0.0 si,  0.0 st
+	KiB Mem : 16267704 total,   175564 free, 10057236 used,  6034904 buff/cache
+	KiB Swap:        0 total,        0 free,        0 used.  5052808 avail Mem 
+
+	  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND                                                                                                                                                                                                  
+	31266 mysql     20   0   10.8g   8.9g   6232 S  93.4 57.4 278:13.47 mysqld                                                                                                                                                                                                   
+	14666 coding0+  20   0  172304  22672   1348 S   3.0  0.1   1184:02 skynet                                                                                                                                                                                                   
+	14702 coding0+  20   0  147768  29516   1408 S   3.0  0.2   1179:39 skynet                                                                                                                                                                                                   
+	   41 root      20   0       0      0      0 S   1.3  0.0   3:58.33 kswapd0      
+	   
+	shell> iostat -dmx 1   
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              38.00     0.00  352.00  482.00    47.98    65.10   277.70    52.73   65.88  150.83    3.84   1.20 100.00
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              21.00     0.00  362.00  419.00    48.05    54.55   269.05    77.46   95.53  201.44    4.03   1.28 100.00
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              51.00     0.00  343.00  374.00    48.11    55.07   294.73    70.76  104.57  214.12    4.10   1.39 100.00
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              42.00     0.00  341.00  453.00    47.86    62.28   284.08    51.80   66.16  148.87    3.90   1.24  98.10
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              13.00     1.00  363.00  425.00    47.17    52.36   258.68    67.12   91.26  193.82    3.67   1.26  99.00
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              64.00     0.00  340.00  511.00    48.88    65.33   274.86    60.74   61.08  146.81    4.04   1.05  89.40
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              36.00     0.00  347.00  381.00    47.93    53.28   284.71    86.13  115.88  238.74    3.98   1.37 100.00
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              19.00     0.00  359.00  424.00    48.08    56.33   273.09    77.40  108.01  230.92    3.94   1.28 100.00
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              57.00     0.00  338.00  450.00    48.01    62.28   286.63    62.32   71.84  162.30    3.89   1.27 100.00
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              59.00     0.00  327.00  458.00    47.90    60.36   282.45    70.20   89.14  208.32    4.05   1.27 100.00
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+	Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+	sda              41.00     0.00  354.00  380.00    48.11    54.32   285.80    79.29  110.25  224.50    3.82   1.36 100.00
+	sdb               0.00     0.00    0.00    0.00     0.00     0.00     0.00     0.00    0.00    0.00    0.00   0.00   0.00
+
+
+
+	shell> iostat 1
+	avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+			   5.30    0.00    3.54   17.68    0.00   73.48
+
+	Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+	sda             619.00     49280.00     54560.00      49280      54560
+	sdb               0.00         0.00         0.00          0          0
+
+	avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+			   5.57    0.00    3.29   17.22    0.00   73.92
+
+	Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+	sda             623.00     49024.00     56608.00      49024      56608
+	sdb               0.00         0.00         0.00          0          0
+
+	avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+			   5.81    0.00    3.28   17.68    0.00   73.23
+
+	Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+	sda             655.00     49152.00     55620.00      49152      55620
+	sdb               0.00         0.00         0.00          0          0
+
+	avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+			   5.56    0.00    3.54   17.17    0.00   73.74
+
+	Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+	sda             610.00     49152.00     55584.00      49152      55584
+	sdb               0.00         0.00         0.00          0          0
+
+	avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+			   5.82    0.00    3.54   17.72    0.00   72.91
+
+	Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+	sda             609.00     49152.00     54560.00      49152      54560
+	sdb               0.00         0.00         0.00          0          0
+
+	avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+			   4.82    0.00    3.30   18.02    0.00   73.86
+
+	Device:            tps    kB_read/s    kB_wrtn/s    kB_read    kB_wrtn
+	sda             578.00     49152.00     51488.00      49152      51488
+	sdb               0.00         0.00         0.00          0          0
+
+
+	
+	mysql> alter table consistency_db.t_20201021 drop column test3;
+	Query OK, 0 rows affected (13 min 2.87 sec)
+	Records: 0  Duplicates: 0  Warnings: 0
+
+	
+	Online DDL: 添加字段和删除字段的耗时一样。
+	
+	
+	

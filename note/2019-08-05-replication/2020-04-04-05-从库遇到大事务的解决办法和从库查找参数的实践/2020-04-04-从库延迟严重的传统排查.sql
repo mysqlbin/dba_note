@@ -222,7 +222,7 @@
 
 		[root@env29 data]# mysqlbinlog -vv --base64-output=decode-rows --start-position=50398400 relay-bin.000042 > 2.sq
 
-	3. select * from information_schema.innodb_trx\G; --查看长事务执行的状态。
+	3. select * from information_schema.innodb_trx\G; --查看正在执行中的事务。
 	
 	4. 查看主库的慢日志
 	

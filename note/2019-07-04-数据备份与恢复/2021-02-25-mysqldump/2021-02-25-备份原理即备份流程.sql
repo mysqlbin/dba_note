@@ -21,12 +21,12 @@
      在RR隔离级别下， 通过START TRANSACTION /*!40100 WITH CONSISTENT SNAPSHOT */;启动一个事务 来获取一致性视图也就是一致性数据快照。
      如果在备份执行期间，某个InnoDB引擎表还没开始备份之前， 该表有做删除一行记录操作并执行成功， 当备份到该表时，根据MVCC的read view可见性判断规则，这时候备份该删除行之前的数据实际上是从 undo中取出来的。
 
-	 /*!40100*/表示主版本大于 4，小版本大于 01 这个 with consistent snapshot语法才能生效； 如果不满足版本要求，那么with consistent snapshot语法是不生效的，只会执行start transaction，不会执行 withconsistent snapshot 。
+	 /*!40100*/表示主版本大于 4，小版本大于 01 这个 with consistent snapshot语法才能生效； 如果不满足版本要求，那么 with consistent snapshot 语法是不生效的，只会执行start transaction，不会执行 with consistent snapshot 。
 	 
    管理：
        由 --single-transaction 参数来控制， 备份时使用 --single-transaction 参数， 就能获取到支持事务引擎表的数据一致性；
 	   
-3. 执行 show master status；语句
+3. 执行 show master status；语句读取binlog位点信息
     作用： 
         GTID模式下读取一致性的GTID信息；
             在备份文件里可以看到 set @@global.gtid_purged='' 这条命令； 
@@ -45,16 +45,20 @@
 
 6. 正式备份数据
 	先执行 show create table `t1`; 语句； 作用是获取表结构
-	执行 SELECT * FROM `t1`; 语句； 作用是开始导数据；
+	
+	执行 SELECT * FROM `t1`; 语句； 作用是开始导数据；查询语句会对表加MDL读锁。
 	 
 7. 导出表数据完成之后， 执行 rollback to savepoint sp 语句；
-    作用是 释放该表MDL的读锁，使其它会话的DDL语句可以正常执行； 在这里的作用是释放 t1 的 MDL 锁。
+    作用是 释放该表MDL的读锁，使其它会话的DDL语句可以正常执行； 在这里的作用是释放 t1 的 MDL 锁。 --理解了。
     重复步骤 6， 直到其它表备份完成；
-
+	
 8. 备份完成之后， 执行 release savepoint sp; 释放保存点。
 	备份文件的最后有 '-- Dump completed on 2020-03-14 21:10:51'  字样，意味着本次备份是正常的。
 	
+9. commit提交事务。
+	
 
-
-    
+10. 小结
+	逻辑备份：通过 select * from 全表扫描语句把数据读取出来并转存为 insert 语句。
+			  把整库每个表都 select 出来存成文本。
   
