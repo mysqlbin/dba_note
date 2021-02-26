@@ -136,7 +136,7 @@
 	11. mysqldump  result-file 之后查看 result-file 的内容
  
 	12. 如何备份存储过程
-		
+		-R 
 				
  5. 逻辑备份的3个关键字
  	加锁、一致性备份、保存点

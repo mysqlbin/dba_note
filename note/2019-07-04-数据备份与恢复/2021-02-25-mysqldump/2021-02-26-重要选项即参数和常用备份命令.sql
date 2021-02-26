@@ -28,25 +28,30 @@
             备份期间只对执行select语句导出表数据的时候加MDL读锁；
 			
 	–add-locks： 
-		设置为 0，表示在输出的文件结果里，不增加 LOCK TABLES <code>t</code> WRITE; ；
+		设置为 0，表示在输出的文件结果里，不增加 LOCK TABLES <code>t</code> WRITE; 语句；
 
 	
     --single-transaction
         获取支持事务引擎表的一致性备份;
-		在导出数据的时候不需要对表 加表锁，而是使用 START TRANSACTION WITH CONSISTENT SNAPSHOT 的方法；
+		在导出数据的时候不需要对表加表锁，而是使用 START TRANSACTION WITH CONSISTENT SNAPSHOT 的方法；
 		
    --master-data    
         该选项自动关闭--lock-tables选项.
         
-    不指定 --single-transaction选项， 只指定  --master-data选项自动关闭 --lock-tables选项， 同时还会打开--lock-all-tables， 备份过程中整个实例全程锁表。
-    指定 --single-transaction、--master-data选项，  会自动开启 --lock-tables参数。
+		不指定 --single-transaction选项， 只指定  --master-data选项自动关闭 --lock-tables选项， 同时还会打开--lock-all-tables， 备份过程中整个实例全程锁表。
+		指定 --single-transaction、--master-data选项，  会自动开启 --lock-tables参数。
     
 	–no-create-info：        
 		表示不需要导出表结构
 	
 	–set-gtid-purged=off：   
 		表示不输出跟 GTID 相关的信息；
-	
+		--
+		-- GTID state at the beginning of the backup 
+		--
+
+		SET @@GLOBAL.GTID_PURGED='f7323d17-6442-11ea-8a77-080027758761:1-14';
+			
 	–result-file：          
 		表示指定了输出文件的路径，其中 client 表示生成的文件是在客户端机器上的。
 

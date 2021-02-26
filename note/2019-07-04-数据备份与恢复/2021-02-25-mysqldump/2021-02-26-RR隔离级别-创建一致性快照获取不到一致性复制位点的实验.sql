@@ -4,7 +4,7 @@
 3. 实验详情
 4. 小结
 
-1. 实验目的:
+1. 实验目的
 	验证 执行"SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 	START TRANSACTION  WITH CONSISTENT SNAPSHOT ;" 之后能否获取到一致性的binlog position位点信息
 
@@ -42,7 +42,8 @@
 	 Binlog_Ignore_DB: 
 	Executed_Gtid_Set: f7323d17-6442-11ea-8a77-080027758761:1-9
 	1 row in set (0.00 sec)
-
+	
+	-- 设置事务隔离级别为可重复读
 	mysql> SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 	Query OK, 0 rows affected (0.00 sec)
 
@@ -56,7 +57,7 @@
 																		 Binlog_Ignore_DB: 
 																		Executed_Gtid_Set: f7323d17-6442-11ea-8a77-080027758761:1-10
 																		1 row in set (0.00 sec)
-																		
+	-- 启动1个事务并创建一致性视图/快照																
 	mysql> START TRANSACTION WITH CONSISTENT SNAPSHOT;
 	Query OK, 0 rows affected (0.00 sec)
 																		

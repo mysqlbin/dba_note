@@ -3,9 +3,9 @@
 1. 执行 flush table with read lock；
    
 	用途/作用：
-		通过获取全局读锁，让整个实例不能写，只能读， 这时候就可以获取到一致性的 show master status; 命令的信息，包括 File、Position和GTID。(这里的结论是在实验中得到的。)
-		不加锁的话，备份系统的备份得到的库不是一个逻辑时间点，这个视图是逻辑不一致的。
-		不通过FTWRL命令对整个实例加锁， 备份得到的数据跟备份的逻辑时间点不一致，最终结果导致备份数据会产生不一致。  
+		通过获取全局读锁，让整个实例不能写，只能读，这时候就可以获取到一致性的 show master status; 命令的信息，包括 File、Position和GTID。(这里的结论是在实验中得到的。)
+		保证备份数据和binlog的一致性。 --没毛病。
+		-- 每次复习都有收获，理解得更好了。
 		
 	造成的影响：
 		期间整个实例不能写，只能读；
@@ -16,10 +16,12 @@
 	
 	可见，了解原理挺重要的。
 	
- 2. 执行 SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ; START TRANSACTION /*!40100 WITH CONSISTENT SNAPSHOT */; 
+ 2. 设置事务隔离级别为可重复读并启动1个事务来获取一致性视图
+	执行 SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ; 
+	START TRANSACTION /*!40100 WITH CONSISTENT SNAPSHOT */; 
    作用：
      在RR隔离级别下， 通过START TRANSACTION /*!40100 WITH CONSISTENT SNAPSHOT */;启动一个事务 来获取一致性视图也就是一致性数据快照。
-     如果在备份执行期间，某个InnoDB引擎表还没开始备份之前， 该表有做删除一行记录操作并执行成功， 当备份到该表时，根据MVCC的read view可见性判断规则，这时候备份该删除行之前的数据实际上是从 undo中取出来的。
+     如果在备份执行期间，某个InnoDB引擎表还没开始备份之前， 该表有做删除一行记录操作并执行成功， 当备份到该表时，根据MVCC的read view可见性判断规则，当前版本的行记录不可见（该表有做删除一行记录操作并执行成功），这时候备份该删除行之前的数据实际上是从 undo中取出来的。
 
 	 /*!40100*/表示主版本大于 4，小版本大于 01 这个 with consistent snapshot语法才能生效； 如果不满足版本要求，那么 with consistent snapshot 语法是不生效的，只会执行start transaction，不会执行 with consistent snapshot 。
 	 
