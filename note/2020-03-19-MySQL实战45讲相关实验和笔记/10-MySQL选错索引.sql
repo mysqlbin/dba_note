@@ -11,8 +11,3 @@ where A in (a,b,c) AND B in (x,y,z)
 
 
 借助 show warnings; 命令就可以看到 A in (a, b, c) 会转成  A=a or A=b or A=c
-
-
-
-
-

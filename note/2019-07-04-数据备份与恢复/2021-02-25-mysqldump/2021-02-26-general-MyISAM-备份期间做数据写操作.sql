@@ -31,7 +31,7 @@
 
 	2. 在备份t2表期间删除t2.id=31999965的数据:
 		delete from t2 where id=31999965;
-		(blocked) 
+		(blocked) ，因为 MyISAM表 不支持行锁。
 		然后手动 kill掉delete from t2 where id=31999965;
 		
 	3. 在备份t2表完成之后, 但是整个备份没有备份完成, 删除t2.id=31999965的数据:
