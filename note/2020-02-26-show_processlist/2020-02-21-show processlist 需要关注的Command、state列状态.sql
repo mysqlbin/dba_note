@@ -26,13 +26,28 @@
 		 正在将结果集拷贝到一个临时表中；
 
 		 copy to tmp table的场景：
+				
+			1. Online DDL 
+				alter table sbtest1 drop column id;
+				mysql>show processlist;
+				+----+------+---------------------+--------+------------------+------+---------------------------------------------------------------+------------------------------------+
+				| Id | User | Host                | db     | Command          | Time | State                                                         | Info                               |
+				+----+------+---------------------+--------+------------------+------+---------------------------------------------------------------+------------------------------------+
+				| 19 | repl | 192.168.1.29:55692  | NULL   | Binlog Dump GTID | 3002 | Master has sent all binlog to slave; waiting for more updates | NULL                               |
+				| 39 | lujb | 192.168.1.100:63704 | sbtest | Sleep            |    2 |                                                               | NULL                               |
+				| 40 | root | localhost           | sbtest | Query            |   62 | copy to tmp table                                             | alter table sbtest1 drop column id |
+				| 42 | root | localhost           | NULL   | Query            |    0 | starting                                                      | show processlist                   |
+				+----+------+---------------------+--------+------------------+------+---------------------------------------------------------------+------------------------------------+
+				4 rows in set (0.00 sec)
+				
+				State=copy to tmp table： 表示需要拷贝原表的数据到临时表中。		
+			2. group by操作
 
-			1. group by操作
+			3. 文件排序操作
 
-			2. 文件排序操作
-
-			3. UNION操作
-
+			4. UNION操作
+			
+			
 	6. Copying to tmp table on disk：
 
 		内存临时表的结果集太大，需要转换成磁盘临时表进行存储数据；

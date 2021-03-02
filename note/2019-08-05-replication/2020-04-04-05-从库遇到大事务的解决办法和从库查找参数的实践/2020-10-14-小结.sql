@@ -5,14 +5,15 @@
 
 0. 描述
 	现象：
-		1. 后台负责人在生产环境上执行 delete from t 命令删除200多W行的数据
+		1. 后台负责人在生产环境上执行 delete from t 命令删除500多W行的全表数据
 		2. 在主库执行耗时约25S
 		3. 通过监控发现从库有长事务和从库有延迟现象
 		4. 通过主库的慢查询日志和mysqlbinlog解析binlog发现这是一个delete大事务
 			也可以通过 information_schema.innodb_trx 命令来看事务已经执行的时间和操作了多少行数据。
-		5. 发现表上没有任何索引
+		5. 发现表上没有主键索引，有2上普通索引
 		
 	解决办法：
+	
 		1. stop slave; 停止复制， 修改从库查找的参数为的 INDEX_SCAN 和 TABLE_SCAN， 然后再开启复制
 			这种情况下有会一定的性能提升，之前测试过，操作的行记录过多，从库执行耗时也会比较久。
 			
@@ -26,7 +27,8 @@
 		
 	1. 没有索引就添加索引
 	2. 根据情况修改从库数据查找的参数
-		一般用于表中没有任何索引的情况下。
+		一般用于表中没有任何索引的情况下。******
+		一般表不会没有二级索引，大多数情况下是没有建立主键索引。
 	3. 在从库跳过这个大事务
 	
 
@@ -58,9 +60,15 @@
 	
 	监控长事务
 	巡检脚本项中加入判断没有主键和没有二级索引的表
+		SELECT t.table_schema,t.table_name FROM information_schema.tables AS t LEFT JOIN   
+				(SELECT DISTINCT table_schema, table_name FROM information_schema.`KEY_COLUMN_USAGE` ) AS kt ON 
+				kt.table_schema=t.table_schema AND kt.table_name = t.table_name WHERE t.table_schema NOT IN 
+				('mysql', 'information_schema', 'performance_schema', 'sys') AND kt.table_name IS NULL;		
+	
 	除了技术总监和DBA，还给其它相关研发人员操作生产环境数据的权限
 	
 	INDEX_SCAN,HASH_SCAN 的生效时机
+		
 		stop slave;
 		SET GLOBAL slave_rows_search_algorithms = 'INDEX_SCAN,HASH_SCAN';
 		start slave;
@@ -74,9 +82,15 @@
 		| log_slave_updates | ON    |
 		+-------------------+-------+
 		1 row in set (0.00 sec)
+
 		
 		
-		
+大表添加自增主键列的操作
+
+
+
+
+
 		
 		
 		

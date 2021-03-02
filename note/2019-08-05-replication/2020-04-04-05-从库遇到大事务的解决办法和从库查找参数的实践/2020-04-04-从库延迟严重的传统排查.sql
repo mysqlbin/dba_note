@@ -9,7 +9,6 @@
 
 
 1. 模拟环境
-
 	
 	root@localhost [(none)]>show global variables like '%slave_rows_search_algorithms%';
 	+------------------------------+-----------------------+
@@ -32,7 +31,9 @@
 	| 42 | root | localhost           | NULL   | Query            |    0 | starting                                                      | show processlist                   |
 	+----+------+---------------------+--------+------------------+------+---------------------------------------------------------------+------------------------------------+
 	4 rows in set (0.00 sec)
-
+	
+	State=copy to tmp table： 表示需要拷贝原表的数据到临时表中。
+	
 	mysql>select count(*) from sbtest1;
 	+----------+
 	| count(*) |

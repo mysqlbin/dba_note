@@ -139,16 +139,13 @@
 			
 			start slave;
 		
-		
-		
-		
 3. INDEX_SCAN,HASH_SCAN
 	
 	
 	slave:
 		stop slave;	
 		SET GLOBAL slave_rows_search_algorithms = 'INDEX_SCAN,HASH_SCAN';
-		start slave
+		start slave;
 
 		root@localhost [sbtest]>show global variables like 'slave_rows_search_algorithms';
 		+------------------------------+----------------------+
