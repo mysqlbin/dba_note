@@ -84,23 +84,23 @@ general log
 	获取 binlog 相关信息:包括 是否开启binlog、row格式、位图格式
 	2020-05-06T09:58:25.873312Z	 4743 Query	select @@global.log_bin, @@global.binlog_format
 	2020-05-06T09:58:25.874109Z	 4743 Query	select @@global.binlog_row_image
-root@mysqldb 18:09:  [sbtest]> select @@global.log_bin, @@global.binlog_format;
-+------------------+------------------------+
-| @@global.log_bin | @@global.binlog_format |
-+------------------+------------------------+
-|                1 | ROW                    |
-+------------------+------------------------+
-1 row in set (0.00 sec)
-root@mysqldb 18:09:  [sbtest]> select @@global.binlog_row_image;
-+---------------------------+
-| @@global.binlog_row_image |
-+---------------------------+
-| FULL                      |
-+---------------------------+
-1 row in set (0.00 sec)
-	
+		root@mysqldb 18:09:  [sbtest]> select @@global.log_bin, @@global.binlog_format;
+		+------------------+------------------------+
+		| @@global.log_bin | @@global.binlog_format |
+		+------------------+------------------------+
+		|                1 | ROW                    |
+		+------------------+------------------------+
+		1 row in set (0.00 sec)
+		root@mysqldb 18:09:  [sbtest]> select @@global.binlog_row_image;
+		+---------------------------+
+		| @@global.binlog_row_image |
+		+---------------------------+
+		| FULL                      |
+		+---------------------------+
+		1 row in set (0.00 sec)
+			
 
-
+	构建1个备库	
 	2020-05-06T09:58:25.875726Z	 4744 Connect	app_user@192.168.0.91 on information_schema using TCP/IP
 	2020-05-06T09:58:25.876335Z	 4744 Query	SET autocommit=true
 	2020-05-06T09:58:25.877005Z	 4744 Query	SET NAMES utf8mb4
@@ -193,7 +193,7 @@ root@mysqldb 18:10:  [sbtest]> explain select /* gh-ost */ * from `sbtest`.`t1_2
 		  END,
 		  COUNT_COLUMN_IN_INDEX
 		  
-	检查连接到主库或从库，是否开启log_slave_updates，以及binlog信息 	  
+	检查连接到主库或从库，是否开启 log_slave_updates ，以及binlog信息 	  
 	2020-05-06T09:58:28.058318Z	 4743 Query	show columns from `sbtest`.`t1_2500`
 	2020-05-06T09:58:28.062061Z	 4745 Connect	app_user@192.168.0.91 on information_schema using TCP/IP
 	2020-05-06T09:58:28.062606Z	 4745 Query	SET autocommit=true
