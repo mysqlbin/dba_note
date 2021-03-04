@@ -19,7 +19,12 @@ ALTER TABLE 出现duplicate primary xxx报错的原因及处理？
 
 	从官方文档中的描述所说 online ddl 期间，其他会话执行的dml操作造成唯一键冲突的sql会记录到 online log 中，在commit阶段等变更结束之后再应用这些sql会导致报错唯一键冲突。
 	
+解决办法：
 	
+	pt-osc和gh-ost就不会有这个问题。
+	
+	因为插入语句为 replace into ... ，对已经存在的数据，先删除再插入。
+		
 相关参考：
 	https://zhuanlan.zhihu.com/p/115285170  MySQL Online DDL增量DML记录和回放的源码实现
 	https://mp.weixin.qq.com/s/tzShTHrunhgFxeLxLzi5fA  MySQL add/drop字段时报主键冲突

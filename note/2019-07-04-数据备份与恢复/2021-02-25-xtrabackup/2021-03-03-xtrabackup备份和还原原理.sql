@@ -4,8 +4,11 @@
 3. 全备还原流程
 4. 别人总结的工作流程
 5. 物理备份的3个关键字
+6. 口述物理备份的流程
+
 
 1. 前言
+	
 	物理备份直接包含了数据库的数据文件，适用于大数据量，需要快速恢复的数据库。
 	逻辑备份包含的是一系列文本文件，其中是代表数据库中数据结构和内容的SQL语句，适用于较小数据量或是跨版本的数据库备份恢复。 
 
@@ -15,7 +18,11 @@
 2. Xtrabackup 2.4 全量备份流程总结
 
 	1. 从Last checkpoint at（上一次检查点的位置）开始复制已有的redo log，然后监听redo log变化并持续复制
-		
+		作用：
+			因为在备份过程中可能有持续的数据写入，所以要先拷贝redo log
+			从备份开始到备份结束期间的增量数据。
+			在备份恢复的时候，应用redo log到数据页中，保证在备份结束后，数据页是一致的。
+			
 		200315 19:46:17 >> log scanned up to (18238654367)
 		open("/home/mysql/data/mysqldata1/innodb_log/ib_logfile0", O_RDONLY) = 4  #重新打开ib_logfile0，读取文件头，找到checkpoint点
 		pread(4, "\200\3\306\7\2\0\0000\0\0\0\37\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"..., 65536, 126611968) = 65536  #从checkpoint点位置开始读取redo log
@@ -27,6 +34,7 @@
 	3. 等待事务引擎数据文件复制完成
 		
 	4. 加锁：全局读锁
+		
 		FLUSH TABLES WITH READ LOCK
 		用途/作用：
 			通过获取全局读锁，让整个实例不能写，只能读， 这时候就可以获取到一致性的 show master status; 命令的信息，包括 File、Position和GTID。(这里的结论是在实验中得到的。)
@@ -45,20 +53,22 @@
 		Copying ./mysql/db.frm to /data/backup/2020-03-15_19-46-09/mysql/db.frm
 		Copying ./mysql/db.MYI to /data/backup/2020-03-15_19-46-09/mysql/db.MYI
 		Copying ./mysql/db.MYD to /data/backup/2020-03-15_19-46-09/mysql/db.MYD
+		如果表的个数很多，比如有3w张表，这一步会很比较耗时，导致加锁的时间也会很长。
+		-- 后期验证下。
 		
 	6. 获取binlog位点信息等元数据
 		xtrabackup_binlog_info
 		Writing /data/backup/2020-03-15_19-46-09/xtrabackup_binlog_info
 
-	7. 获取 备份结束时，数据库中的 checkpoint 点和 已经刷新到重做日志文件的LSN  ，会写入到 xtrabackup_checkpoints 文件中
+	7. 获取 备份结束时，数据库中的 checkpoint 点和 已经刷新到重做日志文件的LSN ，会写入到 xtrabackup_checkpoints 文件中
 
-	8. 停止复制redo log
+	8. 待redo日志拷贝完成，停止复制redo log
 		xtrabackup: Stopping log copying thread.
 		
 	9. 解锁：全局读锁
 		Executing UNLOCK TABLE
-		 
-	10. 复制buffer pool
+		 -- 保证 数据+redo和binlog的一致性、保证事务引擎表数据和非事务引擎表数据的一致性。
+	10. 拷贝buffer pool文件
 		Copying ib_buffer_pool to /data/backup/2020-03-15_19-46-09/ib_buffer_pool
 		
 	11. 备份完成
@@ -76,7 +86,8 @@
 	 
 		2. 加全局读锁的作用？ 
 
-			因为要保证”非事务资源 自身的一致性“ 和 ”非事务资源与 事务资源的一致性“。在加锁期间，没有新数据写入，XtraBackup会复制此时的binlog位置信息，frm表结构，MyISAM等非事务表。    
+			因为要保证”非事务资源 自身的一致性“ 和 ”非事务资源与 事务资源的一致性“。
+			在加锁期间，没有新数据写入，XtraBackup会复制此时的binlog位置信息，frm表结构，MyISAM等非事务表。    
 
 		3. 为什么要先停止复制redo log，再解锁全局读锁？ 
 
@@ -100,9 +111,10 @@
 		将数据文件复制回MySQL数据目录 
 		还原完成。
 		
+	3. 用的是 xtrabackup
 	
-
 4. 别人总结的工作流程
+	
 	工作流程
 		1. start xtrabbackup_log
 		2. copy ibdata1、.ibd; ： 复制 ibdata1、.ibd 数据文件
@@ -159,4 +171,18 @@
 		
 5. 物理备份的3个关键字
 	一致性备份、事务表数据和非事务表数据、redo crash
+	
+	
+6. 口述物理备份的流程
+	1. 先拷贝redo日志，持续监听redo变化并持续复制redo
+	2. 拷贝事务引擎的文件：拷贝ibdata共享表空间文件和ibd数据文件
+	3. 待拷贝事务引擎文件完成，开启ftwrl全局读锁，此时数据库是处于只读状态，不可以写。
+	4. 开始拷贝 frm表结构和非事务引擎文件
+	5. 记录binlog位点
+	6. 停止复制redo
+	7. 释放全局读锁
+	8. 复制内存缓冲池文件
+	9. 备份完成。
+	
+
 	

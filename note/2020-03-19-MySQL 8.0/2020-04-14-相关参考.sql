@@ -27,3 +27,8 @@ https://mp.weixin.qq.com/mp/homepage?__biz=MzU2NzgwMTg0MA==&hid=15&sn=84b3c882d5
 https://dev.mysql.com/doc/relnotes/mysql/8.0/en/news-8-0-11.html
 http://blog.itpub.net/15498/viewspace-2650661/    MySQL 5.6, 5.7, 8.0版本的新特性汇总大全
 https://mp.weixin.qq.com/s/dew1syuy_PdsuGDL98mKjg  MySQL 8.0来了，逆之者亡... 
+
+
+https://mp.weixin.qq.com/s/s7zo0RL5ZWhwAaTg_3zERg  MySQL 8.0，那些不容错过的好特性
+	快速加列、hash join 
+
