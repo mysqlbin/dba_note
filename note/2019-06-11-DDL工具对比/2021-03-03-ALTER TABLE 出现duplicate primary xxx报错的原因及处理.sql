@@ -18,8 +18,8 @@ ALTER TABLE 出现duplicate primary xxx报错的原因及处理？
 
 
 	从官方文档中的描述所说 online ddl 期间，其他会话执行的dml操作造成唯一键冲突的sql会记录到 online log 中，在commit阶段等变更结束之后再应用这些sql会导致报错唯一键冲突。
-
-
+	
+	
 相关参考：
 	https://zhuanlan.zhihu.com/p/115285170  MySQL Online DDL增量DML记录和回放的源码实现
 	https://mp.weixin.qq.com/s/tzShTHrunhgFxeLxLzi5fA  MySQL add/drop字段时报主键冲突
@@ -35,4 +35,3 @@ Online DDL的原理
 		新旧表的切换，需要加MDL写锁，会造成秒级的写阻塞，不会造成死锁。
 		
 		
-insert /* gh-ost `sbtest`.`t1_2500` */ ignore into `sbtest`.`_t1_2500_gho` 

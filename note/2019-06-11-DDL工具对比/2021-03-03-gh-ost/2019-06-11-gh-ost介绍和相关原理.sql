@@ -45,7 +45,7 @@ rename /* gh-ost */ table `sbtest`.`t1_2500` to `sbtest`.`_t1_2500_del`, `sbtest
 		一边在主库上拷贝已有的数据到新表中，一边从备库上拉取增量数据的 binlog，然后不断的把 binlog 应用回主库。
 	
 	3. 等待全部数据同步完成，进行cut-over 新表和原表切换。
-		图中 cut-over 是最后一步，锁住主库的源表，等待 binlog 应用完毕，然后替换 gh-ost 表为源表。
+		cut-over 是最后一步，锁住主库的源表，等待 binlog 应用完毕，然后替换 gh-ost 表为源表。
 		gh-ost 在执行中，会在原本的 binlog event 里面增加以下 hint 和心跳包，用来控制整个流程的进度，检测状态等。
 		
 	理解了.
@@ -58,7 +58,7 @@ rename /* gh-ost */ table `sbtest`.`t1_2500` to `sbtest`.`_t1_2500_del`, `sbtest
 		gh-ost是否不会导致死锁.
 		
 	3. 增量数据的处理
-		通过把增量数据的binlog应用回主库新表中。
+		基于伪装的备库，通过把增量数据的binlog应用回主库新表中。
 	
 	
 5. 部署gt-ost	
