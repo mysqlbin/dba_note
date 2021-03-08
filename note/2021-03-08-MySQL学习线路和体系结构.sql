@@ -10,8 +10,9 @@
 	8. ProxySQL 
 
 优化:
+	
 	1. 索引
-	2. 各种锁
+	2. 行锁
 	3. InnoDB 存储引擎
 		3.1. 逻辑存储结构
 			表空间 
@@ -21,7 +22,6 @@
 			行
 			
 		3.2. 4个后台主线程
-			
 			master thread
 				checkpoint
 			io thread
@@ -44,7 +44,7 @@
 			
 		3.4. buffer pool缓冲池
 		
-		3.5 日志：redo log 、undo log
+		3.5 事务日志：redo log 、undo log
 				
 		
 工具:

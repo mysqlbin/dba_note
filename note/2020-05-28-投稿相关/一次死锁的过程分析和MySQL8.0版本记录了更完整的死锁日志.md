@@ -326,8 +326,13 @@ trx_id 为 18912129 向表 t1 加了一个 X 的记录锁， trx_id 为 18912896
 可以看到， MySQL 8.0版本的死锁日志更加完整了：把事务持有的锁和在等待的锁的详情都记录下来了。
 
 ###7. 小结
- 死锁一般可以结合死锁日志、加锁规则和业务场景来做相关的分析
- 辅助索引的范围查询更新加锁，需要往后找到一条满足条件的记录才会停止扫描
- 加锁是在加在索引上的，当表中有多个索引，只会对必要的索引加锁，例如本案例中的表t1有3个索引，分别为 PRIMARY KEY、idx_order_no和idx_status_createtime，当执行 select * from t1 where order_no='123456' for update; 语句后，会对索引 PRIMARY KEY、idx_order_no 的记录进行加锁，并不会对索引 idx_status_createtime 的记录进行加锁。
- MySQL 8.0版本通过 performance_schema.data_locks 可以看到事务持有的锁列表和在等待的锁的列表。
- 同时，MySQL 8.0版本记录的死锁日志更加完整了，不再需要根据死锁日志中的锁等待的记录信息推导出另一个事务持有的锁信息，分析死锁会更加轻松。
+
+1. 死锁一般可以结合死锁日志、加锁规则和业务场景来做相关的分析
+
+2. 辅助索引的范围查询更新加锁，需要往后找到一条满足条件的记录才会停止扫描
+
+3. 加锁是在加在索引上的，当表中有多个索引，只会对必要的索引加锁，例如本案例中的表t1有3个索引，分别为 PRIMARY KEY、idx_order_no和idx_status_createtime，当执行 select * from t1 where order_no='123456' for update; 语句后，会对索引 PRIMARY KEY、idx_order_no 的记录进行加锁，并不会对索引 idx_status_createtime 的记录进行加锁。
+
+4. MySQL 8.0版本通过 performance_schema.data_locks 可以看到事务持有的锁列表和在等待的锁的列表。
+
+   同时，MySQL 8.0版本记录的死锁日志更加完整了，不再需要根据死锁日志中的锁等待的记录信息推导出另一个事务持有的锁信息，分析死锁会更加轻松。

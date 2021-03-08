@@ -18,4 +18,5 @@
 	
  
 	
+	https://www.cnblogs.com/zhoujinyi/p/14368317.html MongoDB4.2 副本集扫盲说明
 	

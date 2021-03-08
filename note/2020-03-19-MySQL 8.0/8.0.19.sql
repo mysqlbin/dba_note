@@ -1,8 +1,10 @@
 
 
 InnoDB ReplicaSet
+	
 	继 InnoDB Cluster 作为我们基于组复制的第一个完全集成的 MySQL HA 解决方案之后，InnoDB ReplicaSet 提供了另一个完整的解决方案（基于MySQL 复制）。
-	InnoDB ReplicaSet 的基本思想是对经典 MySQL 复制执行与 InnoDB Cluster 对组复制所做的相同操作。我们采用了一种非常强大但可能很复杂的技术，在 MySQL Shell 中为其提供了易于使用的 AdminAPI。
+	InnoDB ReplicaSet 的基本思想是对经典 MySQL 复制执行与 InnoDB Cluster 对组复制所做的相同操作。
+	我们采用了一种非常强大但可能很复杂的技术，在 MySQL Shell 中为其提供了易于使用的 AdminAPI。
 
 	仅需几个易于使用的 Shell 命令，即可从头开始配置 MySQL 复制数据库体系结构，包括使用 CLONE 进行数据供应，设置复制并执行手动切换或故障切换。
 	MySQL Router 了解拓扑结构，并会自动进行负载平衡或流量重定向。
@@ -40,4 +42,5 @@ Mysql InnoDB Cluster 主要由三个模块构成：
 	
 	
 如果mysql router需要实现高可用，可以使用keepalived或者headbetart实现，这里主要介绍mysql router就不实现了。
-
+	-- 组件越多，运维成本越高。
+	
