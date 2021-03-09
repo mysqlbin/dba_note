@@ -21,7 +21,7 @@
 		作用：
 			因为在备份过程中可能有持续的数据写入，所以要先拷贝redo log
 			从备份开始到备份结束期间的增量数据。
-			在备份恢复的时候，应用redo log到数据页中，保证在备份结束后，数据页是一致的。
+			在备份恢复的时候，应用redo log到数据页中，保证在备份恢复结束后，数据页是一致的。
 			
 		200315 19:46:17 >> log scanned up to (18238654367)
 		open("/home/mysql/data/mysqldata1/innodb_log/ib_logfile0", O_RDONLY) = 4  #重新打开ib_logfile0，读取文件头，找到checkpoint点
@@ -61,7 +61,8 @@
 		Writing /data/backup/2020-03-15_19-46-09/xtrabackup_binlog_info
 
 	7. 获取 备份结束时，数据库中的 checkpoint 点和 已经刷新到重做日志文件的LSN ，会写入到 xtrabackup_checkpoints 文件中
-
+		-- 数据恢复的时候，从 checkpoint 检查点开始应用 redo log 到原数据页中。
+		
 	8. 待redo日志拷贝完成，停止复制redo log
 		xtrabackup: Stopping log copying thread.
 		

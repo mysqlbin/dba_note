@@ -35,3 +35,7 @@ root@localhost [zst]>select * from product where name='mi8';
 |  1 | mi8  |      7 |
 +----+------+--------+
 1 row in set (0.00 sec)
+
+
+-- 自己的更新对自己可见。
+

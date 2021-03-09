@@ -1073,6 +1073,8 @@
 2020-06-19T18:20:16.178+0800 I  INITSYNC [replication-1] CollectionCloner ns:yldb.abc finished cloning with status: OK
 2020-06-19T18:20:16.179+0800 I  INDEX    [replication-1] index build: inserted 3 keys from external sorter into index in 0 seconds
 2020-06-19T18:20:16.213+0800 I  INDEX    [replication-1] index build: done building index _id_ on ns yldb.abc
+
+
 2020-06-19T18:20:16.255+0800 I  INITSYNC [replication-1] Finished cloning data: OK. Beginning oplog replay.
 2020-06-19T18:20:16.256+0800 I  INITSYNC [replication-0] No need to apply operations. (currently at { : Timestamp(1592562006, 1) })
 2020-06-19T18:20:16.256+0800 I  SHARDING [replication-1] Marking collection local.replset.oplogTruncateAfterPoint as collection version: <unsharded>
@@ -1091,8 +1093,11 @@
 2020-06-19T18:20:16.286+0800 I  REPL     [replication-0] Starting replication reporter thread
 2020-06-19T18:20:16.286+0800 I  REPL     [rsSync-0] Starting oplog application
 2020-06-19T18:20:16.287+0800 I  REPL     [rsBackgroundSync] could not find member to sync from
+
+全量同步完成后，成员从转换 STARTUP2 为 SECONDARY
 2020-06-19T18:20:16.287+0800 I  REPL     [rsSync-0] transition to SECONDARY from RECOVERING
 2020-06-19T18:20:16.287+0800 I  REPL     [rsSync-0] Resetting sync source to empty, which was :27017
+
 2020-06-19T18:20:18.287+0800 I  STORAGE  [replexec-5] Triggering the first stable checkpoint. Initial Data: Timestamp(1592562006, 1) PrevStable: Timestamp(0, 0) CurrStable: Timestamp(1592562006, 1)
 2020-06-19T18:20:24.288+0800 I  REPL     [rsBackgroundSync] sync source candidate: 192.168.0.242:27017
 2020-06-19T18:20:24.288+0800 I  CONNPOOL [RS] Connecting to 192.168.0.242:27017

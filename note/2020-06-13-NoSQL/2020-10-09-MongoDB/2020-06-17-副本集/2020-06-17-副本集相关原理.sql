@@ -24,10 +24,10 @@ https://zhuanlan.zhihu.com/p/79786663 MongoDB副本集同步原理
 		然后， 它会查询主节点的 oplog, 查询所有时间戳大于自己时间戳的oplog记录；
 		最后， 将找到的记录插入到自己的oplog.rs集合中，并执行这些操作。（当启用日志的时候， 在同一个事务里，文档被写入核心数据文件， 而且同时入 oplog.）
 		这3个步骤的总结：
-			从库通过自己 Oplog的时间戳跟主库的 Oplog的时间戳比较， 获取时间戳大于自己的oplog记录，然后把这部分日志应用到从库中。
+			从库通过自己 Oplog的最新时间戳跟主库的 Oplog的时间戳比较， 获取时间戳大于自己的oplog记录，然后把这部分日志应用到从库中。
 		
-
-
+	从库当前oplog最新的时间戳是14点的，那么就只需要拉取主库时间戳在14点之后的oplog，然后写入到从库自己的oplog中，接着应用oplog进行回放，让从库的数据跟主库的数据保持一致。
+		-- 最新的理解。
 
 选举的原理
 	节点类型分为标准（host）节点、被动（passive）节点和仲裁（arbiter）节点。
@@ -50,7 +50,7 @@ https://zhuanlan.zhihu.com/p/79786663 MongoDB副本集同步原理
 
 	4. else, using a consensus protocol, pick the server with the highest maxLocalOpOrdinal as the Primary.
 
-	大致翻译过来为使用一致协议选择主节点。基本步骤为：
+	大致翻译过来为使用一致性协议选择主节点。基本步骤为：
 
 	1. 得到每个服务器节点的最后操作时间戳。
 		每个mongodb都有oplog机制会记录本机的操作，方便和主服务器进行对比数据是否同步还可以用于错误恢复。

@@ -94,8 +94,18 @@
 	MongoDB的WiredTiger日志文件的最大大小限制为大约100 MB。
 	一旦文件超过该限制，WiredTiger将创建一个新的日记文件。
 	WiredTiger自动删除旧的日记文件，只需要维护从上一个检查点开始需要恢复的文件。
-	
+	-- 类似于binlog，单个文件的大小超过一定的阀值，会自动创建下一个文件。
 
+	shell> date
+	Tue Mar  9 15:40:10 CST 2021
+	
+	shell> ll
+	total 307200
+	-rw-------. 1 mongodb mongodb 104857600 Mar  9 15:39 WiredTigerLog.0000001054
+	-rw-------. 1 mongodb mongodb 104857600 Jul 21  2020 WiredTigerPreplog.0000000031
+	-rw-------. 1 mongodb mongodb 104857600 Mar  9 13:35 WiredTigerPreplog.0000000970
+	
+	
 7. 相关参考
 	
 	https://docs.mongodb.com/manual/core/journaling/
