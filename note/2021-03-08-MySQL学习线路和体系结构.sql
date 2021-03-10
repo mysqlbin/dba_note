@@ -10,41 +10,64 @@
 	8. ProxySQL 
 
 优化:
+	1. MySQL 的体系结构可以划分为2层
 	
-	1. 索引
-	2. 行锁
-	3. InnoDB 存储引擎
-		3.1. 逻辑存储结构
+	2. Server层
+		
+		1. binlog日志
+		
+		2. 细分
+			连接器
+			分析器
+			优化器
+			执行器
+			
+		3. 锁
+			全局读锁、MDL元数据锁
+		
+	3. InnoDB存储引擎层
+		3.0 B+树数据结构
+			
+		3.1 事务和事务隔离级别
+		
+		3.2 索引
+		
+		3.3 锁
+			
+		3.4 逻辑存储结构
 			表空间 
 			段
 			区
 			数据页
 			行
 			
-		3.2. 4个后台主线程
+		3.5 4个后台主线程
 			master thread
 				checkpoint
+				
 			io thread
 				insert buffer thread 
 				log thread
 				write thread
 				read thread
-			purge thread    #已整理
+				
+			purge thread   
 				undo log
-			merge thread    #已整理
+				
+			merge thread    
 				merge change buffer   
 				
 
-		3.3. 关键特性
+		3.6 关键特性
 			change buffer
 			AHI 自适应哈希索引
-			double write buffer
-			预读
+			double write
+			预读、预写、预热
 			刷相邻页
 			
-		3.4. buffer pool缓冲池
+		3.7 buffer pool缓冲池
 		
-		3.5 事务日志：redo log 、undo log
+		3.8 事务日志：redo log 、undo log
 				
 		
 工具:

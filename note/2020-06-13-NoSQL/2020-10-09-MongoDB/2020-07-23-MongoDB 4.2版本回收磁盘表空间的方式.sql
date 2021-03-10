@@ -1426,7 +1426,7 @@
 		一个集合，会加集合所在DB的互斥写锁，会导致该DB上所有的读写请求都阻塞；
 		因为 compact 执行的时间可能很长，跟集合的数据量相关，所以强烈建议在业务低峰期执行，避免影响业务。  --已验证。
 	
-	4. compact 命令不会复制到副本集中的辅助副本，在副本集主库执行 compact，需要加 force 选项
+	4. compact 命令不会复制到副本集中的从库，在副本集主库执行 compact，需要加 force 选项
 
 		repl_set:PRIMARY> db.runCommand({compact: "table_t1"})
 		{

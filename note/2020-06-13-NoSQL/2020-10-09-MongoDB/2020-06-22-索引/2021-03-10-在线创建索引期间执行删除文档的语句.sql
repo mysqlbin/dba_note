@@ -1,8 +1,16 @@
 
-version: "4.2.7" 
+1. MongoDB 版本
+2. 执行流程
+3. 状态
+4. 错误日志记录了创建索引的过程和耗时
+5. 小结
+
+
+1. MongoDB 版本
+	version: "4.2.7" 
  
 
-执行流程：
+2. 执行流程
 	session A                     session B
 	
 	db.table_clubgamelog.createIndex({"szToken" : 1})
@@ -13,7 +21,7 @@ version: "4.2.7"
 								  
 								  
 
-status:
+3. 状态
 	repl_set:PRIMARY> db.table_clubgamelog.createIndex({"szToken" : 1})
 	{
 		"createdCollectionAutomatically" : false,
@@ -34,7 +42,8 @@ status:
 	repl_set:PRIMARY> db.table_clubgamelog.remove({'szToken':'10045-913672-1593716373-16-8'})
 	WriteResult({ "nRemoved" : 18 })
 	
-错误日志	
+4. 错误日志记录了创建索引的过程和耗时	
+
 	2020-08-07T10:58:31.911+0800 I  INDEX    [conn1729] index build: starting on aiuaiu_h5.table_clubgamelog properties: { v: 2, key: { szToken: 1.0 }, name: "szToken_1", ns: "aiuaiu_h5.table_clubgamelog" } using method: Hybrid
 	2020-08-07T10:58:31.911+0800 I  INDEX    [conn1729] build may temporarily use up to 200 megabytes of RAM
 	2020-08-07T10:58:34.001+0800 I  -        [conn1729]   Index Build: scanning collection: 530000/10309189 5%
@@ -56,7 +65,7 @@ status:
 	2020-08-07T10:59:16.432+0800 I  COMMAND  [LogicalSessionCacheRefresh] command config.$cmd command: update { update: "system.sessions", ordered: false, allowImplicitCollectionCreation: false, writeConcern: { w: "majority", wtimeout: 15000 }, $db: "config" } numYields:1 reslen:245 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 3 } }, ReplicationStateTransition: { acquireCount: { w: 3 } }, Global: { acquireCount: { w: 3 } }, Database: { acquireCount: { w: 3 } }, Collection: { acquireCount: { w: 3 } }, Mutex: { acquireCount: { r: 4 } } } flowControl:{ acquireCount: 3, timeAcquiringMicros: 2 } storage:{ data: { bytesRead: 551, timeReadingMicros: 12242 } } protocol:op_msg 863ms
 	2020-08-07T10:59:19.003+0800 I  -        [conn1729]   Index Build: scanning collection: 6253800/10309174 60%
 	
-	-- 到这里执行 delete 操作
+	-- 到这里执行 delete 删除集合 'szToken':'10045-913672-1593716373-16-8' 的数据
 	2020-08-07T10:59:24.224+0800 I  WRITE    [conn1730] remove aiuaiu_h5.table_clubgamelog appName: "MongoDB Shell" command: 
 	{ q: { szToken: "10045-913672-1593716373-16-8" }, limit: 0 } 
 	planSummary: COLLSCAN keysExamined:0 docsExamined:10442742 ndeleted:18 keysDeleted:54 numYields:81675 queryHash:16AB364D planCacheKey:53A94721 
@@ -67,7 +76,6 @@ status:
 	flowControl:{ acquireCount: 81676, timeAcquiringMicros: 46562 } 
 	storage:{ data: { bytesRead: 18090159186, timeReadingMicros: 40237351 }, timeWaitingMicros: { cache: 5771 } } 50413ms
 	
-
 	2020-08-07T10:59:24.224+0800 I  COMMAND  [conn1730] command aiuaiu_h5.$cmd appName: "MongoDB Shell" 
 	command: delete { delete: "table_clubgamelog", ordered: true, lsid: { id: UUID("8f758dde-8494-469f-a33c-974c3ac45b9d") }, 
 	$clusterTime: { clusterTime: Timestamp(1596769058, 1), signature: { hash: BinData(0, 5CA4E2E8B53AD6F8B0699355B1F0BF4A09458361), keyId: 6838881995993382915 } }, 
@@ -75,7 +83,6 @@ status:
 	ReplicationStateTransition: { acquireCount: { w: 81677 } }, Global: { acquireCount: { r: 1, w: 81676 } }, 
 	Database: { acquireCount: { w: 81676 } }, Collection: { acquireCount: { w: 81676 } }, 
 	Mutex: { acquireCount: { r: 37 } } } flowControl:{ acquireCount: 81676, timeAcquiringMicros: 46562 } storage:{} protocol:op_msg 50419ms
-	
 	
 	
 	2020-08-07T10:59:28.961+0800 I  -        [conn1729]   Index Build: scanning collection: 6344600/10309172 61%
@@ -97,9 +104,22 @@ status:
 	2020-08-07T11:00:05.001+0800 I  -        [conn1729]   Index Build: inserting keys from external sorter into index: 3153700/10442730 30%
 	2020-08-07T11:00:08.001+0800 I  -        [conn1729]   Index Build: inserting keys from external sorter into index: 8165100/10442730 78%
 	2020-08-07T11:00:09.294+0800 I  INDEX    [conn1729] index build: inserted 10442730 keys from external sorter into index in 9 seconds
+	
+	deleted: 18：从索引树中删除18个文档
 	2020-08-07T11:00:09.787+0800 I  INDEX    [conn1729] index build: drain applied 18 side writes (inserted: 0, deleted: 18) for 'szToken_1' in 1 ms
+	
 	2020-08-07T11:00:09.787+0800 I  INDEX    [conn1729] index build: done building index szToken_1 on ns aiuaiu_h5.table_clubgamelog
-	2020-08-07T11:00:09.791+0800 I  COMMAND  [conn1729] command aiuaiu_h5.table_clubgamelog appName: "MongoDB Shell" command: createIndexes { createIndexes: "table_clubgamelog", indexes: [ { key: { szToken: 1.0 }, name: "szToken_1" } ], lsid: { id: UUID("d9f33e54-a973-4d47-8c1d-21f29ccba5c8") }, $clusterTime: { clusterTime: Timestamp(1596769029, 1), signature: { hash: BinData(0, FE2FD99D8849765F315528E107967B5556A04B9E), keyId: 6838881995993382915 } }, $db: "aiuaiu_h5" } numYields:81650 reslen:239 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 81652 } }, ReplicationStateTransition: { acquireCount: { w: 81653 } }, Global: { acquireCount: { r: 1, w: 81652 } }, Database: { acquireCount: { r: 1, w: 81652 } }, Collection: { acquireCount: { r: 81652, w: 1, R: 1, W: 2 } }, Mutex: { acquireCount: { r: 4 } } } flowControl:{ acquireCount: 81651, timeAcquiringMicros: 42033 } storage:{ data: { bytesRead: 18798994053, timeReadingMicros: 39622037 }, timeWaitingMicros: { cache: 4190 } } protocol:op_msg 97894ms
+	2020-08-07T11:00:09.791+0800 I  COMMAND  [conn1729] command aiuaiu_h5.table_clubgamelog appName: "MongoDB Shell" 
+	command: createIndexes { createIndexes: "table_clubgamelog", indexes: [ { key: { szToken: 1.0 }, name: "szToken_1" } ], 
+	lsid: { id: UUID("d9f33e54-a973-4d47-8c1d-21f29ccba5c8") }, $clusterTime: { clusterTime: Timestamp(1596769029, 1), 
+	signature: { hash: BinData(0, FE2FD99D8849765F315528E107967B5556A04B9E), keyId: 6838881995993382915 } }, 
+	$db: "aiuaiu_h5" } numYields:81650 reslen:239 locks:{ ParallelBatchWriterMode: { acquireCount: { r: 81652 } }, 
+	ReplicationStateTransition: { acquireCount: { w: 81653 } }, Global: { acquireCount: { r: 1, w: 81652 } }, 
+	Database: { acquireCount: { r: 1, w: 81652 } }, Collection: { acquireCount: { r: 81652, w: 1, R: 1, W: 2 } }, 
+	Mutex: { acquireCount: { r: 4 } } } flowControl:{ acquireCount: 81651, timeAcquiringMicros: 42033 } 
+	storage:{ data: { bytesRead: 18798994053, timeReadingMicros: 39622037 }, timeWaitingMicros: { cache: 4190 } } 
+	protocol:op_msg 97894ms
+		创建索引的耗时：97894ms = 98 秒
 	2020-08-07T11:00:16.521+0800 I  NETWORK  [listener] connection accepted from 10.10.10.223:41110 #1760 (11 connections now open)
 	2020-08-07T11:00:16.521+0800 I  NETWORK  [conn1760] received client metadata from 10.10.10.223:41110 conn1760: { driver: { name: "NetworkInterfaceTL", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.3.1611 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-514.26.2.el7.x86_64" } }
 	2020-08-07T11:00:16.558+0800 I  NETWORK  [conn1746] end connection 10.10.10.223:41034 (10 connections now open)
@@ -108,3 +128,8 @@ status:
 	2020-08-07T11:00:16.560+0800 I  NETWORK  [conn1761] received client metadata from 10.10.10.223:41112 conn1761: { driver: { name: "MongoDB Internal Client", version: "4.2.7" }, os: { type: "Linux", name: "CentOS Linux release 7.3.1611 (Core) ", architecture: "x86_64", version: "Kernel 3.10.0-514.26.2.el7.x86_64" } }
 	2020-08-07T11:00:16.596+0800 I  ACCESS   [conn1761] Successfully authenticated as principal __system on local from client 10.10.10.223:41112
 	2020-08-07T11:00:16.597+0800 I  NETWORK  [conn1761] end connection 10.10.10.223:41112 (10 connections now open)
+
+
+5. 小结
+	4.2 版本支持在线添加索引
+
