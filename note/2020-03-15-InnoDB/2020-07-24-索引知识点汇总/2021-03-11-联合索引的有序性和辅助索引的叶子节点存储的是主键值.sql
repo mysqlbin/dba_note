@@ -8,6 +8,7 @@
 4.3 方式3
 
 1. 初始化表结构和数据
+	
 	drop table tuser;
 	CREATE TABLE `tuser` (
 	  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',  
@@ -26,7 +27,7 @@
 	INSERT INTO `base_db`.`tuser` (`id`, `name`, `age`, `ismale`) VALUES ('5', '李四', '20', NULL);
 	INSERT INTO `base_db`.`tuser` (`id`, `name`, `age`, `ismale`) VALUES ('6', '王五', '10', NULL);
 
-	root@mysqldb 11:41:  [base_db]> select * from tuser;
+	mysql> select * from tuser;
 	+----+--------+-----+--------+
 	| id | name   | age | ismale |
 	+----+--------+-----+--------+
@@ -42,7 +43,7 @@
 
 2. 二级索引idx_name_age 的组织顺序如下
 
-	root@mysqldb 11:41:  [base_db]> select name,age,id from tuser order by name asc,age asc, id asc;
+	mysql> select name,age,id from tuser order by name asc,age asc, id asc;
 	+--------+-----+----+
 	| name   | age | id |
 	+--------+-----+----+
@@ -74,7 +75,7 @@
 	
 3. 验证联合索引的有序性
 	
-	root@mysqldb 11:44:  [base_db]> desc select name,age,id from tuser order by name asc,age asc, id asc;
+	mysql> desc select name,age,id from tuser order by name asc,age asc, id asc;
 	+----+-------------+-------+------------+-------+---------------+--------------+---------+------+------+----------+-------------+
 	| id | select_type | table | partitions | type  | possible_keys | key          | key_len | ref  | rows | filtered | Extra       |
 	+----+-------------+-------+------------+-------+---------------+--------------+---------+------+------+----------+-------------+
@@ -84,7 +85,7 @@
 	-- 不需要排序。
 		
 		
-	root@mysqldb 11:47:  [base_db]> desc select name,age,id from tuser order by name asc,id asc, age asc;
+	mysql> desc select name,age,id from tuser order by name asc,id asc, age asc;
 	+----+-------------+-------+------------+-------+---------------+--------------+---------+------+------+----------+-----------------------------+
 	| id | select_type | table | partitions | type  | possible_keys | key          | key_len | ref  | rows | filtered | Extra                       |
 	+----+-------------+-------+------------+-------+---------------+--------------+---------+------+------+----------+-----------------------------+
@@ -93,7 +94,7 @@
 	1 row in set, 1 warning (0.00 sec)
 	-- 需要排序
 		
-	root@mysqldb 11:48:  [base_db]> desc select * from tuser where name='张三' and age=10 order by id desc;
+	mysql> desc select * from tuser where name='张三' and age=10 order by id desc;
 	+----+-------------+-------+------------+------+---------------+--------------+---------+-------------+------+----------+-------------+
 	| id | select_type | table | partitions | type | possible_keys | key          | key_len | ref         | rows | filtered | Extra       |
 	+----+-------------+-------+------------+------+---------------+--------------+---------+-------------+------+----------+-------------+
@@ -105,7 +106,7 @@
 	
 4. 验证辅助索引 idx_name_age的叶子节点存储的是主键值
 4.1 方式1
-	root@mysqldb 11:44:  [base_db]>  select * from mysql.innodb_index_stats where table_name='tuser';
+	mysql>  select * from mysql.innodb_index_stats where table_name='tuser';
 	+---------------+------------+--------------+---------------------+--------------+------------+-------------+-----------------------------------+
 	| database_name | table_name | index_name   | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
 	+---------------+------------+--------------+---------------------+--------------+------------+-------------+-----------------------------------+
@@ -121,6 +122,7 @@
 	8 rows in set (0.08 sec)
 
 4.2 方式2 
+	
 	分析辅助索引 idx_name_age
 	shell> innodb_space -s ibdata1 -T base_db/tuser -I idx_name_age index-recurse
 	ROOT NODE #5: 6 records, 120 bytes
@@ -132,8 +134,9 @@
 	  RECORD: (name="王五", age=10) → (id=6)
 
 4.3 方式3
+	
 	即 验证联合索引的有序性
-	root@mysqldb 11:44:  [base_db]> desc select name,age,id from tuser order by name asc,age asc, id asc;
+	mysql> desc select name,age,id from tuser order by name asc,age asc, id asc;
 	+----+-------------+-------+------------+-------+---------------+--------------+---------+------+------+----------+-------------+
 	| id | select_type | table | partitions | type  | possible_keys | key          | key_len | ref  | rows | filtered | Extra       |
 	+----+-------------+-------+------------+-------+---------------+--------------+---------+------+------+----------+-------------+

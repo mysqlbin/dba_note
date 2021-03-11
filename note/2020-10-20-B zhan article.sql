@@ -19,6 +19,9 @@ https://mp.weixin.qq.com/s/gYb3yE8IfiOFqkTvMYfjQA   第四期回顾：MySQL Grou
 	MongoDB 为什么好用？不光搭起来简单，开发人员用起来也简单，所以就用的广
 		--副本集自带故障切换, 不需要业务改数据库连接配置, 也不需要第方工具来做高可用.
 	MGR组复制能做到像 MongoDB 一样开箱即用，那离成功就不远了。
+	MySQL的性能比MongoDB好，整体架构都比它好，就是使用上没有它方便，所以 mongoDB 的股票涨得这么好。这一点是 MySQL 和 MGR 欠缺的。
+	
+	因为 VIP 还有很多局限性，不能同网段、不能跨城等都是无法解决的。
 	
 https://mp.weixin.qq.com/s/n8ODYhkmpaklWDWfQfQpBg   B站直播《MySQL冲冲冲》第五期文稿版
 
