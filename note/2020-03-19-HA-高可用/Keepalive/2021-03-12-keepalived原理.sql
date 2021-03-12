@@ -1,6 +1,9 @@
 
 
 Keepalived简介:
+	keep alive ： 保持存活
+	检测服务器的状态
+	
     Keepalived的作用是检测服务器的状态，如果有一台服务器宕机，
 	或工作出现故障，Keepalived将检测到，并将有故障的服务器从系统中剔除，
 	同时使用其它服务器代替该服务器的工作，当服务器工作正常后Keepalived自动将服务器加入到服务器群中，
@@ -43,7 +46,7 @@ VRRP约束:
 	stop.sh
 
 	mysql_check.sh:
-		是为了检查mysqld进程是否存活的脚本，当发现连接不上mysql，自动把keepalived进程干掉（释放VIP, 防止脑裂），让VIP进行漂移。
+		是为了检查mysqld进程是否存活的脚本，当发现连接不上mysql，自动把keepalived进程干掉（释放VIP, 防止脑裂，防止双写），让VIP进行漂移。
 		
 	master.sh:
 		作用是状态改为master以后执行的脚本。
@@ -67,10 +70,13 @@ VRRP约束:
 		
 
 防止脑裂:
+
 	1. 配置文件:
 		nopreempt             # 不抢占
 		priority 100          # 设置优先级/权重, 避免回来切换.
+		
 	2. 检查mysqld进程是否存活的脚本，当发现连接不上mysql，自动把keepalived进程干掉
+	
 	3. 参考文档: mysql双主+keepalived高可用方案.docx
 		每个keepalived的节点都执行一个定时任务的脚本，定时去ping网关，累计失败次数超过阀值次数，则关闭自身的keepalived服务。这样就不会出现脑裂的情况。
 		https://www.zhihu.com/question/50997425
