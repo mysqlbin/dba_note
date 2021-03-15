@@ -23,6 +23,14 @@
 			Nov 14 14:45:47 kp04 Keepalived_vrrp[5749]: (VI_1) Receive advertisement timeout
 			Nov 14 14:45:47 kp04 Keepalived_vrrp[5749]: (VI_1) Entering MASTER STATE
 			Nov 14 14:45:47 kp04 Keepalived_vrrp[5749]: (VI_1) setting VIPs.
+	
+
+	14. 相关错误和解决
+		14.1 错误1 	
+		14.2 错误2	
+
+	15. 小结
+	
 
 1. keepalived 环境
 	主从模式
@@ -178,7 +186,7 @@
 			Nov 14 14:45:32 kp04 Keepalived_vrrp[5749]: Registering Kernel netlink reflector
 			Nov 14 14:45:32 kp04 Keepalived_vrrp[5749]: Registering Kernel netlink command channel
 			Nov 14 14:45:32 kp04 Keepalived_vrrp[5749]: Opening file '/etc/keepalived/keepalived.conf'.
-			Nov 14 14:45:32 kp04 Keepalived_vrrp[5749]: Sync group VG1 has only 1 virtual router(s) - this probably isn't what you want
+			Nov 14 14:45:32 kp04 Keepalived_vrrp[5749]: Sync group VG1 has only 1 virtual router(s) - this probably isn t what you want
 			Nov 14 14:45:32 kp04 Keepalived_vrrp[5749]: Assigned address 192.168.0.91 for interface enp0s3
 			Nov 14 14:45:32 kp04 Keepalived_vrrp[5749]: Assigned address fe80::a00:27ff:fe52:19f4 for interface enp0s3
 			Nov 14 14:45:32 kp04 Keepalived_vrrp[5749]: Registering gratuitous ARP shared channel
@@ -258,6 +266,7 @@
 
 
   7.2 从MySQL 数据库上看:
+	
 	授权 账号:
 		create user test_user@'192.168.0.%' identified by '123456abc';
 		grant all privileges on *.* to test_user@'192.168.0.%';
@@ -363,8 +372,8 @@
 	恢复:
 		kp04:
 			shell> /etc/init.d/keepalived stop
-
 			shell> /etc/init.d/mysql start
+			
 			
 		kp05:
 			mysql> create database test_20191101;
@@ -438,6 +447,7 @@
 		先进入Backup State状态，运行一次Vrrp_script 成功后，发现没有主->Master->拉起Vip完成启动	
 	
 11. 相关参考:
+	
 	https://www.cnblogs.com/gomysql/p/3856484.html  
 	https://blog.csdn.net/wzy0623/article/details/80916567
 	https://cloud.tencent.com/developer/article/1416596
@@ -468,116 +478,125 @@
 	
 
 
-错误1： 	
-[root@kp04 keepalived]# /etc/init.d/keepalived restart
-Restarting keepalived (via systemctl):  Job for keepalived.service failed because the control process exited with error code. See "systemctl status keepalived.service" and "journalctl -xe" for details.
-                                                           [FAILED]
-tail -f /var/log/messages:
-	Nov  5 01:44:45 kp04 systemd: Starting LVS and VRRP High Availability Monitor...
-	Nov  5 01:44:45 kp04 Keepalived[10285]: Starting Keepalived v2.0.19 (10/19,2019)
-	Nov  5 01:44:45 kp04 Keepalived[10285]: Running on Linux 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 (built for Linux 3.10.0)
-	Nov  5 01:44:45 kp04 Keepalived[10285]: Command line: '/usr/local/sbin/keepalived' '-D'
-	Nov  5 01:44:45 kp04 Keepalived[10285]: Configuration file '/etc/keepalived/keepalived.conf' is not a regular non-executable file
-	Nov  5 01:44:45 kp04 Keepalived[10285]: Stopped Keepalived v2.0.19 (10/19,2019)
-	Nov  5 01:44:45 kp04 systemd: keepalived.service: control process exited, code=exited status=6
-	Nov  5 01:44:45 kp04 systemd: Failed to start LVS and VRRP High Availability Monitor.
-	Nov  5 01:44:45 kp04 systemd: Unit keepalived.service entered failed state.
-	Nov  5 01:44:45 kp04 systemd: keepalived.service failed.
+14. 相关错误和解决
+	14.1 错误1 	
+		[root@kp04 keepalived]# /etc/init.d/keepalived restart
+		Restarting keepalived (via systemctl):  Job for keepalived.service failed because the control process exited with error code. See "systemctl status keepalived.service" and "journalctl -xe" for details.
+																   [FAILED]
+		tail -f /var/log/messages:
+			Nov  5 01:44:45 kp04 systemd: Starting LVS and VRRP High Availability Monitor...
+			Nov  5 01:44:45 kp04 Keepalived[10285]: Starting Keepalived v2.0.19 (10/19,2019)
+			Nov  5 01:44:45 kp04 Keepalived[10285]: Running on Linux 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 (built for Linux 3.10.0)
+			Nov  5 01:44:45 kp04 Keepalived[10285]: Command line: '/usr/local/sbin/keepalived' '-D'
+			Nov  5 01:44:45 kp04 Keepalived[10285]: Configuration file '/etc/keepalived/keepalived.conf' is not a regular non-executable file
+			Nov  5 01:44:45 kp04 Keepalived[10285]: Stopped Keepalived v2.0.19 (10/19,2019)
+			Nov  5 01:44:45 kp04 systemd: keepalived.service: control process exited, code=exited status=6
+			Nov  5 01:44:45 kp04 systemd: Failed to start LVS and VRRP High Availability Monitor.
+			Nov  5 01:44:45 kp04 systemd: Unit keepalived.service entered failed state.
+			Nov  5 01:44:45 kp04 systemd: keepalived.service failed.
 
-[root@kp04 keepalived]# systemctl status keepalived.service
-● keepalived.service - LVS and VRRP High Availability Monitor
-   Loaded: loaded (/usr/lib/systemd/system/keepalived.service; enabled; vendor preset: disabled)
-   Active: failed (Result: exit-code) since Tue 2019-11-05 01:44:45 CST; 46s ago
-  Process: 10285 ExecStart=/usr/local/sbin/keepalived $KEEPALIVED_OPTIONS (code=exited, status=6)
- Main PID: 9984 (code=exited, status=0/SUCCESS)
+		[root@kp04 keepalived]# systemctl status keepalived.service
+		● keepalived.service - LVS and VRRP High Availability Monitor
+		   Loaded: loaded (/usr/lib/systemd/system/keepalived.service; enabled; vendor preset: disabled)
+		   Active: failed (Result: exit-code) since Tue 2019-11-05 01:44:45 CST; 46s ago
+		  Process: 10285 ExecStart=/usr/local/sbin/keepalived $KEEPALIVED_OPTIONS (code=exited, status=6)
+		 Main PID: 9984 (code=exited, status=0/SUCCESS)
 
-Nov 05 01:44:45 kp04 systemd[1]: Starting LVS and VRRP High Availability Monitor...
-Nov 05 01:44:45 kp04 systemd[1]: keepalived.service: control process exited, code=exited status=6
-Nov 05 01:44:45 kp04 systemd[1]: Failed to start LVS and VRRP High Availability Monitor.
-Nov 05 01:44:45 kp04 systemd[1]: Unit keepalived.service entered failed state.
-Nov 05 01:44:45 kp04 systemd[1]: keepalived.service failed.
-
-
-[root@kp04 keepalived]# journalctl -xe
--- 
--- The result is failed.
-Nov 05 01:44:03 kp04 systemd[1]: Unit keepalived.service entered failed state.
-Nov 05 01:44:03 kp04 systemd[1]: keepalived.service failed.
-Nov 05 01:44:03 kp04 polkitd[636]: Unregistered Authentication Agent for unix-process:10247:31061609 (system bus name :1.271, object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8) (disconnected from bus)
-Nov 05 01:44:10 kp04 polkitd[636]: Registered Authentication Agent for unix-process:10262:31062365 (system bus name :1.272 [/usr/bin/pkttyagent --notify-fd 5 --fallback], object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8)
-Nov 05 01:44:10 kp04 systemd[1]: Starting LVS and VRRP High Availability Monitor...
--- Subject: Unit keepalived.service has begun start-up
--- Defined-By: systemd
--- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
--- 
--- Unit keepalived.service has begun starting up.
-Nov 05 01:44:10 kp04 Keepalived[10268]: Starting Keepalived v2.0.19 (10/19,2019)
-Nov 05 01:44:10 kp04 Keepalived[10268]: Running on Linux 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 (built for Linux 3.10.0)
-Nov 05 01:44:10 kp04 Keepalived[10268]: Command line: '/usr/local/sbin/keepalived' '-D'
-Nov 05 01:44:10 kp04 Keepalived[10268]: Configuration file '/etc/keepalived/keepalived.conf' is not a regular non-executable file
-Nov 05 01:44:10 kp04 Keepalived[10268]: Stopped Keepalived v2.0.19 (10/19,2019)
-Nov 05 01:44:10 kp04 systemd[1]: keepalived.service: control process exited, code=exited status=6
-Nov 05 01:44:10 kp04 systemd[1]: Failed to start LVS and VRRP High Availability Monitor.
--- Subject: Unit keepalived.service has failed
--- Defined-By: systemd
--- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
--- 
--- Unit keepalived.service has failed.
--- 
--- The result is failed.
-Nov 05 01:44:10 kp04 systemd[1]: Unit keepalived.service entered failed state.
-Nov 05 01:44:10 kp04 systemd[1]: keepalived.service failed.
-Nov 05 01:44:10 kp04 polkitd[636]: Unregistered Authentication Agent for unix-process:10262:31062365 (system bus name :1.272, object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8) (disconnected from bus)
-Nov 05 01:44:45 kp04 polkitd[636]: Registered Authentication Agent for unix-process:10279:31065819 (system bus name :1.273 [/usr/bin/pkttyagent --notify-fd 5 --fallback], object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8)
-Nov 05 01:44:45 kp04 systemd[1]: Starting LVS and VRRP High Availability Monitor...
--- Subject: Unit keepalived.service has begun start-up
--- Defined-By: systemd
--- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
--- 
--- Unit keepalived.service has begun starting up.
-Nov 05 01:44:45 kp04 Keepalived[10285]: Starting Keepalived v2.0.19 (10/19,2019)
-Nov 05 01:44:45 kp04 Keepalived[10285]: Running on Linux 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 (built for Linux 3.10.0)
-Nov 05 01:44:45 kp04 Keepalived[10285]: Command line: '/usr/local/sbin/keepalived' '-D'
-Nov 05 01:44:45 kp04 Keepalived[10285]: Configuration file '/etc/keepalived/keepalived.conf' is not a regular non-executable file
-Nov 05 01:44:45 kp04 Keepalived[10285]: Stopped Keepalived v2.0.19 (10/19,2019)
-Nov 05 01:44:45 kp04 systemd[1]: keepalived.service: control process exited, code=exited status=6
-Nov 05 01:44:45 kp04 systemd[1]: Failed to start LVS and VRRP High Availability Monitor.
--- Subject: Unit keepalived.service has failed
--- Defined-By: systemd
--- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
--- 
--- Unit keepalived.service has failed.
--- 
--- The result is failed.
-Nov 05 01:44:45 kp04 systemd[1]: Unit keepalived.service entered failed state.
-Nov 05 01:44:45 kp04 systemd[1]: keepalived.service failed.
-Nov 05 01:44:45 kp04 polkitd[636]: Unregistered Authentication Agent for unix-process:10279:31065819 (system bus name :1.273, object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8) (disconnected from bus)
-
-原因在这里：
-	[root@kp04 keepalived]# ll
-	total 8
-	-rwxr-xr-x. 1 root root  860 Nov  5  2019 keepalived.conf
-	-rwxr-xr-x. 1 root root 3550 Nov  1 12:20 keepalived.conf_bak
-
-解决办法：
-	[root@kp04 keepalived]# chmod 644 *
-	[root@kp04 keepalived]# ll
-	total 8
-	-rw-r--r--. 1 root root  860 Nov  5  2019 keepalived.conf
-	-rw-r--r--. 1 root root 3550 Nov  1 12:20 keepalived.conf_bak
+		Nov 05 01:44:45 kp04 systemd[1]: Starting LVS and VRRP High Availability Monitor...
+		Nov 05 01:44:45 kp04 systemd[1]: keepalived.service: control process exited, code=exited status=6
+		Nov 05 01:44:45 kp04 systemd[1]: Failed to start LVS and VRRP High Availability Monitor.
+		Nov 05 01:44:45 kp04 systemd[1]: Unit keepalived.service entered failed state.
+		Nov 05 01:44:45 kp04 systemd[1]: keepalived.service failed.
 
 
-错误2： 	
+		[root@kp04 keepalived]# journalctl -xe
+		-- 
+		-- The result is failed.
+		Nov 05 01:44:03 kp04 systemd[1]: Unit keepalived.service entered failed state.
+		Nov 05 01:44:03 kp04 systemd[1]: keepalived.service failed.
+		Nov 05 01:44:03 kp04 polkitd[636]: Unregistered Authentication Agent for unix-process:10247:31061609 (system bus name :1.271, object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8) (disconnected from bus)
+		Nov 05 01:44:10 kp04 polkitd[636]: Registered Authentication Agent for unix-process:10262:31062365 (system bus name :1.272 [/usr/bin/pkttyagent --notify-fd 5 --fallback], object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8)
+		Nov 05 01:44:10 kp04 systemd[1]: Starting LVS and VRRP High Availability Monitor...
+		-- Subject: Unit keepalived.service has begun start-up
+		-- Defined-By: systemd
+		-- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
+		-- 
+		-- Unit keepalived.service has begun starting up.
+		Nov 05 01:44:10 kp04 Keepalived[10268]: Starting Keepalived v2.0.19 (10/19,2019)
+		Nov 05 01:44:10 kp04 Keepalived[10268]: Running on Linux 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 (built for Linux 3.10.0)
+		Nov 05 01:44:10 kp04 Keepalived[10268]: Command line: '/usr/local/sbin/keepalived' '-D'
+		Nov 05 01:44:10 kp04 Keepalived[10268]: Configuration file '/etc/keepalived/keepalived.conf' is not a regular non-executable file
+		Nov 05 01:44:10 kp04 Keepalived[10268]: Stopped Keepalived v2.0.19 (10/19,2019)
+		Nov 05 01:44:10 kp04 systemd[1]: keepalived.service: control process exited, code=exited status=6
+		Nov 05 01:44:10 kp04 systemd[1]: Failed to start LVS and VRRP High Availability Monitor.
+		-- Subject: Unit keepalived.service has failed
+		-- Defined-By: systemd
+		-- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
+		-- 
+		-- Unit keepalived.service has failed.
+		-- 
+		-- The result is failed.
+		Nov 05 01:44:10 kp04 systemd[1]: Unit keepalived.service entered failed state.
+		Nov 05 01:44:10 kp04 systemd[1]: keepalived.service failed.
+		Nov 05 01:44:10 kp04 polkitd[636]: Unregistered Authentication Agent for unix-process:10262:31062365 (system bus name :1.272, object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8) (disconnected from bus)
+		Nov 05 01:44:45 kp04 polkitd[636]: Registered Authentication Agent for unix-process:10279:31065819 (system bus name :1.273 [/usr/bin/pkttyagent --notify-fd 5 --fallback], object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8)
+		Nov 05 01:44:45 kp04 systemd[1]: Starting LVS and VRRP High Availability Monitor...
+		-- Subject: Unit keepalived.service has begun start-up
+		-- Defined-By: systemd
+		-- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
+		-- 
+		-- Unit keepalived.service has begun starting up.
+		Nov 05 01:44:45 kp04 Keepalived[10285]: Starting Keepalived v2.0.19 (10/19,2019)
+		Nov 05 01:44:45 kp04 Keepalived[10285]: Running on Linux 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 (built for Linux 3.10.0)
+		Nov 05 01:44:45 kp04 Keepalived[10285]: Command line: '/usr/local/sbin/keepalived' '-D'
+		Nov 05 01:44:45 kp04 Keepalived[10285]: Configuration file '/etc/keepalived/keepalived.conf' is not a regular non-executable file
+		Nov 05 01:44:45 kp04 Keepalived[10285]: Stopped Keepalived v2.0.19 (10/19,2019)
+		Nov 05 01:44:45 kp04 systemd[1]: keepalived.service: control process exited, code=exited status=6
+		Nov 05 01:44:45 kp04 systemd[1]: Failed to start LVS and VRRP High Availability Monitor.
+		-- Subject: Unit keepalived.service has failed
+		-- Defined-By: systemd
+		-- Support: http://lists.freedesktop.org/mailman/listinfo/systemd-devel
+		-- 
+		-- Unit keepalived.service has failed.
+		-- 
+		-- The result is failed.
+		Nov 05 01:44:45 kp04 systemd[1]: Unit keepalived.service entered failed state.
+		Nov 05 01:44:45 kp04 systemd[1]: keepalived.service failed.
+		Nov 05 01:44:45 kp04 polkitd[636]: Unregistered Authentication Agent for unix-process:10279:31065819 (system bus name :1.273, object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8) (disconnected from bus)
+
+		原因在这里：
+			[root@kp04 keepalived]# ll
+			total 8
+			-rwxr-xr-x. 1 root root  860 Nov  5  2019 keepalived.conf
+			-rwxr-xr-x. 1 root root 3550 Nov  1 12:20 keepalived.conf_bak
+
+		解决办法：
+			[root@kp04 keepalived]# chmod 644 *
+			[root@kp04 keepalived]# ll
+			total 8
+			-rw-r--r--. 1 root root  860 Nov  5  2019 keepalived.conf
+			-rw-r--r--. 1 root root 3550 Nov  1 12:20 keepalived.conf_bak
+
+
+	14.2 错误2 	
+			
+		Nov  5 02:17:41 kp05 Keepalived_vrrp[18080]: WARNING - default user 'keepalived_script' for script execution does not exist - please create.
+		Nov  5 02:17:41 kp05 Keepalived_vrrp[18080]: SECURITY VIOLATION - scripts are being executed but script_security not enabled
+
+		 https://blog.csdn.net/qq_35702095/article/details/88575441
+		 https://github.com/acassen/keepalived/issues/901
+		 
+		 script_user keepalived_script                 #指定运行脚本的用户名和组。默认使用用户的默认组。如未指定，默认为 keepalived_script 用户，如无此用户，则使用root
+		 enable_script_security                        #如果路径为非root可写，不要配置脚本为root用户执行。
+		   
+	   
+
+15. 小结
+
+	基于keepalived的高可用，是最简单的一种方式。
+	有高可用，总比没有的好。
+	现在MySQL的版本越高，故障率就越小。
 	
-Nov  5 02:17:41 kp05 Keepalived_vrrp[18080]: WARNING - default user 'keepalived_script' for script execution does not exist - please create.
-Nov  5 02:17:41 kp05 Keepalived_vrrp[18080]: SECURITY VIOLATION - scripts are being executed but script_security not enabled
-
- https://blog.csdn.net/qq_35702095/article/details/88575441
- https://github.com/acassen/keepalived/issues/901
- 
- script_user keepalived_script                 #指定运行脚本的用户名和组。默认使用用户的默认组。如未指定，默认为 keepalived_script 用户，如无此用户，则使用root
- enable_script_security                        #如果路径为非root可写，不要配置脚本为root用户执行。
-   
-   
-
-   
+	
+	
+  

@@ -15,9 +15,12 @@ Keepalived 多节点之间的高可用原理:
 	3. 这时会根据 vrrp的优先级选举出来一个backup提升为 master, 持有VIP.
 	
 VRRP约束:
+
 	1. 一个VRRP需要一个唯一的路由标识VRID: 0-255之间
-	2. VRRP广播: 使用IP多播数据包进行封装, 组地址为 224.0.0.18, 发布只限于一个局域网内, 只有主才能发送广播, backup在连续三个广播间隔里还没收到 VRRP包或者是收到优先级为0的包,
-		则启动新的一轮VRRP选举
+	
+	2. VRRP广播: 使用IP多播数据包进行封装, 组地址为 224.0.0.18, 发布只限于一个局域网内, 只有主才能发送广播
+		backup在连续三个广播间隔里还没收到 VRRP包或者是收到优先级为0的包,则启动新的一轮VRRP选举
+		
 	3. VRRP中的优先级: 0-255之间
 		当前 master优先级最高: 为255, 0是master放弃VIP持有, backup会发起自动选举
 		所以可配的优先级范围: 1-254, 高优先级的在选举中更容易成为Master
@@ -51,7 +54,7 @@ VRRP约束:
 	master.sh:
 		作用是状态改为master以后执行的脚本。
 		首先判断复制是否有延迟，如果有延迟，等1分钟后，不论是否有延迟。都跳过，并停止复制。记录binlog和pos点。
-		
+		-- 临时主从延迟，是必须要有的。
 		脚本中检查复制是否延时的思想如下：
 			1、首先看 Relay_Master_Log_File 和 Master_Log_File 是否有差异
 			2、如果 Relay_Master_Log_File 和 Master_Log_File 有差异的话，那说明延迟很大了
@@ -61,7 +64,7 @@ VRRP约束:
 			更严谨的则是要同时在master上执行show master status进行对比。
 			这也是MHA在切换过程中可以做到的。
 			MMM的切换也只是在从库上执行了show slave status。所以数据一致性要求还是MHA给力。
-			
+			 
 	backup.sh:
 		脚本的作用是状态改变为backup以后执行的脚本
 
@@ -73,7 +76,9 @@ VRRP约束:
 
 	1. 配置文件:
 		nopreempt             # 不抢占
-		priority 100          # 设置优先级/权重, 避免回来切换.
+		priority 100          # 设置优先级/权重, 避免来回切换.
+			
+		参数设置为非抢占模式，同时设置优先级也就是权重，避免来回切换。
 		
 	2. 检查mysqld进程是否存活的脚本，当发现连接不上mysql，自动把keepalived进程干掉
 	

@@ -54,7 +54,7 @@
 
 3. 删除集合中的所有文档
 		
-	db.foo.remove()    # 不会删除集合本身，也不会删除集合的元信息。
+	db.foo.remove({})    # 不会删除集合本身，也不会删除集合的元信息。
 
 4. 清空整个集合	
 
@@ -224,3 +224,4 @@
 
 
 	
+db.table_report_log.find({"nplayerid" : 131525}).sort({"_id":-1}).limit(1)
