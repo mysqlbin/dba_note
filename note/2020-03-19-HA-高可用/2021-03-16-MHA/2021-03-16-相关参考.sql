@@ -8,8 +8,8 @@
 	https://www.jianshu.com/p/0f7b5a962ba7                  老男孩-标杆班级-MySQL-lesson10-MHA高可用技术
 	 
 切换参考:
+	
 	https://www.cnblogs.com/Uest/p/9225637.html             MHA-Failover(GTID，Auto_Position=0) 
-
 	https://www.cnblogs.com/zengkefu/p/5497009.html         MHA自动Failover过程解析(updated) 转
 
 	
@@ -18,8 +18,10 @@ https://mp.weixin.qq.com/s/ruo2kma3ltUuoFLJR-I07g           MHA在使用过程�
 https://mp.weixin.qq.com/s/Y2LFRTrbzjUkBKqh1vhRdg           MHA调研与应用
 
 
+https://mp.weixin.qq.com/s/ybiGEuTdZuS3UW-_KXLR7Q  			MHA，传奇不再 #M1012#
 
 
+https://mp.weixin.qq.com/s/PVd4qGMu1HVrH2BkIR7i8g   	  《叶问》第18期 高可用架构MHA有什么样的不足和风险点吗？
 
 
-
+https://ke.qq.com/course/430673  把MHA拉下神坛

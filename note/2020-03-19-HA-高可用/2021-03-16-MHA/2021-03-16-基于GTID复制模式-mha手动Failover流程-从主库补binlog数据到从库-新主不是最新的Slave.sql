@@ -65,7 +65,7 @@
 		
 	很明显从节点mha02落后于从节点mha03、从节点mha03落后于主节点mha01
 	把 mha02提升为库, 由于 mha03是最新的 slave, 新Master需要补全跟最新slave的差异 	
-
+	此时主库有未发送到从库的binlog
 
 5. 切换测试	
 	
@@ -92,7 +92,7 @@ mha01节点手动故障切换, 在 mha03上执行:
 	Fri Nov  8 10:52:22 2019 - [info] HealthCheck: SSH to 192.168.0.101 is reachable.
 	Fri Nov  8 10:52:22 2019 - [info] Binlog server 192.168.0.101 is reachable.
 	Fri Nov  8 10:52:22 2019 - [debug] Connecting to servers..
-	Fri Nov  8 10:52:22 2019 - [debug] Got MySQL error when connecting 192.168.0.101(192.168.0.101:3306) :2003:Can't connect to MySQL server on '192.168.0.101' (111)
+	Fri Nov  8 10:52:22 2019 - [debug] Got MySQL error when connecting 192.168.0.101(192.168.0.101:3306) :2003:Can t connect to MySQL server on '192.168.0.101' (111)
 	Fri Nov  8 10:52:23 2019 - [debug]  Connected to: 192.168.0.102(192.168.0.102:3306), user=root
 	Fri Nov  8 10:52:23 2019 - [debug]  Number of slave worker threads on host 192.168.0.102(192.168.0.102:3306): 0
 	Fri Nov  8 10:52:23 2019 - [debug]  Connected to: 192.168.0.103(192.168.0.103:3306), user=root
@@ -314,8 +314,10 @@ mha01节点手动故障切换, 在 mha03上执行:
 		+------+
 		3 rows in set (0.00 sec)
 
+	可以看到, 数据已经补全完成.
 		
 7. 产生的补全文件
+	
 	[root@mha03 app1]# ll
 	total 84
 	-rw-r--r--. 1 root root     0 Nov  8 10:52 app1.failover.complete

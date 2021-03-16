@@ -20,6 +20,7 @@
 
 
 2. 配置 [binlog*]
+	
 	MHA在GTID模式下，需要配置[binlog*]，可以是单独的Binlog Server服务器，也可以是主库的binlog目录。
 	如果不配置[binlog*]，即使主服务器没挂，也不会从主服务器拉binlog，所有未传递到从库的日志将丢失
 	注意事项:
@@ -37,6 +38,7 @@
 
 
 3. 检查整个复制环境状况
+
 	在 mha02 上用root用户操作。
 	masterha_check_repl --global_conf=/etc/masterha/masterha_default.conf --conf=/etc/masterha/app1.conf
 	
@@ -84,7 +86,7 @@
 		Fri Nov  8 07:14:25 2019 - [info]   Executing command: save_binary_logs --command=test --start_pos=4 --binlog_dir=/data/mysql/mysql3306/data --output_file=/var/log/masterha/app1/save_binary_logs_test --manager_version=0.58 --start_file=mysql-bin.000014 --debug  
 		Fri Nov  8 07:14:25 2019 - [info]   Connecting to root@192.168.0.102(192.168.0.102:22).. 
 		Failed to save binary log: Binlog not found from /data/mysql/mysql3306/data! 
-		If you got this error at MHA Manager, please set "master_binlog_dir=/path/to/binlog_directory_of_the_master" correctly in the MHA Manager's configuration file and try again.
+		If you got this error at MHA Manager, please set "master_binlog_dir=/path/to/binlog_directory_of_the_master" correctly in the MHA Manager s configuration file and try again.
 		 at /usr/bin/save_binary_logs line 123.
 			eval {...} called at /usr/bin/save_binary_logs line 70
 			main::main() called at /usr/bin/save_binary_logs line 66
@@ -139,9 +141,10 @@
 	
 	很明显从节点mha02落后于从节点mha03、从节点mha03落后于主节点mha01
 	把 mha03提升为库, 由于 mha03就是最新的 slave, 不需要补全跟最新slave的差异 
-	
+	此时主库有未发送到从库的binlog
 	
 5. 切换测试	
+
 关闭mha01节点数据库服务
 	shell> /etc/init.d/mysql stop
 		
@@ -167,7 +170,7 @@ mha01节点手动故障切换, 在 mha02上执行:
 	Fri Nov  8 07:41:33 2019 - [info] HealthCheck: SSH to 192.168.0.101 is reachable.
 	Fri Nov  8 07:41:33 2019 - [info] Binlog server 192.168.0.101 is reachable.
 	Fri Nov  8 07:41:33 2019 - [debug] Connecting to servers..
-	Fri Nov  8 07:41:33 2019 - [debug] Got MySQL error when connecting 192.168.0.101(192.168.0.101:3306) :2003:Can't connect to MySQL server on '192.168.0.101' (111)
+	Fri Nov  8 07:41:33 2019 - [debug] Got MySQL error when connecting 192.168.0.101(192.168.0.101:3306) :2003:Can t connect to MySQL server on '192.168.0.101' (111)
 	Fri Nov  8 07:41:34 2019 - [debug]  Connected to: 192.168.0.102(192.168.0.102:3306), user=root
 	Fri Nov  8 07:41:34 2019 - [debug]  Number of slave worker threads on host 192.168.0.102(192.168.0.102:3306): 0
 	Fri Nov  8 07:41:34 2019 - [debug]  Connected to: 192.168.0.103(192.168.0.103:3306), user=root
@@ -304,7 +307,8 @@ mha01节点手动故障切换, 在 mha02上执行:
 	Executing command: mysqlbinlog --start-position=2046  /data/mysql/mysql3306/data/mysql-bin.000014 >> /var/log/masterha/app1/saved_binlog_binlog1_20191108074132.binlog
 	 Concat succeeded.
 	 
-	******************** 将得到的binlog scp到 手动failover 运行的工作目录 ********************
+	******************** 将得到的binlog scp 到 手动failover 运行的工作目录 ********************
+	******************** 这就是补binlog数据到从库的逻辑 ********************
 	-------------------- saved_binlog_192.168.0.101_binlog1_20191108074132.binlog
 	
 	Fri Nov  8 07:41:42 2019 - [info] scp from root@192.168.0.101:/var/log/masterha/app1/saved_binlog_binlog1_20191108074132.binlog to local:/var/log/masterha/app1/saved_binlog_192.168.0.101_binlog1_20191108074132.binlog succeeded.
@@ -321,7 +325,7 @@ mha01节点手动故障切换, 在 mha02上执行:
 	
 	******************** 新Master应用完binlog，得到当前位置 ********************
 	
-	Fri Nov  8 07:41:43 2019 - [info] Getting new master's binlog name and position..
+	Fri Nov  8 07:41:43 2019 - [info] Getting new master s binlog name and position..
 	Fri Nov  8 07:41:43 2019 - [info]  mysql-bin.000010:1675
 	Fri Nov  8 07:41:43 2019 - [info]  All other slaves should start replication from here. Statement should be: CHANGE MASTER TO MASTER_HOST='192.168.0.103', MASTER_PORT=3306, MASTER_AUTO_POSITION=1, MASTER_USER='mharpl', MASTER_PASSWORD='xxx';
 	Fri Nov  8 07:41:43 2019 - [info] Master Recovery succeeded. File:Pos:Exec_Gtid_Set: mysql-bin.000010, 1675, 1b9bc372-0042-11ea-b8fa-0800274617cc:1-19,
@@ -428,7 +432,7 @@ mha01节点手动故障切换, 在 mha02上执行:
 	
 7. 宕机的master恢复
 		
- CHANGE MASTER TO MASTER_HOST='192.168.0.103', MASTER_PORT=3306, MASTER_AUTO_POSITION=1, MASTER_USER='mharpl', MASTER_PASSWORD='123456abc';
+	CHANGE MASTER TO MASTER_HOST='192.168.0.103', MASTER_PORT=3306, MASTER_AUTO_POSITION=1, MASTER_USER='mharpl', MASTER_PASSWORD='123456abc';
  
  
  

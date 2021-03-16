@@ -225,7 +225,7 @@ Node1节点手动故障切换, 在 mha03上执行:
 	新主库需要判断自己的relay log是否与 latest(最新) slave 有差异，产生差异relay log；之后 Monitor server 会通过scp将主库差异binlog拷贝到新主库上。
 	
 	Thu Nov  7 12:50:56 2019 - [info] Server 192.168.0.102 received relay logs up to: mysql-bin.000008:609
-	Thu Nov  7 12:50:56 2019 - [info] Need to get diffs from the latest slave(192.168.0.103) up to: mysql-bin.000008:862 (using the latest slave's relay logs)
+	Thu Nov  7 12:50:56 2019 - [info] Need to get diffs from the latest slave(192.168.0.103) up to: mysql-bin.000008:862 (using the latest slave s relay logs)
 	Thu Nov  7 12:50:56 2019 - [info] Connecting to the latest slave host 192.168.0.103, generating diff relay log files..
 														 apply_diff_relay_logs: 识别差异的中继日志事件并将其差异的事件应用于其它slave。
 	Thu Nov  7 12:50:56 2019 - [info] Executing command: apply_diff_relay_logs --command=generate_and_send --scp_user=root --scp_host=192.168.0.102 --latest_mlf=mysql-bin.000008 --latest_rmlp=862 --target_mlf=mysql-bin.000008 --target_rmlp=609 --server_id=3306 --diff_file_readtolatest=/var/log/masterha/app1/relay_from_read_to_latest_192.168.0.102_3306_20191107125044.binlog --workdir=/var/log/masterha/app1 --timestamp=20191107125044 --handle_raw_binlog=1 --disable_log_bin=0 --manager_version=0.58 --relay_dir=/data/mysql/mysql3306/data --current_relay_log=mha03-relay-bin.000024 
@@ -261,7 +261,7 @@ Node1节点手动故障切换, 在 mha03上执行:
 	Thu Nov  7 12:50:58 2019 - [info] Waiting until all relay logs are applied.
 	Thu Nov  7 12:50:58 2019 - [info]  done.
 	Thu Nov  7 12:50:58 2019 - [info] Getting slave status..
-	Thu Nov  7 12:50:58 2019 - [info] This slave(192.168.0.102)'s Exec_Master_Log_Pos equals to Read_Master_Log_Pos(mysql-bin.000008:609). No need to recover from Exec_Master_Log_Pos.
+	Thu Nov  7 12:50:58 2019 - [info] This slave(192.168.0.102) s Exec_Master_Log_Pos equals to Read_Master_Log_Pos(mysql-bin.000008:609). No need to recover from Exec_Master_Log_Pos.
 	Thu Nov  7 12:50:58 2019 - [info] Connecting to the target slave host 192.168.0.102, running recover script..
 	
 	******************** 新Master按顺序应用与最新的Slave缺失的relay-log，以及故障Master保存的binlog ********************
@@ -285,7 +285,7 @@ Node1节点手动故障切换, 在 mha03上执行:
 	Thu Nov  7 12:50:59 2019 - [info]  All relay logs were successfully applied.
 	
 	******************** 新Master应用完所有的relay-log、binlog，得到当前位置 ********************
-	Thu Nov  7 12:50:59 2019 - [info] Getting new master's binlog name and position..
+	Thu Nov  7 12:50:59 2019 - [info] Getting new master s binlog name and position..
 	Thu Nov  7 12:50:59 2019 - [info]  mysql-bin.000006:1138
 	Thu Nov  7 12:50:59 2019 - [info]  All other slaves should start replication from here. Statement should be: CHANGE MASTER TO MASTER_HOST='192.168.0.102', MASTER_PORT=3306, MASTER_LOG_FILE='mysql-bin.000006', MASTER_LOG_POS=1138, MASTER_USER='mharpl', MASTER_PASSWORD='xxx';
 	
@@ -334,7 +334,7 @@ Node1节点手动故障切换, 在 mha03上执行:
 	Thu Nov  7 12:51:01 2019 - [info] Waiting until all relay logs are applied.
 	Thu Nov  7 12:51:01 2019 - [info]  done.
 	Thu Nov  7 12:51:01 2019 - [info] Getting slave status..
-	Thu Nov  7 12:51:01 2019 - [info] This slave(192.168.0.103)'s Exec_Master_Log_Pos equals to Read_Master_Log_Pos(mysql-bin.000008:862). No need to recover from Exec_Master_Log_Pos.
+	Thu Nov  7 12:51:01 2019 - [info] This slave(192.168.0.103) s Exec_Master_Log_Pos equals to Read_Master_Log_Pos(mysql-bin.000008:862). No need to recover from Exec_Master_Log_Pos.
 	Thu Nov  7 12:51:01 2019 - [info] Connecting to the target slave host 192.168.0.103, running recover script..
 	
 	******************** Slave按顺序应用与最新的Slave缺失的relay-log，以及故障Master保存的binlog ********************
@@ -383,39 +383,39 @@ Node1节点手动故障切换, 在 mha03上执行:
 
 
 手动Failover(传统复制)切换流程:
-1、配置检查：
-	
-	连接各实例，检查服务状态，检查主从关系'
-	
-2、宕机的master处理
+	1、配置检查：
+		
+		连接各实例，检查服务状态，检查主从关系
+		
+	2、宕机的master处理
 
-	这个阶段包括虚拟ip摘除
-	停止各Slave上的IO Thread，
-	
-	
-3、新Master恢复
-    3.1、获取最新的Slave
-        用于补全新Master/其他Slave缺少的数据；用于save故障Master的binlog的起始点
-    3.2、保存故障Master的binlog
-        故障Master上执行save_binary_logs(只取最新Slave之后的部分)\n将得到的binlog scp到手动Failover运行的工作目录
-    3.3、选举新Master
-        查找最新的Slave是否包含最旧的Slave缺失的relay-log
-        确定新Master，得到切换前后结构
-        生成最新Slave和新Master之间的差异relay-log，并拷贝到新Master的工作目录
-        从手动Failover运行的工作目录scp故障Master的binlog到新Master工作目录
-    3.4、新Master应用差异log
-        等待新Master应用完自己的relay-log
-        按顺序应用与最新的Slave缺失的relay-log，以及故障Master保存的binlog
-        将所有缺失的relay-log、binlog汇总到total_binlog
-        得到新Master的binlog:pos，其他Slave将从这个位置开始复制
-        绑定虚拟IP，新Master可以对外提供服务
-4、其他Slave恢复
-    4.1、生成差异log
-        生成最新Slave和Slave之间的差异relay-log，并拷贝到Slave的工作目录；从手动Failover运行的工作目录scp故障Master的binlog到Slave工作目录
-    4.2、Slave应用差异log
-        等待Slave应用完自己的relay-log；按顺序应用与最新的Slave缺失的relay-log，以及故障Master保存的binlog；重置Slave上的复制到新Master~
-    4.3、如果存在多个Slaves，重复上述操作
-5、新Master清理：清理旧的复制信息STOP SLAVE;RESET SLAVE ALL;
+		这个阶段包括虚拟ip摘除
+		停止各Slave上的IO Thread，
+		
+		
+	3、新Master恢复
+		3.1、获取最新的Slave
+			用于补全新Master/其他Slave缺少的数据；用于save故障Master的binlog的起始点
+		3.2、保存故障Master的binlog
+			故障Master上执行save_binary_logs(只取最新Slave之后的部分)\n将得到的binlog scp到手动Failover运行的工作目录
+		3.3、选举新Master
+			查找最新的Slave是否包含最旧的Slave缺失的relay-log
+			确定新Master，得到切换前后结构
+			生成最新Slave和新Master之间的差异relay-log，并拷贝到新Master的工作目录
+			从手动Failover运行的工作目录scp故障Master的binlog到新Master工作目录
+		3.4、新Master应用差异log
+			等待新Master应用完自己的relay-log
+			按顺序应用与最新的Slave缺失的relay-log，以及故障Master保存的binlog
+			将所有缺失的relay-log、binlog汇总到total_binlog
+			得到新Master的binlog:pos，其他Slave将从这个位置开始复制
+			绑定虚拟IP，新Master可以对外提供服务
+	4、其他Slave恢复
+		4.1、生成差异log
+			生成最新Slave和Slave之间的差异relay-log，并拷贝到Slave的工作目录；从手动Failover运行的工作目录scp故障Master的binlog到Slave工作目录
+		4.2、Slave应用差异log
+			等待Slave应用完自己的relay-log；按顺序应用与最新的Slave缺失的relay-log，以及故障Master保存的binlog；重置Slave上的复制到新Master~
+		4.3、如果存在多个Slaves，重复上述操作
+	5、新Master清理：清理旧的复制信息STOP SLAVE;RESET SLAVE ALL;
 
 
 2.3、目录文件
@@ -499,74 +499,73 @@ Node1节点手动故障切换, 在 mha03上执行:
 		
 	
 5. 修复宕机的Master 
-        通常情况下自动切换以后，原master可能已经废弃掉，待原master主机修复后，如果数据完整的情况下，可能想把原来master重新作为新主库的slave。
-		这时我们可以借助当时自动切换(手工切换没有看到All other slaves should start replication from here语句, 原因: 当前手工切换有停止主库,所以看不到对应的语句)时刻的MHA日志来完成对原master的修复。下面是提取相关日志的命令：
 
-grep -i "All other slaves should start" /var/log/masterha/app1/app1.log
-        可以看到类似下面的信息：
+    通常情况下自动切换以后，原master可能已经废弃掉，待原master主机修复后，如果数据完整的情况下，可能想把原来master重新作为新主库的slave。
+	这时我们可以借助当时自动切换(手工切换没有看到All other slaves should start replication from here语句, 原因: 当前手工切换有停止主库,所以看不到对应的语句)时刻的MHA日志来完成对原master的修复。下面是提取相关日志的命令：
 
-All other slaves should start replication from here. Statement should be: CHANGE MASTER TO MASTER_HOST='172.16.1.126', MASTER_PORT=3306, MASTER_LOG_FILE='mysql-bin.000005', MASTER_LOG_POS=120, MASTER_USER='repl', MASTER_PASSWORD='123456';
-        意思是说，如果Master主机修复好了，可以在修复好后的Master执行CHANGE MASTER操作，作为新的slave库。
+	grep -i "All other slaves should start" /var/log/masterha/app1/app1.log
+	        可以看到类似下面的信息：
 
-查看新主的 位点:
-	root@mysqldb 13:43:  [test]> show master status\G;
-	*************************** 1. row ***************************
-				 File: mysql-bin.000006
-			 Position: 1391
+	All other slaves should start replication from here. Statement should be: CHANGE MASTER TO MASTER_HOST='172.16.1.126', MASTER_PORT=3306, MASTER_LOG_FILE='mysql-bin.000005', MASTER_LOG_POS=120, MASTER_USER='repl', MASTER_PASSWORD='123456';
+	        意思是说，如果Master主机修复好了，可以在修复好后的Master执行CHANGE MASTER操作，作为新的slave库。
 
-	change master to master_host='192.168.0.102', master_port=3306, master_user='mharpl', master_password='123456abc', master_log_file='mysql-bin.000006', master_log_pos=1391;
-	start slave;
-	show slave status\G;
-	
-	set log_bin=OFF;
-	insert into test.t1 values (4);
-	
-	root@mysqldb 14:01:  [(none)]> set log_bin=OFF;
-	ERROR 1238 (HY000): Variable 'log_bin' is a read only variable
-	
-	
-	
+	查看新主的 位点:
+		root@mysqldb 13:43:  [test]> show master status\G;
+		*************************** 1. row ***************************
+					 File: mysql-bin.000006
+				 Position: 1391
+
+		change master to master_host='192.168.0.102', master_port=3306, master_user='mharpl', master_password='123456abc', master_log_file='mysql-bin.000006', master_log_pos=1391;
+		start slave;
+		show slave status\G;
 		
-	[root@mha02 app1]# 
-	[root@mha02 app1]# masterha_check_repl --global_conf=/etc/masterha/masterha_default.conf --conf=/etc/masterha/app1.conf
-	Thu Nov  7 14:06:29 2019 - [info] Reading default configuration from /etc/masterha/masterha_default.conf..
-	Thu Nov  7 14:06:29 2019 - [info] Reading application default configuration from /etc/masterha/app1.conf..
-	Thu Nov  7 14:06:29 2019 - [info] Reading server configuration from /etc/masterha/app1.conf..
-	Thu Nov  7 14:06:29 2019 - [info] MHA::MasterMonitor version 0.58.
-	Thu Nov  7 14:06:30 2019 - [info] GTID failover mode = 0
-	Thu Nov  7 14:06:30 2019 - [info] Dead Servers:
-	Thu Nov  7 14:06:30 2019 - [info] Alive Servers:
-	Thu Nov  7 14:06:30 2019 - [info]   192.168.0.101(192.168.0.101:3306)
-	Thu Nov  7 14:06:30 2019 - [info]   192.168.0.102(192.168.0.102:3306)
-	Thu Nov  7 14:06:30 2019 - [info]   192.168.0.103(192.168.0.103:3306)
-	Thu Nov  7 14:06:30 2019 - [info] Alive Slaves:
-	Thu Nov  7 14:06:30 2019 - [info]   192.168.0.101(192.168.0.101:3306)  Version=8.0.18 (oldest major version between slaves) log-bin:enabled
-	Thu Nov  7 14:06:30 2019 - [info]     Replicating from 192.168.0.102(192.168.0.102:3306)
-	Thu Nov  7 14:06:30 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
-	Thu Nov  7 14:06:30 2019 - [info]   192.168.0.103(192.168.0.103:3306)  Version=8.0.18 (oldest major version between slaves) log-bin:enabled
-	Thu Nov  7 14:06:30 2019 - [info]     Replicating from 192.168.0.102(192.168.0.102:3306)
-	Thu Nov  7 14:06:30 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
-	Thu Nov  7 14:06:30 2019 - [info] Current Alive Master: 192.168.0.102(192.168.0.102:3306)
-	Thu Nov  7 14:06:30 2019 - [info] Checking slave configurations..
-	Thu Nov  7 14:06:30 2019 - [info]  read_only=1 is not set on slave 192.168.0.101(192.168.0.101:3306).
-	Thu Nov  7 14:06:30 2019 - [warning]  relay_log_purge=0 is not set on slave 192.168.0.101(192.168.0.101:3306).
-	Thu Nov  7 14:06:30 2019 - [info]  read_only=1 is not set on slave 192.168.0.103(192.168.0.103:3306).
-	Thu Nov  7 14:06:30 2019 - [warning]  relay_log_purge=0 is not set on slave 192.168.0.103(192.168.0.103:3306).
-	Thu Nov  7 14:06:30 2019 - [info] Checking replication filtering settings..
-	Thu Nov  7 14:06:30 2019 - [info]  binlog_do_db= , binlog_ignore_db= 
-	Thu Nov  7 14:06:30 2019 - [info]  Replication filtering check ok.
-	Thu Nov  7 14:06:30 2019 - [error][/usr/share/perl5/vendor_perl/MHA/Server.pm, ln398] 192.168.0.101(192.168.0.101:3306): User mha does not exist or does not have REPLICATION SLAVE privilege! Other slaves can not start replication from this host.
-	Thu Nov  7 14:06:30 2019 - [error][/usr/share/perl5/vendor_perl/MHA/MasterMonitor.pm, ln427] Error happened on checking configurations.  at /usr/share/perl5/vendor_perl/MHA/ServerManager.pm line 1403.
-	Thu Nov  7 14:06:30 2019 - [error][/usr/share/perl5/vendor_perl/MHA/MasterMonitor.pm, ln525] Error happened on monitoring servers.
-	Thu Nov  7 14:06:30 2019 - [info] Got exit code 1 (Not master dead).
+		set log_bin=OFF;
+		insert into test.t1 values (4);
+		
+		root@mysqldb 14:01:  [(none)]> set log_bin=OFF;
+		ERROR 1238 (HY000): Variable 'log_bin' is a read only variable
+		
+		
+		[root@mha02 app1]# 
+		[root@mha02 app1]# masterha_check_repl --global_conf=/etc/masterha/masterha_default.conf --conf=/etc/masterha/app1.conf
+		Thu Nov  7 14:06:29 2019 - [info] Reading default configuration from /etc/masterha/masterha_default.conf..
+		Thu Nov  7 14:06:29 2019 - [info] Reading application default configuration from /etc/masterha/app1.conf..
+		Thu Nov  7 14:06:29 2019 - [info] Reading server configuration from /etc/masterha/app1.conf..
+		Thu Nov  7 14:06:29 2019 - [info] MHA::MasterMonitor version 0.58.
+		Thu Nov  7 14:06:30 2019 - [info] GTID failover mode = 0
+		Thu Nov  7 14:06:30 2019 - [info] Dead Servers:
+		Thu Nov  7 14:06:30 2019 - [info] Alive Servers:
+		Thu Nov  7 14:06:30 2019 - [info]   192.168.0.101(192.168.0.101:3306)
+		Thu Nov  7 14:06:30 2019 - [info]   192.168.0.102(192.168.0.102:3306)
+		Thu Nov  7 14:06:30 2019 - [info]   192.168.0.103(192.168.0.103:3306)
+		Thu Nov  7 14:06:30 2019 - [info] Alive Slaves:
+		Thu Nov  7 14:06:30 2019 - [info]   192.168.0.101(192.168.0.101:3306)  Version=8.0.18 (oldest major version between slaves) log-bin:enabled
+		Thu Nov  7 14:06:30 2019 - [info]     Replicating from 192.168.0.102(192.168.0.102:3306)
+		Thu Nov  7 14:06:30 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
+		Thu Nov  7 14:06:30 2019 - [info]   192.168.0.103(192.168.0.103:3306)  Version=8.0.18 (oldest major version between slaves) log-bin:enabled
+		Thu Nov  7 14:06:30 2019 - [info]     Replicating from 192.168.0.102(192.168.0.102:3306)
+		Thu Nov  7 14:06:30 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
+		Thu Nov  7 14:06:30 2019 - [info] Current Alive Master: 192.168.0.102(192.168.0.102:3306)
+		Thu Nov  7 14:06:30 2019 - [info] Checking slave configurations..
+		Thu Nov  7 14:06:30 2019 - [info]  read_only=1 is not set on slave 192.168.0.101(192.168.0.101:3306).
+		Thu Nov  7 14:06:30 2019 - [warning]  relay_log_purge=0 is not set on slave 192.168.0.101(192.168.0.101:3306).
+		Thu Nov  7 14:06:30 2019 - [info]  read_only=1 is not set on slave 192.168.0.103(192.168.0.103:3306).
+		Thu Nov  7 14:06:30 2019 - [warning]  relay_log_purge=0 is not set on slave 192.168.0.103(192.168.0.103:3306).
+		Thu Nov  7 14:06:30 2019 - [info] Checking replication filtering settings..
+		Thu Nov  7 14:06:30 2019 - [info]  binlog_do_db= , binlog_ignore_db= 
+		Thu Nov  7 14:06:30 2019 - [info]  Replication filtering check ok.
+		Thu Nov  7 14:06:30 2019 - [error][/usr/share/perl5/vendor_perl/MHA/Server.pm, ln398] 192.168.0.101(192.168.0.101:3306): User mha does not exist or does not have REPLICATION SLAVE privilege! Other slaves can not start replication from this host.
+		Thu Nov  7 14:06:30 2019 - [error][/usr/share/perl5/vendor_perl/MHA/MasterMonitor.pm, ln427] Error happened on checking configurations.  at /usr/share/perl5/vendor_perl/MHA/ServerManager.pm line 1403.
+		Thu Nov  7 14:06:30 2019 - [error][/usr/share/perl5/vendor_perl/MHA/MasterMonitor.pm, ln525] Error happened on monitoring servers.
+		Thu Nov  7 14:06:30 2019 - [info] Got exit code 1 (Not master dead).
 
-	MySQL Replication Health is NOT OK!
-	
-	原因: 不要在新主执行 masterha_check_repl, 要在 mha03执行.
+		MySQL Replication Health is NOT OK!
+		
+		原因: 不要在新主执行 masterha_check_repl, 要在 mha03执行.
 
 
-mha02: 新主执行:
-	insert into test.t1 values (5);
+	mha02: 新主执行:
+		insert into test.t1 values (5);
 
 	
 

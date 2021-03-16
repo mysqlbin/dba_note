@@ -251,7 +251,7 @@ mha-version: 0.58
 	Wed Nov  6 14:31:17 2019 - [info] Reading server configuration from /etc/masterha/app1.conf..
 	Wed Nov  6 14:31:17 2019 - [info] MHA::MasterMonitor version 0.56.
 	Creating directory /var/log/masterha/app1.. done.
-	Wed Nov  6 14:31:18 2019 - [error][/usr/share/perl5/vendor_perl/MHA/ServerManager.pm, ln188] There is no alive server. We can't do failover
+	Wed Nov  6 14:31:18 2019 - [error][/usr/share/perl5/vendor_perl/MHA/ServerManager.pm, ln188] There is no alive server. We cant do failover
 	Wed Nov  6 14:31:18 2019 - [error][/usr/share/perl5/vendor_perl/MHA/MasterMonitor.pm, ln424] Error happened on checking configurations.  at /usr/share/perl5/vendor_perl/MHA/MasterMonitor.pm line 326.
 	Wed Nov  6 14:31:18 2019 - [error][/usr/share/perl5/vendor_perl/MHA/MasterMonitor.pm, ln523] Error happened on monitoring servers.
 	Wed Nov  6 14:31:18 2019 - [info] Got exit code 1 (Not master dead).
@@ -365,7 +365,7 @@ mha-version: 0.58
 	Thu Nov  7 10:07:58 2019 - [info] Checking recovery script configurations on 192.168.0.101(192.168.0.101:3306)..
 	Thu Nov  7 10:07:58 2019 - [info]   Executing command: save_binary_logs --command=test --start_pos=4 --binlog_dir=/data/mysql/mysql3306/logs --output_file=/var/log/masterha/app1/save_binary_logs_test --manager_version=0.58 --start_file=mysql-bin.000005 
 	Thu Nov  7 10:07:58 2019 - [info]   Connecting to root@192.168.0.101(192.168.0.101:22).. 
-	Failed to save binary log: Binlog not found from /data/mysql/mysql3306/logs! If you got this error at MHA Manager, please set "master_binlog_dir=/path/to/binlog_directory_of_the_master" correctly in the MHA Manager's configuration file and try again.
+	Failed to save binary log: Binlog not found from /data/mysql/mysql3306/logs! If you got this error at MHA Manager, please set "master_binlog_dir=/path/to/binlog_directory_of_the_master" correctly in the MHA Manager s configuration file and try again.
 	 at /usr/bin/save_binary_logs line 123.
 		eval {...} called at /usr/bin/save_binary_logs line 70
 		main::main() called at /usr/bin/save_binary_logs line 66
@@ -427,7 +427,7 @@ mha-version: 0.58
 	Thu Nov  7 12:11:47 2019 - [info] Checking SSH publickey authentication and checking recovery script configurations on all alive slave servers..
 	Thu Nov  7 12:11:47 2019 - [info]   Executing command : apply_diff_relay_logs --command=test --slave_user='root' --slave_host=192.168.0.102 --slave_ip=192.168.0.102 --slave_port=3306 --workdir=/var/log/masterha/app1 --target_version=8.0.18 --manager_version=0.58 --relay_dir=/data/mysql/mysql3306/data --current_relay_log=mha02-relay-bin.000023  --slave_pass=xxx
 	Thu Nov  7 12:11:47 2019 - [info]   Connecting to root@192.168.0.102(192.168.0.102:22).. 
-	Can't exec "mysqlbinlog": No such file or directory at /usr/share/perl5/vendor_perl/MHA/BinlogManager.pm line 106.
+	Can t exec "mysqlbinlog": No such file or directory at /usr/share/perl5/vendor_perl/MHA/BinlogManager.pm line 106.
 	mysqlbinlog version command failed with rc 1:0, please verify PATH, LD_LIBRARY_PATH, and client options
 	 at /usr/bin/apply_diff_relay_logs line 532.
 	Thu Nov  7 12:11:47 2019 - [error][/usr/share/perl5/vendor_perl/MHA/MasterMonitor.pm, ln208] Slaves settings check failed!
