@@ -1,15 +1,15 @@
 
 
-mongoexport -h 192.168.0.242 --port 27017 -u admin -p admin --authenticationDatabase "admin" -d yldb -c t1 --type=json -o bike.csv 
+mongoexport -h 192.168.0.0 --port 27017 -u admin -p admin123 --authenticationDatabase "admin" -d yldb -c t1 --type=json -o bike.csv 
 
 
 
-/usr/local/mongodb/bin/mongoimport -h 192.168.0.242  -u "admin" -p "admin" --authenticationDatabase "admin" -d abc_db -c t1  --type json  --file bike.csv
+/usr/local/mongodb/bin/mongoimport -h 192.168.0.0  -u "admin" -p "admin123" --authenticationDatabase "admin" -d abc_db -c t1  --type json  --file bike.csv
 
 
 
-[root@localhost ~]# mongoexport -h 192.168.0.242 --port 27017 -u admin -p admin --authenticationDatabase "admin" -d yldb -c t1 --type=json -o bike.csv 
-2021-03-15T11:40:46.509+0800	connected to: mongodb://192.168.0.242:27017/
+[root@localhost ~]# mongoexport -h 192.168.0.0 --port 27017 -u admin -p admin123 --authenticationDatabase "admin" -d yldb -c t1 --type=json -o bike.csv 
+2021-03-15T11:40:46.509+0800	connected to: mongodb://192.168.0.0:27017/
 2021-03-15T11:40:46.626+0800	exported 20 records
 
 
@@ -36,7 +36,7 @@ mongoexport -h 192.168.0.242 --port 27017 -u admin -p admin --authenticationData
 {"_id":{"$oid":"5f278782173400003d009685"},"i":4.0,"username":"user4","age":217580.0,"created":{"$date":"2020-08-03T03:41:54.053Z"}}
 
 
-[root@localhost ~]# /usr/local/mongodb/bin/mongoimport -h 192.168.0.242  -u "admin" -p "admin" --authenticationDatabase "admin" -d abc_db -c t1  --type json  --file bike.csv
-2021-03-15T11:43:23.731+0800	connected to: mongodb://192.168.0.242/
+[root@localhost ~]# /usr/local/mongodb/bin/mongoimport -h 192.168.0.0  -u "admin" -p "admin123" --authenticationDatabase "admin" -d abc_db -c t1  --type json  --file bike.csv
+2021-03-15T11:43:23.731+0800	connected to: mongodb://192.168.0.0/
 2021-03-15T11:43:24.132+0800	20 document(s) imported successfully. 0 document(s) failed to import.
 

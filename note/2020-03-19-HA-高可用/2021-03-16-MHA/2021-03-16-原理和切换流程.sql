@@ -336,14 +336,34 @@
 		2. 2个从库做选举，但是这2个从库的位点不一样：
 			MHA具有这个补全relay log的能力，对比位点，获取缺失的relay log，应用到自己的从库上，保证2个从库的数据一致。
 			
-		3. 总的来说，就是具有binlog补偿、relay log补偿的能力。
+		3. 总的来说，就是具有binlog补偿、relay log补偿的能力，最大程度保证数据的不丢失。
 		
 	
 	自己理解的MHA补日志的逻辑：
 		1. 其它从库从最新的slave补差异的 relay log
 		2. 最新的从库根据保存下来的 master 日志补 binlog 
 		3. 最新的从库成为 master, 其它从库成为最新master的从库。
-		
+	
+
+
+	6 小结：
+		理解了 MHA补全日志的逻辑就算差不多理解了MHA的切换逻辑
+		补全日志的逻辑:
+			最新更新的Slave也就是relay log最多的Slave:
+				1. 保存故障Master的binlog，只取最新Slave之后的部分
+				2. 先等自身的realy log应用完成 
+				3. 再应用从故障Master保存的binlog
+			其它Slave:
+				1. 跟最新更新的Slave 生成差异 relay log
+				2. 把保存的故障master的binlog scp 到Slave 的工作目录下
+				3. 先等自身的realy log应用完成
+				4. 再应用与最新更新的Slave产生的差异 relay log
+				5. 最后从应用故障master保存的binlog
+				
+				主要补relay log、补binlog，应用 自身的relay log、差异的relay log、缺失的binlog。
+				
+			-- 这个总结可以。
+				
 	具体的细节需要看故障切换的日志。
 	笔记做得详情一些，方便自己浏览。
 	
