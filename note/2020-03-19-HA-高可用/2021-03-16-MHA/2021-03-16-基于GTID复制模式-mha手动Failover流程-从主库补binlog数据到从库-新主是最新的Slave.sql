@@ -33,7 +33,7 @@
 		shell> cat /etc/masterha/app1.conf
 		[binlog1]
 		hostname=192.168.0.101
-		master_binlog_dir=/data/mysql/mysql3306/data
+		master_binlog_dir=/data/mysql/mysql3306/data    -- 配置binlog，也就是主库的binlog目录。
 		no_master=1
 
 
