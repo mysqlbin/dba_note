@@ -7,3 +7,5 @@ http://baijiahao.baidu.com/s?id=1641353910098832182&wfr=spider&for=pc  MySQL 8.0
 http://www.deituicms.com/mysql8cn/cn/group-replication.html          
 
 https://mp.weixin.qq.com/s/UT7RrjyqoergdR04XlSdVQ   MySQL Group Replication 入坑指北 | By杨奇龙 
+
+

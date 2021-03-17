@@ -18,6 +18,7 @@
 14. 小结
 	
 0. 原理
+
 	基于Consul的DNS接入
 	利用mgr+consul实现高可用及故障自动切换。
 	Consul的作用之一用来做服务发现的 
@@ -31,7 +32,9 @@
 		
 	读写分离的工具:
 		proxysql mycat consul
-		
+	
+	DNS: 通过域名找IP地址
+	
 1. 环境
 	consul server：
 	ip              hostname
@@ -538,7 +541,7 @@
 
 		在线切换
 			把 mgr03 切换为 PRIMARY: 
-				SELECT group_replication_set_as_primary('a6b6670d-07c0-11ea-a385-080027c528833');
+				SELECT group_replication_set_as_primary('a6b6670d-07c0-11ea-a385-080027c52883');
 				root@mysqldb 13:51:  [test_db]> SELECT group_replication_set_as_primary('a6b6670d-07c0-11ea-a385-080027c52883');
 				+--------------------------------------------------------------------------+
 				| group_replication_set_as_primary('a6b6670d-07c0-11ea-a385-080027c52883') |
@@ -842,6 +845,12 @@ consul提供服务发现接口，我们使用DNS解析的方式来查看一下
 		
 	12.2 consul 配置文件的含义
 	
+	12.3 其他服务器要怎么通过consul配置的域名访问数据库呢
+		保证访问效率的时候把原本指向的域名配置指向consul域名即可
+	
 14. 小结
+	consul 支持读写分离，从库挂掉一个或者多个也不会影响服务。
+	
+
 
 cp /usr/local/bin/consul /etc/init.d/consul_agent

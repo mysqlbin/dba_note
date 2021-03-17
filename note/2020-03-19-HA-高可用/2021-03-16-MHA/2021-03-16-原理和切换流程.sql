@@ -43,7 +43,9 @@
 			filter_mysqlbinlog              去除不必要的ROLLBACK事件（MHA已不再使用这个工具）
 			purge_relay_logs                清除中继日志（不会阻塞SQL线程）
 		
-		MHA分为manager和node两部分，manager启动后主要负责检测master状态，以及触发切换动作，node无需启动任何后台进程只包含日志维护脚本。
+		MHA分为manager和node两部分：
+			manager启动后主要负责检测master状态，以及触发切换动作
+			node无需启动任何后台进程只包含日志维护脚本。
 	
 
 2. 优点
@@ -90,7 +92,7 @@
    http://tech.it168.com/a2018/0903/5018/000005018235.shtml  郭忆：网易数据库高可用架构最新进展！ 
    
    MHA最大的亮点莫过于在没有GITD年代选主的机制，而且还需要有 VIP，至于别的，就是一堆运维脚本，仅此而已。
-		MHA解决的痛点MGR本身已经解决即自动选主同时可以在线选主
+		MHA解决的痛点MGR本身已经解决即自动选主同时可以在线选主    -- 但是MGR的驱动需要适配，如果需要官方的router工具来做，在router通过keepalived做高可用的时候，也是需要持有VIP的。
 		https://mp.weixin.qq.com/s/ybiGEuTdZuS3UW-_KXLR7Q  MHA，传奇不再 #M1012#
 
 
@@ -331,10 +333,12 @@
 	
 	异步复制存在的问题和MHA的解决方案：
 	
-		1. 主库宕机，有可能会存在部分binlog没有发送给从库，MHA具有这个补全 binlog的能力，也就是 主库宕机，如果有binlog没有发送给从库，那么MHA的做法是：ssh到主库的服务器上去拿取binlog，然后把这部分binlog补全到从库中。
-		
+		1. 主库宕机，有可能会存在部分binlog没有发送给从库，MHA具有这个补全 binlog的能力，也就是 主库宕机，如果有binlog没有发送给从库，那么MHA的做法是：
+			ssh到主库的服务器上去拿取binlog，然后把这部分binlog补全到从库中。
+			所以MHA高可用场景中，需要配置各个机器之间的ssh互信。
+			
 		2. 2个从库做选举，但是这2个从库的位点不一样：
-			MHA具有这个补全relay log的能力，对比位点，获取缺失的relay log，应用到自己的从库上，保证2个从库的数据一致。
+			MHA高可用场景中，从库之间具有这个补全relay log的能力，对比位点，获取缺失的relay log，应用到自己的从库上，保证2个从库的数据一致。
 			
 		3. 总的来说，就是具有binlog补偿、relay log补偿的能力，最大程度保证数据的不丢失。
 		
@@ -362,6 +366,8 @@
 				
 				主要补relay log、补binlog，应用 自身的relay log、差异的relay log、缺失的binlog。
 				
+		故障切换后，会自动建立新的主从关系。	
+		
 			-- 这个总结可以。
 				
 	具体的细节需要看故障切换的日志。

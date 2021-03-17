@@ -2,9 +2,8 @@
 
 从MySQL 8.0.17版本开始，MGR的兼容性策略将从小版本号考虑，而之前则是从主版本号考虑。
 
-
 在线切换Group Replication的状态:
-    指定某个节点为新的Primary节点。
+    指定某个节点为新的Primary节点, 指定成员ID：
 		用法：SELECT group_replication_set_as_primary(member_uuid)。 MySQL 8.0.17 版本引入
 		比MHA方便多了.
     在线Single Primary和Multi Primary切换。
