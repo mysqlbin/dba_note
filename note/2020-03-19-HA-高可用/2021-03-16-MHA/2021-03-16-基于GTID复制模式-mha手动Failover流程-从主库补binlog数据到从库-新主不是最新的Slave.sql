@@ -225,7 +225,7 @@ mha01节点手动故障切换, 在 mha03上执行:
 	Fri Nov  8 10:52:28 2019 - [info]  not present or turned off, ignoring.
 	Fri Nov  8 10:52:28 2019 - [info] Applying differential binlog /var/log/masterha/app1/saved_binlog_192.168.0.101_binlog1_20191108105222.binlog ..
 	Fri Nov  8 10:52:28 2019 - [info] Differential log apply from binlog server succeeded.
-	Fri Nov  8 10:52:28 2019 - [info] Getting new master's binlog name and position..
+	Fri Nov  8 10:52:28 2019 - [info] Getting new master s binlog name and position..
 	Fri Nov  8 10:52:28 2019 - [info]  mysql-bin.000011:1428
 	Fri Nov  8 10:52:28 2019 - [info]  All other slaves should start replication from here. Statement should be: CHANGE MASTER TO MASTER_HOST='192.168.0.102', MASTER_PORT=3306, MASTER_AUTO_POSITION=1, MASTER_USER='mharpl', MASTER_PASSWORD='xxx';
 	Fri Nov  8 10:52:28 2019 - [info] Master Recovery succeeded. File:Pos:Exec_Gtid_Set: mysql-bin.000011, 1428, 1b9bc372-0042-11ea-b8fa-0800274617cc:1-27,

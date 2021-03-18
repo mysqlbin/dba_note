@@ -6,7 +6,7 @@
 5. MHA切换原理的5个阶段
 6. 具体切换流程
 7. 自己的一些总结/精髓
-		
+8. 关于MHA+GTID		
 	
 
 1. MHA的介绍
@@ -313,6 +313,7 @@
 					等待最新Slave应用完自己的relay-log；
 					将新Master change 到最新Slave，以补全差异数据    
 					# GTID模式下的新主不需要保存最新Slave的relay log， 直接通过 change master to 到最新Slave, 从而实现自动补全差异relay log
+					# 如果新Master没有开启 log_slave_updates 记录binlog的参数，是否可以实现这个自动补全差异的relay log
 					
 				3.3.2 再补全 新Master与故障Master差异
 					故障Master/BinlogServer上执行save_binary_logs；
@@ -372,5 +373,11 @@
 				
 	具体的细节需要看故障切换的日志。
 	笔记做得详情一些，方便自己浏览。
+	
+	
+8. 关于MHA+GTID
+	建议在 GTID 配置情况下放弃 MHA，因为不补偿 Dead MASTER 的日志，这不是1个bug，是这块功能没有做。
+	
+	
 	
 	

@@ -91,5 +91,5 @@
 
 4. 小结
 	
-	purge binary logs后会记录gtid_purged变量的值。
+	purge binary logs后会记录 gtid_purged 变量的值。
 	

@@ -25,3 +25,10 @@ https://mp.weixin.qq.com/s/PVd4qGMu1HVrH2BkIR7i8g   	  《叶问》第18期 高�
 
 
 https://ke.qq.com/course/430673  把MHA拉下神坛
+
+
+
+https://blog.51cto.com/dwchaoyue/2463960   mha 0.58 gtid模式下 丢数据问题修复
+
+
+https://www.jianshu.com/p/bc0d8183b3b0?utm_campaign=hugo  MHA在启用GTID的MySQL集群丢数据的问题
