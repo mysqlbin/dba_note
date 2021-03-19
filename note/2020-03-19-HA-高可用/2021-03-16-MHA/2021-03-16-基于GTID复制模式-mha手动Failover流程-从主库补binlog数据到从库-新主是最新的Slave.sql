@@ -7,7 +7,7 @@
 5. 切换测试	
 6. 查看数据是否有补全
 7. 宕机的master恢复
-
+8. 未完成
 
 1. 环境 
 
@@ -239,6 +239,8 @@ mha01节点手动故障切换, 在 mha02上执行:
 	Fri Nov  8 07:41:39 2019 - [info] 
 	Fri Nov  8 07:41:39 2019 - [debug] Fetching current slave status..
 	Fri Nov  8 07:41:39 2019 - [debug]  Fetching current slave status done.
+	
+	192.168.0.103 是最新的。
 	Fri Nov  8 07:41:39 2019 - [info] The latest binary log file/position on all slaves is mysql-bin.000014:2046
 	Fri Nov  8 07:41:39 2019 - [info] Retrieved Gtid Set: 1b9bc372-0042-11ea-b8fa-0800274617cc:15-18
 	Fri Nov  8 07:41:39 2019 - [info] Latest slaves (Slaves that received relay log files to the latest):
@@ -247,6 +249,8 @@ mha01节点手动故障切换, 在 mha02上执行:
 	Fri Nov  8 07:41:39 2019 - [debug]    Relay log info repository: TABLE
 	Fri Nov  8 07:41:39 2019 - [info]     Replicating from 192.168.0.101(192.168.0.101:3306)
 	Fri Nov  8 07:41:39 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
+	
+	192.168.0.102 是最旧的。
 	Fri Nov  8 07:41:39 2019 - [info] The oldest binary log file/position on all slaves is mysql-bin.000014:1793
 	Fri Nov  8 07:41:39 2019 - [info] Retrieved Gtid Set: 1b9bc372-0042-11ea-b8fa-0800274617cc:15-17,
 	cbe6921b-0043-11ea-b484-0800270d5e94:4
@@ -293,8 +297,7 @@ mha01节点手动故障切换, 在 mha02上执行:
 	
 	
 	----------------------- 在故障Master/BinlogServer执行，取最新Slave之后的部分
-							
-	
+						
 	Fri Nov  8 07:41:42 2019 - [info] -- Saving binlog from host 192.168.0.101 started, pid: 16074
 	Fri Nov  8 07:41:43 2019 - [info] 
 	Fri Nov  8 07:41:43 2019 - [info] Log messages from 192.168.0.101 ...
@@ -436,4 +439,14 @@ mha01节点手动故障切换, 在 mha02上执行:
  
  
  
- 
+8. 未完成
+	
+	这个实验很久了，忘记从库有没有开启log_slave_updates参数。
+	我后面还要做下实验，从库是否有开启log_slave_updates参数，是因为我想验证：其它从库不需要从binlog备份进行恢复，是直接change 到新主 这个逻辑。 
+	如果新主没有开启 log_slave_updates参数，从库是落后新主的，直接change 到新主，但是新主由于没有记录binlog，是怎么进行数据补偿的？
+	
+	
+	
+	
+	
+	

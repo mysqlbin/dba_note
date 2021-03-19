@@ -283,6 +283,7 @@
 					
 		4、其他Slave恢复
 			4.1、重置复制，RESET SLAVE;CHANGE MASTER TO New Master;
+				意味着从库要开启 log_slave_updates参数？
 			4.2、如果存在多个Slaves，重复上述操作
 			
 		5、新Master清理：
@@ -311,11 +312,17 @@
 				3.3.1 先补全 新Master与最新Slave差异
 					等待新Master应用完自己的relay-log；
 					等待最新Slave应用完自己的relay-log；
-					将新Master change 到最新Slave，以补全差异数据    
-					# GTID模式下的新主不需要保存最新Slave的relay log， 直接通过 change master to 到最新Slave, 从而实现自动补全差异relay log
-					# 如果新Master没有开启 log_slave_updates 记录binlog的参数，是否可以实现这个自动补全差异的relay log
+					将新Master change 到最新Slave，以补全差异数据   
+					
+					# GTID模式下的新主不需要保存最新Slave的relay log， 直接通过 change master to 到最新Slave, 从而实现自动补全新主跟最新从库的差异的binlog
+					# 前提：GTID模式下，从库要开启log_slave_udpates 参数？
+					#
+					# 如果新Master没有开启 log_slave_updates 记录binlog的参数，是否可以实现这个自动补全差异的relay log？ 不可以。
+					# 不是还有宕机的主库的binlog吗
+					
 					
 				3.3.2 再补全 新Master与故障Master差异
+				
 					故障Master/BinlogServer上执行save_binary_logs；
 					将得到的binlog scp到手动Failover运行的工作目录；
 					新Master应用完binlog，得到当前位置；
@@ -360,7 +367,7 @@
 				3. 再应用从故障Master保存的binlog
 			其它Slave:
 				1. 跟最新更新的Slave 生成差异 relay log
-				2. 把保存的故障master的binlog scp 到Slave 的工作目录下
+				2. 把保存的故障master的binlog 并 scp 到Slave 的工作目录下
 				3. 先等自身的realy log应用完成
 				4. 再应用与最新更新的Slave产生的差异 relay log
 				5. 最后从应用故障master保存的binlog
@@ -376,7 +383,34 @@
 	
 	
 8. 关于MHA+GTID
-	建议在 GTID 配置情况下放弃 MHA，因为不补偿 Dead MASTER 的日志，这不是1个bug，是这块功能没有做。
+
+	建议在 GTID 配置情况下放弃 MHA，因为不补偿 Dead MASTER 的日志，这不是1个bug，需要在MHA的配置文件手工配置主库的binlog路径。
+	
+	MHA+传统复制模式：
+		新主库的数据并不是最新的，新主库在跟最新的从库可以用差异的relay log做relay log的补偿，保证从库的数据一致。
+		
+	MHA+GTID复制模式：	
+		新主库的数据并不是最新的，新主库在跟最新的从库是怎么做类似于 MHA+传统复制模式中 relay log补偿模式？
+		
+		
+		
+	
+	
+	Fri Nov  8 10:52:27 2019 - [info]  Waiting all logs to be applied on the latest slave.. 
+	Fri Nov  8 10:52:27 2019 - [info]  Resetting slave 192.168.0.102(192.168.0.102:3306) and starting replication from the new master 192.168.0.103(192.168.0.103:3306)..								
+	Fri Nov  8 10:52:27 2019 - [debug]  Stopping slave IO/SQL thread on 192.168.0.102(192.168.0.102:3306)..	
+	
+	
+
+	
+3.3、新Master恢复
+3.3.1 先补全 新Master与最新Slave差异
+	等待新Master应用完自己的relay-log；
+	等待最新Slave应用完自己的relay-log；
+	将新Master change 到最新Slave，以补全差异数据   
+	
+		
+
 	
 	
 	
