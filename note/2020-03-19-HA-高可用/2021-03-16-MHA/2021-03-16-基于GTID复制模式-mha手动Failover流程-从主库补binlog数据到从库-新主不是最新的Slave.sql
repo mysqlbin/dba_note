@@ -64,7 +64,7 @@
 		insert into t1 values (3);
 		
 	很明显从节点mha02落后于从节点mha03、从节点mha03落后于主节点mha01
-	把 mha02提升为库, 由于 mha03是最新的 slave, 新Master需要补全跟最新slave的差异 	
+	把 mha02提升为库, 由于 mha03 是最新的 slave, 新Master需要补全跟最新slave的差异 	
 	此时主库有未发送到从库的binlog
 
 5. 切换测试	
@@ -136,31 +136,42 @@ mha01节点手动故障切换, 在 mha03上执行:
 	Fri Nov  8 10:52:25 2019 - [info] Executing master IP deactivation script:
 	Fri Nov  8 10:52:25 2019 - [info]   /etc/masterha/master_ip_failover --orig_master_host=192.168.0.101 --orig_master_ip=192.168.0.101 --orig_master_port=3306 --command=stopssh --ssh_user=root  
 	Fri Nov  8 10:52:25 2019 - [info]  done.
+	
 	Fri Nov  8 10:52:25 2019 - [warning] shutdown_script is not set. Skipping explicit shutting down of the dead master.
 	Fri Nov  8 10:52:25 2019 - [info] * Phase 2: Dead Master Shutdown Phase completed.
 	Fri Nov  8 10:52:25 2019 - [info] 
 	Fri Nov  8 10:52:25 2019 - [info] * Phase 3: Master Recovery Phase..
 	Fri Nov  8 10:52:25 2019 - [info] 
+	
+	获取最新的从库阶段
 	Fri Nov  8 10:52:25 2019 - [info] * Phase 3.1: Getting Latest Slaves Phase..
 	Fri Nov  8 10:52:25 2019 - [info] 
 	Fri Nov  8 10:52:25 2019 - [debug] Fetching current slave status..
 	Fri Nov  8 10:52:25 2019 - [debug]  Fetching current slave status done.
 	Fri Nov  8 10:52:25 2019 - [info] The latest binary log file/position on all slaves is mysql-bin.000016:902
 	Fri Nov  8 10:52:25 2019 - [info] Retrieved Gtid Set: 1b9bc372-0042-11ea-b8fa-0800274617cc:23-26
+	
+	最新的从库 192.168.0.103
 	Fri Nov  8 10:52:25 2019 - [info] Latest slaves (Slaves that received relay log files to the latest):
+	
 	Fri Nov  8 10:52:25 2019 - [info]   192.168.0.103(192.168.0.103:3306)  Version=8.0.18 (oldest major version between slaves) log-bin:enabled
 	Fri Nov  8 10:52:25 2019 - [info]     GTID ON
 	Fri Nov  8 10:52:25 2019 - [debug]    Relay log info repository: TABLE
 	Fri Nov  8 10:52:25 2019 - [info]     Replicating from 192.168.0.101(192.168.0.101:3306)
+	
 	Fri Nov  8 10:52:25 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
+	
 	Fri Nov  8 10:52:25 2019 - [info] The oldest binary log file/position on all slaves is mysql-bin.000016:649
 	Fri Nov  8 10:52:25 2019 - [info] Retrieved Gtid Set: 1b9bc372-0042-11ea-b8fa-0800274617cc:23-25
+	
+	最老的从库 192.168.0.102
 	Fri Nov  8 10:52:25 2019 - [info] Oldest slaves:
 	Fri Nov  8 10:52:25 2019 - [info]   192.168.0.102(192.168.0.102:3306)  Version=8.0.18 (oldest major version between slaves) log-bin:enabled
 	Fri Nov  8 10:52:25 2019 - [info]     GTID ON
 	Fri Nov  8 10:52:25 2019 - [debug]    Relay log info repository: TABLE
 	Fri Nov  8 10:52:25 2019 - [info]     Replicating from 192.168.0.101(192.168.0.101:3306)
 	Fri Nov  8 10:52:25 2019 - [info]     Primary candidate for the new Master (candidate_master is set)
+	
 	Fri Nov  8 10:52:25 2019 - [info] 
 	Fri Nov  8 10:52:25 2019 - [info] * Phase 3.3: Determining New Master Phase..
 	Fri Nov  8 10:52:25 2019 - [info] 
@@ -190,44 +201,65 @@ mha01节点手动故障切换, 在 mha03上执行:
 	Fri Nov  8 10:52:27 2019 - [info]   done.
 	Fri Nov  8 10:52:27 2019 - [debug]  Stopping slave IO/SQL thread on 192.168.0.102(192.168.0.102:3306)..
 	Fri Nov  8 10:52:27 2019 - [debug]   done.
+	
+	从最新的从服务器192.168.0.103（192.168.0.103:3306）复制并等待应用。
 	Fri Nov  8 10:52:27 2019 - [info]  Replicating from the latest slave 192.168.0.103(192.168.0.103:3306) and waiting to apply..
 	
 	******************** 等待最新的Slave应用完自己的relay-log ********************
 	
 	Fri Nov  8 10:52:27 2019 - [info]  Waiting all logs to be applied on the latest slave.. 
 	Fri Nov  8 10:52:27 2019 - [info]  Resetting slave 192.168.0.102(192.168.0.102:3306) and starting replication from the new master 192.168.0.103(192.168.0.103:3306)..
+									192.168.0.102成为192.168.0.103的从库，用于补偿缺省的日志？ 
+									
 	Fri Nov  8 10:52:27 2019 - [debug]  Stopping slave IO/SQL thread on 192.168.0.102(192.168.0.102:3306)..
 	Fri Nov  8 10:52:27 2019 - [debug]   done.
+	
 	Fri Nov  8 10:52:27 2019 - [info]  Executed CHANGE MASTER.
 	Fri Nov  8 10:52:27 2019 - [debug]  Starting slave IO/SQL thread on 192.168.0.102(192.168.0.102:3306)..
 	Fri Nov  8 10:52:27 2019 - [debug]   done.
 	Fri Nov  8 10:52:27 2019 - [info]  Slave started.
+	
 	Fri Nov  8 10:52:27 2019 - [info]  Waiting to execute all relay logs on 192.168.0.102(192.168.0.102:3306)..
+									   等待 192.168.0.102 应用完所有的 relay log
+									   
 	Fri Nov  8 10:52:27 2019 - [info]  master_pos_wait(mysql-bin.000011:1850) completed on 192.168.0.102(192.168.0.102:3306). Executed 2 events.
+										
 	Fri Nov  8 10:52:27 2019 - [info]   done.
+	
 	Fri Nov  8 10:52:27 2019 - [debug]  Stopping SQL thread on 192.168.0.102(192.168.0.102:3306)..
 	Fri Nov  8 10:52:27 2019 - [debug]   done.
 	Fri Nov  8 10:52:27 2019 - [info]   done.
+	
 	Fri Nov  8 10:52:27 2019 - [info] -- Saving binlog from host 192.168.0.101 started, pid: 22257
 	Fri Nov  8 10:52:28 2019 - [info] 
 	Fri Nov  8 10:52:28 2019 - [info] Log messages from 192.168.0.101 ...
 	Fri Nov  8 10:52:28 2019 - [info] 
+	
+	从故障的master保存binlog到新主的目录下  --没毛病
 	Fri Nov  8 10:52:27 2019 - [info] Fetching binary logs from binlog server 192.168.0.101..
 	Fri Nov  8 10:52:27 2019 - [info] Executing binlog save command: save_binary_logs --command=save --start_file=mysql-bin.000016  --start_pos=902 --output_file=/var/log/masterha/app1/saved_binlog_binlog1_20191108105222.binlog --handle_raw_binlog=0 --skip_filter=1 --disable_log_bin=0 --manager_version=0.58 --oldest_version=8.0.18  --debug  --binlog_dir=/data/mysql/mysql3306/data 
 	  Creating /var/log/masterha/app1 if not exists..    ok.
 	 Concat binary/relay logs from mysql-bin.000016 pos 902 to mysql-bin.000016 EOF into /var/log/masterha/app1/saved_binlog_binlog1_20191108105222.binlog ..
 	Executing command: mysqlbinlog --start-position=902  /data/mysql/mysql3306/data/mysql-bin.000016 >> /var/log/masterha/app1/saved_binlog_binlog1_20191108105222.binlog
+	
 	 Concat succeeded.
 	Fri Nov  8 10:52:27 2019 - [info] scp from root@192.168.0.101:/var/log/masterha/app1/saved_binlog_binlog1_20191108105222.binlog to local:/var/log/masterha/app1/saved_binlog_192.168.0.101_binlog1_20191108105222.binlog succeeded.
 	Fri Nov  8 10:52:28 2019 - [info] End of log messages from 192.168.0.101.
 	Fri Nov  8 10:52:28 2019 - [info] Saved mysqlbinlog size from 192.168.0.101 is 2645 bytes.
 	Fri Nov  8 10:52:28 2019 - [info] Checking if super_read_only is defined and turned on..
 	Fri Nov  8 10:52:28 2019 - [info]  not present or turned off, ignoring.
+	
 	Fri Nov  8 10:52:28 2019 - [info] Applying differential binlog /var/log/masterha/app1/saved_binlog_192.168.0.101_binlog1_20191108105222.binlog ..
+	
 	Fri Nov  8 10:52:28 2019 - [info] Differential log apply from binlog server succeeded.
-	Fri Nov  8 10:52:28 2019 - [info] Getting new master's binlog name and position..
+	
+	获取最新master的位点
+	Fri Nov  8 10:52:28 2019 - [info] Getting new master s binlog name and position..
 	Fri Nov  8 10:52:28 2019 - [info]  mysql-bin.000011:1428
-	Fri Nov  8 10:52:28 2019 - [info]  All other slaves should start replication from here. Statement should be: CHANGE MASTER TO MASTER_HOST='192.168.0.102', MASTER_PORT=3306, MASTER_AUTO_POSITION=1, MASTER_USER='mharpl', MASTER_PASSWORD='xxx';
+	
+	Fri Nov  8 10:52:28 2019 - [info]  All other slaves should start replication from here. 
+		Statement should be: CHANGE MASTER TO MASTER_HOST='192.168.0.102', MASTER_PORT=3306, MASTER_AUTO_POSITION=1, MASTER_USER='mharpl', MASTER_PASSWORD='xxx';
+		
 	Fri Nov  8 10:52:28 2019 - [info] Master Recovery succeeded. File:Pos:Exec_Gtid_Set: mysql-bin.000011, 1428, 1b9bc372-0042-11ea-b8fa-0800274617cc:1-27,
 	cbe6921b-0043-11ea-b484-0800270d5e94:1-6
 	Fri Nov  8 10:52:28 2019 - [info] Executing master IP activate script:
@@ -237,6 +269,8 @@ mha01节点手动故障切换, 在 mha03上执行:
 	Fri Nov  8 10:52:28 2019 - [info] ** Finished master recovery successfully.
 	Fri Nov  8 10:52:28 2019 - [info] * Phase 3: Master Recovery Phase completed.
 	Fri Nov  8 10:52:28 2019 - [info] 
+	
+	-- 其它从库的恢复  change master to ...
 	Fri Nov  8 10:52:28 2019 - [info] * Phase 4: Slaves Recovery Phase..
 	Fri Nov  8 10:52:28 2019 - [info] 
 	Fri Nov  8 10:52:28 2019 - [info] 
@@ -259,6 +293,7 @@ mha01节点手动故障切换, 在 mha03上执行:
 	Fri Nov  8 10:52:30 2019 - [info] -- Slave on host 192.168.0.103(192.168.0.103:3306) started.
 	Fri Nov  8 10:52:30 2019 - [info] All new slave servers recovered successfully.
 	Fri Nov  8 10:52:30 2019 - [info] 
+	
 	Fri Nov  8 10:52:30 2019 - [info] * Phase 5: New master cleanup phase..
 	Fri Nov  8 10:52:30 2019 - [info] 
 	Fri Nov  8 10:52:30 2019 - [info] Resetting slave info on the new master..
@@ -332,3 +367,5 @@ mha01节点手动故障切换, 在 mha03上执行:
 	total 8
 	-rw-r--r-- 1 root root 1214 Nov  6 17:50 app1.log
 	-rw-r--r-- 1 root root 2645 Nov  8 10:52 saved_binlog_binlog1_20191108105222.binlog
+
+

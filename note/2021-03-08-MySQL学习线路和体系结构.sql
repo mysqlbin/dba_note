@@ -47,6 +47,7 @@
 				
 			io thread
 				insert buffer thread 
+					merge change buffer   
 				log thread
 				write thread
 				read thread
@@ -54,10 +55,8 @@
 			purge thread   
 				undo log
 				
-			merge thread    
-				merge change buffer   
+			page cleaner thread    
 				
-
 		3.6 关键特性
 			change buffer
 			AHI 自适应哈希索引
