@@ -21,7 +21,9 @@
 	create  database ddzdb DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
 
 	create user 'recovery_user'@'%' identified by '123456';
-	grant all privileges on ddzdb.table_user to 'recovery_user'@'%' with grant option;
+	
+	grant all privileges on ddzdb.table_user1 to 'recovery_user'@'%' with grant option;
+	grant all privileges on ddzdb.table_user2 to 'recovery_user'@'%' with grant option;
 		
 	mysql -f -urecovery_user -p123456abc ddzdb < ddzdb_2020-10-28.dump
 	

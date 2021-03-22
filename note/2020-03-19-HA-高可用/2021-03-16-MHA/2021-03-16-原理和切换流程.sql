@@ -316,9 +316,9 @@
 					
 					# GTID模式下的新主不需要保存最新Slave的relay log， 直接通过 change master to 到最新Slave, 从而实现自动补全新主跟最新从库的差异的binlog
 					# 前提：GTID模式下，从库要开启log_slave_udpates 参数？
-					#
-					# 如果新Master没有开启 log_slave_updates 记录binlog的参数，是否可以实现这个自动补全差异的relay log？ 不可以。
-					# 不是还有宕机的主库的binlog吗
+					# 是的，要开启log_slave_udpates参数。
+					# 如果新Master没有开启 log_slave_updates 记录binlog的参数，是否可以实现这个自动补全差异的relay log？ 
+					# 不可以。会报错。
 					
 					
 				3.3.2 再补全 新Master与故障Master差异
@@ -390,26 +390,16 @@
 		新主库的数据并不是最新的，新主库在跟最新的从库可以用差异的relay log做relay log的补偿，保证从库的数据一致。
 		
 	MHA+GTID复制模式：	
-		新主库的数据并不是最新的，新主库在跟最新的从库是怎么做类似于 MHA+传统复制模式中 relay log补偿模式？
+		新主库的数据并不是最新的，新主库在跟最新的从库是怎么做类似于 MHA+传统复制模式中 relay log补偿模式(新主跟最新从库的日志补偿)？
+		如果从库没有开启log_slave_updates参数，会报错。
+		
+		Fri Nov  8 10:52:27 2019 - [info]  Waiting all logs to be applied on the latest slave.. 
+		Fri Nov  8 10:52:27 2019 - [info]  Resetting slave 192.168.0.102(192.168.0.102:3306) and starting replication from the new master 192.168.0.103(192.168.0.103:3306)..								
+		Fri Nov  8 10:52:27 2019 - [debug]  Stopping slave IO/SQL thread on 192.168.0.102(192.168.0.102:3306)..	
 		
 		
-		
-	
-	
-	Fri Nov  8 10:52:27 2019 - [info]  Waiting all logs to be applied on the latest slave.. 
-	Fri Nov  8 10:52:27 2019 - [info]  Resetting slave 192.168.0.102(192.168.0.102:3306) and starting replication from the new master 192.168.0.103(192.168.0.103:3306)..								
-	Fri Nov  8 10:52:27 2019 - [debug]  Stopping slave IO/SQL thread on 192.168.0.102(192.168.0.102:3306)..	
-	
-	
 
 	
-3.3、新Master恢复
-3.3.1 先补全 新Master与最新Slave差异
-	等待新Master应用完自己的relay-log；
-	等待最新Slave应用完自己的relay-log；
-	将新Master change 到最新Slave，以补全差异数据   
-	
-		
 
 	
 	
