@@ -90,7 +90,42 @@
 		| cleaning up          | 0.000010 |
 		+----------------------+----------+
 		16 rows in set, 1 warning (0.00 sec)
-		
+	
+
+	set profiling = 1;
+	select word from words order by rand() limit 3;
+	show profiles;
+		root@localhost [db1]>show profile cpu,block io for query 1;
+		+---------------------------+----------+----------+------------+--------------+---------------+
+		| Status                    | Duration | CPU_user | CPU_system | Block_ops_in | Block_ops_out |
+		+---------------------------+----------+----------+------------+--------------+---------------+
+		| starting                  | 0.000240 | 0.000236 |   0.000000 |            0 |             0 |
+		| checking permissions      | 0.000025 | 0.000022 |   0.000000 |            0 |             0 |
+		| checking permissions      | 0.000009 | 0.000009 |   0.000000 |            0 |             0 |
+		| Opening tables            | 0.000030 | 0.000030 |   0.000000 |            0 |             0 |
+		| init                      | 0.000059 | 0.000059 |   0.000000 |            0 |             0 |
+		| System lock               | 0.000018 | 0.000018 |   0.000000 |            0 |             0 |
+		| optimizing                | 0.000016 | 0.000015 |   0.000000 |            0 |             0 |
+		| statistics                | 0.000127 | 0.000131 |   0.000000 |            0 |             0 |
+		| preparing                 | 0.000055 | 0.000051 |   0.000000 |            0 |             0 |
+		| Creating tmp table        | 0.000104 | 0.000108 |   0.000000 |            0 |             0 |
+		| Sorting result            | 0.000024 | 0.000020 |   0.000000 |            0 |             0 |
+		| executing                 | 0.000007 | 0.000007 |   0.000000 |            0 |             0 |
+		| Sending data              | 0.000121 | 0.000122 |   0.000000 |            0 |             0 |
+		| converting HEAP to ondisk | 0.000328 | 0.000327 |   0.000000 |            0 |             0 |    -- 该线程正在将内部临时表从 MEMORY 表转换为磁盘表, 考虑优化SQL或者增加tmp_table_size参数的大小
+		| Sending data              | 0.019617 | 0.019609 |   0.000000 |            0 |             0 |
+		| Creating sort index       | 0.005121 | 0.005121 |   0.000000 |            0 |             0 |
+		| end                       | 0.000053 | 0.000047 |   0.000000 |            0 |             0 |
+		| query end                 | 0.000020 | 0.000018 |   0.000000 |            0 |             0 |
+		| removing tmp table        | 0.000220 | 0.000222 |   0.000000 |            0 |             0 |
+		| query end                 | 0.000011 | 0.000009 |   0.000000 |            0 |             0 |
+		| closing tables            | 0.000015 | 0.000015 |   0.000000 |            0 |             0 |
+		| freeing items             | 0.000032 | 0.000032 |   0.000000 |            0 |             0 |
+		| cleaning up               | 0.000019 | 0.000019 |   0.000000 |            0 |             0 |
+		+---------------------------+----------+----------+------------+--------------+---------------+
+		23 rows in set, 1 warning (0.00 sec)
+					
+				
 	表示用于显示当前sql语句的状态
 
 	1. Sending data：
@@ -188,7 +223,11 @@
 	13. opening_table 
 	
 	
+	14. converting HEAP to ondisk
 	
+		该线程正在将内部临时表从 MEMORY 表转换为磁盘表, 考虑优化SQL或者增加tmp_table_size参数的大小
+		参考笔记：《2020-07-07-converting HEAP to ondisk.sql》
+		
 	
 3. Show proceslist时发现大量的sleep，有什么风险吗，该如何处理？
 

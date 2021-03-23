@@ -158,7 +158,7 @@
 			
 3. 小结
 	1. 当join两边都没有符合条件的记录时， 有group by的结果集正确。
-	2. inner join + sum()函数之类的 要加 group by。
+	2. inner join，要加 group by。
 	
 	
 			

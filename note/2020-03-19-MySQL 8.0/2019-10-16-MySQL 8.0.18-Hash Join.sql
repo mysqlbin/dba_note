@@ -18,7 +18,8 @@
 	6. 思考
 		1. 有了Hash Join, 是否还需要NLJ算法
 	7. 相关参考
-
+	8. 小结
+	
 0. 相关参数
 	
 root@mysqldb 05:41:  [test_db]> show global variables like '%join_buffer%';
@@ -139,9 +140,10 @@ root@mysqldb 05:41:  [test_db]> show global variables like '%join_buffer%';
 	
 	BNL算法的执行时间:   1000 rows in set (51.65 sec)
 	Hash Join的执行时间: 1000 rows in set (0.20 sec)
-	
+	NLJ算法的执行时间:   1000 rows in set (0.01 sec)
 
 5. NLJ算法:
+	
 	alter table t2 add index idx_b(`b`);
 
 	5.1 查看SQL的执行计划
@@ -166,7 +168,11 @@ root@mysqldb 05:41:  [test_db]> show global variables like '%join_buffer%';
 	  
  
 7. 相关参考
+	
 	https://mbd.baidu.com/newspage/data/landingsuper?context=%7B%22nid%22%3A%22news_10054537612828754509%22%7D&n_type=1&p_from=3 深入理解MySQL 8.0 hash join
+	
+		MySQL 8.0.18 版本增加了一个新的特性hash join，关于hash join，通常其执行过程如下：
+			首先基于join操作的一个表，在内存中创建一个对应的hash表，然后再一行一行的读另外一张表，通过计算哈希值，查找内存中的哈希表。
 	
 	https://mp.weixin.qq.com/s/wnYeAtmFQtR_AsA7gnrGHw   MySQL8的 Hash Join
 	 
@@ -174,7 +180,15 @@ root@mysqldb 05:41:  [test_db]> show global variables like '%join_buffer%';
 	
 	https://mp.weixin.qq.com/s/_0ImdUFMVZGTq-NoO9tHpw   MySQL8 的 Hash join 算法
 	
+	https://mp.weixin.qq.com/s/cS_1JgLm4UKlwWp4cXoc1A   MySQL 8.0之hash join
 	
+	https://mysqlserverteam.com/hash-join-in-mysql-8/
+	
+	
+8. 小结
+	NLJ算法，不需要全表扫描，查询性能在大多数场景下还是会比Hash join算法快的。
+
+
 	
 	
 	

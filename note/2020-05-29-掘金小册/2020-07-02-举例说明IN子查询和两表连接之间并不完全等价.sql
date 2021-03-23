@@ -5,26 +5,26 @@
 
 
 1. 表结构和数据初始化
-CREATE TABLE t1 (
-	id INT NOT NULL AUTO_INCREMENT,
-	key1 VARCHAR(100),
-	key2 INT,
-	key3 VARCHAR(100),
-	common_field VARCHAR(100),
-	PRIMARY KEY (id),
-	KEY idx_key1 (key1)
-) Engine=InnoDB CHARSET=utf8mb4;
+	CREATE TABLE t1 (
+		id INT NOT NULL AUTO_INCREMENT,
+		key1 VARCHAR(100),
+		key2 INT,
+		key3 VARCHAR(100),
+		common_field VARCHAR(100),
+		PRIMARY KEY (id),
+		KEY idx_key1 (key1)
+	) Engine=InnoDB CHARSET=utf8mb4;
 
 
-CREATE TABLE t2 (
-	id INT NOT NULL AUTO_INCREMENT,
-	key1 VARCHAR(100),
-	key2 INT,
-	key3 VARCHAR(100),
-	common_field VARCHAR(100),
-	PRIMARY KEY (id),
-	KEY idx_key1 (key1)
-) Engine=InnoDB CHARSET=utf8mb4;
+	CREATE TABLE t2 (
+		id INT NOT NULL AUTO_INCREMENT,
+		key1 VARCHAR(100),
+		key2 INT,
+		key3 VARCHAR(100),
+		common_field VARCHAR(100),
+		PRIMARY KEY (id),
+		KEY idx_key1 (key1)
+	) Engine=InnoDB CHARSET=utf8mb4;
 
 
 --------------------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ CREATE TABLE t2 (
 	4 rows in set (0.00 sec)
 
 	
-	in子查询会去重, 而 inner join 则不会去重.
+	in子查询会去重, 而 inner join 则不会去重.    ****************
 	
 	
 4. 
@@ -136,3 +136,6 @@ CREATE TABLE t2 (
 	| 1    |    1 | 1    | 1            |
 	+------+------+------+--------------+
 	4 rows in set (0.00 sec)
+	
+	in子查询会去重, 而 inner join 则不会去重.    ****************
+	
