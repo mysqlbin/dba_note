@@ -143,7 +143,7 @@ declare _curDiffDate VARCHAR(30) default CONCAT(CURDATE(),' 00:00:00');
 
 
 
-root@mysqldb 15:22:  [yldb]> show global variables like '%isolation%';
+mysql> show global variables like '%isolation%';
 +-----------------------+-----------------+
 | Variable_name         | Value           |
 +-----------------------+-----------------+
@@ -153,7 +153,7 @@ root@mysqldb 15:22:  [yldb]> show global variables like '%isolation%';
 2 rows in set (0.00 sec)
 
 
-root@mysqldb 15:37:  [yldb]> select count(*) from Table_Web_UserZHangJi;
+mysql> select count(*) from Table_Web_UserZHangJi;
 +----------+
 | count(*) |
 +----------+
@@ -162,9 +162,11 @@ root@mysqldb 15:37:  [yldb]> select count(*) from Table_Web_UserZHangJi;
 1 row in set (0.37 sec)
 
 
-desc SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>'2021-03-21 00:00:00'  and szEndTime<'2021-03-22 00:00:00' and nGameId=1001 group by nPlayerId)a
+执行计划和加锁情况
+	
+	desc SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>'2021-03-21 00:00:00'  and szEndTime<'2021-03-22 00:00:00' and nGameId=1001 group by nPlayerId)a
 
-	root@mysqldb 15:39:  [yldb]> desc SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>'2021-03-21 00:00:00'  and szEndTime<'2021-03-22 00:00:00' and nGameId=1001 group by nPlayerId)a;
+	mysql> desc SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>'2021-03-21 00:00:00'  and szEndTime<'2021-03-22 00:00:00' and nGameId=1001 group by nPlayerId)a;
 	+----+-------------+-----------------------+------------+-------+---------------------------+---------------------------+---------+------+--------+----------+-------------+
 	| id | select_type | table                 | partitions | type  | possible_keys             | key                       | key_len | ref  | rows   | filtered | Extra       |
 	+----+-------------+-----------------------+------------+-------+---------------------------+---------------------------+---------+------+--------+----------+-------------+
@@ -172,7 +174,8 @@ desc SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEn
 	|  2 | DERIVED     | Table_Web_UserZHangJi | NULL       | index | idx_Table_Web_UserZHangJi | idx_Table_Web_UserZHangJi | 12      | NULL | 969262 |     1.11 | Using where |
 	+----+-------------+-----------------------+------------+-------+---------------------------+---------------------------+---------+------+--------+----------+-------------+
 	2 rows in set, 1 warning (0.00 sec)
-
+	
+	因为使用了insert into ... select from ...语句
 	使用 (`nPlayerID`,`TableId`,`szEndTime`) 索引，意味着需要对二级索引的全索引扫描，同时对二级索引+主键索引的记录加锁，相当于是对全表的记录加锁。	
 
 主库21号的数据量
@@ -318,4 +321,68 @@ desc SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEn
 		 
 	估计SQL线程具有事务被回滚之后的重试机制。
 
+	
+	
+持续观察
+
+	2021-03-18 04:22:28 23322 [Warning] Slave SQL: Could not execute Write_rows event on table yldb.table_web_userzhangji; Lock wait timeout exceeded; try restarting transaction, Error_code: 1205; handler error HA_ERR_LOCK_WAIT_TIMEOUT; the event's master log mysql-bin.000766, end_log_pos 39949948, Error_code: 1205
+	2021-03-18 04:22:52 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'Rate' at row 1
+	2021-03-18 04:22:52 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'ARPU' at row 1
+	2021-03-19 04:22:31 23322 [Warning] Slave SQL: Could not execute Write_rows event on table yldb.table_web_userzhangji; Lock wait timeout exceeded; try restarting transaction, Error_code: 1205; handler error HA_ERR_LOCK_WAIT_TIMEOUT; the event's master log mysql-bin.000767, end_log_pos 104592860, Error_code: 1205
+	2021-03-19 04:22:53 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'Rate' at row 1
+	2021-03-19 04:22:53 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'ARPU' at row 1
+	2021-03-20 04:22:30 23322 [Warning] Slave SQL: Could not execute Write_rows event on table yldb.table_web_userzhangji; Lock wait timeout exceeded; try restarting transaction, Error_code: 1205; handler error HA_ERR_LOCK_WAIT_TIMEOUT; the event's master log mysql-bin.000768, end_log_pos 167269026, Error_code: 1205
+	2021-03-20 04:22:50 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'Rate' at row 1
+	2021-03-20 04:22:50 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'ARPU' at row 1
+	2021-03-21 04:22:23 23322 [Warning] Slave SQL: Could not execute Write_rows event on table yldb.table_web_userzhangji; Lock wait timeout exceeded; try restarting transaction, Error_code: 1205; handler error HA_ERR_LOCK_WAIT_TIMEOUT; the event's master log mysql-bin.000769, end_log_pos 181629791, Error_code: 1205
+	2021-03-21 04:22:44 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'Rate' at row 1
+	2021-03-21 04:22:44 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'ARPU' at row 1
+	2021-03-22 04:21:15 23322 [Warning] Slave SQL: Could not execute Write_rows event on table yldb.table_web_userzhangji; Lock wait timeout exceeded; try restarting transaction, Error_code: 1205; handler error HA_ERR_LOCK_WAIT_TIMEOUT; the event s master log mysql-bin.000770, end_log_pos 75004569, Error_code: 1205
+	2021-03-22 04:21:17 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'Rate' at row 1
+	2021-03-22 04:21:17 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'ARPU' at row 1
+	2021-03-23 04:21:59 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'Rate' at row 1
+	2021-03-23 04:21:59 23322 [Note] Event Scheduler: [root@%][yldb.totalTableLog] Data truncated for column 'ARPU' at row 1
+	
+	在从库执行，每天的 04:20 执行一次。
+	23号已经没有报从库应用relay log出现SQL线程锁等待超时的现象。
+	
+
+进一步优化
+
+	insert into EffectiveNumber_DayLog
+	(
+	 Sum,MnnSum,MylSum,MslSum,MhxSum,MggSum,MlsSum,MlzSum,MglSum,PbzSum,PsySum,PsszSum,MwzSum,PddzSum,Psgsum,PwzsgSum,PlbsszSum,MlbSum,CreateTime
+	)
+	 select COUNT(*) as 'yxyh',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=1001 group by nPlayerId)a) as 'Mnnmjrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=1002 group by nPlayerId)a) as 'Mylmjrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=1003 group by nPlayerId)a) as 'Mslmjrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=1004 group by nPlayerId)a) as 'Mhxmjrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=1005 group by nPlayerId)a) as 'Mggmjrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=1006 group by nPlayerId)a) as 'Mlsmjrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=1007 group by nPlayerId)a) as 'Mlzmjrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=1008 group by nPlayerId)a) as 'Mglmjrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=2001 group by nPlayerId)a) as 'Pbzrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=2002 group by nPlayerId)a) as 'Psyrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=2003 group by nPlayerId)a) as 'Psszrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=1011 group by nPlayerId)a) as 'Mwzmjrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=2005 group by nPlayerId)a) as 'Pddzrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=2009 group by nPlayerId)a) as 'Psgrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=2012 group by nPlayerId)a) as 'Pwzsgrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=2022 group by nPlayerId)a) as 'Plbsszrs',
+	(SELECT count(*) from(SELECT nPlayerId FROM Table_Web_UserZHangJi where szEndTime>_oldDiffDate and szEndTime<_curDiffDate and nGameId=1015 group by nPlayerId)a) as 'MlbSumrs',
+	_oldDiffDate
+	from 
+	 (SELECT nPlayerID FROM Table_Web_UserZHangJi where nGameId is not null and szEndTime>_oldDiffDate and szEndTime<_curDiffDate group by nPlayerId)t;
+
+	
+	添加索引：
+		alter table Table_Web_UserZHangJi add index idx_nGameId_szEndTime(`nGameId`,`szEndTime`);
+		加快了语句的执行速度，经过测试，耗时比原来少了2/3。
+		
+		
+	
+	
+	
+	
 	
