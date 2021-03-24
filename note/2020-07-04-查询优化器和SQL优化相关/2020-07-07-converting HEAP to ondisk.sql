@@ -238,4 +238,81 @@ root@localhost [db1]>show profile cpu,block io for query 1;
 | cleaning up               | 0.000019 | 0.000019 |   0.000000 |            0 |             0 |
 +---------------------------+----------+----------+------------+--------------+---------------+
 23 rows in set, 1 warning (0.00 sec)
+
+
+怎么知道SQL语句使用到了磁盘临时表做辅助排序？
+
+	通过 show profiles 查看。
+
+----------------------------------------------------------------------------------------------
+
+不需要磁盘临时表做辅助排序：
+
+	show global variables like 'tmp_table_size';
+	show global variables like 'sort_buffer_size';
+	show global variables like 'max_length_for_sort_data';
+
+	root@mysqldb 10:23:  [yldbs]> show global variables like 'tmp_table_size';
+	+----------------+----------+
+	| Variable_name  | Value    |
+	+----------------+----------+
+	| tmp_table_size | 33554432 |
+	+----------------+----------+
+	1 row in set (0.00 sec)
+
+	root@mysqldb 10:44:  [yldbs]> show global variables like 'sort_buffer_size';
+	+------------------+---------+
+	| Variable_name    | Value   |
+	+------------------+---------+
+	| sort_buffer_size | 4194304 |
+	+------------------+---------+
+	1 row in set (0.01 sec)
+
+	root@mysqldb 10:44:  [yldbs]> show global variables like 'max_length_for_sort_data';
+	+--------------------------+-------+
+	| Variable_name            | Value |
+	+--------------------------+-------+
+	| max_length_for_sort_data | 1024  |
+	+--------------------------+-------+
+	1 row in set (0.00 sec)
+
+
+
+	root@mysqldb 10:23:  [yldbs]> show profiles;
+	+----------+------------+------------------------------------------------+
+	| Query_ID | Duration   | Query                                          |
+	+----------+------------+------------------------------------------------+
+	|        1 | 0.07221625 | select word from words order by rand() limit 3 |
+	+----------+------------+------------------------------------------------+
+	1 row in set, 1 warning (0.00 sec)
+
+	root@mysqldb 10:23:  [yldbs]> show profile cpu,block io for query 1;
+	+----------------------+----------+----------+------------+--------------+---------------+
+	| Status               | Duration | CPU_user | CPU_system | Block_ops_in | Block_ops_out |
+	+----------------------+----------+----------+------------+--------------+---------------+
+	| starting             | 0.000106 | 0.000048 |   0.000052 |            0 |             0 |
+	| checking permissions | 0.000017 | 0.000008 |   0.000008 |            0 |             0 |
+	| Opening tables       | 0.000123 | 0.000059 |   0.000064 |            0 |             0 |
+	| init                 | 0.000037 | 0.000017 |   0.000019 |            0 |             0 |
+	| System lock          | 0.000020 | 0.000010 |   0.000010 |            0 |             0 |
+	| optimizing           | 0.000013 | 0.000006 |   0.000007 |            0 |             0 |
+	| statistics           | 0.000027 | 0.000013 |   0.000014 |            0 |             0 |
+	| preparing            | 0.000022 | 0.000011 |   0.000012 |            0 |             0 |
+	| Creating tmp table   | 0.000056 | 0.000027 |   0.000028 |            0 |             0 |
+	| Sorting result       | 0.000013 | 0.000006 |   0.000007 |            0 |             0 |
+	| executing            | 0.000009 | 0.000004 |   0.000004 |            0 |             0 |
+	| Sending data         | 0.059042 | 0.065044 |   0.000000 |            0 |             0 |
+	| Creating sort index  | 0.012567 | 0.014118 |   0.000000 |            0 |             0 |
+	| end                  | 0.000015 | 0.000000 |   0.000000 |            0 |             0 |
+	| query end            | 0.000014 | 0.000000 |   0.000000 |            0 |             0 |
+	| removing tmp table   | 0.000013 | 0.000000 |   0.000000 |            0 |             0 |
+	| query end            | 0.000007 | 0.000000 |   0.000000 |            0 |             0 |
+	| closing tables       | 0.000013 | 0.000000 |   0.000000 |            0 |             0 |
+	| freeing items        | 0.000027 | 0.000000 |   0.000000 |            0 |             0 |
+	| logging slow query   | 0.000060 | 0.000000 |   0.000000 |            0 |             8 |
+	| cleaning up          | 0.000018 | 0.000000 |   0.000000 |            0 |             0 |
+	+----------------------+----------+----------+------------+--------------+---------------+
+	21 rows in set, 1 warning (0.00 sec)
+
+
 			

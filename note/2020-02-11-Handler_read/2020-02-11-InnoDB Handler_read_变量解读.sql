@@ -135,7 +135,7 @@
 	SQL 优化步骤：
 		1. 执行计划
 		2. show warnings 查看SQL的改写
-		3. profile 查看SQL的代价
+		3. profile 查看SQL在各个阶段执行的代价
 		4. 执行完成select后，查看 Handler_read_* 的指标增长情况 
 		
 5. 相关参考

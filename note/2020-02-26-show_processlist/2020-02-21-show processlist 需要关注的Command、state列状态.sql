@@ -227,7 +227,8 @@
 	
 		该线程正在将内部临时表从 MEMORY 表转换为磁盘表, 考虑优化SQL或者增加tmp_table_size参数的大小
 		参考笔记：《2020-07-07-converting HEAP to ondisk.sql》
-		
+		怎么知道SQL语句使用到了磁盘临时表估辅助排序？
+			通过 show profiles 查看。
 	
 3. Show proceslist时发现大量的sleep，有什么风险吗，该如何处理？
 
