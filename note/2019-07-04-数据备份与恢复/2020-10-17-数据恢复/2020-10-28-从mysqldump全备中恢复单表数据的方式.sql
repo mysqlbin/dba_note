@@ -7,6 +7,8 @@
 	
 	create user 'recovery_user'@'%' identified by '123456';
 	grant all privileges on test_db.table_clubgamelog to 'recovery_user'@'%' with grant option;
+	
+	grant all privileges on test_db.table_clubgamelog2 to 'recovery_user'@'%' with grant option;
 
 
 导入：

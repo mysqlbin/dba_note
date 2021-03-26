@@ -13,7 +13,7 @@
 	[dba2@database-03 aiuaiuh5_modb]$ ls -lht table_ab_loginlo.ibd
 	-rw-r----- 1 mysql mysql 912K Mar  1 14:32 table_ab_loginlo.ibd
 
-
+	
 	[dba2@database-04 aiuaiuh5_modb]$ ls -lht table_ab_loginlo.ibd
 	-rw-r----- 1 mysql mysql 912K Mar  1 14:32 table_ab_loginlo.ibd
 
@@ -109,11 +109,11 @@
 		+--------------------+------------+----------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 		| Table              | Non_unique | Key_name                   | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
 		+--------------------+------------+----------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
-		| table_ab_loginlo |          0 | PRIMARY                    |            1 | Idx         | A         |        2677 |     NULL | NULL   |      | BTREE      |         |               |
-		| table_ab_loginlo |          1 | web_loginlog_idx_nPlayerId |            1 | nPlayerId   | A         |         272 |     NULL | NULL   |      | BTREE      |         |               |
-		| table_ab_loginlo |          1 | web_loginlog_idx_szTime    |            1 | szTime      | A         |        2334 |     NULL | NULL   | YES  | BTREE      |         |               |
-		| table_ab_loginlo |          1 | idx_loginIp_szTime         |            1 | loginIp     | A         |         350 |     NULL | NULL   | YES  | BTREE      |         |               |
-		| table_ab_loginlo |          1 | idx_loginIp_szTime         |            2 | szTime      | A         |        2351 |     NULL | NULL   | YES  | BTREE      |         |               |
+		| table_ab_loginlo   |          0 | PRIMARY                    |            1 | Idx         | A         |        2677 |     NULL | NULL   |      | BTREE      |         |               |
+		| table_ab_loginlo   |          1 | web_loginlog_idx_nPlayerId |            1 | nPlayerId   | A         |         272 |     NULL | NULL   |      | BTREE      |         |               |
+		| table_ab_loginlo   |          1 | web_loginlog_idx_szTime    |            1 | szTime      | A         |        2334 |     NULL | NULL   | YES  | BTREE      |         |               |
+		| table_ab_loginlo   |          1 | idx_loginIp_szTime         |            1 | loginIp     | A         |         350 |     NULL | NULL   | YES  | BTREE      |         |               |
+		| table_ab_loginlo   |          1 | idx_loginIp_szTime         |            2 | szTime      | A         |        2351 |     NULL | NULL   | YES  | BTREE      |         |               |
 		+--------------------+------------+----------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 		5 rows in set (0.00 sec)
 
@@ -121,26 +121,25 @@
 
 
 3. 查看表的逻辑大小/碎片大小/行数
+	主库
+		mysql> SELECT table_schema,table_name,data_length,index_length, DATA_FREE, table_rows  FROM information_schema.tables where table_schema='aiuaiuh5_modb' and TABLE_NAME='table_ab_loginlo';
+		+--------------+--------------------+-------------+--------------+-----------+------------+
+		| table_schema | table_name         | data_length | index_length | DATA_FREE | table_rows |
+		+--------------+--------------------+-------------+--------------+-----------+------------+
+		| aiuaiuh5_modb  | table_ab_loginlo |      311296 |       540672 |         0 |       4489 |
+		+--------------+--------------------+-------------+--------------+-----------+------------+
+		1 row in set (0.00 sec)
 
-	mysql> SELECT table_schema,table_name,data_length,index_length, DATA_FREE, table_rows  FROM information_schema.tables where table_schema='aiuaiuh5_modb' and TABLE_NAME='table_ab_loginlo';
-	+--------------+--------------------+-------------+--------------+-----------+------------+
-	| table_schema | table_name         | data_length | index_length | DATA_FREE | table_rows |
-	+--------------+--------------------+-------------+--------------+-----------+------------+
-	| aiuaiuh5_modb  | table_ab_loginlo |      311296 |       540672 |         0 |       4489 |
-	+--------------+--------------------+-------------+--------------+-----------+------------+
-	1 row in set (0.00 sec)
+	从库
+		mysql> SELECT table_schema,table_name,data_length,index_length, DATA_FREE, table_rows  FROM information_schema.tables where table_schema='aiuaiuh5_modb' and TABLE_NAME='table_ab_loginlo';
+		+--------------+--------------------+-------------+--------------+-----------+------------+
+		| table_schema | table_name         | data_length | index_length | DATA_FREE | table_rows |
+		+--------------+--------------------+-------------+--------------+-----------+------------+
+		| aiuaiuh5_modb  | table_ab_loginlo |      212992 |       360448 |         0 |       2698 |
+		+--------------+--------------------+-------------+--------------+-----------+------------+
+		1 row in set (0.00 sec)
 
-
-	mysql> SELECT table_schema,table_name,data_length,index_length, DATA_FREE, table_rows  FROM information_schema.tables where table_schema='aiuaiuh5_modb' and TABLE_NAME='table_ab_loginlo';
-	+--------------+--------------------+-------------+--------------+-----------+------------+
-	| table_schema | table_name         | data_length | index_length | DATA_FREE | table_rows |
-	+--------------+--------------------+-------------+--------------+-----------+------------+
-	| aiuaiuh5_modb  | table_ab_loginlo |      212992 |       360448 |         0 |       2698 |
-	+--------------+--------------------+-------------+--------------+-----------+------------+
-	1 row in set (0.00 sec)
-
-
-
+	
 4. 解决办法
 	
 	mysql> analyze table table_ab_loginlo;
@@ -186,11 +185,11 @@
 	+--------------------+------------+----------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 	| Table              | Non_unique | Key_name                   | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment |
 	+--------------------+------------+----------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
-	| table_ab_loginlo |          0 | PRIMARY                    |            1 | Idx         | A         |        4492 |     NULL | NULL   |      | BTREE      |         |               |
-	| table_ab_loginlo |          1 | web_loginlog_idx_nPlayerId |            1 | nPlayerId   | A         |         598 |     NULL | NULL   |      | BTREE      |         |               |
-	| table_ab_loginlo |          1 | web_loginlog_idx_szTime    |            1 | szTime      | A         |        3849 |     NULL | NULL   | YES  | BTREE      |         |               |
-	| table_ab_loginlo |          1 | idx_loginIp_szTime         |            1 | loginIp     | A         |         810 |     NULL | NULL   | YES  | BTREE      |         |               |
-	| table_ab_loginlo |          1 | idx_loginIp_szTime         |            2 | szTime      | A         |        3871 |     NULL | NULL   | YES  | BTREE      |         |               |
+	| table_ab_loginlo   |          0 | PRIMARY                    |            1 | Idx         | A         |        4492 |     NULL | NULL   |      | BTREE      |         |               |
+	| table_ab_loginlo   |          1 | web_loginlog_idx_nPlayerId |            1 | nPlayerId   | A         |         598 |     NULL | NULL   |      | BTREE      |         |               |
+	| table_ab_loginlo   |          1 | web_loginlog_idx_szTime    |            1 | szTime      | A         |        3849 |     NULL | NULL   | YES  | BTREE      |         |               |
+	| table_ab_loginlo   |          1 | idx_loginIp_szTime         |            1 | loginIp     | A         |         810 |     NULL | NULL   | YES  | BTREE      |         |               |
+	| table_ab_loginlo   |          1 | idx_loginIp_szTime         |            2 | szTime      | A         |        3871 |     NULL | NULL   | YES  | BTREE      |         |               |
 	+--------------------+------------+----------------------------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+
 	5 rows in set (0.00 sec)
 

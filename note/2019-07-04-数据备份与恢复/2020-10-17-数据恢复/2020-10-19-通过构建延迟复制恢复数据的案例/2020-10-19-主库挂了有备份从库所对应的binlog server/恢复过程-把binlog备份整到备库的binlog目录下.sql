@@ -5,7 +5,7 @@
 
 1. 实验目的 
 	通过把已有Slave伪装成主库并把 binlog server 放到伪装主库的 二进制文件目录，然后把全备恢复到一个新建一个的实例中，通过 start slave until 恢复到误操作之前的位置。
-
+	在Slave手工注册binlog。
 
 2. 实操
 		 
@@ -213,12 +213,14 @@
 		/*!*/;
 		# at 886
 		
+		----------------------------------------------------------------------------------------------------------------------------------
 		reset master; \
 		
 		set global gtid_purged = 'f7323d17-6442-11ea-8a77-080027758761:1-110680'; \
 		
 		change master to master_host='192.168.1.29',master_user='repl',master_password='123456abc',master_port=3306,master_auto_position=1; \
 		
+		-- 只恢复db3库的 t1表。
 		change replication filter replicate_do_table = (db3.t1); \
 		
 		start slave until SQL_BEFORE_GTIDS = 'f7323d17-6442-11ea-8a77-080027758761:110687'; 

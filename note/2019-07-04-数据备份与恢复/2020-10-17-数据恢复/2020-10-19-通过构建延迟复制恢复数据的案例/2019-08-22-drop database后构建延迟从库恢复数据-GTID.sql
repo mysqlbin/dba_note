@@ -15,7 +15,7 @@
 	注意事项:
 		
 		不能在已有的从库做数据恢复操作
-		 从库要开启参数log_slave_updates
+		
 		 
 
 Master:

@@ -397,7 +397,9 @@
 	2. 如果要做 binlog server， 那么在哪一台从库做备份，就做对应备份从库的 binlog server。
 		-- GTID模式下不需要这样做，在从库做备份，可以根据主库来做 binlog server。
 	3. GTID模式下，在从库做备份，可以用主库的binlog做数据恢复，从库可以不用开启binlog。
-	
+		-- 把主库的binlog在从库中注册。
+		
+		
 	
 	
 	

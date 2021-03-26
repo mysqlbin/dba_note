@@ -162,7 +162,7 @@ root@mysqldb 05:41:  [test_db]> show global variables like '%join_buffer%';
 
 6. 思考
 	1. 有了Hash Join, 是否还需要NLJ算法
-	  答: 需要的. 通过对比可以发现NLJ算法的执行速度结对Hash Join的执行速度更快.
+	  答: 需要的. 通过对比可以发现NLJ算法的执行速度比Hash Join的执行速度更快.
 		  如果被驱动表是一个大表并且没有索引，那么会造成全表扫描，对磁盘I/O影响很大。
 		  
 	  
