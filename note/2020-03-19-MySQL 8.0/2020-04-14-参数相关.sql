@@ -40,7 +40,7 @@
 		故没有 query_cache_size, query_cache_type 这两个参数
 
 	2. internal_tmp_disk_storage_engine:
-		在新版本中，临时表的存储引擎默认使用innodb，故 internal_tmp_disk_storage_engine 已经被移除。
+		在新版本中，磁盘临时表的存储引擎默认使用innodb，故 internal_tmp_disk_storage_engine 已经被移除。
 	
 	3. innodb_undo_tablespaces = 95
 		默认为2, 可以动态添加undo 表空间的数量
@@ -73,3 +73,10 @@
 
 	tx_isolation 改为 transaction_isolation
 	
+	
+4. 默认值发生变化的参数
+
+	explicit_defaults_for_timestamp=ON
+	innodb_autoinc_lock_mode=2
+	
+

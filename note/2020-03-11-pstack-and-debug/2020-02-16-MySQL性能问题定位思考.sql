@@ -52,7 +52,7 @@ http://www.fordba.com/percona-toolkit-pt-pmp.html    Percona-Toolkit系列之pt-
 
 # 跟 pstack 结合
 
-# 自己也要做总结， 参考 知数堂培训的知识点
+# 自己也要做总结， 参考ZST培训的知识点
 	
 	
 参数设置不合理     # 大多数情况下

@@ -27,6 +27,7 @@ InnoDB参数:
 		建议设置磁盘的IOPS
 		
 	
-	
+	explicit_defaults_for_timestamp=OFF
+		
 
 	
