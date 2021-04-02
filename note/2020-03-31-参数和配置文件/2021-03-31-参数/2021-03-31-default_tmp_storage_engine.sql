@@ -17,3 +17,24 @@ https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_defa
 
 https://mp.weixin.qq.com/s/ro-nNhCcYL-RabIjUZNDew   [MySQL FAQ]系列 — 什么情况下会用到临时表
 
+
+
+
+
+mysql> show global status like '%tables%';
++-------------------------+-------+
+| Variable_name           | Value |
++-------------------------+-------+
+| Com_alter_tablespace    | 0     |
+| Com_lock_tables         | 0     |
+| Com_show_open_tables    | 0     |
+| Com_show_tables         | 149   |
+| Com_unlock_tables       | 4     |
+| Created_tmp_disk_tables | 2436  |
+| Created_tmp_tables      | 5339  |
+| Open_tables             | 797   |
+| Opened_tables           | 9176  |
+| Slave_open_temp_tables  | 0     |
++-------------------------+-------+
+10 rows in set (0.00 sec)
+
