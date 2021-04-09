@@ -1,7 +1,13 @@
 MySQL
-	table_open_cache 
+	 
 	open_files_limit
+		限制所有文件的打开数量
 	innodb_open_files 
+		限制InnoDB文件的打开数量
+		
+	table_open_cache
+	
+	table_definition_cache
 	
 	
 table_open_cache参数
@@ -145,8 +151,9 @@ table_open_cache的作用
 	
 别人面试问到：
 	table_open_cache 怎么优化
-	
-	查看open_tables状态的值是否接近于 table_open_cache，同时 opened_tables状态的值是否在持续增加。
+	思路：
+		查看打开表的状态值
+		查看open_tables状态的值是否接近于 table_open_cache，同时 opened_tables状态的值是否在持续增加。
 	
 	
 	

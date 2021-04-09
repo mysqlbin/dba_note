@@ -59,7 +59,6 @@ table_definition_cache
 	
 https://mp.weixin.qq.com/s/p1CkgV_Nve63GKGmQ58vWg  [MySQL FAQ]系列 — 怎么计算打开文件数
 
-
 https://mp.weixin.qq.com/s/2fSW7F8wn-Bt3nd56kFyRw  [缺陷分析] Table cache 导致 MySQL 崩溃
 
 
