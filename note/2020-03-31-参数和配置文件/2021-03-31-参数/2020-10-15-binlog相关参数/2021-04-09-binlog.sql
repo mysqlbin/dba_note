@@ -17,40 +17,6 @@ binlog_cache_disk_use :
 记录了使用临时文件写二进制日志的次数.
 
 
-
-sync_binlog：
-当 sync_binlog=[N]表示每写缓冲多少次就同步到磁盘。
-
-=1:
-表示采用同步写磁盘的方式来写二进制日志（在一个事务发出COMMIT动作之前）
-如果不是1呢 是0呢
-
-
-工作机制：
-
-
-作用：
-
-
-
-注意：
-事务是在引擎层进行COMMIT之后写 redo log;
-
-binlog 属于 server 层
-redo log 属于 存储引擎层。
- 
-
-
-疑问：
-是否有 binlog buffer 这个东西？
-binlog 刷盘是把日志写入二进制文件？
-写 binlog 是在COMMIT前还是COMMIT后？
-
-参考：
-MYSQL 什么时候同步binlog文件以及它的临时文件在哪里？
-MySQL Binlog实用攻略
-
-
 mysql> show global variables like '%binlog%';
 +--------------------------------------------+----------------------+
 | Variable_name                              | Value                |
