@@ -18,10 +18,9 @@ InnoDB参数:
 	innodb_rollback_on_timeout = OFF
 	innodb_print_all_deadlocks = OFF
 	innodb_data_file_path = ibdata1:12MB:autoextend
-	innodb_log_file_size = 48 MB
+	innodb_log_file_size = 48MB
 	innodb_temp_data_file_path = ibtmp1:12M:autoextend
-		例如 可以改为 innodb_temp_data_file_path = ibtmp1:64M:autoextend:max:5G 
-
+	
 	innodb_io_capacity = 200
 		用于告诉InnoDB所在主机的磁盘IO能力, 用于控制每次刷多少脏页到磁盘
 		建议设置磁盘的IOPS
