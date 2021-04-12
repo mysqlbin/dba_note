@@ -1,9 +1,10 @@
 MySQL
 	 
 	open_files_limit
-		限制所有文件的打开数量
+		限制mysqld能打开的文件数量
 	innodb_open_files 
-		限制InnoDB文件的打开数量
+	
+		限制InnoDB能打开的文件数量
 		
 	table_open_cache
 	

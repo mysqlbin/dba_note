@@ -1,3 +1,0 @@
-rollback segments 总数量：innodb_rollback_segments
-
-通过 innodb_rollback_segments 参数的值可以了解到, Rollback Segments的个数是InnoDB系统启动时分配的.

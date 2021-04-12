@@ -1,9 +1,10 @@
 MySQL
 	 
 	open_files_limit
-		限制所有文件的打开数量
+		限制mysqld能打开的文件数量
 	innodb_open_files 
-		限制InnoDB文件的打开数量
+	
+		限制InnoDB能打开的文件数量
 		
 	table_open_cache
 	
@@ -16,7 +17,7 @@ open_files_limit 参数使用的是默认值 1024，那么就会在访问这个�
  	
 老师，mysql还有一个参数是innodb_open_files，资料上说作用是限制Innodb能打开的表的数量。它和open_files_limit之间有什么关系吗？
 	
-	在InnoDB引擎打开文件超过 innodb_open_files这个值的时候，就会关掉一些之前打开的文件。
+	在InnoDB引擎打开文件超过 innodb_open_files 这个值的时候，就会关掉一些之前打开的文件。
 
 	其实我们文章中 ，InnoDB分区表使用了本地分区策略以后，即使分区个数大于open_files_limit ，打开InnoDB分区表也不会报“打开文件过多”这个错误，就是 innodb_open_files 这个参数发挥的作用。
 
