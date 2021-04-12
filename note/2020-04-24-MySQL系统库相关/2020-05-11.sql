@@ -56,7 +56,9 @@ select @@session.tx_isolation;
 
 
 
-
+查看没有使用到的索引
+	
+	select * from sys.schema_unused_indexes where object_schema='' and object_name='table_user'
 
 
 
