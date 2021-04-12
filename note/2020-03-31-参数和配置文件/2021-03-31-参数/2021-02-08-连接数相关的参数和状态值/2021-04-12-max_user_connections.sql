@@ -1,10 +1,11 @@
+
+
+
 MySQL 同一个用户的最大连接数， 即每个用户只能打开的最大连接数。
 测试
 set  @@global.max_user_connections=1000;
 
 ERROR 1203 (42000): User app_user already has more than 'max_user_connections' active connections
-
-
 
 
 
@@ -25,3 +26,5 @@ max_user_connections（该实例允许每个用户的最大连接数），
 这样就不会发生文章开始说的问题。
 
  
+ 
+ show global status like 'max_used_connections';   #当前已使用的数据库连接数

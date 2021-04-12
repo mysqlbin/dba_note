@@ -1,5 +1,0 @@
-show global variables like 'max_connect_errors';
-show global variables like 'max_connections';
-show global variables like 'max_user_connections';
-show global status like 'max_used_connections';
-show global status like 'Threads_running';
