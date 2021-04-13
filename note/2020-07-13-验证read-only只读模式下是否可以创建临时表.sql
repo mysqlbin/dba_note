@@ -38,14 +38,12 @@ mysql> delete from table_clublogscore20200701 where id=15004289;
 ERROR 1290 (HY000): The MySQL server is running with the --read-only option so it cannot execute this statement
 
 
-内存临时表是否会同步到从库？
-	不会。
-	还需要验证下。
-	
+操作临时表是否会记录到 binlog ？
+	binlog_format=row模式下不会，因此不会同步到从库。
+
+
 在从库操作临时表，会影响备份？
 	过段时间验证下。
-	
-操作内存临时表是否会记录到 binlog ？
 	
 
 
