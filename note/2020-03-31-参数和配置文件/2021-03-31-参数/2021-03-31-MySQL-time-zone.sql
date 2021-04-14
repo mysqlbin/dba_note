@@ -33,7 +33,7 @@ time_zone：
 log_timestamps：
 
     general log、slow log和error log的日志时间， 默认为 UTC；
-    当设置为  UTC， general log、slow log和error log会落后系统时间8个小时，所以需要设置为跟 time_zone的值 SYSTEM 一样。
+    当设置为  UTC， general log、slow log和error log会落后系统时间8个小时，所以需要设置为跟 time_zone 的值 SYSTEM 一样。
 
 
 

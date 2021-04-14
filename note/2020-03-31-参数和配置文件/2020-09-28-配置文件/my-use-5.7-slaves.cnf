@@ -102,9 +102,9 @@ myisam_repair_threads = 1
 
 
 # 时间参数
-system_time_zone=CST
-time_zone=SYSTEM
-log_timestamps=SYSTEM
+#system_time_zone=CST
+#time_zone=SYSTEM
+#log_timestamps=SYSTEM
 
 lock_wait_timeout = 3600
 explicit_defaults_for_timestamp = 1
@@ -167,8 +167,8 @@ innodb_status_output = 0
 innodb_status_output_locks = 0
 
 #performance_schema
-performance_schema = 1
-performance_schema_instrument = '%=on'
+#performance_schema = 1
+#performance_schema_instrument = '%=on'
 
 #定时任务机制
 event_scheduler = on
