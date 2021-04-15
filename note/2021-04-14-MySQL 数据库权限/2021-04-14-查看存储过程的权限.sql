@@ -8,7 +8,7 @@ read_userss@mysqldb 17:36:  [test_db]> select version();
 1 row in set (0.00 sec)
 
 create user 'read_userss'@'%' identified by '123456';
-grant select test_db.* to 'read_userss'@'%' with grant option;
+grant select on test_db.* to 'read_userss'@'%' with grant option;
 
 
 show grants for 'read_userss'@'%';
