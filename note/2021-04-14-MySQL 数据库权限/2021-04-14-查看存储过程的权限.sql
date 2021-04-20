@@ -24,10 +24,6 @@ root@mysqldb 17:32:  [(none)]> show grants for 'read_userss'@'%';
 +--------------------------------------------------------------------+
 2 rows in set (0.00 sec)
 
-
-
-
-
 mysql -h 192.168.0.242 -uread_userss -p123456
 
 

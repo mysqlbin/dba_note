@@ -39,3 +39,6 @@ root@mysqldb 15:41:  [(none)]> show global variables like '%innodb_flush_method%
 	https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_flush_method
 	http://blog.itpub.net/7728585/viewspace-1980262/
 	https://blog.csdn.net/smooth00/article/details/72725941
+	https://zhuanlan.zhihu.com/p/134669835    使用O_DIRECT_NO_FSYNC来提升MySQL性能
+
+	
