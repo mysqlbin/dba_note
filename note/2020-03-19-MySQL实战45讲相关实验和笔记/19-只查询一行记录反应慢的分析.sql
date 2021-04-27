@@ -99,6 +99,8 @@ MDL锁的复现：
 		
 	2.MySQL 5.7版本，通过sys库来找：
 	   查询 sys.schema_table_lock_waits 这张表，可以直接找出造成阻塞的 process id，用 kill 命令把这个连接断开即可。  
+	   可以直接找出造成阻塞的线程ID。
+	   
 		********************************************************
 		
 		mysql> select * from sys.schema_table_lock_waits\G;
@@ -214,7 +216,8 @@ MDL锁的复现：
 		
 	5. 查询语句需要打开表, flush tables语句需要关闭表; 
 	   因此, 同一个表不能在同一个时间段做打开表和关闭表操作。	
-
+	
+	
 1.3 等行锁
 	
 	session A                session B

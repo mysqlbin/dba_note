@@ -263,7 +263,7 @@
 		show processlist;
 		select * from sys.schema_table_lock_waits\G;
 		select * from information_schema.INNODB_TRX\G;
-
+		3联SQL语句。
 
 6. 相关参考
 	https://www.cnblogs.com/ivictor/p/9460147.html  MySQL 5.7中如何定位DDL被阻塞的问题
