@@ -378,7 +378,114 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 		1 row in set, 3 warnings (0.00 sec)
 
 
-																																						
+	
+4.2.2 非唯一索引范围锁：
+
+	root@mysqldb 11:00:  [test_Db]> select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  0 |    0 |    0 |
+	|  5 |    5 |    5 |
+	| 10 |   10 |   10 |
+	| 15 |   15 |   15 |
+	| 20 |   20 |   20 |
+	| 25 |   25 |   25 |
+	+----+------+------+
+	6 rows in set (0.00 sec)
+
+
+	mysql> show create table t\G;
+	*************************** 1. row ***************************
+		   Table: t
+	Create Table: CREATE TABLE `t` (
+	  `id` int(11) NOT NULL,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `c` (`c`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+	1 row in set (0.00 sec)
+	
+	
+	实验一
+		
+		session AA							session BB
+		begin;
+		update t set d=d+1 where id=15;
+		
+											begin;
+											select * from t where c>=10 and c<11 for update;
+											(Query OK)
+		
+		
+
+
+	实验二
+
+		session A                     session B							  session C
+		  
+		begin;
+		select * from t where c>=10 and c<11 for update;
+		+----+------+------+
+		| id | c    | d    |
+		+----+------+------+
+		| 10 |   10 |   10 |
+		+----+------+------+
+		1 row in set (0.00 sec)
+										begin;
+										update t set d=d+1 where c=15;
+										(Blocked)
+																				
+																			begin;
+																			update t set d=d+1 where id=15;
+																			Query OK, 1 row affected (0.00 sec)
+																			Rows matched: 1  Changed: 1  Warnings: 0
+
+																			select * from t;
+																			+----+------+------+
+																			| id | c    | d    |
+																			+----+------+------+
+																			|  0 |    0 |    0 |
+																			|  5 |    5 |    5 |
+																			| 10 |   10 |   10 |
+																			| 15 |   15 |   16 |
+																			| 20 |   20 |   20 |
+																			| 25 |   25 |   25 |
+																			+----+------+------+
+																			6 rows in set (0.00 sec)
+
+																			
+
+		rollback;
+										(Blocked, 被session C的主键id=15的记录锁住，感觉也是合理的。符合：只会对必要的索引加锁这一理论。)	
+																			 commit;
+																						
+										Query OK, 1 row affected (32.77 sec)
+										Rows matched: 1  Changed: 1  Warnings: 0
+
+										root@mysqldb 11:35:  [test_db]> select * from t;
+										+----+------+------+
+										| id | c    | d    |
+										+----+------+------+
+										|  0 |    0 |    0 |
+										|  5 |    5 |    5 |
+										| 10 |   10 |   10 |
+										| 15 |   15 |   17 |
+										| 20 |   20 |   20 |
+										| 25 |   25 |   25 |
+										+----+------+------+
+										6 rows in set (0.00 sec)
+
+
+		加锁，当前读(读取最新版本的记录)，实现串行化，保证数据的一致性
+
+
+
+									
+
+
+	
 4.2.5 非唯一索引上等值查询-Gap lock死锁： 
 
 	session A                                                       session B                                      
