@@ -457,8 +457,15 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 
 																			
 
-		rollback;
-										(Blocked, 被session C的主键id=15的记录锁住，感觉也是合理的。符合：只会对必要的索引加锁这一理论。)	
+		commit;
+										(
+											Blocked
+											被session C主键id=15的记录锁住，感觉也是合理的，不然就是脏读了。
+											符合：只会对必要的索引加锁这一理论。
+											同时还发现1个有趣的现象：
+												二级索引的记录被锁住，导致不能回到主键索引进行加锁。
+												验证了当对二级索引的记录加锁，先锁二级索引的记录，再锁主键索引的记录。
+										)	
 																			 commit;
 																						
 										Query OK, 1 row affected (32.77 sec)
@@ -479,11 +486,6 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 
 
 		加锁，当前读(读取最新版本的记录)，实现串行化，保证数据的一致性
-
-
-
-									
-
 
 	
 4.2.5 非唯一索引上等值查询-Gap lock死锁： 

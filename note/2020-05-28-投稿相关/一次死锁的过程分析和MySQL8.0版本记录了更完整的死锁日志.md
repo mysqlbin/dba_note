@@ -65,8 +65,8 @@
   RECORD LOCKS space id 260 page no 3 n bits 72 index PRIMARY of table `sbtest`.`t1` trx id 18912896 lock_mode X locks rec but not gap waiting
   Record lock, heap no 2 PHYSICAL RECORD: n_fields 8; compact format; info bits 0
    0: len 4; hex 00000001; asc ;;
-   1: len 6; hex 000001209381; asc ;;
-   2: len 7; hex 45000001d825b8; asc E % ;;
+   1: len 6; hex 000001209381; asc ;;             --长度为6个字节的事务ID， 值是16进制 33c54 转为 10进制得到的值为212052，说明被TRANSACTION 18912129 锁住
+   2: len 7; hex 45000001d825b8; asc E % ;;       --长度为7个字节的回滚段信息
    3: len 4; hex 80000001; asc ;;
    4: len 4; hex 80000001; asc ;;
    5: len 6; hex 313233343536; asc 123456;;
@@ -85,8 +85,8 @@
   RECORD LOCKS space id 260 page no 3 n bits 72 index PRIMARY of table `sbtest`.`t1` trx id 18912129 lock_mode X locks rec but not gap
   Record lock, heap no 2 PHYSICAL RECORD: n_fields 8; compact format; info bits 0
    0: len 4; hex 00000001; asc ;;
-   1: len 6; hex 000001209381; asc ;;
-   2: len 7; hex 45000001d825b8; asc E % ;;
+   1: len 6; hex 000001209381; asc ;;            --长度为6个字节的事务ID， 值是16进制 33c54 转为 10进制得到的值为18912129
+   2: len 7; hex 45000001d825b8; asc E % ;;      --长度为7个字节的回滚段信息
    3: len 4; hex 80000001; asc ;;
    4: len 4; hex 80000001; asc ;;
    5: len 6; hex 313233343536; asc 123456;;
@@ -109,6 +109,7 @@
   分析死锁的时候，我习惯把事务编号小的定义为事务一
 
 3.3 事务一的信息：
+
 ```
   事务一的SQL语句：
       update t1 set status=1 where order_no='123456'
@@ -125,7 +126,7 @@
       index idx_status_createtime of table `sbtest`.`t1` --表示在等的是表t1 的辅助索引idx_status_createtime 上面的锁
       lock_mode X locks rec but not gap waiting --表示需要加一个排他锁（写锁），当前的状态是等待中
       Record lock --表示这是一个记录锁
-      n_fields 3 --表示辅助索引idx_status_createtime的记录是3列, 根据索引的存储结构, 3列依次为 status、createtime、ID
+      n_fields 3 --表示辅助索引idx_status_createtime的记录有3列, 根据索引的数据结构, 这3列依次为 status、createtime、ID
       0: len 4; hex 80000000; asc ;; --status字段, 值为 0
       1: len 4; hex 5ea26698; asc ^ f ;; --createtime字段, 5ea26698 从16进制转换为10进制, 得到时间戳1587701400, 转换为具体的日期: 2020-04-24 12:10:00
       2: len 4; hex 00000001; asc ;; --ID字段, 1从16进制转换为10进制, 得到的值为1
@@ -226,7 +227,7 @@ trx_id 为 18912129 向表 t1 加了一个 X 的记录锁， trx_id 为 18912896
 
    方式2更优雅。
 
-   实践意义：尽量不要用范围更新，可以先把主键查询出来，再通过主键作为条件进行更新。
+   实践意义：尽量不要用范围更新，可以使用范围查询，把主键查询出来，再通过主键作为条件进行更新。
 
 ####6. MySQL 8.0.19 版本测试本案例
  环境
@@ -297,8 +298,8 @@ trx_id 为 18912129 向表 t1 加了一个 X 的记录锁， trx_id 为 18912896
   RECORD LOCKS space id 15 page no 4 n bits 72 index PRIMARY of table `sbtest`.`t1` trx id 212055 lock_mode X locks rec but not gap waiting
   Record lock, heap no 2 PHYSICAL RECORD: n_fields 8; compact format; info bits 0
    0: len 4; hex 00000001; asc ;; 
-   1: len 6; hex 000000033c54; asc <T;;
-   2: len 7; hex 0200000ff80e6a; asc j;;
+   1: len 6; hex 000000033c54; asc <T;;       --长度为6个字节的事务ID， 值是16进制 33c54 转为 10进制得到的值为212052，说明被TRANSACTION 212052 锁住
+   2: len 7; hex 0200000ff80e6a; asc j;;      --长度为7个字节的回滚段信息
    3: len 4; hex 80000001; asc ;;
    4: len 4; hex 80000001; asc ;;
    5: len 6; hex 313233343536; asc 123456;; 
@@ -316,8 +317,8 @@ trx_id 为 18912129 向表 t1 加了一个 X 的记录锁， trx_id 为 18912896
   RECORD LOCKS space id 15 page no 4 n bits 72 index PRIMARY of table `sbtest`.`t1` trx id 212052 lock_mode X locks rec but not gap
   Record lock, heap no 2 PHYSICAL RECORD: n_fields 8; compact format; info bits 0
    0: len 4; hex 00000001; asc ;; 
-   1: len 6; hex 000000033c54; asc <T;;
-   2: len 7; hex 0200000ff80e6a; asc j;;
+   1: len 6; hex 000000033c54; asc <T;;       --长度为6个字节的事务ID， 值是16进制 33c54 转为 10进制得到的值为212052
+   2: len 7; hex 0200000ff80e6a; asc j;;      --长度为7个字节的回滚段信息
    3: len 4; hex 80000001; asc ;;
    4: len 4; hex 80000001; asc ;;
    5: len 6; hex 313233343536; asc 123456;; 
