@@ -52,3 +52,9 @@
     order by desc 
 
 
+6. 
+
+
+lock_mode X waiting表示next-key lock；
+lock_mode X locks rec but not gap是只有行锁；
+还有一种 “locks gap before rec”，就是只有间隙锁；
