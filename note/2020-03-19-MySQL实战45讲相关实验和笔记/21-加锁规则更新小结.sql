@@ -53,8 +53,9 @@
 
 
 6. 
-
-
-lock_mode X waiting表示next-key lock；
-lock_mode X locks rec but not gap是只有行锁；
-还有一种 “locks gap before rec”，就是只有间隙锁；
+	lock_mode X waiting                 表示next-key lock；
+	lock_mode X locks rec but not gap   是只有行锁；
+	locks gap before rec                就是只有间隙锁；
+	
+	
+	

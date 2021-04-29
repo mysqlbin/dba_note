@@ -33,7 +33,6 @@
     7. 死锁日志记录的两个SQL是处于锁等待状态的。  --自己的总结
 		由于死锁日志仅记录了最后引起死锁的两条SQL，因此并不能通过死锁日志立即定位
 	
-		
 	
 2. 总结
 
@@ -62,6 +61,12 @@
     8. HOLDS THE LOCK(S) 是已经执行通过的，但是事务没有提交，所以已经持有了锁。
 
 	9. next-key lock = gap lock + record lock （前开后闭）
+	
+	10. 
+		lock_mode X waiting                 表示next-key lock；
+		lock_mode X locks rec but not gap   是只有行锁；
+		locks gap before rec                就是只有间隙锁；
+	
 	
 3. 根据理论/实验的总结
 
