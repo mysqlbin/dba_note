@@ -1,32 +1,43 @@
 
-CREATE TABLE `t` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `c` int(11) DEFAULT NULL,
-  `d` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `c` (`c`)
-) ENGINE=InnoDB;
 
-insert into t values(null, 1,1);
-insert into t values(null, 2,2);
-insert into t values(null, 3,3);
-insert into t values(null, 4,4);
+1. 初始化表结构和数据
+2. insert ... select 语句的加锁 
+3. insert 循环写入
+4. insert 唯一键冲突
+5. 唯一键冲突加锁			
+6. insert into … on duplicate key update
+7. 小结
 
-mysql> select * from t;
-+----+------+------+
-| id | c    | d    |
-+----+------+------+
-|  1 |    1 |    1 |
-|  2 |    2 |    2 |
-|  3 |    3 |    3 |
-|  4 |    4 |    4 |
-+----+------+------+
-4 rows in set (0.00 sec)
+1. 初始化表结构和数据
+	drop table if exists t;
+	CREATE TABLE `t` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  UNIQUE KEY `c` (`c`)
+	) ENGINE=InnoDB;
 
-create table t2 like t
+	insert into t values(null, 1,1);
+	insert into t values(null, 2,2);
+	insert into t values(null, 3,3);
+	insert into t values(null, 4,4);
+
+	mysql> select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  2 |    2 |    2 |
+	|  3 |    3 |    3 |
+	|  4 |    4 |    4 |
+	+----+------+------+
+	4 rows in set (0.00 sec)
+
+	create table t2 like t;
 
 
-1. insert ... select 语句的加锁 
+2. insert ... select 语句的加锁 
 	事务隔离级别: 可重复读
 	binlog_format: statement 格式;
 	
@@ -60,7 +71,7 @@ create table t2 like t
 		执行 insert … select 的时候，对目标表也不是锁全表，而是只锁住需要访问的资源。
 	
 
-2. insert 循环写入:
+3. insert 循环写入
 
 	都能够学会用 explain 的结果来脑补整条语句的执行过程。
 
@@ -199,83 +210,493 @@ create table t2 like t
 			insert into t select * from temp_t;
 			drop table temp_t;
 
-3. insert 唯一键冲突
+4. insert 唯一键冲突
 
+	root@mysqldb 09:55:  [420_db]> select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  2 |    2 |    2 |
+	|  3 |    3 |    3 |
+	|  4 |    4 |    4 |
+	+----+------+------+
+	4 rows in set (0.06 sec)
 
-	session A                      		session B                  					session C
-	begin;
-	insert into t values(null, 5, 5);		 
-										insert into t values(null, 5, 5);		    insert into t values(null, 5, 5);
-
-	rollback;
-
-																					ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
-
-																			
-
-	mysql>  select locked_index,locked_type,blocking_lock_mode,waiting_lock_mode,waiting_query from sys.innodb_lock_waits;
-	+--------------+-------------+--------------------+-------------------+----------------------------------+
-	| locked_index | locked_type | blocking_lock_mode | waiting_lock_mode | waiting_query                    |
-	+--------------+-------------+--------------------+-------------------+----------------------------------+
-	| c            | RECORD      | X                  | S                 | insert into t values(null, 5, 5) |
-	+--------------+-------------+--------------------+-------------------+----------------------------------+
-	1 row in set, 3 warnings (0.02 sec)
-
-	mysql>  select locked_index,locked_type,blocking_lock_mode,waiting_lock_mode,waiting_query from sys.innodb_lock_waits;
-	+--------------+-------------+--------------------+-------------------+----------------------------------+
-	| locked_index | locked_type | blocking_lock_mode | waiting_lock_mode | waiting_query                    |
-	+--------------+-------------+--------------------+-------------------+----------------------------------+
-	| c            | RECORD      | X                  | S                 | insert into t values(null, 5, 5) |
-	| c            | RECORD      | X                  | S                 | insert into t values(null, 5, 5) |
-	+--------------+-------------+--------------------+-------------------+----------------------------------+
-
-	死锁日志:
-	2019-08-04T05:16:43.317616+08:00 19 [Note] InnoDB: Transactions deadlock detected, dumping detailed information.
-	2019-08-04T05:16:43.317670+08:00 19 [Note] InnoDB: 
-	*** (1) TRANSACTION:
-
-	TRANSACTION 8218471, ACTIVE 34 sec inserting
-	mysql tables in use 1, locked 1
-	LOCK WAIT 4 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
-	MySQL thread id 18, OS thread handle 140220116989696, query id 142 192.168.0.54 root update
-	insert into t values(null, 5, 5)
-	2019-08-04T05:16:43.317745+08:00 19 [Note] InnoDB: *** (1) WAITING FOR THIS LOCK TO BE GRANTED:
-
-	RECORD LOCKS space id 4367 page no 4 n bits 80 index c of table `admin_db`.`t` trx id 8218471 lock_mode X insert intention waiting
-	Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
-	 0: len 8; hex 73757072656d756d; asc supremum;;
-
-	----------------------------------------------------------------------------------------------------------------------------------
+	root@mysqldb 09:56:  [420_db]> show create table t\G;
+	*************************** 1. row ***************************
+		   Table: t
+	Create Table: CREATE TABLE `t` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  UNIQUE KEY `c` (`c`)
+	) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4
+	1 row in set (0.00 sec)	
 	
-	2019-08-04T05:16:43.318013+08:00 19 [Note] InnoDB: *** (2) TRANSACTION:
+	时间点	session A                      		session B                  					session C
+			begin;
+			insert into t values(null, 5, 5);
+	T1 
+			
+												insert into t values(null, 5, 5);		    
+	T2																					     insert into t values(null, 5, 5);
 
-	TRANSACTION 8218473, ACTIVE 9 sec inserting
-	mysql tables in use 1, locked 1
-	4 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
-	MySQL thread id 19, OS thread handle 140220116457216, query id 155 192.168.0.54 root update
-	insert into t values(null, 5, 5)
-	2019-08-04T05:16:43.318082+08:00 19 [Note] InnoDB: *** (2) HOLDS THE LOCK(S):
+			rollback;
+												Query OK, 1 row affected (27.78 sec)
 
-	RECORD LOCKS space id 4367 page no 4 n bits 80 index c of table `admin_db`.`t` trx id 8218473 lock mode S
-	Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
-	 0: len 8; hex 73757072656d756d; asc supremum;;
+																							ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction
 
-	2019-08-04T05:16:43.318210+08:00 19 [Note] InnoDB: *** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+																				
 
-	RECORD LOCKS space id 4367 page no 4 n bits 80 index c of table `admin_db`.`t` trx id 8218473 lock_mode X insert intention waiting
-	Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
-	 0: len 8; hex 73757072656d756d; asc supremum;;
 
-	2019-08-04T05:16:43.318339+08:00 19 [Note] InnoDB: *** WE ROLL BACK TRANSACTION (2)
+	T1 
+		root@mysqldb 10:15:  [(none)]> select * from information_schema.innodb_trx\G;
+		*************************** 1. row ***************************
+							trx_id: 9499678
+						 trx_state: RUNNING
+					   trx_started: 2021-04-30 10:16:03
+			 trx_requested_lock_id: NULL
+				  trx_wait_started: NULL
+						trx_weight: 2
+			   trx_mysql_thread_id: 3
+						 trx_query: NULL
+			   trx_operation_state: NULL
+				 trx_tables_in_use: 0
+				 trx_tables_locked: 1
+				  trx_lock_structs: 1
+			 trx_lock_memory_bytes: 1136
+				   trx_rows_locked: 0
+				 trx_rows_modified: 1
+		   trx_concurrency_tickets: 0
+			   trx_isolation_level: REPEATABLE READ
+				 trx_unique_checks: 1
+			trx_foreign_key_checks: 1
+		trx_last_foreign_key_error: NULL
+		 trx_adaptive_hash_latched: 0
+		 trx_adaptive_hash_timeout: 0
+				  trx_is_read_only: 0
+		trx_autocommit_non_locking: 0
+		1 row in set (0.00 sec)
+
+	T2
+
+		root@mysqldb 10:16:  [(none)]> select * from information_schema.innodb_trx\G;
+		*************************** 1. row ***************************
+							trx_id: 9499679
+						 trx_state: LOCK WAIT
+					   trx_started: 2021-04-30 10:17:02
+			 trx_requested_lock_id: 9499679:27403:4:6
+				  trx_wait_started: 2021-04-30 10:17:02
+						trx_weight: 3
+			   trx_mysql_thread_id: 2
+						 trx_query: insert into t values(null, 5, 5)
+			   trx_operation_state: inserting
+				 trx_tables_in_use: 1
+				 trx_tables_locked: 1
+				  trx_lock_structs: 2
+			 trx_lock_memory_bytes: 1136
+				   trx_rows_locked: 1
+				 trx_rows_modified: 1
+		   trx_concurrency_tickets: 0
+			   trx_isolation_level: REPEATABLE READ
+				 trx_unique_checks: 1
+			trx_foreign_key_checks: 1
+		trx_last_foreign_key_error: NULL
+		 trx_adaptive_hash_latched: 0
+		 trx_adaptive_hash_timeout: 0
+				  trx_is_read_only: 0
+		trx_autocommit_non_locking: 0
+		*************************** 2. row ***************************
+							trx_id: 9499678
+						 trx_state: RUNNING
+					   trx_started: 2021-04-30 10:16:03
+			 trx_requested_lock_id: NULL
+				  trx_wait_started: NULL
+						trx_weight: 3
+			   trx_mysql_thread_id: 3
+						 trx_query: NULL
+			   trx_operation_state: NULL
+				 trx_tables_in_use: 0
+				 trx_tables_locked: 1
+				  trx_lock_structs: 2
+			 trx_lock_memory_bytes: 1136
+				   trx_rows_locked: 1
+				 trx_rows_modified: 1
+		   trx_concurrency_tickets: 0
+			   trx_isolation_level: REPEATABLE READ
+				 trx_unique_checks: 1
+			trx_foreign_key_checks: 1
+		trx_last_foreign_key_error: NULL
+		 trx_adaptive_hash_latched: 0
+		 trx_adaptive_hash_timeout: 0
+				  trx_is_read_only: 0
+		trx_autocommit_non_locking: 0
+		2 rows in set (0.00 sec)
+
+
+
+	T3
+
+		root@mysqldb 10:17:  [(none)]> select * from information_schema.innodb_trx\G;
+		*************************** 1. row ***************************
+							trx_id: 9499680
+						 trx_state: LOCK WAIT
+					   trx_started: 2021-04-30 10:17:16
+			 trx_requested_lock_id: 9499680:27403:4:6
+				  trx_wait_started: 2021-04-30 10:17:16
+						trx_weight: 3
+			   trx_mysql_thread_id: 4
+						 trx_query: insert into t values(null, 5, 5)
+			   trx_operation_state: inserting
+				 trx_tables_in_use: 1
+				 trx_tables_locked: 1
+				  trx_lock_structs: 2
+			 trx_lock_memory_bytes: 1136
+				   trx_rows_locked: 1
+				 trx_rows_modified: 1
+		   trx_concurrency_tickets: 0
+			   trx_isolation_level: REPEATABLE READ
+				 trx_unique_checks: 1
+			trx_foreign_key_checks: 1
+		trx_last_foreign_key_error: NULL
+		 trx_adaptive_hash_latched: 0
+		 trx_adaptive_hash_timeout: 0
+				  trx_is_read_only: 0
+		trx_autocommit_non_locking: 0
+		*************************** 2. row ***************************
+							trx_id: 9499679
+						 trx_state: LOCK WAIT
+					   trx_started: 2021-04-30 10:17:02
+			 trx_requested_lock_id: 9499679:27403:4:6
+				  trx_wait_started: 2021-04-30 10:17:02
+						trx_weight: 3
+			   trx_mysql_thread_id: 2
+						 trx_query: insert into t values(null, 5, 5)
+			   trx_operation_state: inserting
+				 trx_tables_in_use: 1
+				 trx_tables_locked: 1
+				  trx_lock_structs: 2
+			 trx_lock_memory_bytes: 1136
+				   trx_rows_locked: 1
+				 trx_rows_modified: 1
+		   trx_concurrency_tickets: 0
+			   trx_isolation_level: REPEATABLE READ
+				 trx_unique_checks: 1
+			trx_foreign_key_checks: 1
+		trx_last_foreign_key_error: NULL
+		 trx_adaptive_hash_latched: 0
+		 trx_adaptive_hash_timeout: 0
+				  trx_is_read_only: 0
+		trx_autocommit_non_locking: 0
+		*************************** 3. row ***************************
+							trx_id: 9499678
+						 trx_state: RUNNING
+					   trx_started: 2021-04-30 10:16:03
+			 trx_requested_lock_id: NULL
+				  trx_wait_started: NULL
+						trx_weight: 3
+			   trx_mysql_thread_id: 3
+						 trx_query: NULL
+			   trx_operation_state: NULL
+				 trx_tables_in_use: 0
+				 trx_tables_locked: 1
+				  trx_lock_structs: 2
+			 trx_lock_memory_bytes: 1136
+				   trx_rows_locked: 1
+				 trx_rows_modified: 1
+		   trx_concurrency_tickets: 0
+			   trx_isolation_level: REPEATABLE READ
+				 trx_unique_checks: 1
+			trx_foreign_key_checks: 1
+		trx_last_foreign_key_error: NULL
+		 trx_adaptive_hash_latched: 0
+		 trx_adaptive_hash_timeout: 0
+				  trx_is_read_only: 0
+		trx_autocommit_non_locking: 0
+		3 rows in set (0.00 sec)
+
+		root@mysqldb 10:17:  [(none)]> select * from information_schema.innodb_locks\G;
+		*************************** 1. row ***************************
+			lock_id: 9499680:27403:4:6
+		lock_trx_id: 9499680
+		  lock_mode: S
+		  lock_type: RECORD
+		 lock_table: `420_db`.`t`
+		 lock_index: c
+		 lock_space: 27403
+		  lock_page: 4
+		   lock_rec: 6
+		  lock_data: 5
+		*************************** 2. row ***************************
+			lock_id: 9499678:27403:4:6
+		lock_trx_id: 9499678
+		  lock_mode: X
+		  lock_type: RECORD
+		 lock_table: `420_db`.`t`
+		 lock_index: c
+		 lock_space: 27403
+		  lock_page: 4
+		   lock_rec: 6
+		  lock_data: 5
+		*************************** 3. row ***************************
+			lock_id: 9499679:27403:4:6
+		lock_trx_id: 9499679
+		  lock_mode: S
+		  lock_type: RECORD
+		 lock_table: `420_db`.`t`
+		 lock_index: c
+		 lock_space: 27403
+		  lock_page: 4
+		   lock_rec: 6
+		  lock_data: 5
+		3 rows in set, 1 warning (0.00 sec)
+
+		root@mysqldb 10:17:  [(none)]> select * from information_schema.innodb_lock_waits\G;
+		*************************** 1. row ***************************
+		requesting_trx_id: 9499680
+		requested_lock_id: 9499680:27403:4:6
+		  blocking_trx_id: 9499678
+		 blocking_lock_id: 9499678:27403:4:6
+		*************************** 2. row ***************************
+		requesting_trx_id: 9499679
+		requested_lock_id: 9499679:27403:4:6
+		  blocking_trx_id: 9499678
+		 blocking_lock_id: 9499678:27403:4:6
+		2 rows in set, 1 warning (0.01 sec)
+
+	
+
+		root@mysqldb 10:17:  [(none)]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+		+--------------+-------------+----------------------------------+-------------------+--------------------+
+		| locked_index | locked_type | waiting_query                    | waiting_lock_mode | blocking_lock_mode |
+		+--------------+-------------+----------------------------------+-------------------+--------------------+
+		| c            | RECORD      | insert into t values(null, 5, 5) | S                 | X                  |
+		| c            | RECORD      | insert into t values(null, 5, 5) | S                 | X                  |
+		+--------------+-------------+----------------------------------+-------------------+--------------------+
+		2 rows in set, 3 warnings (0.00 sec)
+		
+
+		死锁日志:
+			2021-04-30T10:17:30.276895+08:00 4 [Note] InnoDB: Transactions deadlock detected, dumping detailed information.
+			2021-04-30T10:17:30.276925+08:00 4 [Note] InnoDB: 
+			*** (1) TRANSACTION:
+
+			TRANSACTION 9499679, ACTIVE 28 sec inserting
+			mysql tables in use 1, locked 1
+			LOCK WAIT 4 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+			MySQL thread id 2, OS thread handle 140670100358912, query id 62 localhost root update
+			insert into t values(null, 5, 5)
+			2021-04-30T10:17:30.277315+08:00 4 [Note] InnoDB: *** (1) WAITING FOR THIS LOCK TO BE GRANTED:
+
+			RECORD LOCKS space id 27403 page no 4 n bits 72 index c of table `420_db`.`t` trx id 9499679 lock_mode X insert intention waiting
+			Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
+			 0: len 8; hex 73757072656d756d; asc supremum;;
+
+			2021-04-30T10:17:30.277744+08:00 4 [Note] InnoDB: *** (2) TRANSACTION:
+
+			TRANSACTION 9499680, ACTIVE 14 sec inserting
+			mysql tables in use 1, locked 1
+			4 lock struct(s), heap size 1136, 2 row lock(s), undo log entries 1
+			MySQL thread id 4, OS thread handle 140670099293952, query id 64 localhost root update
+			insert into t values(null, 5, 5)
+			2021-04-30T10:17:30.277891+08:00 4 [Note] InnoDB: *** (2) HOLDS THE LOCK(S):
+
+			RECORD LOCKS space id 27403 page no 4 n bits 72 index c of table `420_db`.`t` trx id 9499680 lock mode S
+			Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
+			 0: len 8; hex 73757072656d756d; asc supremum;;
+
+			2021-04-30T10:17:30.278148+08:00 4 [Note] InnoDB: *** (2) WAITING FOR THIS LOCK TO BE GRANTED:
+
+			RECORD LOCKS space id 27403 page no 4 n bits 72 index c of table `420_db`.`t` trx id 9499680 lock_mode X insert intention waiting
+			Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
+			 0: len 8; hex 73757072656d756d; asc supremum;;
+
+			2021-04-30T10:17:30.278529+08:00 4 [Note] InnoDB: *** WE ROLL BACK TRANSACTION (2)
 					
 
-	insert into … on duplicate key update:
+
+5. 唯一键冲突加锁			
+	root@mysqldb 09:55:  [420_db]> select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  2 |    2 |    2 |
+	|  3 |    3 |    3 |
+	|  4 |    4 |    4 |
+	+----+------+------+
+	4 rows in set (0.06 sec)
+
+	root@mysqldb 09:56:  [420_db]> show create table t\G;
+	*************************** 1. row ***************************
+		   Table: t
+	Create Table: CREATE TABLE `t` (
+	  `id` int(11) NOT NULL AUTO_INCREMENT,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  UNIQUE KEY `c` (`c`)
+	) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4
+	1 row in set (0.00 sec)		
+			
+	
+	session A                                            session B
+	insert into t values(10, 10, 10);
+	select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  2 |    2 |    2 |
+	|  3 |    3 |    3 |
+	|  4 |    4 |    4 |
+	| 10 |   10 |   10 |
+	+----+------+------+
+	5 rows in set (0.00 sec)
+
+	begin;
+	mysql> insert into t values(11, 10, 10);
+	ERROR 1062 (23000): Duplicate entry '10' for key 'c'
+	
+	mysql> select * from information_schema.innodb_trx\G;
+	*************************** 1. row ***************************
+						trx_id: 9499653
+					 trx_state: RUNNING
+				   trx_started: 2021-04-30 09:58:45
+		 trx_requested_lock_id: NULL
+			  trx_wait_started: NULL
+					trx_weight: 2
+		   trx_mysql_thread_id: 3
+					 trx_query: NULL
+		   trx_operation_state: NULL
+			 trx_tables_in_use: 0
+			 trx_tables_locked: 1
+			  trx_lock_structs: 2
+		 trx_lock_memory_bytes: 1136
+			   trx_rows_locked: 1
+			 trx_rows_modified: 0
+	   trx_concurrency_tickets: 0
+		   trx_isolation_level: REPEATABLE READ
+			 trx_unique_checks: 1
+		trx_foreign_key_checks: 1
+	trx_last_foreign_key_error: NULL
+	 trx_adaptive_hash_latched: 0
+	 trx_adaptive_hash_timeout: 0
+			  trx_is_read_only: 0
+	trx_autocommit_non_locking: 0
+	1 row in set (0.00 sec)
+
+													mysql> insert into t values(12, 9, 9);		
+
+
+
+													mysql> select * from information_schema.innodb_trx\G;
+													*************************** 1. row ***************************
+																		trx_id: 9499655
+																	 trx_state: LOCK WAIT
+																   trx_started: 2021-04-30 10:00:08
+														 trx_requested_lock_id: 9499655:27401:4:6
+															  trx_wait_started: 2021-04-30 10:00:08
+																	trx_weight: 3
+														   trx_mysql_thread_id: 2
+																	 trx_query: insert into t values(12, 9, 9)
+														   trx_operation_state: inserting
+															 trx_tables_in_use: 1
+															 trx_tables_locked: 1
+															  trx_lock_structs: 2
+														 trx_lock_memory_bytes: 1136
+															   trx_rows_locked: 1
+															 trx_rows_modified: 1
+													   trx_concurrency_tickets: 0
+														   trx_isolation_level: REPEATABLE READ
+															 trx_unique_checks: 1
+														trx_foreign_key_checks: 1
+													trx_last_foreign_key_error: NULL
+													 trx_adaptive_hash_latched: 0
+													 trx_adaptive_hash_timeout: 0
+															  trx_is_read_only: 0
+													trx_autocommit_non_locking: 0
+													*************************** 2. row ***************************
+																		trx_id: 9499653
+																	 trx_state: RUNNING
+																   trx_started: 2021-04-30 09:58:45
+														 trx_requested_lock_id: NULL
+															  trx_wait_started: NULL
+																	trx_weight: 2
+														   trx_mysql_thread_id: 3
+																	 trx_query: NULL
+														   trx_operation_state: NULL
+															 trx_tables_in_use: 0
+															 trx_tables_locked: 1
+															  trx_lock_structs: 2
+														 trx_lock_memory_bytes: 1136
+															   trx_rows_locked: 1
+															 trx_rows_modified: 0
+													   trx_concurrency_tickets: 0
+														   trx_isolation_level: REPEATABLE READ
+															 trx_unique_checks: 1
+														trx_foreign_key_checks: 1
+													trx_last_foreign_key_error: NULL
+													 trx_adaptive_hash_latched: 0
+													 trx_adaptive_hash_timeout: 0
+															  trx_is_read_only: 0
+													trx_autocommit_non_locking: 0
+													2 rows in set (0.00 sec)
+
+													mysql> select * from information_schema.innodb_locks\G;
+													*************************** 1. row ***************************
+														lock_id: 9499655:27401:4:6
+													lock_trx_id: 9499655
+													  lock_mode: X,GAP
+													  lock_type: RECORD
+													 lock_table: `420_db`.`t`
+													 lock_index: c
+													 lock_space: 27401
+													  lock_page: 4
+													   lock_rec: 6
+													  lock_data: 10
+													*************************** 2. row ***************************
+														lock_id: 9499653:27401:4:6
+													lock_trx_id: 9499653
+													  lock_mode: S
+													  lock_type: RECORD
+													 lock_table: `420_db`.`t`
+													 lock_index: c
+													 lock_space: 27401
+													  lock_page: 4
+													   lock_rec: 6
+													  lock_data: 10
+													2 rows in set, 1 warning (0.00 sec)
+
+													
+													mysql> select * from information_schema.innodb_lock_waits\G;
+													*************************** 1. row ***************************
+													requesting_trx_id: 9499655
+													requested_lock_id: 9499655:27401:4:6
+													  blocking_trx_id: 9499653
+													 blocking_lock_id: 9499653:27401:4:6
+													1 row in set, 1 warning (0.00 sec)
+
+													
+													mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+													+--------------+-------------+--------------------------------+-------------------+--------------------+
+													| locked_index | locked_type | waiting_query                  | waiting_lock_mode | blocking_lock_mode |
+													+--------------+-------------+--------------------------------+-------------------+--------------------+
+													| c            | RECORD      | insert into t values(12, 9, 9) | X,GAP             | S                  |
+													+--------------+-------------+--------------------------------+-------------------+--------------------+
+													1 row in set, 3 warnings (0.02 sec)
+
+
+
+
+6. insert into … on duplicate key update
 
 	insert into … on duplicate key update 这个语义的逻辑:
 		插入一行数据，如果碰到唯一键约束，就执行后面的更新语句。
 		如果有多个列违反了唯一性约束，就会按照索引的顺序，修改跟第一个索引冲突的行。	
-
-
+	
 	样例：
 		表 t 里面已经有了 (1,1,1) 和 (2,2,2) 这两行；
 		执行语句： insert into t values(2, 1, 100) on duplicate key update d=100;
@@ -283,6 +704,12 @@ create table t2 like t
 		执行这条语句的 affected rows 返回的是 2，很容易造成误解：
 			实际上，真正更新的只有一行，只是在代码实现上，insert 和 update 都认为自己成功了，update 计数加了 1， insert 计数也加了 1。	
 
-			
-		
-		
+
+7. 小结
+	第40讲涉及到的东西还挺多。
+	
+
+select * from information_schema.innodb_trx\G;
+select * from information_schema.innodb_locks\G;
+select * from information_schema.innodb_lock_waits\G;
+SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;

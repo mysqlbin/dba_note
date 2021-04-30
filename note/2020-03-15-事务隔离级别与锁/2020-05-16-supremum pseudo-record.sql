@@ -11,7 +11,7 @@
 
 0. 什么是supremum pseudo-record
 
-	InnoDB给每个索引加了一个不存在的最大值 supremum, 相当于比索引中最大值还大，相当于最后一行之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
+	InnoDB给每个索引加了一个不存在的最大值 supremum, 相当于比索引中最大值还大，可以理解最后一行记录之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
 	
 	RR隔离级别才会持有。（总的来说就是每个索引页不存在的最大值）
 	
