@@ -7,6 +7,8 @@
 5. 唯一键冲突加锁			
 6. insert into … on duplicate key update
 7. 小结
+8. 思考 
+
 
 1. 初始化表结构和数据
 	drop table if exists t;
@@ -708,6 +710,144 @@
 7. 小结
 	第40讲涉及到的东西还挺多。
 	
+
+8. 思考 
+
+	时间点  	session A           session B 
+								
+									begin;
+									insert into t_20210430(`name`, `ages`, `ismale`, `id_card`, `test1`, `test2`, `createTime`) 
+									select `name`, `ages`, `ismale`, `id_card`, `test1`, `test2`, `createTime` from t_20201023;
+							
+				INSERT INTO `t_20201023` (`name`, `ages`, `ismale`, `id_card`, `test1`, `test2`, `createTime`) 
+				VALUES ('dbf92f8c5f', '50001', '56', 'c6b8b20e7ced13c3ad8c73342c76c9', 'cbb002f8fb918331b0ef5a0d2e91ade8cbc9a9dfacf779920e28b2e5ccbcecc3测试', '00b00e2d067c5ed30b96704453c126d20991cf3e8347322a0a6037d8f76a16fe测试', '2020-10-23 16:02:40.987');
+	T1 					
+									Query OK, 2399998 rows affected (1 min 31.62 sec)
+									Records: 2399998  Duplicates: 0  Warnings: 0
+
+	T2 
+
+									root@mysqldb 15:04:  [test_db]> commit;
+									Query OK, 0 rows affected (4.65 sec)
+	T3
+
+
+	T1 
+
+		[root@localhost logs]# ll
+		总用量 284
+		-rw-r--r-- 1 root  root  247416 3月   1 10:35 55.sql
+		-rw-r----- 1 mysql mysql  11477 4月  28 16:51 mysql-bin.000079
+		-rw-r----- 1 mysql mysql   2642 4月  29 16:46 mysql-bin.000080
+		-rw-r----- 1 mysql mysql   2120 4月  29 17:39 mysql-bin.000081
+		-rw-r----- 1 mysql mysql   2404 4月  30 09:54 mysql-bin.000082
+		-rw-r----- 1 mysql mysql   3305 4月  30 15:00 mysql-bin.000083
+		-rw-r----- 1 mysql mysql    680 4月  30 15:03 mysql-bin.000084
+		-rw-r----- 1 mysql mysql    264 4月  30 15:00 mysql-bin.index
+
+		[root@localhost logs]# mysqlbinlog --no-defaults -vv --base64-output=decode-rows  mysql-bin.000084  > mysqlbinlog_000084.sql
+		[root@localhost logs]# cat mysqlbinlog_000084.sql 
+		/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=1*/;
+		/*!50003 SET @OLD_COMPLETION_TYPE=@@COMPLETION_TYPE,COMPLETION_TYPE=0*/;
+		DELIMITER /*!*/;
+		# at 4
+		#210430 15:00:27 server id 330607  end_log_pos 123 CRC32 0x61aeec20 	Start: binlog v 4, server v 5.7.22-log created 210430 15:00:27 at startup
+		# Warning: this binlog is either in use or was not closed properly.
+		ROLLBACK/*!*/;
+		# at 123
+		#210430 15:00:27 server id 330607  end_log_pos 194 CRC32 0xb2b71d15 	Previous-GTIDs
+		# 56e3abc1-a3e7-11ea-8d96-484d7ea518b9:1635-168567
+		# at 194
+		#210430 15:03:15 server id 330607  end_log_pos 259 CRC32 0x651783b8 	GTID	last_committed=0	sequence_number=1	rbr_only=yes
+		/*!50718 SET TRANSACTION ISOLATION LEVEL READ COMMITTED*//*!*/;
+		SET @@SESSION.GTID_NEXT= '56e3abc1-a3e7-11ea-8d96-484d7ea518b9:168568'/*!*/;
+		# at 259
+		#210430 15:03:15 server id 330607  end_log_pos 342 CRC32 0x215e2b39 	Query	thread_id=2	exec_time=0	error_code=0
+		SET TIMESTAMP=1619766195/*!*/;
+		SET @@session.pseudo_thread_id=2/*!*/;
+		SET @@session.foreign_key_checks=1, @@session.sql_auto_is_null=0, @@session.unique_checks=1, @@session.autocommit=1/*!*/;
+		SET @@session.sql_mode=1075838976/*!*/;
+		SET @@session.auto_increment_increment=1, @@session.auto_increment_offset=1/*!*/;
+		/*!\C utf8 *//*!*/;
+		SET @@session.character_set_client=33,@@session.collation_connection=33,@@session.collation_server=45/*!*/;
+		SET @@session.time_zone='SYSTEM'/*!*/;
+		SET @@session.lc_time_names=0/*!*/;
+		SET @@session.collation_database=DEFAULT/*!*/;
+		BEGIN
+		/*!*/;
+		# at 342
+		#210430 15:03:15 server id 330607  end_log_pos 412 CRC32 0xf09cb5d2 	Table_map: `test_db`.`t_20201023` mapped to number 120
+		# at 412
+		#210430 15:03:15 server id 330607  end_log_pos 649 CRC32 0x7bf45896 	Write_rows: table id 120 flags: STMT_END_F
+		### INSERT INTO `test_db`.`t_20201023`
+		### SET
+		###   @1=2400001 /* INT meta=0 nullable=0 is_null=0 */
+		###   @2='dbf92f8c5f' /* VARSTRING(128) meta=128 nullable=0 is_null=0 */
+		###   @3=50001 /* INT meta=0 nullable=0 is_null=0 */
+		###   @4=56 /* TINYINT meta=0 nullable=0 is_null=0 */
+		###   @5='c6b8b20e7ced13c3ad8c73342c76c9' /* VARSTRING(128) meta=128 nullable=0 is_null=0 */
+		###   @6='cbb002f8fb918331b0ef5a0d2e91ade8cbc9a9dfacf779920e28b2e5ccbcecc3测试' /* BLOB/TEXT meta=2 nullable=1 is_null=0 */
+		###   @7='00b00e2d067c5ed30b96704453c126d20991cf3e8347322a0a6037d8f76a16fe测试' /* BLOB/TEXT meta=2 nullable=1 is_null=0 */
+		###   @8=1603440160.987 /* TIMESTAMP(3) meta=3 nullable=0 is_null=0 */
+		# at 649
+		#210430 15:03:15 server id 330607  end_log_pos 680 CRC32 0x56a8f297 	Xid = 22
+		COMMIT/*!*/;
+		SET @@SESSION.GTID_NEXT= 'AUTOMATIC' /* added by mysqlbinlog */ /*!*/;
+		DELIMITER ;
+		# End of log file
+		/*!50003 SET COMPLETION_TYPE=@OLD_COMPLETION_TYPE*/;
+		/*!50530 SET @@SESSION.PSEUDO_SLAVE_MODE=0*/;
+
+
+	T2 
+		[root@localhost logs]# ll
+		总用量 284
+		-rw-r--r-- 1 root  root  247416 3月   1 10:35 55.sql
+		-rw-r----- 1 mysql mysql  11477 4月  28 16:51 mysql-bin.000079
+		-rw-r----- 1 mysql mysql   2642 4月  29 16:46 mysql-bin.000080
+		-rw-r----- 1 mysql mysql   2120 4月  29 17:39 mysql-bin.000081
+		-rw-r----- 1 mysql mysql   2404 4月  30 09:54 mysql-bin.000082
+		-rw-r----- 1 mysql mysql   3305 4月  30 15:00 mysql-bin.000083
+		-rw-r----- 1 mysql mysql    680 4月  30 15:03 mysql-bin.000084
+		-rw-r----- 1 mysql mysql    264 4月  30 15:00 mysql-bin.index
+
+
+
+	T3
+
+		[root@localhost logs]# ll
+		总用量 524568
+		-rw-r--r-- 1 root  root     247416 3月   1 10:35 55.sql
+		-rw-r----- 1 mysql mysql     11477 4月  28 16:51 mysql-bin.000079
+		-rw-r----- 1 mysql mysql      2642 4月  29 16:46 mysql-bin.000080
+		-rw-r----- 1 mysql mysql      2120 4月  29 17:39 mysql-bin.000081
+		-rw-r----- 1 mysql mysql      2404 4月  30 09:54 mysql-bin.000082
+		-rw-r----- 1 mysql mysql      3305 4月  30 15:00 mysql-bin.000083
+		-rw-r----- 1 mysql mysql 486900517 4月  30 15:06 mysql-bin.000084
+		-rw-r----- 1 mysql mysql       264 4月  30 15:00 mysql-bin.index
+
+
+		root@mysqldb 15:08:  [test_db]> select count(*) from t_20201023;
+		+----------+
+		| count(*) |
+		+----------+
+		|  2399999 |
+		+----------+
+		1 row in set (0.63 sec)
+
+		root@mysqldb 15:09:  [test_db]> select count(*) from t_20210430;
+		+----------+
+		| count(*) |
+		+----------+
+		|  2399998 |
+		+----------+
+		1 row in set (0.34 sec)
+
+	
+	事务提交, binlog才刷盘。
+	
+	
+
 
 select * from information_schema.innodb_trx\G;
 select * from information_schema.innodb_locks\G;
