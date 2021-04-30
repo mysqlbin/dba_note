@@ -482,11 +482,11 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 										| 20 |   20 |   20 |
 										| 25 |   25 |   25 |
 										+----+------+------+
-										6 rows in set (0.00 sec)
+										6 rows in set (0.00 
 
 
 		加锁，当前读(读取最新版本的记录)，实现串行化，保证数据的一致性
-
+		要用动态的观点看锁、分析锁。
 	
 4.2.5 非唯一索引上等值查询-Gap lock死锁： 
 
