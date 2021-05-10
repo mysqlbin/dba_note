@@ -10,3 +10,6 @@
 	
 	
 	
+https://mp.weixin.qq.com/s?__biz=MjM5MjIxNDA4NA==&mid=401323641&idx=1&sn=a49d44b8b67f529557e99094cb6453e9&scene=21#wechat_redirect   你的系统真的需要分布式数据库架构吗？
+
+	
