@@ -79,7 +79,7 @@
 4. 在slave1备份
 
 
-	/usr/local/mysql/bin/mysqldump -uroot -p123456abc --single-transaction --master-data=2 -R -E -B  -A  > 2020-10-19.dump
+	/usr/local/mysql/bin/mysqldump -uroot -p123456abc --single-transaction --master-data=2 -R -E -A  > 2020-10-19.dump
 
 	Warning: A partial dump from a server that has GTIDs will by default include the GTIDs of all transactions, even those that changed suppressed parts of the database. 
 	If you dont want to restore GTIDs, pass --set-gtid-purged=OFF. To make a complete dump, pass --all-databases --triggers --routines --events.

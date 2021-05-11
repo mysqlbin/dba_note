@@ -13,7 +13,10 @@
 
 	select 3034642/60/60/24=35天
 	
-
+	主库的binlog可以正常同步到从库，并写入relay log，因些最近35天的relay log是一直存在的。
+	
+	
+	
 相关监控
 	1. 每天的9点和18点查询一次数据库并发送邮件
 		0 9 * * * /usr/bin/python /home/coding001/scripts/data_monitor_db3_py2.py -beforeDay=-1

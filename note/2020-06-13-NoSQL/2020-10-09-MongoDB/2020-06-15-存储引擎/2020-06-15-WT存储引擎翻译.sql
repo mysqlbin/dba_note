@@ -75,7 +75,7 @@
 	
 	从MongoDB 3.4开始，默认的WiredTiger内部缓存大小是以下两者中的较大者：
 		50％（RAM-1 GB）或256 MB。
-		例如，在总共有4GB RAM的系统上，WiredTiger缓存将使用1.5GB RAM（0.5 *（4 GB-1 GB）= 1.5 GB）。
+		例如，在总共有4GB RAM的系统上，WiredTiger缓存将使用1.5GB，RAM（0.5 *（4 GB-1 GB）= 1.5 GB）。
 		相反，总内存为1.25 GB的系统将为WiredTiger缓存分配256 MB，因为这是总RAM的一半以上减去一GB（0.5 *（1.25 GB-1 GB）= 128 MB <256 MB） 。
 		
 	默认情况下，WiredTiger对所有集合使用Snappy块压缩，对所有索引使用前缀压缩。 压缩默认值是可以在全局级别配置的，也可以在收集和索引创建期间基于每个集合和每个索引进行设置。
@@ -89,8 +89,7 @@
 		块压缩可以节省大量的磁盘存储空间，但是必须对数据进行解压缩才能由服务器进行处理。
 		通过文件系统缓存，MongoDB自动使用WiredTiger缓存或其他进程未使用的所有可用内存。
 		
-		
-		
+	
 6. 参考
 
 	https://docs.mongodb.com/manual/core/wiredtiger/ 

@@ -61,6 +61,14 @@
 	
     导出全库：
         mysqldump -uroot -p123456abc --single-transaction --master-data=2 -A > backup.sql  
+		
+        mysqldump -uroot -p@ly242yhn%. --single-transaction --master-data=2 -A -R -E > backup.sql  
+		
+        mysqldump -uroot -p@ly242yhn%. --single-transaction --master-data=2 -A -R -E |gzip > backup.dump.gz  
+		
+		flush privileges;
+		
+		
 		# done 
     导出单个库:
         mysqldump -uroot -p123456abc  --single-transaction --master-data=2 -B zst > backup.sql  
