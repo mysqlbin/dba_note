@@ -224,4 +224,3 @@
 
 
 	
-db.table_report_log.find({"nplayerid" : 131525}).sort({"_id":-1}).limit(1)
