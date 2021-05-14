@@ -1,11 +1,11 @@
 
 0. 行锁根据互斥的纬度可以分为 
 1. 使用 LOCK IN SHARE MODE 共享锁的场景
-2. 使用 FOR UPDATE 共享锁的场景
+2. 使用 FOR UPDATE 排他锁的场景
 3. 小结
 4. 思考
 5. 相关参考
-
+6. 小结
 
 0. 行锁根据互斥的纬度可以分为
 	共享锁：当读取当一行记录时为了防止别人修改则需要添加S锁
@@ -131,7 +131,7 @@
 
 
 	
-2. 使用 FOR UPDATE 共享锁的场景
+2. 使用 FOR UPDATE 排他锁的场景
 	
 	订单的商品数量: 下订单, 修改商品的库存; 其实主要是解决商品库存更新丢失的问题。
 	mysql> select @@tx_isolation;
@@ -157,6 +157,8 @@
 	
 		SESSION A                                                          SESSION B
 		update product set amount=amount-$order_amount_a where name='mi8';
+		
+		
 																		   update product set amount=amount-$order_amount_b where name='mi8';
 																		   (Blocked; SESSION A未提交，排他锁跟排他锁互斥, 所以这里会阻塞,
 																				被阻塞后, SESSION B获取不到这name='mi8'一行的行锁,
@@ -175,7 +177,7 @@
 		start transaction;
 																			start transaction;			
 		$res = select amount from product where name='mi8';  #res=10
-	
+		
 																		   $order_amount = 1
 																		   $res = select amount from product where name='mi8'; #res=10;
 																		   
@@ -194,7 +196,7 @@
 																		   (result: amount=9; 实际上这里返回的应该是7
 																			所以SELECT 语句不加锁，会造成商品存在不一致。)
 	这就是更新丢失的场景; 矛盾点所在：
-		update语句虽然是当前读，虽然能读取能SESSION A已经提交的最新版本的库存数量；
+		update语句的当前读，虽然能读取到SESSION A已经提交的最新版本的库存数量；
 		但是这里的update语句的更新库存数量操作，是通过两个变量相减的。
 	
 	
@@ -228,7 +230,7 @@
 																			update product set amount=amounts-1 where name='mi8';
 		commit;
 																			commit;
-		如果用的是 for update, 解决了死锁和丢失更新的问题, 但是并发度会有下降;
+		如果用的是 for update, 操作同一行记录是以串行的方式执行，因此解决了死锁和丢失更新的问题;
 	
 
 3. 小结
@@ -238,8 +240,9 @@
 		目前生产环境上有在用，用于 玩家积分 的场景上。
 	共享锁:
 		一般用在多个表存在业务关系的场景下, 解决数据不一致的问题;
-
-
+	加锁设计，也是一门学问。
+	
+	
 4. 思考
 	1. 一个事务内，给行记录加上for update之后, 接下来更新这一行，是否会被阻塞？
 
@@ -281,5 +284,8 @@
 5. 相关参考
 	https://www.cnblogs.com/liaoweipeng/p/7615959.html             MySQL的排他锁和共享锁
 	https://dev.mysql.com/doc/refman/5.7/en/innodb-locks-set.html
+	
+	
+
 	
 	

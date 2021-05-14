@@ -64,7 +64,7 @@
 		
         mysqldump -uroot -p@ly242yhn%. --single-transaction --master-data=2 -A -R -E > backup.sql  
 		
-        mysqldump -uroot -p@ly242yhn%. --single-transaction --master-data=2 -A -R -E |gzip > backup.dump.gz  
+        mysqldump -uroot -pzP1ExFNsugs% --single-transaction --master-data=2 -A -R -E |gzip > backup.dump.gz  
 		
 		flush privileges;
 		

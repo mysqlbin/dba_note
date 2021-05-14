@@ -438,7 +438,7 @@
 	
 4. 小结
 	supremum pseudo-record : 
-		比索引中的最大值还大，相当于最后一行之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
+		比索引中的最大值还大，相当于最后一行记录之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
 		RR隔离级别持有；
 		RC隔离级别下也会持有，不过如果 supremum 没有被别的事务锁住，那么会立即被释放。
 
