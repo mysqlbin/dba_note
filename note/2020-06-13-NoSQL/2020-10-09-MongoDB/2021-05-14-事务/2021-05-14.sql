@@ -151,7 +151,7 @@
 	
 	
 	-- 事务默认必须在60s（可调）没完成，会被取消。
-	
+	-- 事务默认必须在60s（可调）没完成，遇到阻塞的情况，持有锁的事务会被取消。
 	
 
 
@@ -256,7 +256,7 @@ other
 	
 		db.serverStatus()
 		db.currentOp()
-		
+		db.currentOp().transaction
 		
 	2. 加锁是加在索引上不
 
@@ -266,6 +266,10 @@ other
 	
 
 相关参考
+
+	https://mongoing.com/archives/5476    MongoDB事务模型分析
+	https://mongoing.com/archives/5560	  MongoDB 4.0 RC 版本强势登陆	
+	https://mongoing.com/archives/6102    MongoDB 4.0 事务实现浅析
 	
 	https://zhuanlan.zhihu.com/p/71679945   mongodb事务(Transaction)学习
 
