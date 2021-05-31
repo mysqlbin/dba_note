@@ -196,3 +196,44 @@
 	db.addUser('tank2','111')
 	
 	
+修改账号权限
+	read 改为 readWrite
+	{
+		"_id" : "admin.abc_user",
+		"userId" : UUID(""),
+		"user" : "abc_user",
+		"db" : "admin",
+		"roles" : [
+			{
+				"role" : "read",
+				"db" : "niuniu_h5"
+			}
+		],
+		"mechanisms" : [
+			"SCRAM-SHA-1",
+			"SCRAM-SHA-256"
+		]
+	}
+
+	use admin
+	db.updateUser("abc_user",{roles:[ {role:"readWrite",db:"niuniu_h5"} ]})
+
+	{
+		"_id" : "admin.abc_user",
+		"userId" : UUID(""),
+		"user" : "abc_user",
+		"db" : "admin",
+		"roles" : [
+			{
+				"role" : "readWrite",
+				"db" : "niuniu_h5"
+			}
+		],
+		"mechanisms" : [
+			"SCRAM-SHA-1",
+			"SCRAM-SHA-256"
+		]
+	}
+
+
+	

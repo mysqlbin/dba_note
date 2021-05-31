@@ -597,7 +597,7 @@
 			B-tree Node: 11957
 			File Segment inode: 1
 
-			# 8090
+			# 8098
 			[root@mgr9 py_innodb_page_info-master]# python py_innodb_page_info.py /data/mysql/mysql3306/data/test_db/t_long.ibd
 			Total number of page: 50176:
 			Insert Buffer Bitmap: 4
@@ -618,17 +618,24 @@
 		结论
 
 			t_short 的表:
-				在400M左右可以理解，因为 8k * 48849 = 400M
+				-- 397M 
+				-- 计算方式：select 25344 * 16KB = 405504KB = 396MB
 				B-tree Node: 11957
 				Uncompressed BLOB Page: NO
 				
 			t_long 的表：
-				由于独享48849个Uncompressed BLOB Page，严重浪费空间
+				
+				-- 785M
+				-- 计算方式：select 168 * 16 = 2688KB = 2.63MB
+				-- 计算方式：select 48849 * 16 = 781584KB = 763MB
+				-- 计算方式: select 2.63+763 = 765.63MB 
+				-- 1个 Uncompressed BLOB Page 的大小也是 16KB 
+				-- 由于独享48849个Uncompressed BLOB Page，严重浪费空间  
 				B-tree Node: 168
 				Uncompressed BLOB Page: 48849
 
 			一行数据如果实际长度大于8k会溢出, varchar(20000) 没有数据，行数据也不会溢出。
 			t_long 插入的数据仅仅比 t_short 多了几个字节，但是最终的存储却是2倍左右的差距。	
-
 			
+				
 	
