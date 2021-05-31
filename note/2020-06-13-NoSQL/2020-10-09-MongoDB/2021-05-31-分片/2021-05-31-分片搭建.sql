@@ -1,48 +1,61 @@
 
 
 环境规划如下：
-ip: 192.168.0.54    ip: 192.168.0.55    ip: 192.168.0.56
-mongos: 20000  		mongos: 20000 		mongos: 20000
-config: 21000  		config: 21000 		config: 21000
-shard1: 27001主节点 shard1: 27001副节点 shard1: 27001仲裁
-shard2: 27002仲裁   shard2: 27002主节点 shard2: 27002副节点
-shard3: 27003副节点 shard3: 27003仲裁   shard3: 27003主节点
+	
+IP			192.168.0.54   	 		192.168.0.55    		192.168.0.56
+			mongos: 20000  			
+			config: 21000  			config: 21000 			config: 21000
+			
+shard1		shard1: 27017主节点 	shard1: 27017副节点 	shard1: 27017副节点
+		
+shard1		shard2: 27018主节点   	shard2: 27018副节点		shard2: 27018副节点
+
+shard3     	shard3: 27019主节点 	shard3: 27019副节点   	shard3: 27019副节点
+
+
 
 端口分配：
 
-mongos： 20000
-config： 21000
-shard1： 27001
-shard2： 27002
-shard3： 27003
+	mongos： 20000
+	config： 21000
+	
+	shard1： 27001
+	shard2： 27002
+	shard3： 27003
 
 
 
-1) 三个节点都安装Mongodb
-
-分别在每台机器建立conf、mongos、config、shard1、shard2、shard3六个目录; 
-因为mongos不存储数据，只需要建立日志文件目录即可。
-
-mkdir -p /data/mongodb/conf
-
-mkdir -p /data/mongodb/mongos/{log,run}
-
-mkdir -p /data/mongodb/config/{data,log,run}
-
-mkdir -p /data/mongodb/shard1/{data,log,run}
-mkdir -p /data/mongodb/shard2/{data,log,run}
-mkdir -p /data/mongodb/shard3/{data,log,run}
+0. 安装 mongos
 
 
-chown -R mongodb:mongodb /data/mongodb/*
 
+
+1. 三个节点都安装Mongodb
+
+	分别在每台机器建立conf、mongos、config、shard1、shard2、shard3六个目录; 
+	因为mongos不存储数据，只需要建立日志文件目录即可。
+
+	mkdir -p /data/mongodb/conf
+
+	mkdir -p /data/mongodb/mongos/{log,run}
+
+	mkdir -p /data/mongodb/config/{data,log,run}
+
+	
 
 
 2) 三个节点配置 config server 并启动
 
-#启动：
+	service mongodb start
 
-mongod -f /data/mongodb/conf/config.conf
+	mongod -f /data/mongodb/conf/config.conf
+
+
+
+
+
+
+
 
 3) 登录任意一台配置服务器，初始化配置副本集
 
