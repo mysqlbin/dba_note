@@ -1,10 +1,30 @@
 
 
+configsvr = true
+
+bash-4.2$ mongod -f /etc/mongodb.conf --fork
+about to fork child process, waiting until server is ready for connections.
+forked process: 12020
+child process started successfully, parent exiting
+
+
+2021-05-31T02:56:23.493+0800 I  SHARDING [thread1] creating distributed lock ping thread for process ConfigServer (sleeping for 30000ms)
+2021-05-31T02:56:23.493+0800 I  SHARDING [shard-registry-reload] Periodic reload of shard registry failed  :: caused by :: ReadConcernMajorityNotAvailableYet: could not get updated shard list from config server :: caused by :: Read concern majority reads are currently not possible.; will retry after 30s
+
+
+-- 不能从副本集升级为shard模式
+
+
+
+
+
 
 架构如下:
 192.168.0.201  (主库)
 192.168.0.202  (副本)
 192.168.0.203  (副本)
+端口号：27018
+
 
 
 2. 架构2 --1主2从
@@ -16,10 +36,11 @@
 3. 创建目录（数据目录、日志目录、PID文件目录）
 	
 192.168.0.201 
-
+	
+	rm -rf /home/mongodb/shard2
 	mkdir -p /home/mongodb/shard2/{data,log,run}
 
-	chown -R mongodb:mongodb  /home/mongodb/shard2
+	chown -R mongodb:mongodb  /home/mongodb/shard2/*
 	
 	
 
@@ -28,10 +49,12 @@
 	 
 
 192.168.0.202
-
+	
+	
+	rm -rf /home/mongodb/shard2
 	mkdir -p /home/mongodb/shard2/{data,log,run}
 
-	chown -R mongodb:mongodb  /home/mongodb/shard2
+	chown -R mongodb:mongodb  /home/mongodb/shard2/*
 	
 	
 
@@ -42,7 +65,8 @@
 
 
 192.168.0.203
-
+	
+	rm -rf /home/mongodb/shard2
 	mkdir -p /home/mongodb/shard2/{data,log,run}
 
 	chown -R mongodb:mongodb  /home/mongodb/shard2
@@ -62,9 +86,9 @@
 	
 	mongo -port 27018
 	
-	> configs={_id:"repl_shard2",members:[{_id:0,host:"192.168.0.201:27018",priority:90},{_id:1,host:"192.168.0.202:27018",priority:90},{_id:2,host:"192.168.0.203:27018",priority:90}]};
+	> configs={_id:"shard2",members:[{_id:0,host:"192.168.0.201:27018",priority:90},{_id:1,host:"192.168.0.202:27018",priority:90},{_id:2,host:"192.168.0.203:27018",priority:90}]};
 	{
-		"_id" : "repl_shard2",
+		"_id" : "shard2",
 		"members" : [
 			{
 				"_id" : 0,
@@ -85,24 +109,29 @@
 	}
 
 
+
 	> rs.initiate(configs);
 	{
 		"ok" : 1,
+		"$gleStats" : {
+			"lastOpTime" : Timestamp(1622404906, 1),
+			"electionId" : ObjectId("000000000000000000000000")
+		},
+		"lastCommittedOpTime" : Timestamp(0, 0),
 		"$clusterTime" : {
-			"clusterTime" : Timestamp(1622393412, 1),
+			"clusterTime" : Timestamp(1622404906, 1),
 			"signature" : {
 				"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
 				"keyId" : NumberLong(0)
 			}
 		},
-		"operationTime" : Timestamp(1622393412, 1)
+		"operationTime" : Timestamp(1622404906, 1)
 	}
 
-
-repl_shard2:SECONDARY> rs.status()
+shard2:PRIMARY> rs.status()
 {
-	"set" : "repl_shard2",
-	"date" : ISODate("2021-05-30T16:51:09.079Z"),
+	"set" : "shard2",
+	"date" : ISODate("2021-05-31T01:14:15.889Z"),
 	"myState" : 1,
 	"term" : NumberLong(1),
 	"syncingTo" : "",
@@ -113,46 +142,46 @@ repl_shard2:SECONDARY> rs.status()
 	"writeMajorityCount" : 2,
 	"optimes" : {
 		"lastCommittedOpTime" : {
-			"ts" : Timestamp(1622393463, 1),
+			"ts" : Timestamp(1622423650, 3),
 			"t" : NumberLong(1)
 		},
-		"lastCommittedWallTime" : ISODate("2021-05-30T16:51:03.100Z"),
+		"lastCommittedWallTime" : ISODate("2021-05-31T01:14:10.672Z"),
 		"readConcernMajorityOpTime" : {
-			"ts" : Timestamp(1622393463, 1),
+			"ts" : Timestamp(1622423650, 3),
 			"t" : NumberLong(1)
 		},
-		"readConcernMajorityWallTime" : ISODate("2021-05-30T16:51:03.100Z"),
+		"readConcernMajorityWallTime" : ISODate("2021-05-31T01:14:10.672Z"),
 		"appliedOpTime" : {
-			"ts" : Timestamp(1622393463, 1),
+			"ts" : Timestamp(1622423650, 3),
 			"t" : NumberLong(1)
 		},
 		"durableOpTime" : {
-			"ts" : Timestamp(1622393463, 1),
+			"ts" : Timestamp(1622423650, 3),
 			"t" : NumberLong(1)
 		},
-		"lastAppliedWallTime" : ISODate("2021-05-30T16:51:03.100Z"),
-		"lastDurableWallTime" : ISODate("2021-05-30T16:51:03.100Z")
+		"lastAppliedWallTime" : ISODate("2021-05-31T01:14:10.672Z"),
+		"lastDurableWallTime" : ISODate("2021-05-31T01:14:10.672Z")
 	},
-	"lastStableRecoveryTimestamp" : Timestamp(1622393423, 3),
-	"lastStableCheckpointTimestamp" : Timestamp(1622393423, 3),
+	"lastStableRecoveryTimestamp" : Timestamp(1622423650, 3),
+	"lastStableCheckpointTimestamp" : Timestamp(1622423650, 3),
 	"electionCandidateMetrics" : {
 		"lastElectionReason" : "electionTimeout",
-		"lastElectionDate" : ISODate("2021-05-30T16:50:23.069Z"),
+		"lastElectionDate" : ISODate("2021-05-31T01:14:10.646Z"),
 		"electionTerm" : NumberLong(1),
 		"lastCommittedOpTimeAtElection" : {
 			"ts" : Timestamp(0, 0),
 			"t" : NumberLong(-1)
 		},
 		"lastSeenOpTimeAtElection" : {
-			"ts" : Timestamp(1622393412, 1),
+			"ts" : Timestamp(1622423640, 1),
 			"t" : NumberLong(-1)
 		},
 		"numVotesNeeded" : 2,
 		"priorityAtElection" : 90,
 		"electionTimeoutMillis" : NumberLong(10000),
 		"numCatchUpOps" : NumberLong(0),
-		"newTermStartDate" : ISODate("2021-05-30T16:50:23.095Z"),
-		"wMajorityWriteAvailabilityDate" : ISODate("2021-05-30T16:50:24.481Z")
+		"newTermStartDate" : ISODate("2021-05-31T01:14:10.672Z"),
+		"wMajorityWriteAvailabilityDate" : ISODate("2021-05-31T01:14:11.222Z")
 	},
 	"members" : [
 		{
@@ -161,18 +190,18 @@ repl_shard2:SECONDARY> rs.status()
 			"health" : 1,
 			"state" : 1,
 			"stateStr" : "PRIMARY",
-			"uptime" : 351,
+			"uptime" : 49,
 			"optime" : {
-				"ts" : Timestamp(1622393463, 1),
+				"ts" : Timestamp(1622423650, 3),
 				"t" : NumberLong(1)
 			},
-			"optimeDate" : ISODate("2021-05-30T16:51:03Z"),
+			"optimeDate" : ISODate("2021-05-31T01:14:10Z"),
 			"syncingTo" : "",
 			"syncSourceHost" : "",
 			"syncSourceId" : -1,
 			"infoMessage" : "could not find member to sync from",
-			"electionTime" : Timestamp(1622393423, 1),
-			"electionDate" : ISODate("2021-05-30T16:50:23Z"),
+			"electionTime" : Timestamp(1622423650, 1),
+			"electionDate" : ISODate("2021-05-31T01:14:10Z"),
 			"configVersion" : 1,
 			"self" : true,
 			"lastHeartbeatMessage" : ""
@@ -183,19 +212,19 @@ repl_shard2:SECONDARY> rs.status()
 			"health" : 1,
 			"state" : 2,
 			"stateStr" : "SECONDARY",
-			"uptime" : 56,
+			"uptime" : 15,
 			"optime" : {
-				"ts" : Timestamp(1622393463, 1),
+				"ts" : Timestamp(1622423650, 3),
 				"t" : NumberLong(1)
 			},
 			"optimeDurable" : {
-				"ts" : Timestamp(1622393463, 1),
+				"ts" : Timestamp(1622423650, 3),
 				"t" : NumberLong(1)
 			},
-			"optimeDate" : ISODate("2021-05-30T16:51:03Z"),
-			"optimeDurableDate" : ISODate("2021-05-30T16:51:03Z"),
-			"lastHeartbeat" : ISODate("2021-05-30T16:51:07.093Z"),
-			"lastHeartbeatRecv" : ISODate("2021-05-30T16:51:08.510Z"),
+			"optimeDate" : ISODate("2021-05-31T01:14:10Z"),
+			"optimeDurableDate" : ISODate("2021-05-31T01:14:10Z"),
+			"lastHeartbeat" : ISODate("2021-05-31T01:14:14.655Z"),
+			"lastHeartbeatRecv" : ISODate("2021-05-31T01:14:15.199Z"),
 			"pingMs" : NumberLong(0),
 			"lastHeartbeatMessage" : "",
 			"syncingTo" : "192.168.0.201:27018",
@@ -210,20 +239,20 @@ repl_shard2:SECONDARY> rs.status()
 			"health" : 1,
 			"state" : 2,
 			"stateStr" : "SECONDARY",
-			"uptime" : 56,
+			"uptime" : 15,
 			"optime" : {
-				"ts" : Timestamp(1622393463, 1),
+				"ts" : Timestamp(1622423650, 3),
 				"t" : NumberLong(1)
 			},
 			"optimeDurable" : {
-				"ts" : Timestamp(1622393463, 1),
+				"ts" : Timestamp(1622423650, 3),
 				"t" : NumberLong(1)
 			},
-			"optimeDate" : ISODate("2021-05-30T16:51:03Z"),
-			"optimeDurableDate" : ISODate("2021-05-30T16:51:03Z"),
-			"lastHeartbeat" : ISODate("2021-05-30T16:51:07.093Z"),
-			"lastHeartbeatRecv" : ISODate("2021-05-30T16:51:08.492Z"),
-			"pingMs" : NumberLong(0),
+			"optimeDate" : ISODate("2021-05-31T01:14:10Z"),
+			"optimeDurableDate" : ISODate("2021-05-31T01:14:10Z"),
+			"lastHeartbeat" : ISODate("2021-05-31T01:14:14.655Z"),
+			"lastHeartbeatRecv" : ISODate("2021-05-31T01:14:15.207Z"),
+			"pingMs" : NumberLong(1),
 			"lastHeartbeatMessage" : "",
 			"syncingTo" : "192.168.0.201:27018",
 			"syncSourceHost" : "192.168.0.201:27018",
@@ -234,11 +263,11 @@ repl_shard2:SECONDARY> rs.status()
 	],
 	"ok" : 1,
 	"$clusterTime" : {
-		"clusterTime" : Timestamp(1622393463, 1),
+		"clusterTime" : Timestamp(1622423650, 3),
 		"signature" : {
 			"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
 			"keyId" : NumberLong(0)
 		}
 	},
-	"operationTime" : Timestamp(1622393463, 1)
+	"operationTime" : Timestamp(1622423650, 3)
 }
