@@ -1,4 +1,17 @@
 
+1. 环境规划如下
+2. 安装shard1、shard2、shard3 3个分片对应的副本集
+3. 三个节点配置 config server 并启动
+4. 安装和配置mongos
+5. 设置三节点的分片和路由配置服务器串联成集群
+6. 验证分片
+7. 启用分片
+	7.1 哈希分片
+	7.2 范围分片1
+	7.3 范围分片2
+	7.4 不需要分片的集合
+
+
 
 1. 环境规划如下
 	
@@ -38,7 +51,7 @@
 
 	参考：《2021-06-01-配置config》
 
-4. 安装 mongos
+4. 安装和配置mongos
 	
 	mongos  --config  /home/mongodb/router/conf/router.conf
 
@@ -124,13 +137,13 @@
 			{  "_id" : "config",  "primary" : "config",  "partitioned" : true }
 
 
-4. 设置Mongs路由服务器
-
-	先启动配置服务器和分片服务器， 后启动路由实例启动路由实例:
 
 		
 5. 设置三节点的分片和路由配置服务器串联成集群
-
+	
+	先启动配置服务器和分片服务器， 后启动路由实例启动路由实例:
+	
+	
 	登陆任意一台mongos
 
 	mongo --host 192.168.0.201 --port 20000
@@ -258,147 +271,182 @@
 
 7. 启用分片
 
-测试1 
-
-	db.runCommand( { enablesharding :"posdb"});  #设置POSDB数据库分片生效
-
-	#设置数据库posdb里test表根据id自动分片到shard1,2,3中
-	#db.runCommand( { shardcollection : "库名.集合名",key : {id: 1} } )
-
-	db.runCommand( { shardcollection : "posdb.testc_co",key : {id: 1} } )
-
-
-
-	use  posdb;
-
-	for (var i = 1; i <= 100000; i++){
-		db.test.save({id:i,"test":"val1"});
-	}
-	db.table1.stats();
-
-	-----------------------------
+7.1 哈希分片
 	
+	use admin
+	sh.enableSharding("01_db")
 
-	
-	mongos> show dbs
-	admin   0.000GB
-	config  0.003GB
-	mongos> use admin
-	switched to db admin
-	mongos> db.runCommand( { enablesharding :"posdb"});
-	{
-		"ok" : 1,
-		"operationTime" : Timestamp(1622424451, 7),
-		"$clusterTime" : {
-			"clusterTime" : Timestamp(1622424451, 7),
-			"signature" : {
-				"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
-				"keyId" : NumberLong(0)
-			}
-		}
-	}
-	mongos> show dbs
-	admin   0.000GB
-	config  0.003GB
+	###片键必须是一个索引，通过sh.shardCollection加会自动创建索引（前提是此集合不存在的情况下）:
+	sh.shardCollection("01_db.user",{userid:"hashed"})
 
-	
-	
-	mongos> db.runCommand( { shardcollection : "posdb.testc_co",key : {id: 1} } )
-	{
-		"collectionsharded" : "posdb.testc_co",
-		"collectionUUID" : UUID("ba2d69ec-7790-46c2-8100-15c2026eb718"),
-		"ok" : 1,
-		"operationTime" : Timestamp(1622424542, 14),
-		"$clusterTime" : {
-			"clusterTime" : Timestamp(1622424542, 14),
-			"signature" : {
-				"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
-				"keyId" : NumberLong(0)
-			}
-		}
-	}
+	使用sh.status()方法或db.printShardingStatus()命令查看分片状态信息
+
+	use 01_db
+	for(i=0;i<100000;i++)(db.user.insert({"userid":i, "Date":new Date()}));
 
 
 
+	登录到 shard 节点进行数据查看：
 
-	use  posdb;
-	
-	
-	for (var i = 1; i <= 20; i++){
-		db.testc_co.save({id:i,"test":"val1"});
-	}
+		shard1:PRIMARY> db.user.count()
+		33755
+		shard1:PRIMARY> db.user.find().limit(10)
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1dfc"), "userid" : 6, "Date" : ISODate("2021-05-31T18:40:35.768Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1dfe"), "userid" : 8, "Date" : ISODate("2021-05-31T18:40:35.777Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e02"), "userid" : 12, "Date" : ISODate("2021-05-31T18:40:35.786Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e0a"), "userid" : 20, "Date" : ISODate("2021-05-31T18:40:35.800Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e0b"), "userid" : 21, "Date" : ISODate("2021-05-31T18:40:35.801Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e10"), "userid" : 26, "Date" : ISODate("2021-05-31T18:40:35.811Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e11"), "userid" : 27, "Date" : ISODate("2021-05-31T18:40:35.813Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e16"), "userid" : 32, "Date" : ISODate("2021-05-31T18:40:35.860Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e17"), "userid" : 33, "Date" : ISODate("2021-05-31T18:40:35.864Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e1e"), "userid" : 40, "Date" : ISODate("2021-05-31T18:40:35.889Z") }
+
+
+		shard2:PRIMARY> db.user.count()
+		33142
+		shard2:PRIMARY> db.user.find().limit(10)
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1df8"), "userid" : 2, "Date" : ISODate("2021-05-31T18:40:35.762Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1df9"), "userid" : 3, "Date" : ISODate("2021-05-31T18:40:35.764Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1dfa"), "userid" : 4, "Date" : ISODate("2021-05-31T18:40:35.766Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e01"), "userid" : 11, "Date" : ISODate("2021-05-31T18:40:35.783Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e06"), "userid" : 16, "Date" : ISODate("2021-05-31T18:40:35.794Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e0d"), "userid" : 23, "Date" : ISODate("2021-05-31T18:40:35.806Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e0e"), "userid" : 24, "Date" : ISODate("2021-05-31T18:40:35.807Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e0f"), "userid" : 25, "Date" : ISODate("2021-05-31T18:40:35.809Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e13"), "userid" : 29, "Date" : ISODate("2021-05-31T18:40:35.844Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e14"), "userid" : 30, "Date" : ISODate("2021-05-31T18:40:35.845Z") }
+
+
+		shard3:PRIMARY> db.user.count()
+		33103
+		shard3:PRIMARY> db.user.find().limit(10)
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1df6"), "userid" : 0, "Date" : ISODate("2021-05-31T18:40:35.666Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1df7"), "userid" : 1, "Date" : ISODate("2021-05-31T18:40:35.760Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1dfb"), "userid" : 5, "Date" : ISODate("2021-05-31T18:40:35.767Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1dfd"), "userid" : 7, "Date" : ISODate("2021-05-31T18:40:35.771Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1dff"), "userid" : 9, "Date" : ISODate("2021-05-31T18:40:35.779Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e00"), "userid" : 10, "Date" : ISODate("2021-05-31T18:40:35.782Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e03"), "userid" : 13, "Date" : ISODate("2021-05-31T18:40:35.789Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e04"), "userid" : 14, "Date" : ISODate("2021-05-31T18:40:35.791Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e05"), "userid" : 15, "Date" : ISODate("2021-05-31T18:40:35.793Z") }
+		{ "_id" : ObjectId("60b52da39a3ffc30911d1e07"), "userid" : 17, "Date" : ISODate("2021-05-31T18:40:35.795Z") }
+
+		-- 哈希分片，相对均匀。
 		
-	mongos> db.testc_co.count()
-	20
+		
+
+	-- 查看分片情况
+		use config
+		db.databases.find()
+		db.chunks.find({"ns": "01_db.user"})
+		db.user.count()	
+
+		mongos> use config
+		switched to db config
+		mongos> db.databases.find()
+		{ "_id" : "posdb", "primary" : "shard3", "partitioned" : true, "version" : { "uuid" : UUID("d28c0ca4-b67f-4d83-b3a2-925502d4d89d"), "lastMod" : 1 } }
+		{ "_id" : "postdb", "primary" : "shard2", "partitioned" : false, "version" : { "uuid" : UUID("a7403db3-72a9-4b86-b8cb-1cba563d92ac"), "lastMod" : 1 } }
+		{ "_id" : "shardtest_db", "primary" : "shard2", "partitioned" : true, "version" : { "uuid" : UUID("8cdc2c7e-1e2f-4a77-8377-0a82558be285"), "lastMod" : 1 } }
+		{ "_id" : "shard_db", "primary" : "shard2", "partitioned" : true, "version" : { "uuid" : UUID("b227f552-abda-4860-901f-9991b48c6743"), "lastMod" : 1 } }
+		{ "_id" : "1008_db", "primary" : "shard2", "partitioned" : true, "version" : { "uuid" : UUID("a0b83dcb-0ec9-4456-9863-480105f78d17"), "lastMod" : 1 } }
+		{ "_id" : "01_db", "primary" : "shard3", "partitioned" : true, "version" : { "uuid" : UUID("490e3c88-94b8-412d-9c33-f3cf95ccdc4a"), "lastMod" : 1 } }
+		mongos> db.chunks.find({"ns": "01_db.user"})
+		{ "_id" : "01_db.user-userid_MinKey", "ns" : "01_db.user", "min" : { "userid" : { "$minKey" : 1 } }, "max" : { "userid" : NumberLong("-6148914691236517204") }, "shard" : "shard1", "lastmod" : Timestamp(1, 0), "lastmodEpoch" : ObjectId("60b52d94813b999acac173b6"), "history" : [ { "validAfter" : Timestamp(1622486420, 6), "shard" : "shard1" } ] }
+		{ "_id" : "01_db.user-userid_-6148914691236517204", "ns" : "01_db.user", "min" : { "userid" : NumberLong("-6148914691236517204") }, "max" : { "userid" : NumberLong("-3074457345618258602") }, "shard" : "shard1", "lastmod" : Timestamp(1, 1), "lastmodEpoch" : ObjectId("60b52d94813b999acac173b6"), "history" : [ { "validAfter" : Timestamp(1622486420, 6), "shard" : "shard1" } ] }
+		{ "_id" : "01_db.user-userid_-3074457345618258602", "ns" : "01_db.user", "min" : { "userid" : NumberLong("-3074457345618258602") }, "max" : { "userid" : NumberLong(0) }, "shard" : "shard2", "lastmod" : Timestamp(1, 2), "lastmodEpoch" : ObjectId("60b52d94813b999acac173b6"), "history" : [ { "validAfter" : Timestamp(1622486420, 6), "shard" : "shard2" } ] }
+		{ "_id" : "01_db.user-userid_0", "ns" : "01_db.user", "min" : { "userid" : NumberLong(0) }, "max" : { "userid" : NumberLong("3074457345618258602") }, "shard" : "shard2", "lastmod" : Timestamp(1, 3), "lastmodEpoch" : ObjectId("60b52d94813b999acac173b6"), "history" : [ { "validAfter" : Timestamp(1622486420, 6), "shard" : "shard2" } ] }
+		{ "_id" : "01_db.user-userid_3074457345618258602", "ns" : "01_db.user", "min" : { "userid" : NumberLong("3074457345618258602") }, "max" : { "userid" : NumberLong("6148914691236517204") }, "shard" : "shard3", "lastmod" : Timestamp(1, 4), "lastmodEpoch" : ObjectId("60b52d94813b999acac173b6"), "history" : [ { "validAfter" : Timestamp(1622486420, 6), "shard" : "shard3" } ] }
+		{ "_id" : "01_db.user-userid_6148914691236517204", "ns" : "01_db.user", "min" : { "userid" : NumberLong("6148914691236517204") }, "max" : { "userid" : { "$maxKey" : 1 } }, "shard" : "shard3", "lastmod" : Timestamp(1, 5), "lastmodEpoch" : ObjectId("60b52d94813b999acac173b6"), "history" : [ { "validAfter" : Timestamp(1622486420, 6), "shard" : "shard3" } ] }
+
+		mongos> db.user.count()
+		100000
+
+	-- 通过sh.status()直观的查看分片情况：
+
+		mongos> use 01_db
+		switched to db 01_db
+		mongos> sh.status()
+		--- Sharding Status --- 
+		  sharding version: {
+			"_id" : 1,
+			"minCompatibleVersion" : 5,
+			"currentVersion" : 6,
+			"clusterId" : ObjectId("60b422603cd71bde20721c1e")
+		  }
+		  shards:
+				{  "_id" : "shard1",  "host" : "shard1/192.168.0.201:27016,192.168.0.202:27016,192.168.0.203:27016",  "state" : 1 }
+				{  "_id" : "shard2",  "host" : "shard2/192.168.0.201:27018,192.168.0.202:27018,192.168.0.203:27018",  "state" : 1 }
+				{  "_id" : "shard3",  "host" : "shard3/192.168.0.201:27019,192.168.0.202:27019,192.168.0.203:27019",  "state" : 1 }
+		  active mongoses:
+				"4.2.7" : 1
+		  autosplit:
+				Currently enabled: yes
+		  balancer:
+				Currently enabled:  yes
+				Currently running:  no
+				Failed balancer rounds in last 5 attempts:  0
+				Migration Results for the last 24 hours: 
+						682 : Success
+		  databases:
+				{  "_id" : "01_db",  "primary" : "shard3",  "partitioned" : true,  "version" : {  "uuid" : UUID("490e3c88-94b8-412d-9c33-f3cf95ccdc4a"),  "lastMod" : 1 } }
+						01_db.user
+								shard key: { "userid" : "hashed" }
+								unique: false
+								balancing: true
+								chunks:
+										shard1	2
+										shard2	2
+										shard3	2
+								{ "userid" : { "$minKey" : 1 } } -->> { "userid" : NumberLong("-6148914691236517204") } on : shard1 Timestamp(1, 0) 
+								{ "userid" : NumberLong("-6148914691236517204") } -->> { "userid" : NumberLong("-3074457345618258602") } on : shard1 Timestamp(1, 1) 
+								{ "userid" : NumberLong("-3074457345618258602") } -->> { "userid" : NumberLong(0) } on : shard2 Timestamp(1, 2) 
+								{ "userid" : NumberLong(0) } -->> { "userid" : NumberLong("3074457345618258602") } on : shard2 Timestamp(1, 3) 
+								{ "userid" : NumberLong("3074457345618258602") } -->> { "userid" : NumberLong("6148914691236517204") } on : shard3 Timestamp(1, 4) 
+								{ "userid" : NumberLong("6148914691236517204") } -->> { "userid" : { "$maxKey" : 1 } } on : shard3 Timestamp(1, 5) 
+				{  "_id" : "1008_db",  "primary" : "shard2",  "partitioned" : true,  "version" : {  "uuid" : UUID("a0b83dcb-0ec9-4456-9863-480105f78d17"),  "lastMod" : 1 } }
 
 
-	db.testc_co.stats();
-	
 
-
-
-
--------------------------------------------------------------------------------------
-	
-测试2	
+7.2 范围分片1
 
 	use admin
-	sh.enableSharding("shard_db")
-	db.runCommand( { enablesharding :"shard_db"});
-	sh.shardCollection("shard_db.user",{userid:"hashed"})
-	for(i=0;i<10;i++)(db.user.insert({"userid":i}));
-		
-		
-	mongos> use admin
-	switched to db admin
-	mongos> sh.enableSharding("shard_db")
-	{
-		"ok" : 1,
-		"operationTime" : Timestamp(1622427438, 7),
-		"$clusterTime" : {
-			"clusterTime" : Timestamp(1622427438, 7),
-			"signature" : {
-				"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
-				"keyId" : NumberLong(0)
-			}
-		}
-	}
-	mongos> db.runCommand( { enablesharding :"shard_db"});
-	{
-		"ok" : 1,
-		"operationTime" : Timestamp(1622427438, 9),
-		"$clusterTime" : {
-			"clusterTime" : Timestamp(1622427438, 9),
-			"signature" : {
-				"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
-				"keyId" : NumberLong(0)
-			}
-		}
-	}
-	mongos> sh.shardCollection("shard_db.user",{userid:"hashed"})
+	sh.enableSharding("02_db")
+	sh.shardCollection("02_db.user",{id:1})
 
-	{
-		"collectionsharded" : "shard_db.user",
-		"collectionUUID" : UUID("39e709b5-d758-408e-a41b-0ef633625704"),
-		"ok" : 1,
-		"operationTime" : Timestamp(1622427439, 36),
-		"$clusterTime" : {
-			"clusterTime" : Timestamp(1622427439, 36),
-			"signature" : {
-				"hash" : BinData(0,"AAAAAAAAAAAAAAAAAAAAAAAAAAA="),
-				"keyId" : NumberLong(0)
-			}
-		}
-	}
-	mongos> for(i=0;i<10;i++)(db.user.insert({"userid":i}));
-	WriteResult({ "nInserted" : 1 })
+	use 02_db
 
+	for(i=0;i<100000;i++)(db.user.insert({"id":i, "Date":new Date()}));
+
+
+
+	use config
+	db.databases.find()
+	db.chunks.find({"ns": "02_db.user"})
+	db.user.count()	
+
+
+	mongos> use config
+	switched to db config
+	mongos> db.databases.find()
+	{ "_id" : "posdb", "primary" : "shard3", "partitioned" : true, "version" : { "uuid" : UUID("d28c0ca4-b67f-4d83-b3a2-925502d4d89d"), "lastMod" : 1 } }
+	{ "_id" : "postdb", "primary" : "shard2", "partitioned" : false, "version" : { "uuid" : UUID("a7403db3-72a9-4b86-b8cb-1cba563d92ac"), "lastMod" : 1 } }
+	{ "_id" : "shardtest_db", "primary" : "shard2", "partitioned" : true, "version" : { "uuid" : UUID("8cdc2c7e-1e2f-4a77-8377-0a82558be285"), "lastMod" : 1 } }
+	{ "_id" : "shard_db", "primary" : "shard2", "partitioned" : true, "version" : { "uuid" : UUID("b227f552-abda-4860-901f-9991b48c6743"), "lastMod" : 1 } }
+	{ "_id" : "1008_db", "primary" : "shard2", "partitioned" : true, "version" : { "uuid" : UUID("a0b83dcb-0ec9-4456-9863-480105f78d17"), "lastMod" : 1 } }
+	{ "_id" : "01_db", "primary" : "shard3", "partitioned" : true, "version" : { "uuid" : UUID("490e3c88-94b8-412d-9c33-f3cf95ccdc4a"), "lastMod" : 1 } }
+	{ "_id" : "02_db", "primary" : "shard1", "partitioned" : true, "version" : { "uuid" : UUID("dbcdb56b-2f3f-4523-a6d1-eacab67d00c4"), "lastMod" : 1 } }
+	mongos> db.chunks.find({"ns": "02_db.user"})
+	{ "_id" : "02_db.user-id_MinKey", "ns" : "02_db.user", "min" : { "id" : { "$minKey" : 1 } }, "max" : { "id" : { "$maxKey" : 1 } }, "shard" : "shard1", "lastmod" : Timestamp(1, 0), "lastmodEpoch" : ObjectId("60b5382629a21eaeea79c904"), "history" : [ { "validAfter" : Timestamp(1622489126, 10), "shard" : "shard1" } ] }
+	mongos> db.user.count()
+	0
+	mongos> use 02_db
+	switched to db 02_db
+	mongos> db.user.count()
+	100000
 	
-	db.user.stats()
-	db.printShardingStatus()
 	
-	
-	mongos> db.printShardingStatus()
+	mongos> sh.status()
 	--- Sharding Status --- 
 	  sharding version: {
 		"_id" : 1,
@@ -421,137 +469,66 @@
 			Migration Results for the last 24 hours: 
 					682 : Success
 	  databases:
-			{  "_id" : "config",  "primary" : "config",  "partitioned" : true }
-					config.system.sessions
-							shard key: { "_id" : 1 }
-							unique: false
-							balancing: true
-							chunks:
-									shard1	342
-									shard2	341
-									shard3	341
-							too many chunks to print, use verbose if you want to force print
-			{  "_id" : "posdb",  "primary" : "shard3",  "partitioned" : true,  "version" : {  "uuid" : UUID("d28c0ca4-b67f-4d83-b3a2-925502d4d89d"),  "lastMod" : 1 } }
-					posdb.testc_co
+		
+			{  "_id" : "02_db",  "primary" : "shard1",  "partitioned" : true,  "version" : {  "uuid" : UUID("dbcdb56b-2f3f-4523-a6d1-eacab67d00c4"),  "lastMod" : 1 } }
+					02_db.user
 							shard key: { "id" : 1 }
 							unique: false
 							balancing: true
 							chunks:
-									shard3	1
-							{ "id" : { "$minKey" : 1 } } -->> { "id" : { "$maxKey" : 1 } } on : shard3 Timestamp(1, 0) 
-			{  "_id" : "postdb",  "primary" : "shard2",  "partitioned" : false,  "version" : {  "uuid" : UUID("a7403db3-72a9-4b86-b8cb-1cba563d92ac"),  "lastMod" : 1 } }
-			{  "_id" : "shard_db",  "primary" : "shard2",  "partitioned" : true,  "version" : {  "uuid" : UUID("b227f552-abda-4860-901f-9991b48c6743"),  "lastMod" : 1 } }
-					shard_db.user
-							shard key: { "userid" : "hashed" }
-							unique: false
-							balancing: true
-							chunks:
-									shard1	2
-									shard2	2
-									shard3	2
-							{ "userid" : { "$minKey" : 1 } } -->> { "userid" : NumberLong("-6148914691236517204") } on : shard1 Timestamp(1, 0) 
-							{ "userid" : NumberLong("-6148914691236517204") } -->> { "userid" : NumberLong("-3074457345618258602") } on : shard1 Timestamp(1, 1) 
-							{ "userid" : NumberLong("-3074457345618258602") } -->> { "userid" : NumberLong(0) } on : shard2 Timestamp(1, 2) 
-							{ "userid" : NumberLong(0) } -->> { "userid" : NumberLong("3074457345618258602") } on : shard2 Timestamp(1, 3) 
-							{ "userid" : NumberLong("3074457345618258602") } -->> { "userid" : NumberLong("6148914691236517204") } on : shard3 Timestamp(1, 4) 
-							{ "userid" : NumberLong("6148914691236517204") } -->> { "userid" : { "$maxKey" : 1 } } on : shard3 Timestamp(1, 5) 
-			{  "_id" : "shardtest_db",  "primary" : "shard2",  "partitioned" : true,  "version" : {  "uuid" : UUID("8cdc2c7e-1e2f-4a77-8377-0a82558be285"),  "lastMod" : 1 } }
-					shardtest_db.user
-							shard key: { "userid" : "hashed" }
-							unique: false
-							balancing: true
-							chunks:
-									shard1	2
-									shard2	2
-									shard3	2
-							{ "userid" : { "$minKey" : 1 } } -->> { "userid" : NumberLong("-6148914691236517204") } on : shard1 Timestamp(1, 0) 
-							{ "userid" : NumberLong("-6148914691236517204") } -->> { "userid" : NumberLong("-3074457345618258602") } on : shard1 Timestamp(1, 1) 
-							{ "userid" : NumberLong("-3074457345618258602") } -->> { "userid" : NumberLong(0) } on : shard2 Timestamp(1, 2) 
-							{ "userid" : NumberLong(0) } -->> { "userid" : NumberLong("3074457345618258602") } on : shard2 Timestamp(1, 3) 
-							{ "userid" : NumberLong("3074457345618258602") } -->> { "userid" : NumberLong("6148914691236517204") } on : shard3 Timestamp(1, 4) 
-							{ "userid" : NumberLong("6148914691236517204") } -->> { "userid" : { "$maxKey" : 1 } } on : shard3 Timestamp(1, 5) 
-
-	mongos> 
+									shard1	1
+							{ "id" : { "$minKey" : 1 } } -->> { "id" : { "$maxKey" : 1 } } on : shard1 Timestamp(1, 0) 
 
 
 
--------------------------------------------------------------------------------------	
+
+
+
+
+7.3 范围分片2
+
+	use admin
+	sh.enableSharding("03_db")
+	sh.shardCollection("03_db.user",{id:1})
 	
-10) 查看分片数据：
+	use 03_db
+	for(i=0;i<300000;i++)(db.user.insert({"id":i, "name": "range key", "Date":new Date()}));
 
-mongos> db.account.stats() #查看集合的分布情况
+	
+	mongos> db.user.count()
+	300000
+	
+	shard3:PRIMARY> use 03_db
+	switched to db 03_db
+	shard3:PRIMARY> db.user.count()
+	300000
+	
+	-- 数据全部落在 shard3 上了。
+	
 
+7.4 不需要分片的集合
 
-
-测试1）
-
-use  test2db;
-
-#指定testdb分片生效
-db.runCommand( { enablesharding :"test2db"});
-#指定数据库里需要分片的集合和片键
-db.runCommand( { shardcollection : "test2db.table1",key : {id: 1} } )
-
-for (var i = 1; i <= 10000000; i++){
-	db.table1.save({id:i,"test1":"testvall"});
-}
-
-
-#指定testdb分片生效
-db.runCommand( { enablesharding :"test3db"});
-#指定数据库里需要分片的集合和片键
-db.runCommand( { shardcollection : "test3db.table3",key : {id: 1} } )
-
-for (var i = 1; i <= 200000; i++){
-	db.table3.save({id:i,"table3":"testvall"});
-}
+	use 04_db
+	for(i=0;i<300000;i++)(db.user.insert({"id":i, "name": "not shard key", "Date":new Date()}));
 
 
-config.settings 集合里主要存储sharded cluster的配置信息，比如chunk size，是否开启balancer等
+	
+	mongos> db.user.count()
+	500000
 
-mongos> db.settings.find()
-{ "_id" : "balancer", "mode" : "full", "stopped" : false }
-{ "_id" : "chunksize", "value" : 2 }
+	shard2:SECONDARY> db.user.count()
+	500000
 
-balancer
-sh.setBalancerState(true)
-db.settings.save( { _id:"chunksize", value: 64 } );
-
-
-
-
-测试2）------- OK
-use shardtest
-use admin
-mongos> sh.enableSharding("shardtest")
-db.runCommand( { enablesharding :"shardtest"});
-
-use admin
-
-###片键必须是一个索引，通过sh.shardCollection加会自动创建索引（前提是此集合不存在的情况下）:
-sh.shardCollection("shardtest.user",{userid:"hashed"})
-
-使用sh.status()方法或db.printShardingStatus()命令查看分片状态信息
-
-for(i=0;i<100000;i++)(db.user.insert({"userid":i}));
-
-登录到 shard 节点进行数据查看：
-shard1:PRIMARY> use shardtest
-switched to db shardtest
-shard1:PRIMARY> db.user.count()
-33755
-
-
-参考：
-https://www.cnblogs.com/mysql-dba/p/5057559.html
-
-http://www.mongoing.com/archives/2782
-
-
-
-总结:
-
-Sharding 启动顺序:
-mongod -f /data/mongodb/conf/config.conf
-mongod -f /data/mongodb/conf/shard1.conf
-mongos -f /data/mongodb/conf/mongos.conf
+	shard1:SECONDARY> show dbs
+	01_db   0.002GB
+	02_db   0.005GB
+	admin   0.000GB
+	config  0.001GB
+	local   0.005GB
+	
+	-- 对不需要分片的集合，默认落在任意1个节点上吗？
+		是的。
+		
+	没有分片的集合是会随机找个shard 复制集存吗？
+	作者回复: mongos在你新建库的时候会为你的库挑一个“primary shard”，所有未分片的集合都会在这个shard里面。挑选的规则就是看哪个分片相对数据量小一点。
+	
