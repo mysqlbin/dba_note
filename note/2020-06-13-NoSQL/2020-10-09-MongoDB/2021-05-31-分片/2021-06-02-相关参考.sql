@@ -12,7 +12,6 @@ https://www.cnblogs.com/ityouknow/p/7344005.html  mongodb 3.4 集群搭建：分
 https://mp.weixin.qq.com/s/fPYmsemJ2JfhrzlXaA0THQ   一文了解MongoDB分片
 https://www.freesion.com/article/6886370039/          超简单MONGODB 4.2分片集群搭建指南
 https://www.cnblogs.com/leohahah/p/8652572.html       MongoDB Sharding分片配置
-https://www.freesion.com/article/6886370039/		 超简单MONGODB 4.2分片集群搭建指南
 
 
 https://www.cnblogs.com/mysql-dba/p/5057559.html
