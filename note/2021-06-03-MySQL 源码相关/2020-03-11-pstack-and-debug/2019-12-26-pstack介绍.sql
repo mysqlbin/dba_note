@@ -27,7 +27,8 @@ pstack 介绍：
 		http://mysql.taobao.org/monthly/2016/01/07/   MySQL · 特性分析 · drop table的优化
 		https://www.jianshu.com/p/a956a3e30eb6        随笔：Innodb truncate内存维护代价高于drop
 
-		如何删除大表？  通过 pt-atchiver 归档是最好的方式。
+		如何删除大表？  通过 pt-atchiver 归档或是最好的方式。
+		停服的时候直接drop大表。
 				
 pstack 相关参考		
 	https://www.cnblogs.com/lonelyxmas/p/10891649.html   MySQL 几种调式分析利器
@@ -42,10 +43,9 @@ pstack 相关参考
 
 	当MySQL里有线程hang住时， 利用 pstack 排查由于哪些函数调用存在问题	
 		
-	
+
+	连续多次查看这个进程的函数调用关系堆栈进行分析：
+		当进程吊死时，多次使用 pstack 查看进程的函数调用堆栈，死锁线程将一直处于等锁的状态，对比多次的函数调用堆栈输出结果，确定哪两个线程（或者几个线程）一直没有变化且一直处于等锁的状态（可能存在两个线程 一直没有变化）。
 
 
-
-连续多次查看这个进程的函数调用关系堆栈进行分析：当进程吊死时，多次使用 pstack 查看进程的函数调用堆栈，死锁线程将一直处于等锁的状态，对比多次的函数调用堆栈输出结果，确定哪两个线程（或者几个线程）一直没有变化且一直处于等锁的状态（可能存在两个线程 一直没有变化）。
-
-
+pstack $(pgrep -xn mysqld) > 1.sql

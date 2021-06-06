@@ -416,7 +416,7 @@
 			2020-03-10T18:52:22.680865Z 0 [Note] InnoDB: 1 transactions in prepared state after recovery
 			2020-03-10T18:52:22.680870Z 0 [Note] Found 1 prepared transaction(s) in InnoDB
 			2020-03-10T18:52:22.680880Z 0 [Note] rollback xid 'MySQLXidi\13\5\0\0\0\0\0I\0\0\0\0\0\0\0'
-			# 事务处于 prepare，binlog 不完整， 会回滚。  灾里验证了这个逻辑。
+			# 事务处于 prepare，binlog 不完整， 会回滚。  这里验证了这个逻辑。
 			2020-03-10T18:52:22.922647Z 0 [Note] Crash recovery finished.
 			2020-03-10T18:52:23.069053Z 0 [Note] Read 2 events from binary log file '/data/mysql/logs/mysql-bin.000001' to determine the GTIDs purged from binary logs.
 			2020-03-10T18:52:23.086365Z 0 [Warning] Failed to set up SSL because of the following SSL library error: SSL context is not usable without certificate and private key

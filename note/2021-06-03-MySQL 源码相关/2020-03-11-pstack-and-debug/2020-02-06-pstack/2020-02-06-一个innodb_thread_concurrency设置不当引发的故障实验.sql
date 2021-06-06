@@ -94,8 +94,8 @@ root@mysqldb 12:01:  [db1]> show processlist;
 			在 /storage/innobase/srv/srv0conc.cc 目录文件下
 			
 				
-		好了有了这些栈帧视乎发现一些共同点他们都处于 srv_conc_enter_innodb_with_atomics 函数下，本函数正是下面参数实现的方式：
-
+		好了有了这些栈帧视乎发现一些共同点他们都处于 srv_conc_enter_innodb_with_atomics 函数下，本函数正是下面参数实现的方式(这里是怎么知道的？)：
+			
 			innodb_thread_concurrency
 			innodb_concurrency_tickets
 			所以我随即告诉他检查这两个参数，如果设置了可以尝试取消。过后数据库故障得到解决。
@@ -108,3 +108,27 @@ root@mysqldb 12:01:  [db1]> show processlist;
 			+---------------------------+-------+
 			1 row in set (0.00 sec)
 			
+			
+			
+		/*********************************************************************//**
+		如果并发线程太多，则让 OS 线程等待(>= srv_thread_concurrency) 在 InnoDB 中。 线程在 FIFO 队列中等待。
+
+		Puts an OS thread to wait if there are too many concurrent threads
+		(>= srv_thread_concurrency) inside InnoDB. The threads wait in a FIFO queue.
+		@param[in,out]	prebuilt	row prebuilt handler */
+		void
+		srv_conc_enter_innodb(
+			row_prebuilt_t*	prebuilt)
+		{
+			trx_t*	trx	= prebuilt->trx;
+
+		#ifdef UNIV_DEBUG
+			{
+				btrsea_sync_check	check(trx->has_search_latch);
+
+				ut_ad(!sync_check_iterate(check));
+			}
+		#endif /* UNIV_DEBUG */
+
+			srv_conc_enter_innodb_with_atomics(trx);
+		}

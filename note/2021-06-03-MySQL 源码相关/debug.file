@@ -1,0 +1,2 @@
+break main
+run --defaults-file=/etc/my.cnf --user=mysql --gdb
