@@ -314,6 +314,7 @@ Thread 10 (Thread 0x7f81127ad700 (LWP 2894)):
 #5  0x0000000001256a94 in pfs_spawn_thread (arg=0xe43adb0) at /export/home/pb2/build/sb_0-27500212-1520171728.22/mysql-5.7.22/storage/perfschema/pfs.cc:2190
 #6  0x00007f82cd52fe25 in start_thread () from /lib64/libpthread.so.0
 #7  0x00007f82cbfe8bad in clone () from /lib64/libc.so.6
+
 Thread 9 (Thread 0x7f8126fd9700 (LWP 25233)):
 #0  0x00007f82cbfddf0d in poll () from /lib64/libc.so.6
 #1  0x00000000012bdf4f in vio_io_wait (vio=<optimized out>, event=<optimized out>, timeout=3600000) at /export/home/pb2/build/sb_0-27500212-1520171728.22/mysql-5.7.22/vio/viosocket.c:786
@@ -330,6 +331,7 @@ Thread 9 (Thread 0x7f8126fd9700 (LWP 25233)):
 #12 0x0000000001256a94 in pfs_spawn_thread (arg=0xe38dca0) at /export/home/pb2/build/sb_0-27500212-1520171728.22/mysql-5.7.22/storage/perfschema/pfs.cc:2190
 #13 0x00007f82cd52fe25 in start_thread () from /lib64/libpthread.so.0
 #14 0x00007f82cbfe8bad in clone () from /lib64/libc.so.6
+
 Thread 8 (Thread 0x7f8126f57700 (LWP 26170)):
 #0  0x00007f82cbfddf0d in poll () from /lib64/libc.so.6
 #1  0x00000000012bdf4f in vio_io_wait (vio=<optimized out>, event=<optimized out>, timeout=3600000) at /export/home/pb2/build/sb_0-27500212-1520171728.22/mysql-5.7.22/vio/viosocket.c:786
