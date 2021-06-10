@@ -71,7 +71,7 @@ trx_undo_read_v_idx
 2.1 Insert操作调用 row_undo_ins()回滚
 	
 	
-	假如是 Insert 操作，则调用 row_undo_ins() 回滚，直接删除二级索引和主键索引上的数据  -- 通过源码
+	假如是 Insert 操作，则调用 row_undo_ins() 回滚，直接删除二级索引和主键索引上的数据  -- 通过源码验证了这一理论。
 		
 	具体的操作中，先回滚二级索引记录（row_undo_mod_del_mark_sec、row_undo_mod_upd_exist_sec、row_undo_mod_upd_del_sec），再回滚聚集索引记录（row_undo_mod_clust）。
 	
