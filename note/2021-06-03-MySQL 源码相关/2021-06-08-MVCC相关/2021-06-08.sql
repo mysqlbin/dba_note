@@ -247,6 +247,9 @@
 		}
 	}
 	
+	--------------------------------------------------------
+	
+	row_search_for_mysql->row_search_mvcc
 	dberr_t
 	row_search_mvcc(
 		byte*		buf,
@@ -342,7 +345,7 @@
 
 					/* If purge can't see the record then we can't rely on
 					the UNDO log record. */
-					/* 构建 undo 版本 */
+					/* 通过undo构建行记录的历史版本 */
 					bool	purge_sees = trx_undo_prev_version_build(
 						rec, mtr, version, index, *offsets, heap,
 						&prev_version, NULL, vrow, 0);
@@ -354,7 +357,7 @@
 		}
 		-----------------------------------------------------------------------------------------
 		
-		/* 构建聚集索引记录的undo版本 */
+		/* 通过undo构建行记录的历史版本 */
 		/* mysql-5.7.26\storage\innobase\trx\trx0rec.cc */
 		
 		/*******************************************************************//**
@@ -386,7 +389,7 @@
 			/* 解析 roll_ptr 指针内容. */
 			trx_undo_decode_roll_ptr(roll_ptr, &is_insert, &rseg_id, &page_no,
 						 &offset);
-			/* 根据回滚段 ID 查找回滚段。*/
+			/* 根据回滚段 ID 查找回滚段。（Looks for a rollback segment, based on the rollback segment id.）*/
 			rseg = trx_rseg_get_on_id(rseg_id, is_redo_rseg);
 
 			mtr_start(&mtr);
