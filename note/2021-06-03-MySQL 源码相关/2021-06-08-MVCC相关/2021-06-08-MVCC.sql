@@ -6,7 +6,7 @@
 3. row_search_mvcc和row_search_no_mvcc的入口函数
 4. lock_clust_rec_cons_read_sees和row_vers_build_for_consistent_read
 	4.1 row_search_mvcc->lock_clust_rec_cons_read_sees 判断可见性
-	4.2  row_vers_build_for_consistent_read构建undo历史版本
+	4.2 row_vers_build_for_consistent_read 构建undo历史版本
 5. 相关参考
 
 
