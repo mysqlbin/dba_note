@@ -3,17 +3,19 @@
 大纲
 	1. Insert操作和Update操作的 Undo Record 格式
 
-	2. 事务回滚
-		2.1 Insert操作调用 row_undo_ins()回滚	
-		2.2 Update操作调用 row_undo_mod()回滚
 
-	3. undo记录的主要类型为2个大类
+	2. undo记录的主要类型为2个大类
 
-		3.1 源码部分
-		3.2 insert的undo 
-		3.3 update和delete的undo
-		3.4 DML操作在undo中的记录
-		3.5 原地更新的源码入口处
+		2.1 源码部分
+		2.2 insert的undo 
+		2.3 update和delete的undo
+		2.4 DML操作在undo中的记录
+		2.5 原地更新的源码入口处
+	
+	3. 事务回滚
+		3.1 Insert操作调用 row_undo_ins()回滚	
+		3.2 Update操作调用 row_undo_mod()回滚
+
 	
 	4. DML操作对应的undo 
 			
@@ -42,8 +44,144 @@ trx_undo_read_v_idx
 
 
 
+--------------------------------------------------------------------------------------------------------------------------------------
 
-2. 事务回滚
+2. undo记录的主要类型为2个大类
+
+	2.1 源码部分
+
+		/* mysql-5.7.26\storage\innobase\include\trx0rec.h */
+
+		/* Types of an undo log record: these have to be smaller than 16, as the
+		compilation info multiplied by 16 is ORed to this value in an undo log
+		record */
+
+		#define	TRX_UNDO_INSERT_REC	11	/* fresh insert into clustered index */
+		#define	TRX_UNDO_UPD_EXIST_REC	12	/* update of a non-delete-marked
+							record */                             更新未被标记delete的记录
+		#define	TRX_UNDO_UPD_DEL_REC	13	/* update of a delete marked record to
+							a not delete marked record; also the
+							fields of the record can change */    将delete的记录标记为not delete, 记录的字段也可以更改
+
+		#define	TRX_UNDO_DEL_MARK_REC	14	/* delete marking of a record; fields
+							do not change */					  将记录标记为delete
+		#define	TRX_UNDO_CMPL_INFO_MULT	16	/* compilation info is multiplied by
+							this and ORed to the type above */
+		#define	TRX_UNDO_UPD_EXTERN	128	/* This bit can be ORed to type_cmpl
+							to denote that we updated external
+							storage fields: used by purge to
+							free the external storage */
+							
+							
+						
+		其中 TRX_UNDO_INSERT_REC 为insert的undo，其他为update和delete的undo。
+
+		之所以把undo日志分成两个大类，是因为类型为TRX_UNDO_INSERT_REC的undo日志在事务提交后可以直接删除掉，而其他类型的undo日志还需要为所谓的MVCC服务，不能直接删除掉，对它们的处理需要区别对待。
+			https://juejin.cn/book/6844733769996304392/section/6844733770071801869
+			
+		
+	2.2 insert的undo 
+		INSERT操作对应的undo日志： TRX_UNDO_INSERT_REC 日志
+
+	2.3 update和delete的undo
+	
+		总共3种 update undo 类型:
+		
+			2.1 TRX_UNDO_UPD_EXIST_REC: 
+				更新未被标记delete的记录
+				-- 标记删除操作, 未修改任何列值, 这既可能是普通的删除操作产生, 也可能是使用delete mark + insert 的更新导致(例如修改聚集索引键值: delete mark + insert)
+				-- 原地更新: 				 更新记录时，对于被更新的每个列来说，如果更新后的列和更新前的列占用的存储空间都一样大，那么就可以进行就地更新，也就是直接在原记录的基础上修改对应列的值。
+				-- 非原地更新(先删除再插入): 如果有任何一个被更新的列更新前和更新后占用的存储空间大小不一致，那么就需要先把这条旧的记录从聚簇索引页面中删除掉，然后再根据更新后列的值创建一条新的记录插入到页面中。
+				
+			2.2 TRX_UNDO_UPD_DEL_REC:    
+				将delete的记录标记为not delete
+				-- 更新一个已被标记删除的记录, 列值可被修改;
+				-- 在 InnoDB里 这是允许的, 例如某个记录被删除后,再很快插入相同键值的记录, 之前的记录若还未被purge, 就可能重用该记录所在的位置
+				-- 先不看
+			
+				
+			2.3 TRX_UNDO_DEL_MARK_REC:
+				将记录标记为delete
+				-- 更新一个未被标识删除的记录(普通更新)	
+				
+	
+	2.4 DML操作在undo中的记录
+	
+		1. 对于insert和delete，undo中会记录键值(主键索引和二级索引的值)，delete操作只是标记删除(delete mark)记录。
+	
+		2. 对于update：
+			1. 原地更新：undo中会记录键值(主键索引和二级索引的值)和老值(非索引值)。
+			2. 非原地更新：
+				通过delete+insert方式进行的，则undo中记录主键值(方便查找这一行记录)，不需记录老值; 其中delete也是标记删除记录。
+				-- 回滚的时候，清除删除标识就行了。
+		
+			3. 对于update操作有原地更新和delete+insert两种，那么怎么区分undo记录使用的哪种方式呢？
+	 
+				原地更新条件：更新没有改变值的长度且也没有更新行外数据，具体可参考 row_upd_changes_field_size_or_external
+				
+	
+		3. 二级索引的更新总是delete+insert方式进行。具体日志格式参考 trx_undo_report_row_operation 。
+
+
+	
+	2.5 原地更新的源码入口处
+	
+		/* mysql-5.7.26\storage\innobase\row\row0upd.cc */
+		
+		/***********************************************************//**
+		Updates a clustered index record of a row when the ordering fields do
+		not change.
+		@return DB_SUCCESS if operation successfully completed, else error
+		code or DB_LOCK_WAIT */
+		static MY_ATTRIBUTE((warn_unused_result))
+		dberr_t
+		row_upd_clust_rec(
+		
+		
+			/* Try optimistic updating of the record, keeping changes within
+			the page; we do not check locks because we assume the x-lock on the
+			record to update */
+
+			if (node->cmpl_info & UPD_NODE_NO_SIZE_CHANGE) {
+				err = btr_cur_update_in_place(
+					flags | BTR_NO_LOCKING_FLAG, btr_cur,
+					offsets, node->update,
+					node->cmpl_info, thr, thr_get_trx(thr)->id, mtr);
+			} else {
+				err = btr_cur_optimistic_update(
+					flags | BTR_NO_LOCKING_FLAG, btr_cur,
+					&offsets, offsets_heap, node->update,
+					node->cmpl_info, thr, thr_get_trx(thr)->id, mtr);
+			}
+
+		------------------------------------------------------------------------------------------------------------------------------------------------
+		
+		/* mysql-5.7.26\storage\innobase\btr\btr0cur.cc */
+		dberr_t
+		btr_cur_optimistic_update(
+		){		
+					
+				
+			if (!row_upd_changes_field_size_or_external(index, *offsets, update)) {
+
+				/* The simplest and the most common case: the update does not
+				change the size of any field and none of the updated fields is
+				externally stored in rec or update, and there is enough space
+				on the compressed page to log the update. */
+				
+				/*最简单最常见的情况：更新不更改任何字段的大小，并且没有更新的字段是外部存储在rec或update中（更新的列字段长度没有变化，并且没有更新外行记录），并且有足够的空间在压缩页面上记录更新。*/
+				
+				return(btr_cur_update_in_place(
+						   flags, cursor, *offsets, update,
+						   cmpl_info, thr, trx_id, mtr));
+			}
+		}
+				
+
+
+
+
+3. 事务回滚
 
 
 	/***********************************************************//**
@@ -68,7 +206,7 @@ trx_undo_read_v_idx
 		具体的操作中，先回滚二级索引记录（row_undo_mod_del_mark_sec、row_undo_mod_upd_exist_sec、row_undo_mod_upd_del_sec），再回滚聚集索引记录（row_undo_mod_clust）。
 
 
-2.1 Insert操作调用 row_undo_ins()回滚
+3.1 Insert操作调用 row_undo_ins()回滚
 	
 	
 	假如是 Insert 操作，则调用 row_undo_ins() 回滚，直接删除二级索引和主键索引上的数据  -- 通过源码验证了这一理论。
@@ -145,7 +283,7 @@ trx_undo_read_v_idx
 		
 
 		
-2.2 Update操作调用 row_undo_mod()回滚
+3.2 Update操作调用 row_undo_mod()回滚
 		
 		
 	Update 操作选择 row_undo_mod()将更新过的数据利用 Undo Log 还原, 与数据直接写入原理相同(btr_cur_optimistic_insert()).
@@ -225,142 +363,6 @@ trx_undo_read_v_idx
 		/*=====================*/
 			undo_node_t*	node,	/*!< in: row undo node */
 			que_thr_t*	thr)	/*!< in: query thread */
-
-
-
---------------------------------------------------------------------------------------------------------------------------------------
-
-3. undo记录的主要类型为2个大类
-
-	3.1 源码部分
-
-		/* mysql-5.7.26\storage\innobase\include\trx0rec.h */
-
-		/* Types of an undo log record: these have to be smaller than 16, as the
-		compilation info multiplied by 16 is ORed to this value in an undo log
-		record */
-
-		#define	TRX_UNDO_INSERT_REC	11	/* fresh insert into clustered index */
-		#define	TRX_UNDO_UPD_EXIST_REC	12	/* update of a non-delete-marked
-							record */                             更新未被标记delete的记录
-		#define	TRX_UNDO_UPD_DEL_REC	13	/* update of a delete marked record to
-							a not delete marked record; also the
-							fields of the record can change */    将delete的记录标记为not delete, 记录的字段也可以更改
-
-		#define	TRX_UNDO_DEL_MARK_REC	14	/* delete marking of a record; fields
-							do not change */					  将记录标记为delete
-		#define	TRX_UNDO_CMPL_INFO_MULT	16	/* compilation info is multiplied by
-							this and ORed to the type above */
-		#define	TRX_UNDO_UPD_EXTERN	128	/* This bit can be ORed to type_cmpl
-							to denote that we updated external
-							storage fields: used by purge to
-							free the external storage */
-							
-							
-						
-		其中 TRX_UNDO_INSERT_REC 为insert的undo，其他为update和delete的undo。
-
-		之所以把undo日志分成两个大类，是因为类型为TRX_UNDO_INSERT_REC的undo日志在事务提交后可以直接删除掉，而其他类型的undo日志还需要为所谓的MVCC服务，不能直接删除掉，对它们的处理需要区别对待。
-			https://juejin.cn/book/6844733769996304392/section/6844733770071801869
-			
-		
-	3.2 insert的undo 
-		INSERT操作对应的undo日志： TRX_UNDO_INSERT_REC 日志
-
-	3.3 update和delete的undo
-	
-		总共3种 update undo 类型:
-		
-			2.1 TRX_UNDO_UPD_EXIST_REC: 
-				更新未被标记delete的记录
-				-- 标记删除操作, 未修改任何列值, 这既可能是普通的删除操作产生, 也可能是使用delete mark + insert 的更新导致(例如修改聚集索引键值: delete mark + insert)
-				-- 原地更新: 				 更新记录时，对于被更新的每个列来说，如果更新后的列和更新前的列占用的存储空间都一样大，那么就可以进行就地更新，也就是直接在原记录的基础上修改对应列的值。
-				-- 非原地更新(先删除再插入): 如果有任何一个被更新的列更新前和更新后占用的存储空间大小不一致，那么就需要先把这条旧的记录从聚簇索引页面中删除掉，然后再根据更新后列的值创建一条新的记录插入到页面中。
-				
-			2.2 TRX_UNDO_UPD_DEL_REC:    
-				将delete的记录标记为not delete
-				-- 更新一个已被标记删除的记录, 列值可被修改;
-				-- 在 InnoDB里 这是允许的, 例如某个记录被删除后,再很快插入相同键值的记录, 之前的记录若还未被purge, 就可能重用该记录所在的位置
-				-- 先不看
-			
-				
-			2.3 TRX_UNDO_DEL_MARK_REC:
-				将记录标记为delete
-				-- 更新一个未被标识删除的记录(普通更新)	
-				
-	
-	3.4 DML操作在undo中的记录
-	
-		1. 对于insert和delete，undo中会记录键值(主键索引和二级索引的值)，delete操作只是标记删除(delete mark)记录。
-	
-		2. 对于update：
-			1. 原地更新：undo中会记录键值(主键索引和二级索引的值)和老值(非索引值)。
-			2. 非原地更新：
-				通过delete+insert方式进行的，则undo中记录主键值(方便查找这一行记录)，不需记录老值; 其中delete也是标记删除记录。
-				-- 回滚的时候，清除删除标识就行了。
-		
-			3. 对于update操作有原地更新和delete+insert两种，那么怎么区分undo记录使用的哪种方式呢？
-	 
-				原地更新条件：更新没有改变值的长度且也没有更新行外数据，具体可参考 row_upd_changes_field_size_or_external
-				
-	
-		3. 二级索引的更新总是delete+insert方式进行。具体日志格式参考 trx_undo_report_row_operation 。
-
-
-	
-	3.5 原地更新的源码入口处
-	
-		/* mysql-5.7.26\storage\innobase\row\row0upd.cc */
-		
-		/***********************************************************//**
-		Updates a clustered index record of a row when the ordering fields do
-		not change.
-		@return DB_SUCCESS if operation successfully completed, else error
-		code or DB_LOCK_WAIT */
-		static MY_ATTRIBUTE((warn_unused_result))
-		dberr_t
-		row_upd_clust_rec(
-		
-		
-			/* Try optimistic updating of the record, keeping changes within
-			the page; we do not check locks because we assume the x-lock on the
-			record to update */
-
-			if (node->cmpl_info & UPD_NODE_NO_SIZE_CHANGE) {
-				err = btr_cur_update_in_place(
-					flags | BTR_NO_LOCKING_FLAG, btr_cur,
-					offsets, node->update,
-					node->cmpl_info, thr, thr_get_trx(thr)->id, mtr);
-			} else {
-				err = btr_cur_optimistic_update(
-					flags | BTR_NO_LOCKING_FLAG, btr_cur,
-					&offsets, offsets_heap, node->update,
-					node->cmpl_info, thr, thr_get_trx(thr)->id, mtr);
-			}
-
-		------------------------------------------------------------------------------------------------------------------------------------------------
-		
-		/* mysql-5.7.26\storage\innobase\btr\btr0cur.cc */
-		dberr_t
-		btr_cur_optimistic_update(
-		){		
-					
-				
-			if (!row_upd_changes_field_size_or_external(index, *offsets, update)) {
-
-				/* The simplest and the most common case: the update does not
-				change the size of any field and none of the updated fields is
-				externally stored in rec or update, and there is enough space
-				on the compressed page to log the update. */
-				
-				/*最简单最常见的情况：更新不更改任何字段的大小，并且没有更新的字段是外部存储在rec或update中（更新的列字段长度没有变化，并且没有更新外行记录），并且有足够的空间在压缩页面上记录更新。*/
-				
-				return(btr_cur_update_in_place(
-						   flags, cursor, *offsets, update,
-						   cmpl_info, thr, trx_id, mtr));
-			}
-		}
-				
 
 
 
