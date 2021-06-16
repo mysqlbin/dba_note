@@ -5,3 +5,11 @@ https://blog.csdn.net/weixin_28781243/article/details/113378069     c+mysql+use_
 
 
 https://blog.csdn.net/weixin_39890543/article/details/113194361  gdb调试MySQL如何打断点_gdb调试MySQL
+
+
+
+https://segmentfault.com/a/1190000018176119?utm_source=tag-newest    GDB 调试 Mysql 实战（二）GDB 调试打印
+
+
+http://c.biancheng.net/gdb/
+

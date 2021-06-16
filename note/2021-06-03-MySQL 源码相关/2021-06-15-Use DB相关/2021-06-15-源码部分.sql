@@ -1,6 +1,9 @@
 
+1. use db切换数据库的源码部分
+2. 分析方向不对的记录
 
-use db切换数据库的源码部分
+
+1. use db切换数据库的源码部分
 	
 	com_use入口函数
 
@@ -256,7 +259,7 @@ use db切换数据库的源码部分
 
 
 
-方向不对的记录
+2. 分析方向不对的记录
 
 	[root@localhost data]# /home/mysql/bin/mysql -uroot -p123456abc sbtest
 	mysql: [Warning] Using a password on the command line interface can be insecure.

@@ -408,6 +408,37 @@
 		}
 
 
+		/* 解析 roll_ptr 指针内容. */
+		/***********************************************************************//**
+		Decodes a roll pointer. */
+		UNIV_INLINE
+		void
+		trx_undo_decode_roll_ptr(
+		/*=====================*/
+			roll_ptr_t	roll_ptr,	/*!< in: roll pointer */
+			ibool*		is_insert,	/*!< out: TRUE if insert undo log */
+			ulint*		rseg_id,	/*!< out: rollback segment id */
+			ulint*		page_no,	/*!< out: page number */
+			ulint*		offset)		/*!< out: offset of the undo
+							entry within page */
+		{
+		#if DATA_ROLL_PTR_LEN != 7
+		# error "DATA_ROLL_PTR_LEN != 7"
+		#endif
+		#if TRUE != 1
+		# error "TRUE != 1"
+		#endif
+			ut_ad(roll_ptr < (1ULL << 56));
+			*offset = (ulint) roll_ptr & 0xFFFF;
+			roll_ptr >>= 16;
+			*page_no = (ulint) roll_ptr & 0xFFFFFFFF;
+			roll_ptr >>= 32;
+			*rseg_id = (ulint) roll_ptr & 0x7F;
+			roll_ptr >>= 7;
+			*is_insert = (ibool) roll_ptr; /* TRUE==1 */
+		}
+
+
 5. 构建undo历史版本的流程
 
 	1. 构建老版本记录（trx_undo_prev_version_build）需要持有page latch，因此如果Undo链太长的话，其他请求该page的线程可能等待时间过长导致crash 
@@ -429,4 +460,7 @@
     https://blog.csdn.net/maray/article/details/80848544
 	
 	https://www.leviathan.vip/2019/03/20/InnoDB%E7%9A%84%E4%BA%8B%E5%8A%A1%E5%88%86%E6%9E%90-MVCC/   
+	
+	http://blog.itpub.net/7728585/viewspace-2284045/  MySQL：Innodb DB_ROLL_PTR指针解析
+
 	
