@@ -4,3 +4,4 @@ https://blog.csdn.net/weixin_28781243/article/details/113378069     c+mysql+use_
 源码下无秘密。
 
 
+https://blog.csdn.net/weixin_39890543/article/details/113194361  gdb调试MySQL如何打断点_gdb调试MySQL
