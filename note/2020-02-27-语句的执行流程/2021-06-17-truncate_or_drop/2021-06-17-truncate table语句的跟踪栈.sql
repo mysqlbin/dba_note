@@ -139,78 +139,207 @@
 	root@mysqldb 03:13:  [lujb_db]> drop table t;
 	阻塞住
 
-
 	
-	/* 持有buffer pool mutex； */
-	/** Acquire a buffer pool mutex. */
-	#define buf_pool_mutex_enter(b) do {		\
-		ut_ad(!(b)->zip_mutex.is_owned());	\
-		mutex_enter(&(b)->mutex);		\
-	} while (0)
+	buf_LRU_flush_or_remove_pages
 
-	
-	
-	/*
-	当我们删除该表空间的数据文件时，删除属于特定缓冲池实例中给定表空间的所有脏页。 这些页面仍然是 LRU 的一部分，并且随着它们老化到 LRU 的尾部而从列表中被逐出。
-	*/
-	
-	/******************************************************************//**
-	Remove all dirty pages belonging to a given tablespace inside a specific
-	buffer pool instance when we are deleting the data file(s) of that
-	tablespace. The pages still remain a part of LRU and are evicted from
-	the list as they age towards the tail of the LRU.
-	@retval DB_SUCCESS if all freed
-	@retval DB_FAIL if not all freed
-	@retval DB_INTERRUPTED if the transaction was interrupted */
-	static	MY_ATTRIBUTE((warn_unused_result))
-	dberr_t
-	buf_flush_or_remove_pages(
-	/*======================*/
-		buf_pool_t*	buf_pool,	/*!< buffer pool instance */
-		ulint		id,		/*!< in: target space id for which
-						to remove or flush pages */
-		FlushObserver*	observer,	/*!< in: flush observer */
-		bool		flush,		/*!< in: flush to disk if true but
-						don't remove else remove without
-						flushing to disk */
-		const trx_t*	trx)		/*!< to check if the operation must
-						be interrupted, can be 0 */--
-					
-					
-	-------------------------------------------------------------------------------				
+		buf_LRU_flush_or_remove_pages (id=121, buf_remove=BUF_REMOVE_FLUSH_NO_WRITE
+		
+		/* 删除所有脏页或删除属于指定表空间的所有页（）。 */ 
+		/******************************************************************//**
+		Flushes all dirty pages or removes all pages belonging
+		to a given tablespace. A PROBLEM: if readahead is being started, what
+		guarantees that it will not try to read in pages after this operation
+		has completed? */
+		void
+		buf_LRU_flush_or_remove_pages(
+		/*==========================*/
+			ulint		id,		/*!< in: space id */
+			buf_remove_t	buf_remove,	/*!< in: remove or flush strategy */
+			const trx_t*	trx)		/*!< to check if the operation must
+							be interrupted */
+		{
+			ulint		i;
 
-	/** Deletes an IBD tablespace, either general or single-table.
-	The tablespace must be cached in the memory cache. This will delete the
-	datafile, fil_space_t & fil_node_t entries from the file_system_t cache.
-	@param[in]	space_id	Tablespace id
-	@param[in]	buf_remove	Specify the action to take on the pages
-	for this table in the buffer pool.
-	@return DB_SUCCESS or error */
-	dberr_t
-	fil_delete_tablespace(
-		ulint		id,
-		buf_remove_t	buf_remove)
-	{
-		char*		path = 0;
-		fil_space_t*	space = 0;
+			/* Before we attempt to drop pages one by one we first
+			attempt to drop page hash index entries in batches to make
+			it more efficient. The batching attempt is a best effort
+			attempt and does not guarantee that all pages hash entries
+			will be dropped. We get rid of remaining page hash entries
+			one by one below. */
+			for (i = 0; i < srv_buf_pool_instances; i++) {
+				buf_pool_t*	buf_pool;
 
-		ut_a(!is_system_tablespace(id));
+				buf_pool = buf_pool_from_array(i);
 
-		dberr_t err = fil_check_pending_operations(
-			id, FIL_OPERATION_DELETE, &space, &path);
-
-		if (err != DB_SUCCESS) {
-
-			ib::error() << "Cannot delete tablespace " << id
-				<< " because it is not found in the tablespace"
-				" memory cache.";
-
-			return(err);
+				switch (buf_remove) {
+				
+				case BUF_REMOVE_FLUSH_NO_WRITE:
+					/* It is a DROP TABLE for a single table
+					tablespace. No AHI entries exist because
+					we already dealt with them when freeing up
+					extents. */
+		
+				buf_LRU_remove_pages(buf_pool, id, buf_remove, trx);
+			}
 		}
 
-		ut_a(space);
-		ut_a(path != 0);
+
+		buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages
+			/******************************************************************//**
+			Remove pages belonging to a given tablespace inside a specific
+			buffer pool instance when we are deleting the data file(s) of that
+			tablespace. The pages still remain a part of LRU and are evicted from
+			the list as they age towards the tail of the LRU only if buf_remove
+			is BUF_REMOVE_FLUSH_NO_WRITE. */
+			static
+			void
+			buf_LRU_remove_pages(
+			/*=================*/
+				buf_pool_t*	buf_pool,	/*!< buffer pool instance */
+				ulint		id,		/*!< in: space id */
+				buf_remove_t	buf_remove,	/*!< in: remove or flush strategy */
+				const trx_t*	trx)		/*!< to check if the operation must
+								be interrupted */
+			{
+				FlushObserver*	observer = (trx == NULL) ? NULL : trx->flush_observer;
+
+				switch (buf_remove) {
+
+				case BUF_REMOVE_FLUSH_NO_WRITE:
+					/* Pass trx as NULL to avoid interruption check. */
+					buf_flush_dirty_pages(buf_pool, id, observer, false, NULL);
+					break;
+
+				
+			}
 		
+		buf_LRU_remove_pages->buf_flush_dirty_pages
+			/******************************************************************//**
+			Remove or flush all the dirty pages that belong to a given tablespace
+			inside a specific buffer pool instance. The pages will remain in the LRU
+			list and will be evicted from the LRU list as they age and move towards
+			the tail of the LRU list. */
+			static
+			void
+			buf_flush_dirty_pages(
+			/*==================*/
+				buf_pool_t*	buf_pool,	/*!< buffer pool instance */
+				ulint		id,		/*!< in: space id */
+				FlushObserver*	observer,	/*!< in: flush observer */
+				bool		flush,		/*!< in: flush to disk if true otherwise
+								remove the pages without flushing */
+				const trx_t*	trx)		/*!< to check if the operation must
+								be interrupted */
+			{
+				dberr_t		err;
+
+				do {
+					buf_pool_mutex_enter(buf_pool);
+
+					err = buf_flush_or_remove_pages(
+						buf_pool, id, observer, flush, trx);
+					
+					/* 释放BP缓冲池的mutex互斥锁 */
+					buf_pool_mutex_exit(buf_pool);
+
+					ut_ad(buf_flush_validate(buf_pool));
+
+					if (err == DB_FAIL) {
+						os_thread_sleep(2000);
+					}
+
+					if (err == DB_INTERRUPTED && observer != NULL) {
+						ut_a(flush);
+
+						flush = false;
+						err = DB_FAIL;
+					}
+
+					/* DB_FAIL is a soft error, it means that the task wasn't
+					completed, needs to be retried. */
+
+					ut_ad(buf_flush_validate(buf_pool));
+
+				} while (err == DB_FAIL);
+
+				ut_ad(err == DB_INTERRUPTED
+					  || buf_pool_get_dirty_pages_count(buf_pool, id, observer) == 0);
+			}
+
+		
+		buf_flush_dirty_pages->	buf_pool_mutex_enter
+			/* 持有buffer pool mutex； */
+			/** Acquire a buffer pool mutex. */
+			#define buf_pool_mutex_enter(b) do {		\
+				ut_ad(!(b)->zip_mutex.is_owned());	\
+				mutex_enter(&(b)->mutex);		\
+			} while (0)
+
+		
+		buf_flush_dirty_pages->buf_flush_or_remove_pages
+	
+	
+			/*
+			当我们删除该表空间的数据文件时，删除属于特定缓冲池实例中给定表空间的所有脏页。 这些页面仍然是 LRU 的一部分，并且随着它们老化到 LRU 的尾部而从列表中被逐出。
+			*/
+			
+			/******************************************************************//**
+			Remove all dirty pages belonging to a given tablespace inside a specific
+			buffer pool instance when we are deleting the data file(s) of that
+			tablespace. The pages still remain a part of LRU and are evicted from
+			the list as they age towards the tail of the LRU.
+			@retval DB_SUCCESS if all freed
+			@retval DB_FAIL if not all freed
+			@retval DB_INTERRUPTED if the transaction was interrupted */
+			static	MY_ATTRIBUTE((warn_unused_result))
+			dberr_t
+			buf_flush_or_remove_pages(
+			/*======================*/
+				buf_pool_t*	buf_pool,	/*!< buffer pool instance */
+				ulint		id,		/*!< in: target space id for which
+								to remove or flush pages */
+				FlushObserver*	observer,	/*!< in: flush observer */
+				bool		flush,		/*!< in: flush to disk if true but
+								don't remove else remove without
+								flushing to disk */
+				const trx_t*	trx)		/*!< to check if the operation must
+								be interrupted, can be 0 */--
+							
+						
+		-------------------------------------------------------------------------------				
+
+		/** Deletes an IBD tablespace, either general or single-table.
+		The tablespace must be cached in the memory cache. This will delete the
+		datafile, fil_space_t & fil_node_t entries from the file_system_t cache.
+		@param[in]	space_id	Tablespace id
+		@param[in]	buf_remove	Specify the action to take on the pages
+		for this table in the buffer pool.
+		@return DB_SUCCESS or error */
+		dberr_t
+		fil_delete_tablespace(
+			ulint		id,
+			buf_remove_t	buf_remove)
+		{
+			char*		path = 0;
+			fil_space_t*	space = 0;
+
+			ut_a(!is_system_tablespace(id));
+
+			dberr_t err = fil_check_pending_operations(
+				id, FIL_OPERATION_DELETE, &space, &path);
+
+			if (err != DB_SUCCESS) {
+
+				ib::error() << "Cannot delete tablespace " << id
+					<< " because it is not found in the tablespace"
+					" memory cache.";
+
+				return(err);
+			}
+
+			ut_a(space);
+			ut_a(path != 0);
+			
 
 	/** Drop a single-table tablespace as part of dropping or renaming a table.
 	This deletes the fil_space_t if found and the file on disk.

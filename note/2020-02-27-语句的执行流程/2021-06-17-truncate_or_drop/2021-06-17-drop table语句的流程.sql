@@ -3,7 +3,10 @@
 
 
 
-
+https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
+	C语言中，每个栈帧对应着一个未运行完的函数。栈帧中保存了该函数的返回地址和局部变量。
+	从逻辑上讲，栈帧就是一个函数执行的环境：函数参数、函数的局部变量、函数执行完后返回到哪里等等。
+	
 
 drop table 的执行流程
 	MySQL lazy模式
@@ -30,8 +33,12 @@ drop table 的执行流程
 	4. 释放flush list mutex；
 	5. 释放buffer pool mutex；
 	
+	
 	从磁盘上删除表空间是在哪1个步骤？
-	锁自适应哈希索引是在哪个步骤？ 
+	
+	锁自适应哈希索引是在哪个步骤？
+
+	
 	
 	drop table引起的MySQL 短暂hang死的问题，是由于drop 一张使用AHI空间较大的表时，调用执行AHI的清理动作，会消耗较长时间，执行期间长时间持有dict_operation_lock的X锁，阻塞了其他后台线程和用户线程;
 	drop table执行结束锁释放，MySQL积压的用户线程集中运行，出现了并发线程和连接数瞬间上升的现象。
@@ -58,6 +65,7 @@ drop table 的执行流程
 	4. 释放脏页链表的锁;
 	5. 释放BP缓冲池的锁。
 
+	
 
 	other:
 		持有一把数据字典的互斥锁、读写锁。
@@ -70,6 +78,11 @@ drop table 的执行流程
 
 		这里的数据字典是什么东西
 		
+		------------------------------------------------------
+		
+		删除表对应的AHI，需要持有一把 数据字典的互斥锁、读写锁。
+			
+			
 
 核心源码
 
@@ -129,9 +142,46 @@ drop table 的执行流程
 	https://dev.mysql.com/doc/refman/5.7/en/drop-table.html  
 
 	https://mp.weixin.qq.com/s/U3PJWI8l4DgJKm-p09Pc2Q    Drop Table对MySQL的性能影响分析
+	
+	https://blog.csdn.net/qiuyepiaoling/article/details/6545372
+	
+	
+	https://blog.csdn.net/weixin_35849182/article/details/113056288   delete mysql 大表_MySQL的DropTable影响分析和最佳实践
 
 	
+drop table 的风险和避免方法
+	1. Drop table 要做的主要有3件事：
+		把硬盘上的这个文件删了
 
+		把内存中的这个库已经加载加来的Page删了，腾出空间
+
+		把MySQL元数据字典中这张表关联信息删了
+
+	2. 可能会引起的风险有3种：
+		
+		MySQL长时间阻塞其他事务执行，大量请求堆积，实例假死。(锁)
+		
+		内存里的page大量置换，引起线程阻塞，实例假死(内存)
+		
+		磁盘IO被短时间大量占用，数据库性能明显下降(IO)
+
+
+	3. 解决和避免的方法3种：
+	
+		io占用的问题，对这个表建一个硬链，使Drop table 表的时候并没有真的去磁盘上删那个巨大的ibd文件，事后再用truncate的方式慢慢的删除这个文件，如果是SSD盘和卡,drop table后再直接rm文件也没问题
+
+		内存和IO占用的问题，升级MySQL版本
+
+		MySQL 5.5.23 引入了 lazy drop table 来优化改进了drop 操作影响(改进，改进，并没有说完全消除!!!拐杖敲黑板3次)
+
+		MySQL5.7.8 拆分了AHI共用一个全局的锁结构 btr_search_latch
+
+		MySQL8.0 解决了truncate table 的风险
+	4. 持有的锁
+		BP缓冲池互斥锁
+		数据字典的互斥锁、读写锁
+		
+	
 生产环境清空表数据实践
 
 	机器配置：4 CPU、16GB 内存，200GB的SSD盘。
