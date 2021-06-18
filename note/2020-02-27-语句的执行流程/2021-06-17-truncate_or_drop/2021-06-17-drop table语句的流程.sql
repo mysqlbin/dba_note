@@ -5,7 +5,7 @@
 
 
 
-drop table 的执行流程：
+drop table 的执行流程
 	MySQL lazy模式
 	在MySQL 5.5.23以后的版本，也实现了一个lazy drop table的方式，和percona的方式有所区别，下面来看一下具体的过程：
 
@@ -18,6 +18,7 @@ drop table 的执行流程：
 	3. 开始扫描flush list；
 	
 		3.1 如果dirty page属于drop table，那么就直接从flush list中remove掉；
+			-- 对应 buf_flush_or_remove_pages 函数
 		3.2 如果删除的page个数超过了#define BUF_LRU_DROP_SEARCH_SIZE 1024 这个数目的话，释放buffer pool mutex，flush list mutex，释放cpu资源：
 			释放flush list mutex；
 			释放buffer pool mutex；
@@ -29,6 +30,26 @@ drop table 的执行流程：
 	4. 释放flush list mutex；
 	5. 释放buffer pool mutex；
 	
+	从磁盘上删除表空间是在哪1个步骤？
+	锁自适应哈希索引是在哪个步骤？ 
+	
+	drop table引起的MySQL 短暂hang死的问题，是由于drop 一张使用AHI空间较大的表时，调用执行AHI的清理动作，会消耗较长时间，执行期间长时间持有dict_operation_lock的X锁，阻塞了其他后台线程和用户线程;
+	drop table执行结束锁释放，MySQL积压的用户线程集中运行，出现了并发线程和连接数瞬间上升的现象。
+	规避问题的方法，可以考虑在drop table前关闭AHI。
+	
+
+	AHI存在一个副作用：当删除大表，且缓冲池（Buffer Pool，下简称BP）比较大，如超过32G，则MySQL数据库可能会有短暂被hang住的情况发生。
+	这时会对业务线程造成一定影响，从而导致业务系统的抖动。
+	产生这个问题的原因是在删除表的时候，InnoDB存储引擎会将该表在BP中的内存都淘汰掉，释放可用空间。
+	这其中包括数据页、索引页、自适应哈希页等。
+	当BP比较大是，扫描BP中flush_list链表需要比较长的时间，因此会产生系统的抖动。
+	因此在海量的互联网并发业务中，删除表操作需要做精细的逻辑控制，如：
+		1. 业务低峰期删除大表；
+		2. 删除表前禁用AHI功能；
+		3. 控制脏页链表长度，只有长度小于一定阈值，才发起删除操作；
+		4. 删除表后启用AHI功能；
+	不过呢，所有这么麻烦的处理在 MySQL 8.0.23 版本之后，就都不再需要了。
+
 	-----------------------------------------------------------------------------------------------------------------------------------------
 	
 	1. 锁住BP缓冲池;
@@ -50,7 +71,7 @@ drop table 的执行流程：
 		这里的数据字典是什么东西
 		
 
-核心源码：
+核心源码
 
 	其核心的代码如下：
 
@@ -82,10 +103,11 @@ drop table 的执行流程：
 				nBigWinner BIGINT DEFAULT 0
 		);
 	
-	2.  也就是pt操作后drop旧表的操作 drop表会带来的问题  会把整个库锁住  整个系统会在drop表期间不可用
-		 --[no]drop-old-table             Drop the original table after renaming it (default yes)
+	2.  pt操作后drop旧表的操作 
+		drop表会带来的问题  会把整个库锁住  整个系统会在drop表期间不可用
+		--[no]drop-old-table             Drop the original table after renaming it (default yes)
 		 
-		 系统会短暂不可用，在意的话做pt-osc加上不删除旧表的选项，停服更新的时候删除旧表，不过一般都在业务低期做表的变更
+		系统会短暂不可用，在意的话做pt-osc加上不删除旧表的选项，停服更新的时候删除旧表，不过一般都在业务低期做表的变更
 		 
 		 
 

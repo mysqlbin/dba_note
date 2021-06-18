@@ -264,7 +264,11 @@
 		return(err);
 	}
 
-
+	
+	/*
+	从MySQL中删除表
+	如果数据字典尚未被事务锁定，则将提交事务。 否则，数据字典将保持锁定状态。
+	*/
 	
 	/** Drop a table for MySQL.
 	If the data dictionary was not already locked by the transaction,
