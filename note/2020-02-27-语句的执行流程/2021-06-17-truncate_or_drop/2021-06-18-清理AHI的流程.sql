@@ -2,6 +2,181 @@
 
 
 
+1. btr_search_drop_page_hash_when_freed
+2. btr_search_drop_page_hash_when_freed->btr_search_drop_page_hash_index
+3. btr_search_drop_page_hash_when_freed->btr_search_drop_page_hash_index->ha_remove_all_nodes_to_page
+4. btr_search_drop_page_hash_when_freed->btr_search_drop_page_hash_index->ha_remove_all_nodes_to_page->ha_delete_hash_node
+
+
+
+/** Frees a single page of a segment.
+@param[in]	seg_inode	segment inode
+@param[in]	page_id		page id
+@param[in]	page_size	page size
+@param[in]	ahi		whether we may need to drop the adaptive
+hash index
+@param[in,out]	mtr		mini-transaction */
+static
+void
+fseg_free_page_low(
+
+	if (ahi) {
+		btr_search_drop_page_hash_when_freed(page_id, page_size);
+	}
+
+
+
+/**********************************************************************//**
+Frees an extent of a segment to the space free list. */
+static
+void
+fseg_free_extent(
+
+	if (ahi) {
+		for (i = 0; i < FSP_EXTENT_SIZE; i++) {
+			if (!xdes_mtr_get_bit(descr, XDES_FREE_BIT, i, mtr)) {
+
+				/* Drop search system page hash index
+				if the page is found in the pool and
+				is hashed */
+
+				btr_search_drop_page_hash_when_freed(
+					page_id_t(space,
+						  first_page_in_extent + i),
+					page_size);
+			}
+		}
+	}
+
+
+1. btr_search_drop_page_hash_when_freed
+	/* mysql-5.7.26\storage\innobase\btr\btr0sea.cc */
+
+	/* 删除任何可能指向索引的自适应哈希索引条目
+	可能在缓冲池中的页面，当一个页面从
+	缓冲池或在文件段中释放。 */
+	
+	/*
+	当页面从缓冲池中被逐出或在文件段中被释放时，删除任何可能指向可能在缓冲池中的索引页的自适应哈希索引条目
+	*/
+	/** Drop any adaptive hash index entries that may point to an index
+	page that may be in the buffer pool, when a page is evicted from the
+	buffer pool or freed in a file segment.
+	@param[in]	page_id		page id
+	@param[in]	page_size	page size */
+	void
+	btr_search_drop_page_hash_when_freed()
+	{
+		btr_search_drop_page_hash_index(block);
+	}
+
+
+
+
+
+2. btr_search_drop_page_hash_when_freed->btr_search_drop_page_hash_index
+
+	/* 删除任何指向索引页的自适应哈希索引条目。 */
+
+	/** Drop any adaptive hash index entries that point to an index page.
+	@param[in,out]	block	block containing index page, s- or x-latched, or an
+				index page for which we know that
+				block->buf_fix_count == 0 or it is an index page which
+				has already been removed from the buf_pool->page_hash
+				i.e.: it is in state BUF_BLOCK_REMOVE_HASH */
+	void
+	btr_search_drop_page_hash_index(buf_block_t* block)
+	{
+
+
+
+		for (i = 0; i < n_cached; i++) {
+
+			ha_remove_all_nodes_to_page(
+				btr_search_sys->hash_tables[ahi_slot],
+				folds[i], page);
+		}
+		
+3. btr_search_drop_page_hash_when_freed->btr_search_drop_page_hash_index->ha_remove_all_nodes_to_page
+
+	/*****************************************************************//**
+	Removes from the chain determined by fold all nodes whose data pointer
+	points to the page given. */
+	void
+	ha_remove_all_nodes_to_page(
+	/*========================*/
+		hash_table_t*	table,	/*!< in: hash table */
+		ulint		fold,	/*!< in: fold value */
+		const page_t*	page)	/*!< in: buffer page */
+	{
+		ha_node_t*	node;
+
+		ut_ad(table);
+		ut_ad(table->magic_n == HASH_TABLE_MAGIC_N);
+		hash_assert_can_modify(table, fold);
+		ut_ad(btr_search_enabled);
+
+		node = ha_chain_get_first(table, fold);
+
+		while (node) {
+			if (page_align(ha_node_get_data(node)) == page) {
+
+				/* Remove the hash node */
+
+				ha_delete_hash_node(table, node);
+
+				/* Start again from the first node in the chain
+				because the deletion may compact the heap of
+				nodes and move other nodes! */
+
+				node = ha_chain_get_first(table, fold);
+			} else {
+				node = ha_chain_get_next(node);
+			}
+		}
+	#ifdef UNIV_DEBUG
+		/* Check that all nodes really got deleted */
+
+		node = ha_chain_get_first(table, fold);
+
+		while (node) {
+			ut_a(page_align(ha_node_get_data(node)) != page);
+
+			node = ha_chain_get_next(node);
+		}
+	#endif /* UNIV_DEBUG */
+	}
+
+
+4. btr_search_drop_page_hash_when_freed->btr_search_drop_page_hash_index->ha_remove_all_nodes_to_page->ha_delete_hash_node
+	/***********************************************************//**
+	Deletes a hash node. */
+	void
+	ha_delete_hash_node(
+	/*================*/
+		hash_table_t*	table,		/*!< in: hash table */
+		ha_node_t*	del_node)	/*!< in: node to be deleted */
+	{
+		ut_ad(table);
+		ut_ad(table->magic_n == HASH_TABLE_MAGIC_N);
+		ut_d(ha_btr_search_latch_x_locked(table));
+		ut_ad(btr_search_enabled);
+	#if defined UNIV_AHI_DEBUG || defined UNIV_DEBUG
+		if (table->adaptive) {
+			ut_a(del_node->block->frame = page_align(del_node->data));
+			ut_a(os_atomic_decrement_ulint(&del_node->block->n_pointers, 1)
+				 < MAX_N_POINTERS);
+		}
+	#endif /* UNIV_AHI_DEBUG || UNIV_DEBUG */
+
+		HASH_DELETE_AND_COMPACT(ha_node_t, next, table, del_node);
+	}
+	
+	
+
+
+
+
 
 create  database test_db DEFAULT CHARSET utf8mb4 --UTF-8 Unicode COLLATE utf8mb4_general_ci;
 
@@ -100,128 +275,3 @@ Thread 32 (Thread 0x7f5d002b2700 (LWP 8156)):
 #26 start_thread ()
 
 
-
-
-
-
-
-btr_search_drop_page_hash_when_freed
-	/* mysql-5.7.26\storage\innobase\btr\btr0sea.cc */
-
-	/* 删除任何可能指向索引的自适应哈希索引条目
-	可能在缓冲池中的页面，当一个页面从
-	缓冲池或在文件段中释放。 */
-	/** Drop any adaptive hash index entries that may point to an index
-	page that may be in the buffer pool, when a page is evicted from the
-	buffer pool or freed in a file segment.
-	@param[in]	page_id		page id
-	@param[in]	page_size	page size */
-	void
-	btr_search_drop_page_hash_when_freed()
-	{
-		btr_search_drop_page_hash_index(block);
-	}
-
-
-
-
-
-btr_search_drop_page_hash_when_freed->btr_search_drop_page_hash_index->ha_remove_all_nodes_to_page
-	/* mysql-5.7.26\storage\innobase\btr\btr0sea.cc */
-
-	/* 删除任何指向索引页的自适应哈希索引条目。 */
-
-	/** Drop any adaptive hash index entries that point to an index page.
-	@param[in,out]	block	block containing index page, s- or x-latched, or an
-				index page for which we know that
-				block->buf_fix_count == 0 or it is an index page which
-				has already been removed from the buf_pool->page_hash
-				i.e.: it is in state BUF_BLOCK_REMOVE_HASH */
-	void
-	btr_search_drop_page_hash_index(buf_block_t* block)
-	{
-
-
-
-		for (i = 0; i < n_cached; i++) {
-
-			ha_remove_all_nodes_to_page(
-				btr_search_sys->hash_tables[ahi_slot],
-				folds[i], page);
-		}
-		
-btr_search_drop_page_hash_when_freed->btr_search_drop_page_hash_index->ha_remove_all_nodes_to_page
-
-	/*****************************************************************//**
-	Removes from the chain determined by fold all nodes whose data pointer
-	points to the page given. */
-	void
-	ha_remove_all_nodes_to_page(
-	/*========================*/
-		hash_table_t*	table,	/*!< in: hash table */
-		ulint		fold,	/*!< in: fold value */
-		const page_t*	page)	/*!< in: buffer page */
-	{
-		ha_node_t*	node;
-
-		ut_ad(table);
-		ut_ad(table->magic_n == HASH_TABLE_MAGIC_N);
-		hash_assert_can_modify(table, fold);
-		ut_ad(btr_search_enabled);
-
-		node = ha_chain_get_first(table, fold);
-
-		while (node) {
-			if (page_align(ha_node_get_data(node)) == page) {
-
-				/* Remove the hash node */
-
-				ha_delete_hash_node(table, node);
-
-				/* Start again from the first node in the chain
-				because the deletion may compact the heap of
-				nodes and move other nodes! */
-
-				node = ha_chain_get_first(table, fold);
-			} else {
-				node = ha_chain_get_next(node);
-			}
-		}
-	#ifdef UNIV_DEBUG
-		/* Check that all nodes really got deleted */
-
-		node = ha_chain_get_first(table, fold);
-
-		while (node) {
-			ut_a(page_align(ha_node_get_data(node)) != page);
-
-			node = ha_chain_get_next(node);
-		}
-	#endif /* UNIV_DEBUG */
-	}
-
-
-btr_search_drop_page_hash_when_freed->btr_search_drop_page_hash_index->ha_remove_all_nodes_to_page->ha_delete_hash_node
-	/***********************************************************//**
-	Deletes a hash node. */
-	void
-	ha_delete_hash_node(
-	/*================*/
-		hash_table_t*	table,		/*!< in: hash table */
-		ha_node_t*	del_node)	/*!< in: node to be deleted */
-	{
-		ut_ad(table);
-		ut_ad(table->magic_n == HASH_TABLE_MAGIC_N);
-		ut_d(ha_btr_search_latch_x_locked(table));
-		ut_ad(btr_search_enabled);
-	#if defined UNIV_AHI_DEBUG || defined UNIV_DEBUG
-		if (table->adaptive) {
-			ut_a(del_node->block->frame = page_align(del_node->data));
-			ut_a(os_atomic_decrement_ulint(&del_node->block->n_pointers, 1)
-				 < MAX_N_POINTERS);
-		}
-	#endif /* UNIV_AHI_DEBUG || UNIV_DEBUG */
-
-		HASH_DELETE_AND_COMPACT(ha_node_t, next, table, del_node);
-	}
-	

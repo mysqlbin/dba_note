@@ -6,9 +6,9 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 1. mysql_rm_table
 	
 	1.1 mysql_rm_table
-
 	1.2 mysql_rm_table->find_table_for_mdl_upgrade
 	1.3 mysql_rm_table->mysql_rm_table_no_locks
+		-- 获得MDL写锁
 	1.4 mysql_rm_table->mysql_rm_table_no_locks->ha_delete_table
 	1.5 mysql_rm_table->mysql_rm_table_no_locks->ha_delete_table->handler::ha_delete_table
 	1.6 mysql_rm_table->mysql_rm_table_no_locks->ha_delete_table->handler::ha_delete_table->handler::delete_table
@@ -19,8 +19,10 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 	2.1 ha_innobase::delete_table
 	2.2 ha_innobase::delete_table->row_drop_table_for_mysql
 	2.3 ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_lock_data_dictionary
-	
-	
+		-- 锁住数据字典（独占锁）
+		-- 通过代码我们可以看到drop table调用row_drop_table_for_mysql函数时，在row_mysql_lock_data_dictionary(trx);位置对元数据加了排它锁
+	2.4 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace
+	2.5 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace
 	
 1. mysql_rm_table
 	
@@ -88,7 +90,7 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 
 		/*
 
-		此函数检查连接是否持有全局 IX 元数据锁。
+		此函数检查连接是否持有全局 IX 元数据写锁。
 
 		*/
 		TABLE *find_table_for_mdl_upgrade(THD *thd, const char *db,
@@ -115,7 +117,8 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 		  @retval  0  ok
 		  @retval  1  Error
 		  @retval -1  Thread was killed
-
+		
+		  在这个函数中已经获得MDL写锁
 		  @note This function assumes that metadata locks have already been taken.
 				It is also assumed that the tables have been removed from TDC.
 
@@ -156,76 +159,71 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 	--------------------------------------------------------------------------------------------------------------
 	1.5 mysql_rm_table->mysql_rm_table_no_locks->ha_delete_table->handler::ha_delete_table
 
-	/**
-	  Delete table: public interface(公共接口).
-	  
-	  @sa handler::delete_table()
-	*/
+		/**
+		  Delete table: public interface(公共接口).
+		  
+		  @sa handler::delete_table()
+		*/
 
 
-	int
-	handler::ha_delete_table(const char *name)
-	{
-	  DBUG_ASSERT(m_lock_type == F_UNLCK);
-	  mark_trx_read_write();
+		int
+		handler::ha_delete_table(const char *name)
+		{
+		  DBUG_ASSERT(m_lock_type == F_UNLCK);
+		  mark_trx_read_write();
 
-	  return delete_table(name);
-	}
+		  return delete_table(name);
+		}
 
 	--------------------------------------------------------------------------------------------------------------
 
 	1.6 mysql_rm_table->mysql_rm_table_no_locks->ha_delete_table->handler::ha_delete_table->handler::delete_table
 
-	/**
-	  Delete all files with extension from bas_ext().
+		/**
+		  Delete all files with extension from bas_ext().
 
-	  @param name		Base name of table
+		  @param name		Base name of table
 
-	  @note
-		We assume that the handler may return more extensions than
-		was actually used for the file.
+		  @note
+			We assume that the handler may return more extensions than
+			was actually used for the file.
 
-	  @retval
-		0   If we successfully deleted at least one file from base_ext and
-		didn't get any other errors than ENOENT
-	  @retval
-		!0  Error
-	*/
-	int handler::delete_table(const char *name)
-	{
-	  int saved_error= 0;
-	  int error= 0;
-	  int enoent_or_zero= ENOENT;                   // Error if no file was deleted
-	  char buff[FN_REFLEN];
-	  DBUG_ASSERT(m_lock_type == F_UNLCK);
-
-	  for (const char **ext=bas_ext(); *ext ; ext++)
-	  {
-		fn_format(buff, name, "", *ext, MY_UNPACK_FILENAME|MY_APPEND_EXT);
-		if (mysql_file_delete_with_symlink(key_file_misc, buff, MYF(0)))
+		  @retval
+			0   If we successfully deleted at least one file from base_ext and
+			didn't get any other errors than ENOENT
+		  @retval
+			!0  Error
+		*/
+		int handler::delete_table(const char *name)
 		{
-		  if (my_errno() != ENOENT)
+		  int saved_error= 0;
+		  int error= 0;
+		  int enoent_or_zero= ENOENT;                   // Error if no file was deleted
+		  char buff[FN_REFLEN];
+		  DBUG_ASSERT(m_lock_type == F_UNLCK);
+
+		  for (const char **ext=bas_ext(); *ext ; ext++)
 		  {
-			/*
-			  If error on the first existing file, return the error.
-			  Otherwise delete as much as possible.
-			*/
-			if (enoent_or_zero)
-			  return my_errno();
-		saved_error= my_errno();
+			fn_format(buff, name, "", *ext, MY_UNPACK_FILENAME|MY_APPEND_EXT);
+			if (mysql_file_delete_with_symlink(key_file_misc, buff, MYF(0)))
+			{
+			  if (my_errno() != ENOENT)
+			  {
+				/*
+				  If error on the first existing file, return the error.
+				  Otherwise delete as much as possible.
+				*/
+				if (enoent_or_zero)
+				  return my_errno();
+			saved_error= my_errno();
+			  }
+			}
+			else
+			  enoent_or_zero= 0;                        // No error for ENOENT
+			error= enoent_or_zero;
 		  }
+		  return saved_error ? saved_error : error;
 		}
-		else
-		  enoent_or_zero= 0;                        // No error for ENOENT
-		error= enoent_or_zero;
-	  }
-	  return saved_error ? saved_error : error;
-	}
-
-
-
-
-
 
 
 2. ha_innobase::delete_table
@@ -237,6 +235,12 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 		/* /mysql-5.7.26/storage/innobase/handler/ha_innodb.cc:12583 */
 		
 		
+		/*
+			从 InnoDB 数据库中删除表。 
+			在调用这个函数之前，MySQL 调用 innobase_commit 来提交当前用户的事务。
+			那么当前用户不能在表上设置锁。
+			InnoDB 中的删除表操作将删除任何用户在 InnoDB 中的表上的所有锁。
+		*//
 		/*****************************************************************//**
 		Drops a table from an InnoDB database. Before calling this function,
 		MySQL calls innobase_commit to commit the transaction of the current user.
@@ -250,45 +254,7 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 		/*======================*/
 			const char*	name)	/*!< in: table name */
 		{
-			dberr_t	err;
-			THD*	thd = ha_thd();
-			char	norm_name[FN_REFLEN];
-
-			DBUG_ENTER("ha_innobase::delete_table");
-
-			DBUG_EXECUTE_IF(
-				"test_normalize_table_name_low",
-				test_normalize_table_name_low();
-			);
-			DBUG_EXECUTE_IF(
-				"test_ut_format_name",
-				test_ut_format_name();
-			);
-
-			/* Strangely, MySQL passes the table name without the '.frm'
-			extension, in contrast to ::create */
-			normalize_table_name(norm_name, name);
-
-			innodb_session_t*&	priv = thd_to_innodb_session(thd);
-			dict_table_t*		handler = priv->lookup_table_handler(norm_name);
-
-			if (handler != NULL) {
-				for (dict_index_t* index = UT_LIST_GET_FIRST(handler->indexes);
-					 index != NULL && index->last_ins_cur;
-					 index = UT_LIST_GET_NEXT(indexes, index)) {
-					/* last_ins_cur and last_sel_cur are allocated
-					together ,therfore checking only last_ins_cur
-					before releasing mtr */
-					index->last_ins_cur->release();
-					index->last_sel_cur->release();
-				}
-			} else if (srv_read_only_mode
-				   ||  srv_force_recovery >= SRV_FORCE_NO_UNDO_LOG_SCAN) {
-				DBUG_RETURN(HA_ERR_TABLE_READONLY);
-			}
-
-			trx_t*	parent_trx = check_trx_exists(thd);
-
+			
 			TrxInInnoDB	trx_in_innodb(parent_trx);
 
 			/* Remove the to-be-dropped table from the list of modified tables
@@ -333,95 +299,6 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 				norm_name, trx, thd_sql_command(thd) == SQLCOM_DROP_DB,
 				true, handler);
 
-			if (err == DB_TABLE_NOT_FOUND) {
-				/* Test to drop all tables which matches db/tablename + '#'.
-				Only partitions can have '#' as non-first character in
-				the table name!
-
-				Temporary table names always start with '#', partitions are
-				the only 'tables' that can have '#' after the first character
-				and table name must have length > 0. User tables cannot have
-				'#' since it would be translated to @0023. Therefor this should
-				only match partitions. */
-				uint	len = (uint) strlen(norm_name);
-				ulint	num_partitions;
-				ut_a(len < FN_REFLEN);
-				norm_name[len] = '#';
-				norm_name[len + 1] = 0;
-				err = row_drop_database_for_mysql(norm_name, trx,
-					&num_partitions);
-				norm_name[len] = 0;
-				if (num_partitions == 0
-					&& !row_is_mysql_tmp_table_name(norm_name)) {
-					table_name_t tbl_name;
-					tbl_name.m_name = norm_name;
-					ib::error() << "Table " << tbl_name <<
-						" does not exist in the InnoDB"
-						" internal data dictionary though MySQL is"
-						" trying to drop it. Have you copied the .frm"
-						" file of the table to the MySQL database"
-						" directory from another database? "
-						<< TROUBLESHOOTING_MSG;
-				}
-				if (num_partitions == 0) {
-					err = DB_TABLE_NOT_FOUND;
-				}
-			}
-
-			/* TODO: remove this when the conversion tool from ha_partition to
-			native innodb partitioning is completed */
-			if (err == DB_TABLE_NOT_FOUND
-				&& innobase_get_lower_case_table_names() == 1) {
-		#ifdef _WIN32
-				char*	is_part = strstr(norm_name, "#p#");
-		#else
-				char*	is_part = strstr(norm_name, "#P#");
-		#endif /* _WIN32 */
-
-				if (is_part != NULL) {
-					char	par_case_name[FN_REFLEN];
-
-		#ifndef _WIN32
-					/* Check for the table using lower
-					case name, including the partition
-					separator "P" */
-					strcpy(par_case_name, norm_name);
-					innobase_casedn_str(par_case_name);
-		#else
-					/* On Windows platfrom, check
-					whether there exists table name in
-					system table whose name is
-					not being normalized to lower case */
-					create_table_info_t::normalize_table_name_low(
-						par_case_name, name, FALSE);
-		#endif /* _WIN32 */
-					err = row_drop_table_for_mysql(
-						par_case_name, trx,
-						thd_sql_command(thd) == SQLCOM_DROP_DB,
-						true, handler);
-				}
-			}
-
-			if (handler == NULL) {
-				ut_ad(!srv_read_only_mode);
-				/* Flush the log to reduce probability that the .frm files and
-				the InnoDB data dictionary get out-of-sync if the user runs
-				with innodb_flush_log_at_trx_commit = 0 */
-
-				log_buffer_flush_to_disk();
-			} else if (err == DB_SUCCESS) {
-				priv->unregister_table_handler(norm_name);
-			}
-
-			innobase_commit_low(trx);
-
-			trx_free_for_mysql(trx);
-
-			DBUG_RETURN(convert_error_code_to_mysql(err, 0, NULL));
-		}
-
-
-
 	2.2 ha_innobase::delete_table->row_drop_table_for_mysql
 
 		/* mysql-5.7.26\storage\innobase\row\row0mysql.cc */
@@ -438,7 +315,7 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 		@param[in]	trx		Transaction handle
 		@param[in]	drop_db		true=dropping whole database
 		@param[in]	nonatomic	Whether it is permitted to release
-		and reacquire dict_operation_lock
+		and reacquire dict_operation_lock    /* 是否允许释放和重新获取dict_operation_lock */
 		@param[in,out]	handler		Table handler
 		@return error code or DB_SUCCESS */
 		dberr_t
@@ -1103,10 +980,11 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 		
 		
 	2.4 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace
-
-
-	
-	
+		
+		/*
+			删除单表表空间作为删除或重命名表的一部分。
+			这将删除 fil_space_t（如果找到）和磁盘上的文件。
+		*/
 		/** Drop a single-table tablespace as part of dropping or renaming a table.
 		This deletes the fil_space_t if found and the file on disk.
 		@param[in]	space_id	Tablespace ID
@@ -1132,11 +1010,13 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 			is compressed and temporary. If so, don't spam the log when we
 			delete one of these or if we can't find the tablespace. */
 			bool	print_msg = !is_temp && !is_encrypted;
-
+			
+			/* 如果表空间不在缓存中，只需删除该文件。 */
 			/* If the tablespace is not in the cache, just delete the file. */
 			if (!fil_space_for_table_exists_in_mem(
 					space_id, tablename, print_msg, false, NULL, 0)) {
-
+				
+				/* 强制删除任何无用的或临时的文件。 */
 				/* Force a delete of any discarded or temporary files. */
 				fil_delete_file(filepath);
 
@@ -1161,9 +1041,23 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 	
 	
 	2.5 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace
-	
-
-	
-	
+		
+		/*
+		删除 ibd 表空间，无论是在共享表空间还是在独立表空间中。
+		表空间必须缓存在内存缓存中。
+		这将从 file_system_t 缓存中删除数据文件、fil_space_t 和 fil_node_t 条目。
+		*/
+		/** Deletes an IBD tablespace, either general or single-table.
+		The tablespace must be cached in the memory cache. This will delete the
+		datafile, fil_space_t & fil_node_t entries from the file_system_t cache.
+		@param[in]	space_id	Tablespace id
+		@param[in]	buf_remove	Specify the action to take on the pages
+		for this table in the buffer pool.
+		@return true if success */
+		dberr_t
+		fil_delete_tablespace(
+			ulint		id,
+			buf_remove_t	buf_remove);
+			
 	
 	
