@@ -8,6 +8,8 @@
 4. btr_search_drop_page_hash_when_freed->btr_search_drop_page_hash_index->ha_remove_all_nodes_to_page->ha_delete_hash_node
 
 
+buf_LRU_drop_page_hash_batch
+buf_LRU_drop_page_hash_for_tablespace
 
 /** Frees a single page of a segment.
 @param[in]	seg_inode	segment inode

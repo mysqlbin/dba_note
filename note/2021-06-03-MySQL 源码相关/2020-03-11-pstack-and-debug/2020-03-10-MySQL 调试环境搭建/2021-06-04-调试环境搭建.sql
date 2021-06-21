@@ -226,7 +226,7 @@
 		OR 
 
 		/home/mysql/bin/mysqld --defaults-file=/etc/my.cnf &   # 生成.sock文件)
-	
+		
 	环境变量
 		echo $PATH
 		echo "export PATH=$PATH:/home/mysql/bin">>/etc/profile

@@ -21,9 +21,34 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 	2.3 ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_lock_data_dictionary
 		-- 锁住数据字典（独占锁）
 		-- 通过代码我们可以看到drop table调用row_drop_table_for_mysql函数时，在row_mysql_lock_data_dictionary(trx);位置对元数据加了排它锁
-	2.4 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace
-	2.5 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace
+	2.4 ha_innobase::delete_table->row_drop_table_for_mysql->trx_start_for_ddl
 	
+	2.5 clean up data dictionary
+		拼接了一个巨大的SQL，用来从系统表中清理信息
+	
+	2.6 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_table_from_cache
+		清缓存
+		
+	2.7 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace
+	2.8 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace
+	2.9 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace->buf_LRU_flush_or_remove_pages
+	2.10 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace->os_file_delete
+	2.11 ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_unlock_data_dictionary
+		释放数据字典的排他锁。
+		
+		
+	
+3. DROP TABLE的源代码调用关系大致为
+
+	row_drop_table_for_mysql --> row_mysql_lock_data_dictionary
+							 |__ trx_start_for_ddl
+							 |__ clean up data dictionary
+							 |__ row_drop_table_from_cache
+							 |__ row_drop_single_table_tablespace --> fil_delete_tablespace --> buf_LRU_flush_or_remove_pages
+							 |                                                              |__ os_file_delete --> unlink
+							 |__ row_mysql_unlock_data_dictionary
+							 
+							 
 1. mysql_rm_table
 	
 	1.1 mysql_rm_table
@@ -1042,6 +1067,8 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 	
 	2.5 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace
 		
+		
+		/* mysql-5.7.26\storage\innobase\fil\fil0fil.cc */
 		/*
 		删除 ibd 表空间，无论是在共享表空间还是在独立表空间中。
 		表空间必须缓存在内存缓存中。
