@@ -1,8 +1,4 @@
 
-
-
-
-
 https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	C语言中，每个栈帧对应着一个未运行完的函数。栈帧中保存了该函数的返回地址和局部变量。
 	从逻辑上讲，栈帧就是一个函数执行的环境：函数参数、函数的局部变量、函数执行完后返回到哪里等等。
@@ -22,22 +18,28 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	MySQL在5.5.23版本之前的处理方式即同步模式:
 		当要drop table的时候，会在整个操作过程中持有buffer pool的mutex，然后扫描两次LRU链表，把属于这个table的page失效掉，buffer pool中page的个数越多，持有mutex时间就会越长，对在线业务的影响也就越明显。
 	简短看下核心处理代码:
+	
+		fil_delete_tablespace
+		buf_LRU_invalidate_tablespace(
+			 ulint     id)     /*!< in: space id */
+		{
+			 ulint     i;()
+			 for (i = 0; i < srv_buf_pool_instances; i++) {
+				  buf_pool_t*     buf_pool;
 
-	fil_delete_tablespace
-	buf_LRU_invalidate_tablespace(
-		 ulint     id)     /*!< in: space id */
-	{
-		 ulint     i;()
-		 for (i = 0; i < srv_buf_pool_instances; i++) {
-			  buf_pool_t*     buf_pool;
-
-			  buf_pool = buf_pool_from_array(i);
-			  buf_LRU_drop_page_hash_for_tablespace(buf_pool, id);
-			  buf_LRU_invalidate_tablespace_buf_pool_instance(buf_pool, id);
-		 }
-	}		
-	buf_LRU_drop_page_hash_for_tablespace 会扫描一次LRU list，需要从adaptive hash中删除对要删除的表的page的引用；
-	buf_LRU_invalidate_tablespace_buf_pool_instance 会扫描一次LRU list: 如果是dirty block，需要从flush list remove掉，然后从page hash中删除，最后从LRU list中删除。		
+				  buf_pool = buf_pool_from_array(i);
+				  buf_LRU_drop_page_hash_for_tablespace(buf_pool, id);
+				  buf_LRU_invalidate_tablespace_buf_pool_instance(buf_pool, id);
+			 }
+		}		
+		buf_LRU_drop_page_hash_for_tablespace 会扫描一次LRU list，需要从adaptive hash中删除对要删除的表的page的引用；
+		buf_LRU_invalidate_tablespace_buf_pool_instance 会扫描一次LRU list: 如果是dirty block，需要从flush list remove掉，然后从page hash中删除，最后从LRU list中删除。		
+			
+		
+	Percona曾经在MySQL官方5.5.23之前的版本中遇到过这个问题，并且提供了一种叫Percona Lazy Drop的补丁。简单来说，他们认为这个问题的瓶颈在CPU。
+	在删除一个有独立表空间的大表时，需要对buffer pool中所有和这个表空间有关的数据页做清理工作，包括从AHI，flush list和LRU list上移除，而在这个清理过程中，会一直持有buffer pool的mutex。
+	如果buffer pool配置特别大，比如500 GB大小，持有这个mutex的事件会较长，导致其他连接被阻塞住，从而导致系统性能的下降。
+	Percona Lazy Drop就是在清理buffer pool这里做了优化，尽量短时间和小粒度的持有mutex。
 		
 		
 1. drop table懒加载删除脏页的执行流程
@@ -58,7 +60,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		3.2 如果删除的脏页page个数超过了#define BUF_LRU_DROP_SEARCH_SIZE 1024 这个数目的话，释放buffer pool mutex，flush list mutex，释放cpu资源：
 			释放flush list mutex；
 			释放buffer pool mutex；
-			强制通过pthread_yield进行一次OS context switch，释放剩余的cpu时间片；
+			强制通过 pthread_yield 进行一次OS context switch，释放剩余的cpu时间片；
 			
 		3.3 重新持有buffer pool mutex；
 		3.4 重新持有flush list mutext；
@@ -66,55 +68,10 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	4. 释放flush list mutex；
 	5. 释放buffer pool mutex；
 	
-
-		
-	drop table引起的MySQL 短暂hang死的问题，是由于drop 一张使用AHI空间较大的表时，调用执行AHI的清理动作，会消耗较长时间，
-	执行期间长时间持有dict_operation_lock的X锁，阻塞了其他后台线程和用户线程;
-	drop table执行结束锁释放，MySQL积压的用户线程集中运行，出现了并发线程和连接数瞬间上升的现象。
-	规避问题的方法，可以考虑在drop table前关闭AHI。
 	
-
-	AHI存在一个副作用：当删除大表，且缓冲池（Buffer Pool，下简称BP）比较大，如超过32G，则MySQL数据库可能会有短暂被hang住的情况发生。
-	这时会对业务线程造成一定影响，从而导致业务系统的抖动。
-	产生这个问题的原因是在删除表的时候，InnoDB存储引擎会将该表在BP中的内存都淘汰掉，释放可用空间。
-	这其中包括数据页、索引页、自适应哈希页等。
-	当BP比较大是，扫描BP中flush_list链表需要比较长的时间，因此会产生系统的抖动。
-	因此在海量的互联网并发业务中，删除表操作需要做精细的逻辑控制，如：
-		1. 业务低峰期删除大表；
-		2. 删除表前禁用AHI功能；
-		3. 控制脏页链表长度，只有长度小于一定阈值，才发起删除操作；
-		4. 删除表后启用AHI功能；
-	不过呢，所有这么麻烦的处理在 MySQL 8.0.23 版本之后，就都不再需要了。
-
-	-----------------------------------------------------------------------------------------------------------------------------------------
+	MySQL官方在5.5.23版本中也实现了一个lazy drop的功能，但和Percona的实现方式不一样：在移除flush list时，会有一个条件判断，如果已经处理了超过一定数量的page，会强制释放当前持有的buffer pool mutex和flush list mutex，并且让出CPU，过一会儿再重新拿回锁继续清理flush list；
+	对于LRU list，则不做处理，因为当这个表被删除后，这些数据页最终会在LRU算法调度下被回收。
 	
-	drop table引起的MySQL 短暂hang死的问题，是由于drop 一张使用AHI空间较大的表时，调用执行AHI的清理动作，会消耗较长时间，执行期间长时间持有dict_operation_lock的X锁，阻塞了其他后台线程和用户线程;
-	调用执行AHI的清理动作会长时间持有 dict_operation_lock的X锁 ？
-	不理解。
-	
-	--------------------------------------
-
-
-	
-
-	other:
-		持有一把数据字典的互斥锁、读写锁。
-
-		最近，我们中心的同学发现，仅上述这两种操作步骤依然无法达到优雅的定义。因为在DROP TABLE过程中，依然会存在大量的线程处于 OPENING TABLES 的状态。
-		最终，姜老师发现除了BP的大锁之外，还存在一把数据字典的锁，而这把锁会引起性能的抖动。
-		
-		BP变大，意味着AHI所占用的空间也变大。当DROP TABLE时，InnoDB引擎还会删除表对应的AHI（自适应哈希索引）。而这个过程需要持有一把数据字典的互斥锁、读写锁。
-		-- 删除表对应的AHI需要持有一把数据字典的互斥锁、读写锁？
-		-- 我看源码并不是这样的。
-		而这两把锁有分别和Master Thread和用户线程互斥，所以导致在删除AHI时，会有大量的Opening tables用户线程状态显示。
-		对于这个问题，可以在DROP TABLE的时候关闭AHI功能。不过姜老师更为推荐直接关闭AHI功能。
-
-		这里的数据字典是什么东西？
-			-- 可以理解为在系统表中的数据表。
-		
-
-	
-
 	
 2. 整个DROP TABLE过程可以简单地概括为
 	

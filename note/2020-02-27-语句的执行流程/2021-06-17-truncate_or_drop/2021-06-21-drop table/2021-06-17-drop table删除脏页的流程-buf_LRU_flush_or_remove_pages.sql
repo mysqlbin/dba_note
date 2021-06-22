@@ -4,7 +4,7 @@
 	3.1.2 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages
 	3.1.3 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->buf_pool_mutex_enter
 	3.1.4 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->->buf_flush_or_remove_pages	
-	
+	3.1.5 ulint BUF_LRU_DROP_SEARCH_SIZE = 1024
 	
 	3.1 buf_LRU_flush_or_remove_pages
 
@@ -185,6 +185,27 @@
 			---------------------------------------------------------
 
 	
-	-----------------------------------------------------------------------------------------------------------------------------------------------
 	
+	
+	
+	3.1.5 ulint BUF_LRU_DROP_SEARCH_SIZE = 1024
+	
+		/** When dropping the search hash index entries before deleting an ibd
+		file, we build a local array of pages belonging to that tablespace
+		in the buffer pool. Following is the size of that array.
+		We also release buf_pool->mutex after scanning this many pages of the
+		flush_list when dropping a table. This is to ensure that other threads
+		are not blocked for extended period of time when using very large
+		buffer pools. */
+		
+		/*
+		
+		在删除 ibd 之前删除搜索哈希索引条目时文件，我们构建属于该表空间的页面的本地数组在缓冲池中。 
+		以下是该数组的大小。
+		我们在扫描了这么多页面后也释放了 buf_pool->mutex删除表时flush_list。
+		这是为了确保在使用非常大的缓冲池时不会长时间阻塞其他线程
+		*/
+		static const ulint BUF_LRU_DROP_SEARCH_SIZE = 1024;
+
+
 
