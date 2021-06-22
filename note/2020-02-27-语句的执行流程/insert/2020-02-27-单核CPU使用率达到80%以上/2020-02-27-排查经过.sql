@@ -235,7 +235,7 @@
 	TRANSACTIONS
 	------------
 	Trx id counter 1951730280
-	Purge done for trx's n:o < 1951730279 undo n:o < 0 state: running but idle
+	Purge done for trx s n:o < 1951730279 undo n:o < 0 state: running but idle
 	History list length 3197
 	LIST OF TRANSACTIONS FOR EACH SESSION:
 	---TRANSACTION 0, not started

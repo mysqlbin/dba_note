@@ -105,6 +105,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	6. unlink ibd文件
 		-- 删除ibd文件。
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace->os_file_delete
+		-- C语言unlink()函数：删除文件
 		
 	7. 提交InnoDB DLL事务
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->trx_commit_for_mysql

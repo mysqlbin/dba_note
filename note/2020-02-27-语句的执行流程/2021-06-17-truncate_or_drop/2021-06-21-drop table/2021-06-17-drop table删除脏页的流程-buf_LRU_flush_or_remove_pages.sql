@@ -1,9 +1,18 @@
+
+
+相关的函数调用顺序为：
+	buf_LRU_flush_or_remove_pages(BUF_REMOVE_FLUSH_NO_WRITE) --> buf_LRU_remove_pages --> buf_flush_dirty_pages --> buf_pool_mutex_enter
+																												|__ buf_flush_or_remove_pages --> buf_flush_list_mutex_enter
+																												|                             |__ buf_flush_try_yield
+																												|                             |__ buf_flush_list_mutex_exit
+																												|__ buf_pool_mutex_exit
 	
+																											
 3.1 buf_LRU_flush_or_remove_pages
 	3.1.1 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages
 	3.1.2 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages
 	3.1.3 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->buf_pool_mutex_enter
-	3.1.4 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->->buf_flush_or_remove_pages	
+	3.1.4 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->buf_flush_or_remove_pages	
 	3.1.5 ulint BUF_LRU_DROP_SEARCH_SIZE = 1024
 	
 	3.1 buf_LRU_flush_or_remove_pages
