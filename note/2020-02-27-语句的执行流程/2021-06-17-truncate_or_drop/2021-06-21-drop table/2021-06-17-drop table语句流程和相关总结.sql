@@ -8,7 +8,8 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	从逻辑上讲，栈帧就是一个函数执行的环境：函数参数、函数的局部变量、函数执行完后返回到哪里等等。
 	
 大纲
-	1. drop table删除脏页的执行流程
+	0. drop table同步模式
+	1. drop table懒加载删除脏页的执行流程
 	2. 整个DROP TABLE过程可以简单地概括为
 	3. 相关思考
 	4. drop table的风险和避免方法
@@ -16,7 +17,30 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	6. 生产环境清空表数据实践
 	7. 相关参考
 	
-1. drop table删除脏页的执行流程
+0. drop table同步模式
+	
+	MySQL在5.5.23版本之前的处理方式即同步模式:
+		当要drop table的时候，会在整个操作过程中持有buffer pool的mutex，然后扫描两次LRU链表，把属于这个table的page失效掉，buffer pool中page的个数越多，持有mutex时间就会越长，对在线业务的影响也就越明显。
+	简短看下核心处理代码:
+
+	fil_delete_tablespace
+	buf_LRU_invalidate_tablespace(
+		 ulint     id)     /*!< in: space id */
+	{
+		 ulint     i;()
+		 for (i = 0; i < srv_buf_pool_instances; i++) {
+			  buf_pool_t*     buf_pool;
+
+			  buf_pool = buf_pool_from_array(i);
+			  buf_LRU_drop_page_hash_for_tablespace(buf_pool, id);
+			  buf_LRU_invalidate_tablespace_buf_pool_instance(buf_pool, id);
+		 }
+	}		
+	buf_LRU_drop_page_hash_for_tablespace 会扫描一次LRU list，需要从adaptive hash中删除对要删除的表的page的引用；
+	buf_LRU_invalidate_tablespace_buf_pool_instance 会扫描一次LRU list: 如果是dirty block，需要从flush list remove掉，然后从page hash中删除，最后从LRU list中删除。		
+		
+		
+1. drop table懒加载删除脏页的执行流程
 
 	MySQL lazy模式
 	在MySQL 5.5.23以后的版本，也实现了一个lazy drop table的方式，和percona的方式有所区别，下面来看一下具体的过程：
@@ -31,7 +55,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	
 		3.1 如果dirty page属于drop table，那么就直接从flush list中remove掉；
 			-- 对应 buf_flush_or_remove_pages 函数
-		3.2 如果删除的page个数超过了#define BUF_LRU_DROP_SEARCH_SIZE 1024 这个数目的话，释放buffer pool mutex，flush list mutex，释放cpu资源：
+		3.2 如果删除的脏页page个数超过了#define BUF_LRU_DROP_SEARCH_SIZE 1024 这个数目的话，释放buffer pool mutex，flush list mutex，释放cpu资源：
 			释放flush list mutex；
 			释放buffer pool mutex；
 			强制通过pthread_yield进行一次OS context switch，释放剩余的cpu时间片；
@@ -93,7 +117,9 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 
 	
 2. 整个DROP TABLE过程可以简单地概括为
-
+	
+	0. 申请MDL写锁
+		
 	1. 获取dict_sys->mutex这个数据字典锁
 		-- 函数：ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_lock_data_dictionary
 		
@@ -134,7 +160,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	8. 释放dict_sys->mutex	
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_unlock_data_dictionary
 	
-	不足之处：没有讲到AHI
+	不足之处：没有讲到清理AHI
 	
 
 
@@ -217,12 +243,12 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		MySQL8.0 解决了truncate table 的风险
 		
 	4. 持有的锁
-		数据字典的全局排他锁->BP缓冲池排他锁。
+		MDL写锁，数据字典的全局排他锁->BP缓冲池排他锁。
 		
 	
 5. 小结
 	持有的锁：
-		数据字典的全局排他锁->BP缓冲池排他锁。
+		MDL写锁、数据字典的全局排他锁->BP缓冲池排他锁。
 		
 		DML请求都需要访问BP内存缓冲池，如果内存缓冲池被锁住了，自然阻塞所有的DML请求，QPS降为0。
 	
