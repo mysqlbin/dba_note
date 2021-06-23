@@ -119,10 +119,11 @@ trx_undo_read_v_idx
 					
 			3. 更新表中的一条记录
 				TRX_UNDO_UPD_EXIST_REC 
-					将主键和被更新了的字段内容记入日志，记录键值和老值
+					原地更新：将主键和被更新了的字段内容记入日志，也就是记录键值和老值
 				TRX_UNDO_DEL_MARK_REC 和 TRX_UNDO_INSERT_REC
-					当更新主键字段时，实际执行的过程是删除旧的记录然后，再插入一条新的记录。		
-			https://blog.csdn.net/weixin_33714884/article/details/89627823   MySQL InnoDB Purge简介
+					当更新主键字段时 或者 非原地更新：实际执行的过程是删除旧的记录然后，再插入一条新的记录。	
+					
+			4. https://blog.csdn.net/weixin_33714884/article/details/89627823   MySQL InnoDB Purge简介
 	
 				-- 标记删除操作, 未修改任何列值, 这既可能是普通的删除操作产生, 也可能是使用delete mark + insert 的更新导致(例如修改聚集索引键值: delete mark + insert)
 				-- 原地更新: 				 更新记录时，对于被更新的每个列来说，如果更新后的列和更新前的列占用的存储空间都一样大，那么就可以进行就地更新，也就是直接在原记录的基础上修改对应列的值。
