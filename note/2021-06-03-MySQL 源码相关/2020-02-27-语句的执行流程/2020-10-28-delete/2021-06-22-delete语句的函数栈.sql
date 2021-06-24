@@ -292,6 +292,27 @@
 	先对主键索引的记录打删除标记，再对二级索引的记录打删除标记。
 	
 	
+	示例：
+		初始化表结构、数据：
+			CREATE TABLE `t` (
+				  `id` int(11) NOT NULL,
+				  `a` int(11) DEFAULT NULL,
+				  `t_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+				  PRIMARY KEY (`id`),
+				  KEY `t_modified`(`t_modified`)
+				) ENGINE=InnoDB; 
+			insert into t values(5,1,'2018-11-13');
+			
+	
+			
+		删除语句：
+			delete from t where id=5;
+			 
+		主键索引的记录：(5,1,'2018-11-13')，先对这一行打删除标记
+		二级索引的记录：('2018-11-13', 5)，再对这一行删除标记
+	
+	
+	
 	
 7. 相关参考
 
@@ -300,7 +321,6 @@
 	https://blog.csdn.net/weixin_33714884/article/details/89627823
 
 	https://blog.csdn.net/weixin_39853523/article/details/110713852   insert时调用本身字段_MySQL RC级别下并发insert锁超时问题 - 源码分析
-
 
 	https://zhuanlan.zhihu.com/p/52098868  MySQL RC级别下并发insert锁超时问题 - 现象分析和解释
 	https://zhuanlan.zhihu.com/p/52100378  MySQL RC级别下并发insert锁超时问题 - 源码分析
@@ -320,7 +340,9 @@
 	4. 删除记录只是打了删除标记的原因：加快执行删除语句的速度，加速语句的响应时间。
 	
 	5. gdb bt 打印的栈帧，要从后面往前面看
-
+	
+	6. 先对主键索引的记录打删除标记，再对二级索引的记录打删除标记。
+	
 
 后面要看看insert 和 update语句的函数栈。
 	
