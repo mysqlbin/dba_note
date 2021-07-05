@@ -5,8 +5,6 @@
 4. 根据二级索引的记录对主键索引的记录进行加锁
 
 
-
-
 1. 判断是否给主键索引还是二级索引的记录加锁
 
 E:\github\mysql-5.7.26\storage\innobase\row\row0sel.cc
