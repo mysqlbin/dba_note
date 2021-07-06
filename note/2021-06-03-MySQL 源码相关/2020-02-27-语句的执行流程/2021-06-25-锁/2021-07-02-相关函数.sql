@@ -2,7 +2,7 @@
 1. sel_set_rec_lock--判断是否给主键索引还是二级索引的记录加锁
 2. lock_sec_rec_read_check_and_lock--锁二级索引的记录
 3. lock_clust_rec_read_check_and_lock--锁主键索引的记录
-4. row_sel_get_clust_rec_for_mysql--根据二级索引的记录对主键索引的记录进行加锁
+4. row_sel_get_clust_rec_for_mysql--根据二级索引的记录回表查找主键索引的记录
 5. lock_sec_rec_modify_check_and_lock--对二级索引的记录加锁，用于update语句更新的时候有更新二级索引的数据
 6. lock_rec_lock--行级锁加锁的入口函数
 
@@ -48,7 +48,7 @@
 				static_cast<lock_mode>(mode), type, thr);
 		-- 对二级索引加锁
 		} else {
-			-- 空间索引
+			-- 空间索引，暂时忽略
 			if (dict_index_is_spatial(index)) {
 				if (type == LOCK_GAP || type == LOCK_ORDINARY) {
 					ut_ad(0);
@@ -226,7 +226,7 @@
 	}
 
 
-4. row_sel_get_clust_rec_for_mysql--根据二级索引的记录对主键索引的记录进行加锁
+4. row_sel_get_clust_rec_for_mysql--根据二级索引的记录回表查找主键索引的记录
 	/*********************************************************************//**
 	Retrieves the clustered index record corresponding to a record in a
 	non-clustered index. Does the necessary locking. Used in the MySQL

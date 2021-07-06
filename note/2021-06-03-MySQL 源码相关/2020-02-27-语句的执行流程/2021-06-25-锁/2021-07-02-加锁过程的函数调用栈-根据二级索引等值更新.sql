@@ -126,7 +126,7 @@
 	-- mode=LOCK_X，再锁主键索引的记录
 	#2  0x000000000194dcd5 in lock_clust_rec_read_check_and_lock (flags=0, block=0x7f396ba45ec0, rec=0x7f396cbe019b "\200", index=0x7f3958015d60, offsets=0x7f397815a880, mode=LOCK_X, gap_mode=1024, thr=0x7f395800ef08)
 		at /usr/local/mysql/storage/innobase/lock/lock0lock.cc:6414
-	-- 根据二级索引的记录对主键索引的记录进行加锁
+	-- 根据二级索引的记录回表查找主键索引的记录
 	#3  0x0000000001a4b095 in row_sel_get_clust_rec_for_mysql (prebuilt=0x7f395800e770, sec_index=0x7f39580168d0, rec=0x7f396cbd80a6 "c曹操\200", thr=0x7f395800ef08, out_rec=0x7f397815b110, offsets=0x7f397815b0e8, offset_heap=0x7f397815b0f0, vrow=0x0, mtr=0x7f397815aba0)
 		at /usr/local/mysql/storage/innobase/row/row0sel.cc:3649
 	#4  0x0000000001a4f94a in row_search_mvcc (buf=0x7f3958027240 "\377", mode=PAGE_CUR_GE, prebuilt=0x7f395800e770, match_mode=1, direction=0) at /usr/local/mysql/storage/innobase/row/row0sel.cc:5773
