@@ -193,6 +193,10 @@
 		-- RC隔离级别下不走这个流程
 	
 	
+	4. 语句的加锁范围
+		idx_name: record key: (name="c曹操",id=8)
+		primary key: record key: id=8
+		注意：这个语句需要访问到 name="l刘备" 这行记录并加锁，但是这行记录并不满足查询条件，所以会把 name="l刘备" 的行锁释放掉。
 
 3.2 RR隔离级别	
 
@@ -391,7 +395,7 @@
 		获得主键记录后，就可以执行更新了(row_update_for_mysql)
 	
 	3. 第三次，扫描下一条记录，看看是否满足条件。
-		
+		-- 需要访问到不满足的第一行记录为止
 		ha_innobase::general_fetch
 			->row_search_mvcc
 				->sel_set_rec_lock
@@ -400,8 +404,35 @@
 						
 		-- RC隔离级别下不需要走这个流程	
 		
+	
+	4. 语句的加锁范围
+		idx_name: next key lock: (-∞, "c曹操"] + gap lock: ("c曹操", "l刘备")
+		primary key: record key: id=8
+		
+		注意：这个语句需要访问到 name="l刘备" 这行记录并加锁，但是因为是二级索引上的等值查询，所以需要加 gap lock: ("c曹操", "l刘备")，并且会把 name="l刘备" 的行锁释放掉 。
+
 
 4. 小结
 	
 	通过函数调用栈，明白SQL语句最终需要加的锁。
 	
+	update hero set country='中' where name='c曹操' 语句加锁范围：
+		mysql> select * from hero order by name;
+		+--------+------------+---------+
+		| number | name       | country |
+		+--------+------------+---------+
+		|      8 | c曹操      | 魏      |
+		|      1 | l刘备      | 蜀      |
+		|     20 | s孙权      | 吴      |
+		|     15 | x荀彧      | 魏      |
+		|      3 | z诸葛亮    | 蜀      |
+		+--------+------------+---------+
+		5 rows in set (0.00 sec)
+		
+		RC隔离级别
+			idx_name: record key: (name="c曹操",id=8)
+			primary key: record key: id=8	
+					
+		RR隔离级别
+			idx_name: next key lock: (-∞, "c曹操"] + gap lock: ("c曹操", "l刘备")
+			primary key: record key: id=8
