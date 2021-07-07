@@ -6,11 +6,14 @@
 4. 行锁加锁流程(lock_rec_lock)
 
 
-match_mode=0：范围查询
-match_mode=1：等值查询
+
  
  
 1. InnoDB锁结构实现
+	
+	match_mode
+		match_mode=0：范围查询
+		match_mode=1：等值查询
 
 	锁类型
 		Innodb锁有两种类型，分别是表锁与行锁
@@ -64,8 +67,6 @@ match_mode=1：等值查询
 			ib_uint32_t	page_no;	/* 页号 */
 			ib_uint32_t	n_bits;		/* 锁位图大小，并且位图是放在lock_t结构之后的 */
 		};
-
-
 
 
 

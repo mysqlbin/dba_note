@@ -1,14 +1,18 @@
 
-CREATE TABLE `t` (
-	  `id` int(11) NOT NULL,
-	  `a` int(11) DEFAULT NULL,
-	  `t_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-	  PRIMARY KEY (`id`),
-	  KEY `t_modified`(`t_modified`)
-	) ENGINE=InnoDB; 
-	
-	
-insert into t values(5,1,'2018-11-13');
+
+
+0. 初始化表结构和数据
+
+	CREATE TABLE `t` (
+		  `id` int(11) NOT NULL,
+		  `a` int(11) DEFAULT NULL,
+		  `t_modified` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		  PRIMARY KEY (`id`),
+		  KEY `t_modified`(`t_modified`)
+		) ENGINE=InnoDB; 
+		
+		
+	insert into t values(5,1,'2018-11-13');
 	
 1. 打断点找函数调用栈
 	
@@ -49,8 +53,6 @@ insert into t values(5,1,'2018-11-13');
 		#23 0x00007f0b871cb9fd in clone () from /lib64/libc.so.6
 
 
-
-
 		Server层
 			mysql_parse -> mysql_execute_command -> Sql_cmd_insert::execute -> Sql_cmd_insert::mysql_insert -> write_record -> handler::ha_write_row 
 			
@@ -72,8 +74,6 @@ insert into t values(5,1,'2018-11-13');
 		-> lock_rec_insert_check_and_lock
 			-> lock_rec_other_has_conflicting
 				-> lock_rec_has_to_wait
-				
-		
 	
 	2.1 btr_cur_ins_lock_and_undo
 	
@@ -92,6 +92,8 @@ insert into t values(5,1,'2018-11-13');
 				检查插入的记录是否会被别的事务持有的锁锁住
 				如果有被锁住，则处于等待状态
 				如果没有，则持有
+				
+			调用 lock_rec_insert_check_and_lock 函数，用插入意向锁来检查是否需要等待
 		*/
 		/*********************************************************************//**
 		Checks if locks of other transactions prevent an immediate insert of
@@ -110,7 +112,7 @@ insert into t values(5,1,'2018-11-13');
 			BTR_NO_LOCKING_FLAG and skip the locking altogether. */
 			ut_ad(lock_table_has(trx, index->table, LOCK_IX));
 
-			-- 在记录上首先 get explicit lock（显式锁），返回 first lock ，没有则返回null
+			-- 在记录上首先获取 explicit lock（显式锁），返回 first lock ，没有则返回null
 			lock = lock_rec_get_first(lock_sys->rec_hash, block, heap_no);
 
 
@@ -275,59 +277,32 @@ insert into t values(5,1,'2018-11-13');
 
 			return(FALSE);
 		}
-		
+	
+
+-- 获取记录锁的等待插入标志
+/*********************************************************************//**
+Gets the waiting insert flag of a record lock.
+@return LOCK_INSERT_INTENTION or 0 */
+UNIV_INLINE
+ulint
+lock_rec_get_insert_intention(
+/*==========================*/
+	const lock_t*	lock)	/*!< in: record lock */
+{
+	ut_ad(lock);
+	ut_ad(lock_get_type_low(lock) == LOCK_REC);
+
+	return(lock->type_mode & LOCK_INSERT_INTENTION);
+}	
+
+
+
+
+
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-b page_cur_insert_rec_write_log	
-
-
-	(gdb) b page_cur_insert_rec_write_log
-	Breakpoint 2 at 0x19938dd: file /usr/local/mysql/storage/innobase/page/page0cur.cc, line 964.
-	(gdb) info b
-	Num     Type           Disp Enb Address            What
-	1       breakpoint     keep y   0x0000000000e9a04c in main(int, char**) at /usr/local/mysql/sql/main.cc:25
-		breakpoint already hit 1 time
-	2       breakpoint     keep y   0x00000000019938dd in page_cur_insert_rec_write_log(rec_t*, ulint, rec_t*, dict_index_t*, mtr_t*) at /usr/local/mysql/storage/innobase/page/page0cur.cc:964
-
-		
-									insert into t values(9,1,'2019-12-13');
-
-
-	(gdb) c
-	Continuing.
-	[Switching to Thread 0x7f298423e700 (LWP 5954)]
-
-	Breakpoint 2, page_cur_insert_rec_write_log (insert_rec=0x7f29946100bc "\200", rec_size=31, cursor_rec=0x7f299461009d "\200", index=0x7f299c014190, mtr=0x7f298423ab20) at /usr/local/mysql/storage/innobase/page/page0cur.cc:964
-	964		if (dict_table_is_temporary(index->table)) {
-	(gdb) bt
-	#0  page_cur_insert_rec_write_log (insert_rec=0x7f29946100bc "\200", rec_size=31, cursor_rec=0x7f299461009d "\200", index=0x7f299c014190, mtr=0x7f298423ab20) at /usr/local/mysql/storage/innobase/page/page0cur.cc:964
-	#1  0x000000000199522b in page_cur_insert_rec_low (current_rec=0x7f299461009d "\200", index=0x7f299c014190, rec=0x4d1bcb6 "\200", offsets=0x7f298423a800, mtr=0x7f298423ab20) at /usr/local/mysql/storage/innobase/page/page0cur.cc:1531
-	#2  0x0000000001b181a8 in page_cur_tuple_insert (cursor=0x7f298423a708, tuple=0x4d1b820, index=0x7f299c014190, offsets=0x7f298423b040, heap=0x7f298423b048, n_ext=0, mtr=0x7f298423ab20, use_cache=false) at /usr/local/mysql/storage/innobase/include/page0cur.ic:280
-	#3  0x0000000001b212a3 in btr_cur_optimistic_insert (flags=0, cursor=0x7f298423a700, offsets=0x7f298423b040, heap=0x7f298423b048, entry=0x4d1b820, rec=0x7f298423b038, big_rec=0x7f298423b050, n_ext=0, thr=0x4cce158, mtr=0x7f298423ab20)
-		at /usr/local/mysql/storage/innobase/btr/btr0cur.cc:3218
-	#4  0x00000000019f0380 in row_ins_clust_index_entry_low (flags=0, mode=2, index=0x7f299c014190, n_uniq=1, entry=0x4d1b820, n_ext=0, thr=0x4cce158, dup_chk_only=false) at /usr/local/mysql/storage/innobase/row/row0ins.cc:2607
-	#5  0x00000000019f2281 in row_ins_clust_index_entry (index=0x7f299c014190, entry=0x4d1b820, thr=0x4cce158, n_ext=0, dup_chk_only=false) at /usr/local/mysql/storage/innobase/row/row0ins.cc:3293
-	#6  0x00000000019f2780 in row_ins_index_entry (index=0x7f299c014190, entry=0x4d1b820, thr=0x4cce158) at /usr/local/mysql/storage/innobase/row/row0ins.cc:3429
-	#7  0x00000000019f2cc0 in row_ins_index_entry_step (node=0x4ccded0, thr=0x4cce158) at /usr/local/mysql/storage/innobase/row/row0ins.cc:3579
-	#8  0x00000000019f3020 in row_ins (node=0x4ccded0, thr=0x4cce158) at /usr/local/mysql/storage/innobase/row/row0ins.cc:3717
-	#9  0x00000000019f3484 in row_ins_step (thr=0x4cce158) at /usr/local/mysql/storage/innobase/row/row0ins.cc:3853
-	#10 0x0000000001a11357 in row_insert_for_mysql_using_ins_graph (mysql_rec=0x4d206b0 "\375\t", prebuilt=0x4ccd900) at /usr/local/mysql/storage/innobase/row/row0mysql.cc:1738
-	#11 0x0000000001a118c5 in row_insert_for_mysql (mysql_rec=0x4d206b0 "\375\t", prebuilt=0x4ccd900) at /usr/local/mysql/storage/innobase/row/row0mysql.cc:1859
-	#12 0x00000000018bf0b0 in ha_innobase::write_row (this=0x4d203c0, record=0x4d206b0 "\375\t") at /usr/local/mysql/storage/innobase/handler/ha_innodb.cc:7598
-	#13 0x0000000000f367b1 in handler::ha_write_row (this=0x4d203c0, buf=0x4d206b0 "\375\t") at /usr/local/mysql/sql/handler.cc:8062
-	#14 0x0000000001758940 in write_record (thd=0x4d18030, table=0x4cff630, info=0x7f298423c1c0, update=0x7f298423c240) at /usr/local/mysql/sql/sql_insert.cc:1873
-	#15 0x0000000001755b08 in Sql_cmd_insert::mysql_insert (this=0x4cfc830, thd=0x4d18030, table_list=0x4cfc290) at /usr/local/mysql/sql/sql_insert.cc:769
-	#16 0x000000000175c3ef in Sql_cmd_insert::execute (this=0x4cfc830, thd=0x4d18030) at /usr/local/mysql/sql/sql_insert.cc:3118
-	#17 0x0000000001535155 in mysql_execute_command (thd=0x4d18030, first_level=true) at /usr/local/mysql/sql/sql_parse.cc:3596
-	#18 0x000000000153a849 in mysql_parse (thd=0x4d18030, parser_state=0x7f298423d690) at /usr/local/mysql/sql/sql_parse.cc:5570
-	#19 0x00000000015302d8 in dispatch_command (thd=0x4d18030, com_data=0x7f298423ddf0, command=COM_QUERY) at /usr/local/mysql/sql/sql_parse.cc:1484
-	#20 0x000000000152f20c in do_command (thd=0x4d18030) at /usr/local/mysql/sql/sql_parse.cc:1025
-	#21 0x000000000165f7c8 in handle_connection (arg=0x4a3fb10) at /usr/local/mysql/sql/conn_handler/connection_handler_per_thread.cc:306
-	#22 0x0000000001ce7612 in pfs_spawn_thread (arg=0x3d85200) at /usr/local/mysql/storage/perfschema/pfs.cc:2190
-	#23 0x00007f29abac5ea5 in start_thread () from /lib64/libpthread.so.0
-	#24 0x00007f29aa98b9fd in clone () from /lib64/libc.so.6
-
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
 相关参考
@@ -336,18 +311,20 @@ b page_cur_insert_rec_write_log
 	http://mysql.taobao.org/monthly/2017/09/10/	 MySQL · 源码分析 · 一条insert语句的执行过程
 	https://www.cnblogs.com/jiangxu67/p/4242346.html	 【MySQL】MySQL锁和隔离级别浅析二 之 INSERT
 	https://blog.csdn.net/aeolus_pu/article/details/55508289	mysql lock_rec_insert_check_and_lock 设置断点调试
-	http://blog.itpub.net/31493717/viewspace-2151017/		InnoDB事务锁之行锁-判断是否有隐式锁原理图
 	https://blog.csdn.net/weixin_28733651/article/details/113287018
 	https://www.aneasystone.com/archives/2017/11/solving-dead-locks-two.html	解决死锁之路 - 了解常见的锁类型
 	https://blog.51cto.com/u_15080020/2655735	 深入浅出MySQL 8.0 lock_sys锁相关优化
 	http://blog.itpub.net/7728585/viewspace-2216591/ MySQL：一个死锁分析 (未分析出来的死锁)
+	https://www.iamivan.net/a/bBKE5dM.html		[MySQL学习] Innodb锁系统(4) Insert/Delete 锁处理及死锁示例分析
+	
+	https://tech.souyunku.com/?p=28410   MySQL 死锁套路：一次诡异的批量插入死锁问题分析
+	 
+	https://blog.csdn.net/qiuyepiaoling/article/details/7587057	 MySQL数据库InnoDB存储引擎中的锁机制（原创：宋利兵）
 
-
+	
 思考
 
 	1. 语句锁等待的场景下如何打断点
 	
 	
-
-
 

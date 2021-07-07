@@ -1,4 +1,24 @@
 
+
+	/** Searches for rows in the database using cursor.
+	Function is mainly used for tables that are shared accorss connection and
+	so it employs technique that can help re-construct the rows that
+	transaction is suppose to see.
+	It also has optimization such as pre-caching the rows, using AHI, etc.
+
+	@param[out]	buf		buffer for the fetched row in MySQL format
+	@param[in]	mode		search mode PAGE_CUR_L
+	@param[in,out]	prebuilt	prebuilt struct for the table handler;
+					this contains the info to search_tuple,
+					index; if search tuple contains 0 field then
+					we position the cursor at start or the end of
+					index, depending on 'mode'
+	@param[in]	match_mode	0 or ROW_SEL_EXACT or ROW_SEL_EXACT_PREFIX
+	@param[in]	direction	0 or ROW_SEL_NEXT or ROW_SEL_PREV;
+					Note: if this is != 0, then prebuilt must has a
+					pcur with stored position! In opening of a
+					cursor 'direction' should be 0.
+	@return DB_SUCCESS or error code */
 	dberr_t
 	row_search_mvcc(
 		byte*		buf,

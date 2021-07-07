@@ -201,7 +201,8 @@
 		heap_no = page_rec_get_heap_no(rec);
 
 		if (heap_no != PAGE_HEAP_NO_SUPREMUM) {
-
+			
+			-- 如果事务在记录上具有隐式 x 锁，但没有在记录上设置显式 x 锁，则为其设置一个
 			lock_rec_convert_impl_to_expl(block, rec, index, offsets);
 		}
 
