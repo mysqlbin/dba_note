@@ -65,7 +65,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 			强制通过 pthread_yield 进行一次OS context switch，释放剩余的cpu时间片；
 			
 		3.3 重新持有buffer pool mutex；
-		3.4 重新持有flush list mutext；
+		3.4 重新持有flush list mutex；
 		
 	4. 释放flush list mutex；
 	5. 释放buffer pool mutex；
@@ -112,8 +112,11 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		
 	8. 释放dict_sys->mutex	
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_unlock_data_dictionary
+		
+	9. 释放MDL写锁。
 	
 	不足之处：没有讲到清理AHI
+	
 	
 
 
@@ -123,16 +126,14 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	
 		把硬盘上的这个文件删了
 
-		把内存中的这个库已经加载加来的Page删了，腾出空间
+		把表在内存缓冲池的脏页删了
 
 		把MySQL元数据字典中这张表关联信息删了
 
 
-	2. 可能会引起的风险有3种：
+	2. 可能会引起的风险有2种：
 		
-		MySQL长时间阻塞其他事务执行，大量请求堆积，实例假死。(锁)
-		
-		内存里的page大量置换，引起线程阻塞，实例假死(内存)
+		MySQL长时间阻塞其他事务执行，大量请求堆积，实例假死。(数据字典全局锁、内存缓冲池锁)
 		
 		磁盘IO被短时间大量占用，数据库性能明显下降(IO)
 
@@ -143,11 +144,14 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 
 		内存和IO占用的问题，升级MySQL版本
 
-		MySQL 5.5.23 引入了 lazy drop table 来优化改进了drop 操作影响(改进，改进，并没有说完全消除!!!拐杖敲黑板3次)
+			MySQL 5.5.23 引入了 lazy drop table 来优化改进了drop 操作影响(改进，改进，并没有说完全消除!!!拐杖敲黑板3次)
 
-		MySQL5.7.8 拆分了AHI共用一个全局的锁结构 btr_search_latch
+			MySQL5.7.8 拆分了AHI共用一个全局的锁结构 btr_search_latch
+			
+			MySQL8.0 解决了truncate table 的风险
 		
-		MySQL8.0 解决了truncate table 的风险
+		业务停服期间做drop table操作。
+		
 		
 	4. 持有的锁
 		MDL写锁，数据字典的全局排他锁->BP缓冲池排他锁。
@@ -284,3 +288,14 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		-- 我看源码并不是这样的。
 	
 
+	6. 跟踪了代码，没有发现有调用 buf_LRU_drop_page_hash_for_tablespace 函数来删除AHI。
+
+		(gdb) b buf_LRU_drop_page_hash_for_tablespace
+		Breakpoint 2 at 0x1b73696: file /usr/local/mysql/storage/innobase/buf/buf0lru.cc, line 266.
+
+		(gdb) c
+		Continuing.
+		[New Thread 0x7fe77008b700 (LWP 2251)]
+		
+		mysql> drop table t3;
+		Query OK, 0 rows affected (0.08 sec)

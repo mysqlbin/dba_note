@@ -257,10 +257,26 @@
 6. 删除数据的函数栈
 
 	主键索引：
-		ha_innobase::delete_row -> row_update_for_mysql -> row_update_for_mysql_using_upd_graph -> row_upd_step -> row_upd -> row_upd_clust_step -> row_upd_del_mark_clust_rec -> btr_cur_del_mark_set_clust_rec -> btr_rec_set_deleted_flag
+		ha_innobase::delete_row 
+			-> row_update_for_mysql 
+				-> row_update_for_mysql_using_upd_graph 
+					-> row_upd_step 
+							-> row_upd 
+								-> row_upd_clust_step 
+									-> row_upd_del_mark_clust_rec 
+										-> btr_cur_del_mark_set_clust_rec 
+											-> btr_rec_set_deleted_flag
 
 	二级索引：
-		ha_innobase::delete_row -> row_update_for_mysql -> row_update_for_mysql_using_upd_graph -> row_upd_step -> row_upd -> row_upd_sec_step -> row_upd_sec_index_entry -> btr_cur_del_mark_set_sec_rec -> btr_rec_set_deleted_flag
+		ha_innobase::delete_row 
+			-> row_update_for_mysql 
+				-> row_update_for_mysql_using_upd_graph 
+					-> row_upd_step 
+						-> row_upd 
+							-> row_upd_sec_step 
+								-> row_upd_sec_index_entry 
+									-> btr_cur_del_mark_set_sec_rec 
+										-> btr_rec_set_deleted_flag
 
 	row_upd->row_upd_clust_step
 		row_upd_clust_ 操作主键索引的记录
@@ -290,7 +306,7 @@
 		} while (node->index != NULL);
 	
 	先对主键索引的记录打删除标记，再对二级索引的记录打删除标记。
-	
+	-- 先修改主键索引的记录，再修改二级索引的记录。
 	
 	示例：
 		初始化表结构、数据：
