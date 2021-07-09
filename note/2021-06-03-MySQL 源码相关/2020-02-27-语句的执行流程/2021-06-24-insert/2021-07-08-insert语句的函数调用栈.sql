@@ -1,4 +1,14 @@
 
+0. 初始化表结构和数据
+1. 打断点找函数调用栈
+2. 梳理 insert 语句的函数调用堆栈
+	2.1 btr_cur_ins_lock_and_undo
+	2.2 btr_cur_ins_lock_and_undo -> lock_rec_insert_check_and_lock
+	2.3 btr_cur_ins_lock_and_undo -> lock_rec_insert_check_and_lock -> lock_rec_other_has_conflicting
+	2.4 btr_cur_ins_lock_and_undo -> lock_rec_insert_check_and_lock -> lock_rec_other_has_conflicting -> lock_rec_has_to_wait
+
+3. 相关参考
+
 
 
 0. 初始化表结构和数据
@@ -302,10 +312,10 @@ lock_rec_get_insert_intention(
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
-相关参考
+
+3. 相关参考
 
 	https://www.aneasystone.com/archives/2018/06/insert-locks-via-mysql-source-code.html  读 MySQL 源码再看 INSERT 加锁流程
 	http://mysql.taobao.org/monthly/2017/09/10/	 MySQL · 源码分析 · 一条insert语句的执行过程
