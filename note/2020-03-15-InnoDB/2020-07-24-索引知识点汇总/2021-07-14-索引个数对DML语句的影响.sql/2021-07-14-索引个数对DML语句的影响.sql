@@ -54,8 +54,8 @@
 
 
 
-	for i in `seq 1 10`;do mysql -h192.168.1.10 -uroot -pgame2018root -e "use consistency_db;create table t$i like t0";done;
-	for i in `seq 1 10`; do for j in `seq 1 "$i"`; do mysql -h192.168.1.10 -uroot -pgame2018root -e"use consistency_db;alter table t$i add key idx_r$j (r$j)"; done; done;
+	for i in `seq 1 10`;do mysql -h192.168.1.10 -uroot -p -e "use consistency_db;create table t$i like t0";done;
+	for i in `seq 1 10`; do for j in `seq 1 "$i"`; do mysql -h192.168.1.10 -uroot -p -e"use consistency_db;alter table t$i add key idx_r$j (r$j)"; done; done;
 
 
 
