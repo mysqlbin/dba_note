@@ -9,6 +9,8 @@
 	2. 耗费的CPU资源和IO资源
 	3. 耗时多久
 
+7. 结果集各列的含义
+
 
 1. 是什么 
 	0. 是主从数据一致性校验的工作
@@ -47,7 +49,7 @@
 		FROM `consistency_db`.`checksums` 
 		WHERE (master_cnt <> this_cnt OR master_crc <> this_crc OR ISNULL(master_crc) <> ISNULL(this_crc))  AND (db='niuniuh5_db' AND tbl='table_bet_inout')
 
-	10. 重复 6-9这3个步骤
+	10. 重复 6-9 这4个步骤
 	
 	
 	
@@ -56,19 +58,23 @@
 	参考笔记：《2021-07-16-相关参数.sql》
 
 		
-------------------------------------------------------------------------
-
-
 
 4. 小结
 	pt-table-checksum、pt-archiver 的策略都是分块处理工具，避免大事务
 
 
 5. 相关参考
+
 	https://mp.weixin.qq.com/s/N4FeV7_Vuug3F3VfmVEFCQ	 第13问：pt-table-checksum 到底会不会影响业务性能？
 	https://www.modb.pro/db/56033   					 pt-table-checksum使用方法及主从一致性校验
 	https://blog.51cto.com/u_10574662/1733788?xiangguantuijian&04	pt-table-checksum 原理解析
 	
+	
+	https://www.percona.com/downloads/percona-toolkit/3.2.0/binary/tarball/percona-toolkit-3.2.0_x86_64.tar.gz
+	https://www.percona.com/downloads/percona-toolkit/LATEST/
+	wget https://www.percona.com/downloads/percona-toolkit/3.0.11/binary/redhat/7/x86_64/percona-toolkit-3.0.11-1.el7.x86_64.rpm
+	https://www.percona.com/downloads/percona-toolkit/3.2.0/binary/redhat/7/x86_64/percona-toolkit-3.2.0-1.el7.x86_64.rpm
+
 	
 6. 思考
 	
@@ -267,5 +273,40 @@
 		参考笔记：《2021-07-16-制造数据和查看主从一致性检查耗时.sql》
 		
 	
-	
 
+7. 结果集各列的含义
+	
+				TS ERRORS  DIFFS     ROWS  DIFF_ROWS  CHUNKS SKIPPED    TIME TABLE
+	07-16T17:36:10      0      0       23          0       1       0   0.025 dezhou_db.accountinfo
+	07-16T17:36:10      0      0        1          0       1       0   0.023 dezhou_db.accountinrole
+	07-16T17:36:10      0      0       37          0       1       0   0.023 dezhou_db.accountorroleinrule
+	07-16T17:36:10      0      0        0          0       1       0   0.023 dezhou_db.clubbackgroundoperationlog
+	07-16T17:36:10      0      0        0          0       1       0   0.024 dezhou_db.enterpricemanage
+	07-16T17:36:10      0      0       23          0       1       0   0.026 dezhou_db.enterprise
+	07-16T17:36:10      0      0        0          0       1       0   0.024 dezhou_db.enterpriseauth
+	07-16T17:36:10      0      0      759          0       1       0   0.025 dezhou_db.enterpriselog
+	07-16T17:36:10      0      0      404          0       1       0   0.025 dezhou_db.operationslog
+	07-16T17:36:10      0      0      397          0       1       0   0.026 dezhou_db.rechargedetail
+	07-16T17:36:10      0      0        1          0       1       0   0.023 dezhou_db.roleinfo
+	07-16T17:36:10      0      0      125          0       1       0   0.024 dezhou_db.ruleinfo
+	07-16T17:36:10      0      0      123          0       1       0   0.024 dezhou_db.sys_code
+	07-16T17:36:10      0      0        0          0       1       0   0.024 dezhou_db.systemlog
+	07-16T17:36:11      0      0     1694          0       1       0   0.026 dezhou_db.table_bet_inout
+	07-16T17:36:11      0      1        0     135201       1       0   0.443 dezhou_db.table_career
+	07-16T17:36:11      0      0      100          0       1       0   0.025 dezhou_db.table_club_application
+	07-16T17:36:11      0      0       24          0       1       0   0.023 dezhou_db.table_club_diamond_pay_config
+
+
+
+	TS            ：完成检查的时间。
+	ERRORS        ：检查时候发生错误和警告的数量。
+	DIFFS         ：0表示一致，1表示不一致。当指定--no-replicate-check时，会一直为0，当指定--replicate-check-only会显示不同的信息。
+	ROWS          ：表的行数。
+	CHUNKS        ：表的第几个分块。
+	SKIPPED       ：由于错误或警告或过大，则跳过块的数目。
+	TIME          ：执行的时间。
+	TABLE         ：被检查的表名。
+	
+	
+	
+	
