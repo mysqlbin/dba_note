@@ -1,28 +1,76 @@
+1. 是什么
+2. 内部工作流程
+3. 相关参数
+4. 小结
+5. 相关参考
+6. 思考
+	0. checksums表各个字段的含义
+	1. pt-table-checksum 对SQL语句加的什么锁
+	2. 耗费的CPU资源和IO资源
+	3. 耗时多久
 
 
-通过相同sql分别在主从库进行计算而校验出来的
-pt-table-checksum通过sql在主库执行数据块的校验，然后把相同的语句传送到从库，并在从库上计算数据块的校验，最后将主从库相同块的校验值进行对比，辨别主从不一致。
+1. 是什么 
+	0. 是主从数据一致性校验的工作
+	1. 需要扫描指定库下的所有表的数据，这里是分块(分批)操作
+	2. 通过相同sql分别在主从库进行计算而校验出来的
+		2.0 把binlog格式改为statement格式 
+		2.1 通过sql在主库执行数据块的校验，同时对取到块数据进行加锁，保证数据不被别的事务修改
+		2.2 然后把相同的语句传送到从库，并在从库上计算数据块的校验，最后将主从库相同块的校验值进行对比，辨别主从不一致。
+		
+2. 内部工作流程
+	1. 设置行锁等待时间为 1秒钟
+		当遇到锁冲突，就退出，为了不阻塞业务的正常运行
+		
+	2. 把binlog格式改为statement格式
+	3. 设置事务隔离级别为可重复读
+	4. 创建校验信息存放的库和表
+	5. 确定分块的第一行和使用的索引列
+		2021-07-16T03:48:53.520072Z	332454 Query	SELECT /*!40001 SQL_NO_CACHE */ `id` FROM `niuniuh5_db`.`table_bet_inout` FORCE INDEX(`PRIMARY`) ORDER BY `id` LIMIT 1 /*first lower boundary*/
+		2021-07-16T03:48:53.526675Z	332454 Query	SELECT /*!40001 SQL_NO_CACHE */ `id` FROM `niuniuh5_db`.`table_bet_inout` FORCE INDEX (`PRIMARY`) WHERE `id` IS NOT NULL ORDER BY `id` LIMIT 1 /*key_len*/
+	
+	6. 查出该分块的所有记录，对记录加锁并且做校验，最后插入检验表
+		REPLACE INTO `consistency_db`.`checksums` (db, tbl, chunk, chunk_index, lower_boundary, upper_boundary, this_cnt, this_crc) 
+		SELECT 'niuniuh5_db', 'table_bet_inout', '1', 'PRIMARY', '1', '51646', COUNT(*) AS cnt, COALESCE(LOWER(CONV(BIT_XOR(CAST(CRC32(CONCAT_WS('#', `id`, `nplayerid`, `tableid`, `ninouttype`, `namount`, `nfreeamount`, `nplayerscore`, `nplayerfreescore`, `ntablescore`, `ntablefreescore`, UNIX_TIMESTAMP(`createtime`))) AS UNSIGNED)), 10, 16)), 0) AS crc 
+		FROM `niuniuh5_db`.`table_bet_inout` FORCE INDEX(`PRIMARY`) WHERE ((`id` >= '1')) AND ((`id` <= '51646')) /*checksum chunk*/
+		
+	7. 查出主库校验值和校验行数更新到校验信息表的master_crc, master_cnt列
+		2021-07-16T03:48:53.638248Z	332454 Query	
+		UPDATE `consistency_db`.`checksums` SET chunk_time = '0.092035', master_crc = '30058458', master_cnt = '51646' WHERE db = 'niuniuh5_db' AND tbl = 'table_bet_inout' AND chunk = '1'
+	
+	8. 6-7的语句同步到从库，在从库上计算数据块的校验
+	
+	9. 通过sql命令查出校验表中主从校验不一致的信息。
+	
+		2021-07-16T03:48:54.495065Z	61678 Query	SELECT CONCAT(db, '.', tbl) AS `table`, chunk, chunk_index, lower_boundary, upper_boundary, 
+		COALESCE(this_cnt-master_cnt, 0) AS cnt_diff, COALESCE(this_crc <> master_crc OR ISNULL(master_crc) <> ISNULL(this_crc), 0) AS crc_diff, this_cnt, master_cnt, this_crc, master_crc 
+		FROM `consistency_db`.`checksums` 
+		WHERE (master_cnt <> this_cnt OR master_crc <> this_crc OR ISNULL(master_crc) <> ISNULL(this_crc))  AND (db='niuniuh5_db' AND tbl='table_bet_inout')
 
-pt-table-checksum：
-	1. 需要扫描指定库下的所有表的数据
+	10. 重复 6-9这3个步骤
 	
 	
-原理
-	1. 肯定要在同1个时间范围内取同一批数据来做对比，并且加锁，保证数据不被别的事务修改
 	
+3. 相关参数
+
+	参考笔记：《2021-07-16-相关参数.sql》
+
+		
+------------------------------------------------------------------------
 
 
-小结
+
+4. 小结
 	pt-table-checksum、pt-archiver 的策略都是分块处理工具，避免大事务
 
 
-相关参考：
+5. 相关参考
 	https://mp.weixin.qq.com/s/N4FeV7_Vuug3F3VfmVEFCQ	 第13问：pt-table-checksum 到底会不会影响业务性能？
 	https://www.modb.pro/db/56033   					 pt-table-checksum使用方法及主从一致性校验
 	https://blog.51cto.com/u_10574662/1733788?xiangguantuijian&04	pt-table-checksum 原理解析
 	
 	
-思考：
+6. 思考
 	
 	0. checksums表各个字段的含义
 		
@@ -32,10 +80,10 @@ pt-table-checksum：
 		  `chunk` int(11) NOT NULL comment '第几个块',
 		  `chunk_time` float DEFAULT NULL '对这个块校验需要的时间',
 		  `chunk_index` varchar(200) DEFAULT NULL comment '使用的索引',
-		  `lower_boundary` text comment '',
-		  `upper_boundary` text comment '',
+		  `lower_boundary` text comment '当前chunk的ID起始值',
+		  `upper_boundary` text comment '当前chunk的ID结束值',
 		  `this_crc` char(40) NOT NULL comment '在从库校验得到的值', 
-		  `this_cnt` int(11) NOT NULL comment '在主库校验的行数',
+		  `this_cnt` int(11) NOT NULL comment '在从库校验的行数',
 		  `master_crc` char(40) DEFAULT NULL comment '在主库校验得到的值',
 		  `master_cnt` int(11) DEFAULT NULL comment '在主库校验的行数',
 		  `ts` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -92,10 +140,8 @@ pt-table-checksum：
 
 
 
-	1. pt-table-checksum 对SQL语句加的什么锁？
+	1. pt-table-checksum 对SQL语句加的什么锁
 		对数据加共享读锁。
-		
-		
 		
 		master
 			
@@ -103,14 +149,14 @@ pt-table-checksum：
 			
 			SET SESSION TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 			
-			更新 this_cnt、this_crc 的值
+			更新主库 this_cnt、this_crc 的值
 			2021-07-16T03:48:53.545364Z	332454 Query
 			REPLACE INTO `consistency_db`.`checksums` (db, tbl, chunk, chunk_index, lower_boundary, upper_boundary, this_cnt, this_crc) 
 			SELECT 'niuniuh5_db', 'table_bet_inout', '1', 'PRIMARY', '1', '51646', COUNT(*) AS cnt, COALESCE(LOWER(CONV(BIT_XOR(CAST(CRC32(CONCAT_WS('#', `id`, `nplayerid`, `tableid`, `ninouttype`, `namount`, `nfreeamount`, `nplayerscore`, `nplayerfreescore`, `ntablescore`, `ntablefreescore`, UNIX_TIMESTAMP(`createtime`))) AS UNSIGNED)), 10, 16)), 0) AS crc 
 			FROM `niuniuh5_db`.`table_bet_inout` FORCE INDEX(`PRIMARY`) WHERE ((`id` >= '1')) AND ((`id` <= '51646')) /*checksum chunk*/
 			
 			2021-07-16T03:48:53.638248Z	332454 Query	
-			更新 master_crc、master_cnt 的值
+			更新主库 master_crc、master_cnt 的值
 			UPDATE `consistency_db`.`checksums` SET chunk_time = '0.092035', master_crc = '30058458', master_cnt = '51646' WHERE db = 'niuniuh5_db' AND tbl = 'table_bet_inout' AND chunk = '1'
 			
 			
@@ -128,15 +174,15 @@ pt-table-checksum：
 
 			
 		slave
-			更新 this_cnt、this_crc 的值
+			更新从库 this_cnt、this_crc 的值
 					
 			2021-07-16T03:48:53.728736Z	11767 Query
 			REPLACE INTO `consistency_db`.`checksums` (db, tbl, chunk, chunk_index, lower_boundary, upper_boundary, this_cnt, this_crc) 
 			SELECT 'niuniuh5_db', 'table_bet_inout', '1', 'PRIMARY', '1', '51646', COUNT(*) AS cnt, COALESCE(LOWER(CONV(BIT_XOR(CAST(CRC32(CONCAT_WS('#', `id`, `nplayerid`, `tableid`, `ninouttype`, `namount`, `nfreeamount`, `nplayerscore`, `nplayerfreescore`, `ntablescore`, `ntablefreescore`, UNIX_TIMESTAMP(`createtime`))) AS UNSIGNED)), 10, 16)), 0) AS crc 
 			FROM `niuniuh5_db`.`table_bet_inout` FORCE INDEX(`PRIMARY`) WHERE ((`id` >= '1')) AND ((`id` <= '51646')) /*checksum chunk*/
 			
-			更新 master_crc、master_cnt 的值
-			这2个值跟主库的一样
+			更新 master_crc、master_cnt 的检验值
+			因为传的是固定值，所以这2个值一样会跟主库的一样
 			2021-07-16T03:48:53.729289Z	11767 Query	
 			UPDATE `consistency_db`.`checksums` SET chunk_time = '0.092035', master_crc = '30058458', master_cnt = '51646' WHERE db = 'niuniuh5_db' AND tbl = 'table_bet_inout' AND chunk = '1'
 
@@ -218,43 +264,8 @@ pt-table-checksum：
 
 	 
 	3. 耗时多久
-		制造数据，验证下
+		参考笔记：《2021-07-16-制造数据和查看主从一致性检查耗时.sql》
 		
 	
 	
-sudo  pt-table-checksum --nocheck-replication-filters --no-check-binlog-format  --replicate=consistency_db.checksums h=192.168.1.10,u=pt_user,p='123456',P=3306 --databases=dezhou_db
-
-
-------------------------------------------------------------------------
-
-
-
-shell> sudo  pt-table-checksum --nocheck-replication-filters  --replicate=consistency_db.checksums h=192.168.1.10,u=pt_user,p='123456',P=3306 --databases=niuniuh5_db
-Checking if all tables can be checksummed ...
-Starting checksum ...
-Replica db-b has binlog_format ROW which could cause pt-table-checksum to break replication.  Please read "Replicas using row-based replication" in the LIMITATIONS section of the tool s documentation.  If you understand the risks, specify --no-check-binlog-format to disable this check.
-
-
-
-mysql> show global variables like '%binlog_format%';
-+---------------+-------+
-| Variable_name | Value |
-+---------------+-------+
-| binlog_format | ROW   |
-+---------------+-------+
-1 row in set (0.00 sec)
-
-------------------------------------------------------------------------
-
-
-sudo  pt-table-checksum --nocheck-replication-filters --no-check-binlog-format  --replicate=consistency_db.checksums h=192.168.1.10,u=pt_user,p='123456',P=3306 --databases=niuniuh5_db
-
-
-
-
-
-alter user 'pt_user'@'%' identified by '123456';
-
-
-
 
