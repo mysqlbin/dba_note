@@ -5,9 +5,11 @@
 	information_schema.innodb_trx;
 	information_schema.innodb_locks;
 	information_schema.innodb_lock_waits;
+	
 5.7以上才有的视图：
 	sys.innodb_lock_waits;
 	sys.schema_table_lock_waits;
+	
 8.0下可用的视图
 	information_schema.innodb_trx;
 	Performance_Schema.data_locks
@@ -26,11 +28,18 @@ https://blog.csdn.net/yuyinghua0302/article/details/82318408    数据库事务�
 
 
 MySQL 5.7 
+	
+	select version();
+	select @@global.tx_isolation;
+	select @@session.tx_isolation;	
+
 	select * from information_schema.innodb_trx\G;
 	select * from information_schema.innodb_locks\G;
 	select * from information_schema.innodb_lock_waits\G;
 	SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+	
 MySQL 8.0.19
+
 	select version();
 	select @@global.transaction_isolation;
 	select @@session.transaction_isolation;
@@ -41,19 +50,6 @@ MySQL 8.0.19
 	pager less
 	select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 	
-
-select version();
-select @@global.transaction_isolation;
-select @@session.transaction_isolation;	
-	
-
-
-
-
-select version();
-select @@global.tx_isolation;
-select @@session.tx_isolation;	
-
 
 
 查看没有使用到的索引
