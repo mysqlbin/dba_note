@@ -1,3 +1,7 @@
+
+在5.7中我们已经可以通过MySQL语句和LWP ID进行对应了，这让性能诊断变得更加便捷。
+这里的 THREAD_OS_ID 就是线程的LWP ID。
+
 root@mysqldb 18:04:  [(none)]> select a.thd_id,b.THREAD_OS_ID,a.user,b.TYPE from  sys.processlist a,performance_schema.threads  b where b.thread_id=a.thd_id;
 +--------+--------------+---------------------------------+------------+
 | thd_id | THREAD_OS_ID | user                            | TYPE       |

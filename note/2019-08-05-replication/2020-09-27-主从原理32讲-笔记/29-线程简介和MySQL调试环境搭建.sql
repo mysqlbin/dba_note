@@ -17,7 +17,7 @@
 2. pid、lwp id、thread id
 
 	PID：       内核分配，用于识别各个进程的ID。这个应该是大家最熟悉的。
-	LWP ID：    内核分配，用于识别各个线程的ID，它就像是线程是‘PID’一样。同一个进程下的所有线程有相同的PID，但是LWP ID却不一样，主控线程的LWP ID就是进程PID。
+	LWP ID：    内核分配，用于识别各个线程的ID，它就像是线程的‘PID’一样。同一个进程下的所有线程有相同的PID，但是LWP ID却不一样，主控线程的LWP ID就是进程PID。
 	Thread TID：  进程内部用于识别各个线程的内部ID，这个ID用得不多。
 
 	
