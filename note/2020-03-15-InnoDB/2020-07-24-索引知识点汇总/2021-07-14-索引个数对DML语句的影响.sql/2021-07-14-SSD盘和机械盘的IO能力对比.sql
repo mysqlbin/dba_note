@@ -9,8 +9,17 @@
 	2.1 顺序写的I/O   
 	2.2 顺序读的I/O  
 	2.3 随机混合写和读的I/O
+	
+3. 1000GB的SSD盘
+	3.1 顺序写的I/O   
+	3.2 顺序读的I/O  
+	3.3 随机混合写和读的I/O
 
-3. 对比
+4. 对比
+
+
+
+
 
 1. 100GB的SSD 盘
 
@@ -288,11 +297,135 @@
 
 
 
+3. 1000GB的SSD盘
+
+3.1 顺序写的I/O   
+
+	[root@iZ2zebrso907kehx5xp0z3Z mydata]# fio -filename=/mydata/fio_write.txt -direct=1 -iodepth 1 -thread -rw=write -ioengine=psync -bs=16k -size=500M -numjobs=10 -runtime=10 -group_reporting -name=mytest 
+	mytest: (g=0): rw=write, bs=(R) 16.0KiB-16.0KiB, (W) 16.0KiB-16.0KiB, (T) 16.0KiB-16.0KiB, ioengine=psync, iodepth=1
+	...
+	fio-3.19
+	Starting 10 threads
+	mytest: Laying out IO file (1 file / 500MiB)
+	Jobs: 10 (f=10): [W(10)][100.0%][w=158MiB/s][w=10.1k IOPS][eta 00m:00s]
+	mytest: (groupid=0, jobs=10): err= 0: pid=26403: Thu Jul 22 11:04:47 2021
+	  write: IOPS=11.1k, BW=173MiB/s (182MB/s)(1733MiB/10001msec); 0 zone resets
+		clat (usec): min=398, max=4494, avg=900.20, stdev=383.82
+		 lat (usec): min=399, max=4495, avg=900.92, stdev=383.82
+		clat percentiles (usec):
+		 |  1.00th=[  486],  5.00th=[  562], 10.00th=[  603], 20.00th=[  660],
+		 | 30.00th=[  709], 40.00th=[  758], 50.00th=[  807], 60.00th=[  873],
+		 | 70.00th=[  947], 80.00th=[ 1045], 90.00th=[ 1237], 95.00th=[ 1500],
+		 | 99.00th=[ 2638], 99.50th=[ 3163], 99.90th=[ 3884], 99.95th=[ 4015],
+		 | 99.99th=[ 4228]
+	   bw (  KiB/s): min=160256, max=196897, per=100.00%, avg=177997.53, stdev=1308.17, samples=190
+	   iops        : min=10016, max=12306, avg=11124.58, stdev=81.73, samples=190
+	  lat (usec)   : 500=1.35%, 750=37.35%, 1000=37.01%
+	  lat (msec)   : 2=21.84%, 4=2.39%, 10=0.05%
+	  cpu          : usr=0.35%, sys=0.94%, ctx=114260, majf=0, minf=0
+	  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+		 submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+		 complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+		 issued rwts: total=0,110909,0,0 short=0,0,0,0 dropped=0,0,0,0
+		 latency   : target=0, window=0, percentile=100.00%, depth=1
+
+	Run status group 0 (all jobs):
+	  WRITE: bw=173MiB/s (182MB/s), 173MiB/s-173MiB/s (182MB/s-182MB/s), io=1733MiB (1817MB), run=10001-10001msec
+
+	Disk stats (read/write):
+	  vdb: ios=0/109147, merge=0/812, ticks=0/96572, in_queue=96571, util=99.12%
+	  
+3.2 顺序读的I/O  	  
+	[root@iZ2zebrso907kehx5xp0z3Z mydata]# fio -filename=/mydata/fio_read.txt -direct=1 -iodepth 1 -thread -rw=read -ioengine=psync -bs=16k -size=500M -numjobs=10 -runtime=10 -group_reporting -name=mytest 
+	mytest: (g=0): rw=read, bs=(R) 16.0KiB-16.0KiB, (W) 16.0KiB-16.0KiB, (T) 16.0KiB-16.0KiB, ioengine=psync, iodepth=1
+	...
+	fio-3.19
+	Starting 10 threads
+	mytest: Laying out IO file (1 file / 500MiB)
+	Jobs: 10 (f=10): [R(10)][100.0%][r=156MiB/s][r=9990 IOPS][eta 00m:00s]
+	mytest: (groupid=0, jobs=10): err= 0: pid=26417: Thu Jul 22 11:05:10 2021
+	  read: IOPS=11.0k, BW=172MiB/s (180MB/s)(1720MiB/10003msec)
+		clat (usec): min=111, max=10061, avg=907.42, stdev=1883.35
+		 lat (usec): min=111, max=10061, avg=907.53, stdev=1883.34
+		clat percentiles (usec):
+		 |  1.00th=[  137],  5.00th=[  163], 10.00th=[  184], 20.00th=[  217],
+		 | 30.00th=[  249], 40.00th=[  302], 50.00th=[  338], 60.00th=[  367],
+		 | 70.00th=[  396], 80.00th=[  437], 90.00th=[  766], 95.00th=[ 7046],
+		 | 99.00th=[ 7308], 99.50th=[ 7439], 99.90th=[ 7570], 99.95th=[ 7635],
+		 | 99.99th=[ 8291]
+	   bw (  KiB/s): min=127424, max=328010, per=99.58%, avg=175362.21, stdev=4957.51, samples=190
+	   iops        : min= 7964, max=20496, avg=10959.89, stdev=309.77, samples=190
+	  lat (usec)   : 250=30.42%, 500=55.57%, 750=3.95%, 1000=0.74%
+	  lat (msec)   : 2=0.44%, 4=0.18%, 10=8.71%, 20=0.01%
+	  cpu          : usr=0.27%, sys=1.07%, ctx=110112, majf=0, minf=40
+	  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+		 submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+		 complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+		 issued rwts: total=110093,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+		 latency   : target=0, window=0, percentile=100.00%, depth=1
+
+	Run status group 0 (all jobs):
+	   READ: bw=172MiB/s (180MB/s), 172MiB/s-172MiB/s (180MB/s-180MB/s), io=1720MiB (1804MB), run=10003-10003msec
+
+	Disk stats (read/write):
+	  vdb: ios=108783/0, merge=0/0, ticks=97559/0, in_queue=97559, util=99.09%
+	  
+
+3.3 随机混合写和读的I/O	  
+	[root@iZ2zebrso907kehx5xp0z3Z mydata]# fio -filename=/mydata/fio.txt -direct=1 -iodepth 1 -thread -rw=randrw -ioengine=psync -bs=16k -size=500M -numjobs=10 -runtime=10 -group_reporting -name=mytest
+	mytest: (g=0): rw=randrw, bs=(R) 16.0KiB-16.0KiB, (W) 16.0KiB-16.0KiB, (T) 16.0KiB-16.0KiB, ioengine=psync, iodepth=1
+	...
+	fio-3.19
+	Starting 10 threads
+	mytest: Laying out IO file (1 file / 500MiB)
+	Jobs: 10 (f=10): [m(10)][100.0%][r=77.9MiB/s,w=78.2MiB/s][r=4986,w=5003 IOPS][eta 00m:00s]
+	mytest: (groupid=0, jobs=10): err= 0: pid=26431: Thu Jul 22 11:05:27 2021
+	  read: IOPS=5480, BW=85.6MiB/s (89.8MB/s)(857MiB/10004msec)
+		clat (usec): min=129, max=7641, avg=831.68, stdev=1493.15
+		 lat (usec): min=129, max=7641, avg=831.78, stdev=1493.15
+		clat percentiles (usec):
+		 |  1.00th=[  251],  5.00th=[  277], 10.00th=[  289], 20.00th=[  306],
+		 | 30.00th=[  318], 40.00th=[  334], 50.00th=[  351], 60.00th=[  371],
+		 | 70.00th=[  404], 80.00th=[  469], 90.00th=[  840], 95.00th=[ 5669],
+		 | 99.00th=[ 6194], 99.50th=[ 6325], 99.90th=[ 6456], 99.95th=[ 6521],
+		 | 99.99th=[ 7046]
+	   bw (  KiB/s): min=72640, max=162568, per=99.62%, avg=87348.63, stdev=1899.70, samples=190
+	   iops        : min= 4540, max=10156, avg=5459.05, stdev=118.64, samples=190
+	  write: IOPS=5525, BW=86.3MiB/s (90.5MB/s)(864MiB/10004msec); 0 zone resets
+		clat (usec): min=367, max=7994, avg=981.57, stdev=1475.82
+		 lat (usec): min=367, max=7995, avg=982.49, stdev=1475.81
+		clat percentiles (usec):
+		 |  1.00th=[  404],  5.00th=[  412], 10.00th=[  424], 20.00th=[  445],
+		 | 30.00th=[  465], 40.00th=[  486], 50.00th=[  510], 60.00th=[  537],
+		 | 70.00th=[  570], 80.00th=[  635], 90.00th=[ 1090], 95.00th=[ 5735],
+		 | 99.00th=[ 6325], 99.50th=[ 6390], 99.90th=[ 6718], 99.95th=[ 7111],
+		 | 99.99th=[ 7701]
+	   bw (  KiB/s): min=75328, max=168945, per=99.66%, avg=88115.42, stdev=1995.58, samples=190
+	   iops        : min= 4708, max=10554, avg=5506.95, stdev=124.62, samples=190
+	  lat (usec)   : 250=0.47%, 500=64.00%, 750=23.44%, 1000=2.22%
+	  lat (msec)   : 2=1.18%, 4=0.23%, 10=8.46%
+	  cpu          : usr=0.36%, sys=1.03%, ctx=110401, majf=0, minf=0
+	  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+		 submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+		 complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+		 issued rwts: total=54822,55282,0,0 short=0,0,0,0 dropped=0,0,0,0
+		 latency   : target=0, window=0, percentile=100.00%, depth=1
+
+	Run status group 0 (all jobs):
+	   READ: bw=85.6MiB/s (89.8MB/s), 85.6MiB/s-85.6MiB/s (89.8MB/s-89.8MB/s), io=857MiB (898MB), run=10004-10004msec
+	  WRITE: bw=86.3MiB/s (90.5MB/s), 86.3MiB/s-86.3MiB/s (90.5MB/s-90.5MB/s), io=864MiB (906MB), run=10004-10004msec
+
+	Disk stats (read/write):
+	  vdb: ios=54107/54587, merge=0/0, ticks=44381/52942, in_queue=97323, util=99.08%
+
+
+
 3. 对比
 
 	内存大小  CPU	磁盘类型   			顺序写的IOPS   顺序读的IOPS   混合随机读写的IOPS
-	16GB	  4核	100GB的SSD      	3074           3072			  r=1502,w=1500 IOPS
-	16GB	  4核	900GB的机械盘		12000		   20000		  r=129,w=104 IOPS
-	
+	16GB	  4核	100GB的SSD      	3074           3072			  r=1502,w=1500 
+	16GB	  4核	900GB的机械盘		12000		   20000		  r=129,w=104
+	4GB       2核   1000GB的SSD			10000		   9990			  r=4986,w=5003
+
 
 
