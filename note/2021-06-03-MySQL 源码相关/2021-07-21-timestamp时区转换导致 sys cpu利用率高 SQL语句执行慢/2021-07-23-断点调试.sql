@@ -6,6 +6,9 @@
 		2.2 更新操作
 			2.2.1 更新timestamp时间字段值为now()
 			2.2.2 更新timestamp时间字段值为指定时间
+			2.2.3 根据timestamp类型字段作为更新条件
+			2.2.4 更新条件和更新的字段不包含timestamp时间类型的字段 
+
 		2.3 查询操作
 			2.3.1 查询字段包括timestamp时间类型
 			2.3.2 查询字段不包括timestamp时间类型
@@ -15,7 +18,7 @@
 			2.4.2 timestamp时间类型字段插入now()
 			2.4.3 timestamp时间类型字段插入指定时间
 		2.5 删除操作
-			2.5.1 根据主键ID作为条件删除
+			2.5.1 根据主键ID作为条件删除记录
 			2.5.2 根据时间作为条件删除记录
 		2.6 小结
 
@@ -212,6 +215,95 @@
 	11 rows in set (24.74 sec)
 
 
+2.2.3 根据timestamp类型字段作为更新条件
+	
+	Database changed
+	mysql> select * from t_20210722;
+	+----+-------+-----+---------------------+
+	| id | name  | age | createTime          |
+	+----+-------+-----+---------------------+
+	|  2 | bin1  |   1 | 2021-07-13 15:48:43 |
+	|  3 | bi2   |   1 | 2021-07-13 15:48:43 |
+	|  4 | bi3   |   1 | 2021-07-13 15:48:43 |
+	|  5 | bi4   |   1 | 2021-07-13 15:48:43 |
+	|  6 | bi5   |   1 | 2021-07-13 15:48:43 |
+	|  7 | bi6   |   1 | 2021-07-13 15:48:43 |
+	|  8 | bin7  |   1 | 2021-07-13 15:48:43 |
+	|  9 | bin8  |   1 | 2021-07-13 15:48:43 |
+	| 10 | bin9  |   1 | 2021-07-13 15:48:43 |
+	| 12 | bin11 |   1 | 2021-07-14 11:56:09 |
+	| 13 | bin11 |   1 | 2021-07-14 14:30:40 |
+	| 14 | bin11 |   1 | 2021-07-14 14:42:13 |
+	+----+-------+-----+---------------------+
+	12 rows in set (0.00 sec)
+
+
+				(gdb) b Time_zone_system::gmt_sec_to_TIME
+				Breakpoint 2 at 0x163a1d4: file /usr/local/mysql/sql/tztime.cc, line 1092.
+				(gdb) c
+				Continuing.
+				[Switching to Thread 0x7f8a74197700 (LWP 6004)]
+
+				Breakpoint 2, Time_zone_system::gmt_sec_to_TIME (this=0x2d23c68 <tz_SYSTEM>, tmp=0x7f8a74196220, t=1626252105) at /usr/local/mysql/sql/tztime.cc:1092
+				1092	  time_t tmp_t= (time_t)t;
+				(gdb) c
+				Continuing.
+				
+	update t_20210722 set age=2  where createTime="2021-07-14 14:42:13";
+	
+				Breakpoint 2, Time_zone_system::gmt_sec_to_TIME (this=0x2d23c68 <tz_SYSTEM>, tmp=0x7f8a74194ad0, t=1626244933) at /usr/local/mysql/sql/tztime.cc:1092
+				1092	  time_t tmp_t= (time_t)t;
+				(gdb) bt
+				#0  Time_zone_system::gmt_sec_to_TIME (this=0x2d23c68 <tz_SYSTEM>, tmp=0x7f8a74194ad0, t=1626244933) at /usr/local/mysql/sql/tztime.cc:1092
+				#1  0x0000000000f135b9 in Time_zone::gmt_sec_to_TIME (this=0x2d23c68 <tz_SYSTEM>, tmp=0x7f8a74194ad0, tv=...) at /usr/local/mysql/sql/tztime.h:60
+				#2  0x0000000000ef8b8d in Field_timestampf::get_date_internal (this=0x6dbae10, ltime=0x7f8a74194ad0) at /usr/local/mysql/sql/field.cc:5986
+				#3  0x0000000000ef6e46 in Field_temporal_with_date::val_date_temporal (this=0x6dbae10) at /usr/local/mysql/sql/field.cc:5328
+				#4  0x0000000000f48743 in Item_field::val_date_temporal (this=0x64798d0) at /usr/local/mysql/sql/item.cc:2993
+				#5  0x0000000000f6cf14 in get_datetime_value (thd=0x6d9dc20, item_arg=0x647a188, cache_arg=0x647a1c8, warn_item=0x6dbc520, is_null=0x7f8a74194be7) at /usr/local/mysql/sql/item_cmpfunc.cc:1384
+				#6  0x0000000000f6d1f5 in Arg_comparator::compare_datetime (this=0x647a188) at /usr/local/mysql/sql/item_cmpfunc.cc:1505
+				#7  0x0000000000f8268a in Arg_comparator::compare (this=0x647a188) at /usr/local/mysql/sql/item_cmpfunc.h:92
+				#8  0x0000000000f6fdeb in Item_func_eq::val_int (this=0x647a0b0) at /usr/local/mysql/sql/item_cmpfunc.cc:2509
+				#9  0x0000000000f1dc11 in QEP_TAB::skip_record (this=0x7f8a74195148, thd=0x6d9dc20, skip_record_arg=0x7f8a741952ce) at /usr/local/mysql/sql/sql_executor.h:457
+				#10 0x00000000015e7be7 in mysql_update (thd=0x6d9dc20, fields=..., values=..., limit=18446744073709551615, handle_duplicates=DUP_ERROR, found_return=0x7f8a74195428, updated_return=0x7f8a74195420) at /usr/local/mysql/sql/sql_update.cc:817
+				#11 0x00000000015edf22 in Sql_cmd_update::try_single_table_update (this=0x64791d8, thd=0x6d9dc20, switch_to_multitable=0x7f8a741954cf) at /usr/local/mysql/sql/sql_update.cc:2891
+				#12 0x00000000015ee453 in Sql_cmd_update::execute (this=0x64791d8, thd=0x6d9dc20) at /usr/local/mysql/sql/sql_update.cc:3018
+				#13 0x00000000015351f1 in mysql_execute_command (thd=0x6d9dc20, first_level=true) at /usr/local/mysql/sql/sql_parse.cc:3606
+				#14 0x000000000153a849 in mysql_parse (thd=0x6d9dc20, parser_state=0x7f8a74196690) at /usr/local/mysql/sql/sql_parse.cc:5570
+				#15 0x00000000015302d8 in dispatch_command (thd=0x6d9dc20, com_data=0x7f8a74196df0, command=COM_QUERY) at /usr/local/mysql/sql/sql_parse.cc:1484
+				#16 0x000000000152f20c in do_command (thd=0x6d9dc20) at /usr/local/mysql/sql/sql_parse.cc:1025
+				#17 0x000000000165f7c8 in handle_connection (arg=0x6354c80) at /usr/local/mysql/sql/conn_handler/connection_handler_per_thread.cc:306
+				#18 0x0000000001ce7612 in pfs_spawn_thread (arg=0x54b7ab0) at /usr/local/mysql/storage/perfschema/pfs.cc:2190
+				#19 0x00007f8a9d520ea5 in start_thread () from /lib64/libpthread.so.0
+				#20 0x00007f8a9c3e69fd in clone () from /lib64/libc.so.6
+
+2.2.4 更新条件和更新的字段不包含timestamp时间类型的字段 
+	
+	
+	b Time_zone_system::gmt_sec_to_TIME
+	
+	mysql> select * from t_20210722;
+	+----+-------+-----+---------------------+
+	| id | name  | age | createTime          |
+	+----+-------+-----+---------------------+
+	|  2 | bin1  |   1 | 2021-07-13 15:48:43 |
+	|  3 | bi2   |   1 | 2021-07-13 15:48:43 |
+	|  4 | bi3   |   1 | 2021-07-13 15:48:43 |
+	|  5 | bi4   |   1 | 2021-07-13 15:48:43 |
+	|  6 | bi5   |   1 | 2021-07-13 15:48:43 |
+	|  7 | bi6   |   1 | 2021-07-13 15:48:43 |
+	|  8 | bin7  |   1 | 2021-07-13 15:48:43 |
+	|  9 | bin8  |   1 | 2021-07-13 15:48:43 |
+	| 10 | bin9  |   1 | 2021-07-13 15:48:43 |
+	| 12 | bin11 |   1 | 2021-07-14 11:56:09 |
+	| 13 | bin11 |   1 | 2021-07-14 14:30:40 |
+	| 14 | bin11 |   1 | 2021-07-14 14:42:13 |
+	+----+-------+-----+---------------------+
+	12 rows in set (0.00 sec)
+
+	mysql> update t_20210722 set age=2  where id=2;
+	Query OK, 1 row affected (0.00 sec)
+					
+	
 2.3 查询操作
 
 2.3.1 查询字段包括timestamp时间类型
@@ -457,7 +549,7 @@
 	+----+-------+-----+---------------------+
 	14 rows in set (0.00 sec)
 	
-	2.5.1 根据主键ID作为条件删除
+	2.5.1 根据主键ID作为条件删除记录
 	
 	
 					(gdb)  b Time_zone_system::gmt_sec_to_TIME
@@ -529,13 +621,28 @@
 		
 2.9 小结
 
-	-- 查询字段包含 timestamp 类型的字段，更新timestamp类型字段的值，都会走 Time_zone_system::gmt_sec_to_TIME 时区转换的逻辑。
-	-- 根据timestamp类型的字段作为where查询条件，不会走操作系统时区转换的逻辑。
-	-- 这种转换操作是每行符合条件的数据都需要转换的。
+	1. 需要做时区转换的DML、查询操作方式列表
+		1.1 更新操作：更新timestamp时间字段值为now()、更新timestamp时间字段值为指定时间、根据timestamp类型字段作为更新条件
+			
+		1.2 查询操作：查询字段包含timestamp类型的字段
+			
+		1.3 插入操作：timestamp时间类型字段插入now()、timestamp时间类型字段插入指定时间
+		
+		1.4 删除操作：根据timestamp时间类型字段作为条件删除记录
+		
+		
+	2. 不需要做时区转换的DML、查询操作方式列表
+		2.1 更新操作：更新条件和更新的字段不包含timestamp时间类型的字段
+		
+		2.2 查询操作：查询字段不包括timestamp时间类型、根据timestamp类型字段作为查询条件
+		
+		2.3 插入操作：timestamp时间类型字段使用默认的 CURRENT_TIMESTAMP
+		
+		2.4 删除操作：根据主键ID作为条件删除记录
+		
+	3. 这种转换操作是每行符合条件的数据都需要转换的。
 	
 	
-
-
 
 3. time_zone='+08:00'
 

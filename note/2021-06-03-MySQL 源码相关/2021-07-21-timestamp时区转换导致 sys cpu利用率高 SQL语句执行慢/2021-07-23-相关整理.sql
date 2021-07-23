@@ -37,7 +37,7 @@ Thread 38 (Thread 0x7fe57a86f700 (LWP 67268)):
 timestamp 转换：
 
     在进行新纪元时间（1970-01-01 00:00:00）以来的秒到实际时间之间转换的时候MySQL根据参数time_zone的设置有两种选择：
-    time_zone：设置为SYSTEM的话，使用sys_time_zone获取的OS会话时区，同时使用OS API进行转换。对应转换函数 Time_zone_system::gmt_sec_to_TIME
-    time_zone：设置为实际的时区的话，比如‘+08:00’，那么使用使用MySQL自己的方法进行转换。对应转换函数 Time_zone_offset::gmt_sec_to_TIME
+		1. time_zone：设置为SYSTEM的话，使用sys_time_zone获取的OS会话时区，同时使用OS API进行转换。对应转换函数 Time_zone_system::gmt_sec_to_TIME
+		2. time_zone：设置为实际的时区的话，比如‘+08:00’，那么使用使用MySQL自己的方法进行转换。对应转换函数 Time_zone_offset::gmt_sec_to_TIME
 	
 	实际上Time_zone_system和Time_zone_offset均继承于Time_zone类，并且实现了Time_zone类的虚函数进行了重写，因此上层调用都是Time_zone::gmt_sec_to_TIME。
