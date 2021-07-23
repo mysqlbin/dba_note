@@ -196,4 +196,48 @@ Time_zone_offset::Time_zone_offset(long tz_offset_arg):
 }
 
 
-
+/* Return the `struct tm' representation of *TIMER in the local timezone.
+   Use local time if USE_LOCALTIME is nonzero, UTC otherwise.  */
+struct tm *
+__tz_convert (const time_t *timer, int use_localtime, struct tm *tp)
+{
+  long int leap_correction;
+  int leap_extra_secs;
+  if (timer == NULL)
+    {
+      __set_errno (EINVAL);
+      return NULL;
+    }
+  __libc_lock_lock (tzset_lock);
+  /* Update internal database according to current TZ setting.
+     POSIX.1 8.3.7.2 says that localtime_r is not required to set tzname.
+     This is a good idea since this allows at least a bit more parallelism.  */
+  tzset_internal (tp == &_tmbuf && use_localtime, 1);
+  if (__use_tzfile)
+    __tzfile_compute (*timer, use_localtime, &leap_correction,
+              &leap_extra_secs, tp);
+  else
+    {
+      if (! __offtime (timer, 0, tp))
+    tp = NULL;
+      else
+    __tz_compute (*timer, tp, use_localtime);
+      leap_correction = 0L;
+      leap_extra_secs = 0;
+    }
+  if (tp)
+    {
+      if (! use_localtime)
+    {
+      tp->tm_isdst = 0;
+      tp->tm_zone = "GMT";
+      tp->tm_gmtoff = 0L;
+    }
+      if (__offtime (timer, tp->tm_gmtoff - leap_correction, tp))
+        tp->tm_sec += leap_extra_secs;
+      else
+    tp = NULL;
+    }
+  __libc_lock_unlock (tzset_lock);
+  return tp;
+}

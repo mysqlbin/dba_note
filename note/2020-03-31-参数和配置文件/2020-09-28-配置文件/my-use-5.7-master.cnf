@@ -90,9 +90,8 @@ myisam_repair_threads = 1
 
 
 # 时间参数
-#system_time_zone=CST
-#time_zone=SYSTEM
-#log_timestamps=SYSTEM
+default-time-zone = '+8:00'
+log_timestamps=SYSTEM
 
 lock_wait_timeout = 3600
 explicit_defaults_for_timestamp = 1
