@@ -37,7 +37,15 @@ MySQL 5.7
 	select * from information_schema.innodb_locks\G;
 	select * from information_schema.innodb_lock_waits\G;
 	SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+	SELECT * FROM sys.innodb_lock_waits;
 	
+	
+	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+	ERROR 1356 (HY000): View 'sys.innodb_lock_waits' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them
+	mysql> SELECT * FROM sys.innodb_lock_waits;
+	ERROR 1356 (HY000): View 'sys.innodb_lock_waits' references invalid table(s) or column(s) or function(s) or definer/invoker of view lack rights to use them
+
+
 MySQL 8.0.19
 
 	select version();
