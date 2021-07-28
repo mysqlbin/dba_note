@@ -1,60 +1,11 @@
 
-1. 初始化表结构和数据
-2. b lock_rec_lock
-3. 根据主键索引等值更新二级索引的值
-	3.2 RR隔离级别	
-	3.2.1 原地更新
-	3.2.2 非原地更新
-	3.2.3 小结
-
-1. 初始化表结构和数据
-
-	mysql> show create table hero\G;
-	*************************** 1. row ***************************
-		   Table: hero
-	Create Table: CREATE TABLE `hero` (
-	  `number` int(11) NOT NULL,
-	  `name` varchar(100) DEFAULT NULL,
-	  `country` varchar(100) DEFAULT NULL,
-	  PRIMARY KEY (`number`),
-	  KEY `idx_name` (`name`)
-	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-	1 row in set (0.01 sec)
-
-	mysql> select * from hero;
-	+--------+------------+---------+
-	| number | name       | country |
-	+--------+------------+---------+
-	|      1 | l刘备      | 蜀      |
-	|      3 | z诸葛亮    | 蜀      |
-	|      8 | c曹操      | 中      |
-	|     15 | x荀彧      | 魏      |
-	|     20 | s孙权      | 吴      |
-	+--------+------------+---------+
-	5 rows in set (0.00 sec)
 
 
-	mysql> select * from hero order by name;
-	+--------+------------+---------+
-	| number | name       | country |
-	+--------+------------+---------+
-	|      8 | c曹操      | 中      |
-	|      1 | l刘备      | 蜀      |
-	|     20 | s孙权      | 吴      |
-	|     15 | x荀彧      | 魏      |
-	|      3 | z诸葛亮    | 蜀      |
-	+--------+------------+---------+
-	5 rows in set (0.00 sec)
+1. 根据主键索引等值更新
 
 
-2. b lock_rec_lock
-	你可以通过GDB，断点函数 lock_rec_lock 来查看某条SQL如何执行加锁操作。
 
-
-3. 根据主键索引等值更新二级索引的值
-
-
-3.2 RR隔离级别	
+	RR隔离级别	
 
 	mysql> show global variables like 'tx_isolation';
 	+---------------+-----------------+
@@ -63,8 +14,10 @@
 	| tx_isolation  | REPEATABLE-READ |
 	+---------------+-----------------+
 	1 row in set (0.03 sec)
+
+1. 根据主键索引等值更新-不更新二级索引的值
 	
-3.2.1 原地更新
+1.1 原地更新
 
 	update hero set country='老' where number=8;
 	
@@ -115,7 +68,7 @@
 	#23 0x00007fd30b59f9fd in clone () from /lib64/libc.so.6
 
 
-3.2.2 非原地更新
+1.2 非原地更新
 	
 	update hero set country='老国' where number=8;
 	
@@ -153,3 +106,6 @@
 	#22 0x00007fd30c6d9ea5 in start_thread () from /lib64/libpthread.so.0
 	#23 0x00007fd30b59f9fd in clone () from /lib64/libc.so.6
 
+
+
+参考：《2021-07-05-加锁过程的函数调用栈-根据主键索引等值更新.sql》
