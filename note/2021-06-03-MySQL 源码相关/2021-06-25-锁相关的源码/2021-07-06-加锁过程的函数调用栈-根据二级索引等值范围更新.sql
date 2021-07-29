@@ -5,7 +5,7 @@ select * from t1 where c>=10 and c<=11 for update;
 
 1. 初始化表结构和数据
 2. b lock_rec_lock
-3. 二级索引等值更新加锁
+3. 二级索引等值范围更新加锁
 	3.1 RC隔离级别
 	3.2 RR隔离级别
 4. 小结
@@ -42,7 +42,7 @@ select * from t1 where c>=10 and c<=11 for update;
 	你可以通过GDB，断点函数 lock_rec_lock 来查看某条SQL如何执行加锁操作。
 
 
-3. 二级索引等值更新加锁
+3. 二级索引等值范围更新加锁
 
 
 3.2 RR隔离级别	
@@ -251,3 +251,10 @@ select * from t1 where c>=10 and c<=11 for update;
 		c: next-key lock: (5, 10]
 		primary: record lock: [10]
 		c: next-key lock: (10, 15]
+		
+		-- 不需要锁 ID=15 这一行记录。
+		
+		
+		
+		
+		
