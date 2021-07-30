@@ -5,6 +5,8 @@
 4. row_sel_get_clust_rec_for_mysql--根据二级索引的记录回表查找主键索引的记录
 5. lock_sec_rec_modify_check_and_lock--对二级索引的记录加锁，用于update语句更新的时候有更新二级索引的数据
 6. lock_rec_lock--行级锁加锁的入口函数
+7. lock_rec_lock_slow
+8. RecLock::add_to_waitq --检测锁等待和死锁
 
 1. sel_set_rec_lock--判断是否给主键索引还是二级索引的记录加锁
 
@@ -496,6 +498,105 @@
 
 
 ------------------------------------------------------------------------
+
+7. lock_rec_lock_slow
+
+
+	/*********************************************************************//**
+	This is the general, and slower, routine for locking a record. This is a
+	low-level function which does NOT look at implicit locks! Checks lock
+	compatibility within explicit locks. This function sets a normal next-key
+	lock, or in the case of a page supremum record, a gap type lock.
+	@return DB_SUCCESS, DB_SUCCESS_LOCKED_REC, DB_LOCK_WAIT, DB_DEADLOCK,
+	or DB_QUE_THR_SUSPENDED */
+	static
+	dberr_t
+	lock_rec_lock_slow(
+	/*===============*/
+		ibool			impl,	/*!< in: if TRUE, no lock is set
+						if no wait is necessary: we
+						assume that the caller will
+						set an implicit lock */
+		ulint			mode,	/*!< in: lock mode: LOCK_X or
+						LOCK_S possibly ORed to either
+						LOCK_GAP or LOCK_REC_NOT_GAP */
+		const buf_block_t*	block,	/*!< in: buffer block containing
+						the record */
+		ulint			heap_no,/*!< in: heap number of record */
+		dict_index_t*		index,	/*!< in: index of record */
+		que_thr_t*		thr)	/*!< in: query thread */
+	{
+		ut_ad(lock_mutex_own());
+		ut_ad(!srv_read_only_mode);
+		ut_ad((LOCK_MODE_MASK & mode) != LOCK_S
+			  || lock_table_has(thr_get_trx(thr), index->table, LOCK_IS));
+		ut_ad((LOCK_MODE_MASK & mode) != LOCK_X
+			  || lock_table_has(thr_get_trx(thr), index->table, LOCK_IX));
+		ut_ad((LOCK_MODE_MASK & mode) == LOCK_S
+			  || (LOCK_MODE_MASK & mode) == LOCK_X);
+		ut_ad(mode - (LOCK_MODE_MASK & mode) == LOCK_GAP
+			  || mode - (LOCK_MODE_MASK & mode) == 0
+			  || mode - (LOCK_MODE_MASK & mode) == LOCK_REC_NOT_GAP);
+		ut_ad(dict_index_is_clust(index) || !dict_index_is_online_ddl(index));
+
+		DBUG_EXECUTE_IF("innodb_report_deadlock", return(DB_DEADLOCK););
+
+		dberr_t	err;
+		trx_t*	trx = thr_get_trx(thr);
+
+		trx_mutex_enter(trx);
+		
+		-- 判断当前事务是否已经持有了一个优先级更高的锁，如果是的话，直接返回成功（lock_rec_has_expl）;
+		if (lock_rec_has_expl(mode, block, heap_no, trx)) {
+
+			/* The trx already has a strong enough lock on rec: do
+			nothing */
+
+			err = DB_SUCCESS;
+
+		} else {
+			
+			-- 判断是否有锁冲突
+			const lock_t* wait_for = lock_rec_other_has_conflicting(
+				mode, block, heap_no, trx);
+
+			if (wait_for != NULL) {
+
+				/* If another transaction has a non-gap conflicting
+				request in the queue, as this transaction does not
+				have a lock strong enough already granted on the
+				record, we may have to wait. */
+				-- 如果存在锁冲突的话，就创建一个锁对象（RecLock::RecLock）	
+				RecLock	rec_lock(thr, index, block, heap_no, mode);
+				-- 加入锁等待队列
+				err = rec_lock.add_to_waitq(wait_for);
+
+			} else if (!impl) {
+
+				/* Set the requested lock on the record, note that
+				we already own the transaction mutex. */
+				-- 如果没有冲突的锁，则入队列（lock_rec_add_to_queue）
+				lock_rec_add_to_queue(
+					LOCK_REC | mode, block, heap_no, index, trx,
+					true);
+
+				err = DB_SUCCESS_LOCKED_REC;
+			} else {
+				err = DB_SUCCESS;
+			}
+		}
+
+		trx_mutex_exit(trx);
+
+		return(err);
+	}
+
+
+
+
+
+8. RecLock::add_to_waitq --检测锁等待和死锁
+	参考笔记：《2021-07-29-核心源码.sql》
 
 
 E:\github\mysql-5.7.26\storage\innobase\lock\lock0lock.cc

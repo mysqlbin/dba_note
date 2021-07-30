@@ -1,6 +1,9 @@
 
 
 基本的代码流程如下
+	-- 检查是否存在和当前申请锁模式冲突的锁（lock_rec_other_has_conflicting），如果存在的话，就创建一个锁对象（RecLock::RecLock），并加入到等待队列中（RecLock::add_to_waitq），这里会进行死锁检测;
+	-- 当发现有冲突的锁时，调用函数 RecLock::add_to_waitq 进行锁等待/死锁的判断
+	-- @return DB_LOCK_WAIT, DB_DEADLOCK, or DB_QUE_THR_SUSPENDED, or DB_SUCCESS_LOCKED_REC;
 	RecLock::add_to_waitq
 		-- 进行死锁的检测
 		RecLock::deadlock_check
@@ -189,6 +192,7 @@ DeadlockChecker::check_and_resolve(const lock_t* lock, trx_t* trx)
 			break;
 			
 		-- 如果需要回滚的是其他事务，那么调用 checker.trx_rollback() 进行回滚
+		-- 回滚的是造成死锁的第1个事务
 		} else if (victim_trx != NULL && victim_trx != trx) {
 
 			ut_ad(victim_trx == checker.m_wait_lock->trx);
@@ -205,7 +209,7 @@ DeadlockChecker::check_and_resolve(const lock_t* lock, trx_t* trx)
 	} while (victim_trx != NULL && victim_trx != trx);
 	
 	/* If the joining transaction was selected as the victim. */
-	-- 回滚当前事务
+	-- 回滚当前事务，非第1个事务
 	if (victim_trx != NULL) {
 		
 		-- 回滚事务2
@@ -395,6 +399,8 @@ DeadlockChecker::select_victim() const
 	ut_ad(m_start->lock.wait_lock != 0);
 	ut_ad(m_wait_lock->trx != m_start);
 
+	-- 判断权重
+	-- 这里的代码还没看懂
 	if (thd_trx_priority(m_start->mysql_thd) > 0
 	    || thd_trx_priority(m_wait_lock->trx->mysql_thd) > 0) {
 
@@ -409,7 +415,7 @@ DeadlockChecker::select_victim() const
 	}
 
 	if (trx_weight_ge(m_wait_lock->trx, m_start)) {
-
+		-- 加入代价最小的事务，选择它作为牺牲者并回滚
 		/* The joining transaction is 'smaller',
 		choose it as the victim and roll it back. */
 
@@ -447,12 +453,3 @@ DeadlockChecker::rollback_print(const trx_t*	trx, const lock_t* lock)
 
 
 
-
-
-当发生死锁时，需要选择一个牺牲者(DeadlockChecker::select_victim())来解决死锁，通常事务权重低的回滚(trx_weight_ge)
-
-	1. 修改了非事务表的会话具有更高的权重；
-	2. 如果两个表都修改了、或者都没有修改事务表，那么就根据事务的undo数量加上持有的事务锁个数来决定权值（TRX_WEIGHT）；
-	3. 低权重的事务被回滚，高权重的获得锁对象。
-
-select_victim()返回一个选中需要被回滚的事务，MySQL 并不会迭代所有的 trx 来选择一个代价较小的事务，仅仅在m_start和 m_wait_lock ->trx这两个事务中选一个优先级较低的事务回滚.
