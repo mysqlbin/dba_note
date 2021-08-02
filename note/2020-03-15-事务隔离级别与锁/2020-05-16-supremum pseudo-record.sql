@@ -13,7 +13,7 @@
 
 	InnoDB给每个索引加了一个不存在的最大值 supremum, 相当于比索引中最大值还大，可以理解最后一行记录之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
 	
-	RR隔离级别才会持有。（总的来说就是每个索引页不存在的最大值）
+	总的来说就是每个索引页不存在的最大值。
 	
 	
 	https://phpor.net/blog/post/3186  关于mysql锁的学习
@@ -117,7 +117,6 @@
 						insert into t(c,d) values(6,6);
 						(Query OK)
 						
-	select * from t where id>=5 lock in share mode; 呢
 	
 	mysql>select * from information_schema.innodb_trx\G;
 
@@ -442,5 +441,7 @@
 		RR隔离级别持有；
 		RC隔离级别下也会持有，不过如果 supremum 没有被别的事务锁住，那么会立即被释放。
 
+	supremum pseudo-record 跟 innodb_autoinc_lock_mode 参数的设置无关。
+	
 	
 

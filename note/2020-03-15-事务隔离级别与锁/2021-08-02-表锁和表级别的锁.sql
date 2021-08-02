@@ -11,6 +11,7 @@
 6. 相关参考
 
 1. 表锁和表级锁
+	
 	表锁: lock table t write/read; 
 		通过表锁锁表.
 		
@@ -19,11 +20,11 @@
 		MDL锁、自增锁、意向锁、锁住全表的记录(使用全表的Next-Key Lock来锁住整个表的记录)
 		
 		
-	表锁(lock tables)
+	表锁(lock tables)：
 
-		只有正确通过索引条件检索数据（没有索引失效的情况），InnoDB才会使用行级锁，否则InnoDB对表中的所有记录加锁，也就是将锁住整个表.
+		只有正确通过索引条件检索数据（没有索引失效的情况），InnoDB才会使用行级锁，否则InnoDB对表中的所有记录加锁，也就是将锁住整个表的记录;
 
-		这里说的是锁住整个表，但是InnoDB并不是使用表锁来锁住表的，而是使用了下面介绍的Next-Key Lock来锁住整个表。
+		这里说的是锁住整个表，但是InnoDB并不是使用表锁来锁住表的，而是使用了下面介绍的Next-Key Lock来锁住整个表的记录;
 		
 		发生在RR隔离级别下的表级锁, 其它事务可以快照读, 不可以当前读或者说插入数据.
 	
@@ -199,6 +200,7 @@
 
 
 5. 隔离级别RC下的表级锁	
+
 	mysql> set global transaction isolation level READ COMMITTED;
 	Query OK, 0 rows affected (0.75 sec)
 

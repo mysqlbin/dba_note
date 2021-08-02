@@ -6,8 +6,11 @@
 5. lock_sec_rec_modify_check_and_lock--对二级索引的记录加锁，用于update语句更新的时候有更新二级索引的数据
 6. lock_rec_lock--行级锁加锁的入口函数
 7. lock_rec_lock_slow
-8. RecLock::add_to_waitq --检测锁等待和死锁
-
+	7.1 lock_rec_other_has_conflicting
+	7.2 lock_rec_has_to_wait
+	7.3 RecLock::add_to_waitq --检测锁等待和死锁
+		
+		
 1. sel_set_rec_lock--判断是否给主键索引还是二级索引的记录加锁
 
 	E:\github\mysql-5.7.26\storage\innobase\row\row0sel.cc
@@ -572,7 +575,7 @@
 				err = rec_lock.add_to_waitq(wait_for);
 
 			} else if (!impl) {
-
+				
 				/* Set the requested lock on the record, note that
 				we already own the transaction mutex. */
 				-- 如果没有冲突的锁，则入队列（lock_rec_add_to_queue）
@@ -592,10 +595,154 @@
 	}
 
 
+7.1 lock_rec_other_has_conflicting
+
+	-- 兼容性矩阵事务在对InnoDB中的数据进行加锁操作时，需要判断是否存在与之冲突的锁，这个过程是通过函数lock_rec_other_has_conflicting来实现的
+	
+	/*********************************************************************//**
+	Checks if some other transaction has a conflicting explicit lock request
+	in the queue, so that we have to wait.
+	@return lock or NULL */
+	static
+	const lock_t*
+	lock_rec_other_has_conflicting(
+	/*===========================*/
+		ulint			mode,	/*!< in: LOCK_S or LOCK_X,
+						possibly ORed to LOCK_GAP or
+						LOC_REC_NOT_GAP,
+						LOCK_INSERT_INTENTION */
+		const buf_block_t*	block,	/*!< in: buffer block containing
+						the record */
+		ulint			heap_no,/*!< in: heap number of the record */
+		const trx_t*		trx)	/*!< in: our transaction */
+	{
+		const lock_t*		lock;
+
+		ut_ad(lock_mutex_own());
+		
+		/*检测要加锁的索引是否为 supremum */
+
+		bool	is_supremum = (heap_no == PAGE_HEAP_NO_SUPREMUM);
+	
+		/*从锁hash表中去查看对应到此索引记录的锁*/
+		for (lock = lock_rec_get_first(lock_sys->rec_hash, block, heap_no);
+			 lock != NULL;
+			 lock = lock_rec_get_next_const(heap_no, lock)) {
+			/*检测检索到的锁结构与此事务要添加的锁是否冲突，如果冲突，会处于锁等待状态 */
+			if (lock_rec_has_to_wait(trx, mode, lock, is_supremum)) {
+				return(lock);
+			}
+		}
+
+		return(NULL);
+	}
 
 
+7.2 lock_rec_has_to_wait
 
-8. RecLock::add_to_waitq --检测锁等待和死锁
+	-- lock_rec_other_has_conflicting 判断冲突->lock_rec_has_to_wait 检测是否需要等待
+
+
+	-- 通过函数 lock_rec_has_to_wait 去判断同一个索引记录上的锁是否冲突
+	
+	/*********************************************************************//**
+	Checks if a lock request for a new lock has to wait for request lock2.
+	@return TRUE if new lock has to wait for lock2 to be removed */  /* 如果新锁必须等待 lock2 被移除，则为 TRUE */
+	UNIV_INLINE
+	ibool
+	lock_rec_has_to_wait(
+	/*=================*/
+		const trx_t*	trx,	/*!< in: trx of new lock */
+		ulint		type_mode,/*!< in: precise mode of the new lock
+					to set: LOCK_S or LOCK_X, possibly
+					ORed to LOCK_GAP or LOCK_REC_NOT_GAP,
+					LOCK_INSERT_INTENTION */
+		const lock_t*	lock2,	/*!< in: another record lock; NOTE that
+					it is assumed that this has a lock bit
+					set on the same record as in the new
+					lock we are setting */
+		bool		lock_is_on_supremum)
+					/*!< in: TRUE if we are setting the
+					lock on the 'supremum' record of an
+					index page: we know then that the lock
+					request is really for a 'gap' type lock */
+	{
+		ut_ad(trx && lock2);
+		ut_ad(lock_get_type_low(lock2) == LOCK_REC);
+
+		-- 首先要判断这两个锁对象是否属于同一个事务，如果属于同一个事务，则不冲突；
+		-- 并且 判断是否存在表锁冲突，如果不存在，需要进行锁兼容性矩阵的初步检测	
+		if (trx != lock2->trx
+			&& !lock_mode_compatible(static_cast<lock_mode>(
+							 LOCK_MODE_MASK & type_mode),
+						 lock_get_mode(lock2))) {
+			
+			-- 当间隙类型记录锁导致等待时，我们有一些复杂的规则
+			/* We have somewhat complex rules when gap type record locks
+			cause waits */
+			
+			
+			if ((lock_is_on_supremum || (type_mode & LOCK_GAP))
+				&& !(type_mode & LOCK_INSERT_INTENTION)) {
+
+				/* Gap type locks without LOCK_INSERT_INTENTION flag
+				do not need to wait for anything. This is because
+				different users can have conflicting lock types
+				on gaps. */
+				
+				-- 没有 LOCK_INSERT_INTENTION 标志的间隙类型锁不需要等待任何东西。 这是因为不同的用户可能在间隙上拥有冲突的锁类型
+
+				return(FALSE);
+			}
+
+			if (!(type_mode & LOCK_INSERT_INTENTION)
+				&& lock_rec_get_gap(lock2)) {
+
+				/* Record lock (LOCK_ORDINARY or LOCK_REC_NOT_GAP
+				does not need to wait for a gap type lock */
+				-- 记录锁（LOCK_ORDINARY 或 LOCK_REC_NOT_GAP 不需要等待间隙型锁
+				
+				return(FALSE);
+			}
+
+			if ((type_mode & LOCK_GAP)
+				&& lock_rec_get_rec_not_gap(lock2)) {
+
+				/* Lock on gap does not need to wait for
+				a LOCK_REC_NOT_GAP type lock */
+				
+				-- 间隙锁跟行锁不冲突
+				
+				return(FALSE);
+			}
+
+			if (lock_rec_get_insert_intention(lock2)) {
+
+				/* No lock request needs to wait for an insert
+				intention lock to be removed. This is ok since our
+				rules allow conflicting locks on gaps. This eliminates
+				a spurious deadlock caused by a next-key lock waiting
+				for an insert intention lock; when the insert
+				intention lock was granted, the insert deadlocked on
+				the waiting next-key lock.
+
+				Also, insert intention locks do not disturb each
+				other. */
+				
+				-- 
+				
+				return(FALSE);
+			}
+
+			return(TRUE);
+		}
+
+		return(FALSE);
+	}
+	
+	
+	
+7.3 RecLock::add_to_waitq --检测锁等待和死锁
 	参考笔记：《2021-07-29-核心源码.sql》
 
 

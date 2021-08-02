@@ -179,7 +179,8 @@
 
 			1. 首先尝试fast lock的方式，对于冲突少的场景，这是比较普通的加锁方式(lock_rec_lock_fast), 符合如下情况时，可以走fast lock:
 				1.1 记录所在的page上没有任何记录锁时，直接创建锁对象，加入rec_hash，并返回成功;
-				1.2 记录所在的page上只存在一个记录锁，并且属于当前事务，且这个记录锁预分配的bitmap能够描述当前的heap no（预分配的bit数为创建锁对象时的page上记录数 + 64，参阅函数 RecLock::lock_size ），则直接设置对应的bit位并返回;
+				1.2 记录所在的page上只存在一个记录锁，并且属于当前事务，且这个记录锁预分配的bitmap能够描述当前的heap no（预分配的bit数为创建锁对象时的page上记录数 + 64，
+					参阅函数 RecLock::lock_size ），则直接设置对应的bit位并返回;
 			
 			2. 无法走fast lock时，再调用slow lock的逻辑(lock_rec_lock_slow)
 			
