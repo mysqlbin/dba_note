@@ -2,12 +2,13 @@
 
 1. 表结构和数据的初始化
 2. RR隔离级别
-	2.1 实验1
-	2.2 实验2
-	2.3 实验3
-	2.4 实验4
-	2.5 实验5
-
+	2.1 实验1--全表扫描加锁
+	2.2 实验2--主键索引范围等值加锁并且有对最后一行记录加锁
+	2.3 实验3--主键索引范围等值加锁
+	2.4 实验4--主键索引范围等值加锁并且有对最后一行记录加锁同时后有数据插入
+	2.5 实验5--主键索引范围等值加锁并且有对最后一行记录加锁同时先有数据插入
+	2.6 实验6--未实践
+	
 3. RC隔离级别
 	3.1 实验1
 	3.2 实验2
@@ -15,6 +16,9 @@
 	3.4 实验4
 	3.5 实验5
 	
+4. 小结
+
+
 1. 表结构和数据的初始化
 	CREATE TABLE `t` (
 	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
@@ -54,7 +58,7 @@
 	
 2. RR隔离级别
 
-2.1 实验1
+2.1 实验1--全表扫描加锁
 
 	mysql> select @@session.transaction_isolation;
 	+---------------------------------+
@@ -103,7 +107,7 @@
 	7 rows in set (0.00 sec)
 	
 	
-2.2 实验2
+2.2 实验2--主键索引范围等值加锁并且有对最后一行记录加锁
 	begin;
 	mysql> select * from t where id>=3 and  id<=5 lock in share mode;
 	+----+------+------+
@@ -127,7 +131,7 @@
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+------------------------+
 	5 rows in set (0.00 sec)
 
-2.3 实验3
+2.3 实验3--主键索引范围等值加锁
 
 	session A            session B
 
@@ -156,7 +160,7 @@
 	3 rows in set (0.00 sec)
 
 
-2.4 实验4
+2.4 实验4--主键索引范围等值加锁并且有对最后一行记录加锁同时后有数据插入
 
 	session A           	session B
 	begin;
@@ -194,7 +198,7 @@
 	9 rows in set (0.01 sec)
 
 
-2.5 实验5
+2.5 实验5--主键索引范围等值加锁并且有对最后一行记录加锁同时先有数据插入
 	
 	session A           session B
 	begin;
@@ -204,10 +208,22 @@
 						select * from t where id<=5 lock in share mode;
 						(Blocked)
 						
-	参考笔记 《2020-05-24-innodb_autoinc_lock_mode-验证 8.0.18版本是否存在主键记录锁扩大.sql》
+	参考笔记 《2020-05-16-innodb_autoinc_lock_mode-验证MySQL 8.0.19版本是否存在自增锁扩大.sql》
 
 
+
+2.6 实验6--未实践
+
+	session A            session B
+	begin;
+	delete from t where id=5;
+	
+						begin;
+						select * from t where id>=3 and  id<=4 lock in share mode;
+
+						
 3. RC隔离级别
+
 	mysql> select @@session.transaction_isolation;
 	+---------------------------------+
 	| @@session.transaction_isolation |
@@ -254,7 +270,7 @@
 	| 140570760526704:281:4:6:140570655808632 |       422045737237360 |        58 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 5         |
 	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 	6 rows in set (0.03 sec)
-
+	
 	
 3.2 实验2
 
@@ -350,5 +366,22 @@
 						begin;
 						select * from t where id<=5 lock in share mode;
 						(Blocked)
+
+3.6 实验6 
+
+	session A           session B
+	begin;
+	delete from t where id=5;
 						
+						begin;
+						select * from t where id>=3 and  id<=4 lock in share mode;
+							
 						
+4. 小结
+	这里的笔记要重新整理下。
+	
+	8.0.18 的RR隔离级别优化唯一索引范围加锁的bug，但是如果范围加锁包含索引的最大值，会锁住索引上不存在的最大值。
+	
+	
+	
+	

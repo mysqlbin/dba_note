@@ -389,7 +389,7 @@
 ------------------------------ 以上都经过了测试.
 
 
-2.1 环境1
+3.1 环境1
 	
 	root@mysqldb 14:37:  [db3]> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
@@ -434,7 +434,7 @@
  	
 			
 
-2.2 环境2
+3.2 环境2
 	
 	root@mysqldb 14:37:  [db3]> show global variables like '%innodb_autoinc_lock_mode%';
 	+--------------------------+-------+
