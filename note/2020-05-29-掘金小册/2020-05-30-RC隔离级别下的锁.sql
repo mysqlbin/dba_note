@@ -76,7 +76,7 @@
 
 2. 主键索引范围锁
 
-	2.1 实验1-没有阻塞
+	2.1 实验1--先范围查询加锁再等值查询加锁
 		session A               session B
 		BEGIN;
 		SELECT * FROM hero WHERE number <= 8 LOCK IN SHARE MODE;
@@ -107,7 +107,7 @@
 		6 rows in set (0.09 sec)
 
 
-	2.2 实验2-有阻塞
+	2.2 实验2--先等值查询加锁再范围查询加锁
 		session A               session B
 		BEGIN;
 		SELECT * FROM hero WHERE number = 15 FOR UPDATE;
@@ -199,7 +199,7 @@
 		
 4. 二级索引等值范围锁
 
-4.1 实验1
+4.1 实验1--先范围查询加锁再等值查询加锁
 	mysql> select * from hero order by name asc;
 	+--------+------------+---------+
 	| number | name       | country |
@@ -1256,7 +1256,8 @@
 		
 		理解了，参考笔记 《2020-05-27-证明RC隔离级别下先加锁再退化释放锁的实验.sql》
 		
-	姜少华的解答
+	姜少华的解答：
+	
 		1.insert的通过自增加的隐式锁       
 		2.第二个语句是锁的过程实际上是id<=5的下一条记录也就是这个页的最大记录（如果这个在RC级别下没有被锁，则会立即释放）
 		举个例子  id 1，3，5   
@@ -1309,7 +1310,7 @@
 	9 rows in set (0.00 sec)
 
 	session A 持有 id=6 的行锁
-	session B 是当前读，想持有 id=6 的行锁，处于等待状态中。
+	session B 是范围查询的当前读，想持有 id=6 的行锁，处于等待状态中。
 			
 10.4 MySQL 8.0.18版本
 
@@ -1361,6 +1362,6 @@
 	9 rows in set (0.00 sec)
 	
 	session A 持有 id=6 的行锁
-	session B 是当前读，想持有 id=6 的行锁，处于等待状态中。
+	session B 是范围查询的当前读，想持有 id=6 的行锁，处于等待状态中。
 	
 	

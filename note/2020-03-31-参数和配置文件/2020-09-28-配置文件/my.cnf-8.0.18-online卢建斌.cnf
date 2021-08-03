@@ -1,14 +1,4 @@
-#
-## my.cnf for MySQL 5.7/8.0
-## autoor: yejr(yejinrong@zhishutang.com, http://imysql.com, QQ: 4700963)
-##
-## 叶金荣(yejr)
-## 靠谱优质的在线培训品牌知数堂培训(http://zhishuedu.com)联合创始人
-## 新浪微博: @叶金荣, 微信公众：老叶茶馆(imysql_wx)
-## QQ群: 650149401
-## 注意：个别建议可能需要根据实际情况作调整，请自行判断或联系我，本人不对这些建议结果负相应责任
-## 本配置文件主要适用于MySQL 5.7/8.0版本
-#
+
 [client]
 port	= 3306
 socket	= /tmp/mysql.sock
@@ -21,7 +11,7 @@ no-auto-rehash
 user	= mysql
 port	= 3306
 basedir	= /usr/local/mysql
-datadir	= /data/mysql/mysql3306/data/
+datadir	= /home/mysql/3306/data/
 socket	= /tmp/mysql.sock
 pid-file = mysqldb.pid
 character-set-server = utf8mb4
@@ -39,14 +29,14 @@ max_allowed_packet = 32M
 sort_buffer_size = 4M
 join_buffer_size = 4M
 thread_cache_size = 768
-tmpdir=/data/mysql/mysql3306/tmp
+tmpdir=/home/mysql/3306/tmp
 interactive_timeout = 600
 wait_timeout = 600
 tmp_table_size = 32M
 max_heap_table_size = 32M
 slow_query_log = 1
-slow_query_log_file = /data/mysql/mysql3306/data/slow.log
-log-error = /data/mysql/mysql3306/data/error.log
+slow_query_log_file = /home/mysql/3306/data/slow.log
+log-error = /home/mysql/3306/data/error.log
 long_query_time = 0.1
 log_queries_not_using_indexes =1
 log_throttle_queries_not_using_indexes = 60
@@ -55,7 +45,7 @@ min_examined_row_limit = 100
 log_slow_admin_statements = 1
 log_slow_slave_statements = 1
 server-id = 3306
-log-bin = /data/mysql/mysql3306/logs/mysql-bin
+log-bin = /home/mysql/3306/logs/mysql-bin
 sync_binlog = 1
 binlog_cache_size = 4M
 max_binlog_cache_size = 2G
@@ -158,9 +148,11 @@ innodb_monitor_enable="module_ibuf_system"
 innodb_monitor_enable="module_buffer_page"
 innodb_monitor_enable="module_adaptive_hash"
 
+# 时间参数
+default-time-zone = '+8:00'
+log_timestamps=SYSTEM
 
 # Group Replication
-
 server_id = 330602
 gtid_mode = ON
 enforce_gtid_consistency = ON
