@@ -6,7 +6,6 @@
 4.1.2 主键索引范围锁																								
 4.1.3 优化了唯一索引范围 bug 
 4.1.4 唯一索引范围非等值查询&order by
-
 4.2.1 非唯一索引等值锁--lock in share mode模式
 4.2.1 非唯一索引等值锁--for update模式
 4.2.2 非唯一索引范围锁
@@ -71,6 +70,7 @@ select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOC
 SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 
 4.1.1 唯一索引等值查询间隙锁
+
 CREATE TABLE `t` (
   `id` int(11) NOT NULL,
   `c` int(11) DEFAULT NULL,
@@ -118,7 +118,8 @@ T1:
 	1 row in set (0.01 sec)
 
 	
-4.1.2 主键索引范围锁																								
+4.1.2 主键索引范围锁	
+																							
 session A                                  session B                session C                     session D                                                                                                   
 begin;
 select * from t where id>=10 and id<11 for update;
@@ -176,51 +177,67 @@ T2
 											
 
 4.1.3 优化了唯一索引范围 bug 
-优化了尾点延伸  
-其它相关参考： https://mp.weixin.qq.com/s/xDKKuIvVgFNiKp5kt2NIgA  
-session A                                       session B                                                                                                                                                                                     
-begin;
-select * from t where id>10 and id<=15 for update;
-+----+------+------+
-| id | c    | d    |
-+----+------+------+
-| 15 |   15 |   15 |
-+----+------+------+
-1 row in set (0.00 sec)
-T1: performance_schema.data_locks
-												begin;
-												update t set d=d+1 where id=20;
-												(Query OK)  
-												
-												insert into t values(12,12,12); 
-												(Blocked)
-T2	
-												insert into t values(16,16,16); 
-												(Query OK)
-T3		
+	
+	优化了尾点延伸  
+	其它相关参考： https://mp.weixin.qq.com/s/xDKKuIvVgFNiKp5kt2NIgA  
+	session A                                       session B                                                                                                                                                                                     
+	begin;
+	select * from t where id>10 and id<=15 for update;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	| 15 |   15 |   15 |
+	+----+------+------+
+	1 row in set (0.00 sec)
+	T1: performance_schema.data_locks
+													begin;
+													update t set d=d+1 where id=20;
+													(Query OK)  
+													
+													insert into t values(12,12,12); 
+													(Blocked)
+	T2	
+													insert into t values(16,16,16); 
+													(Query OK)
+	T3		
 
-T1
-mysql>  select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
-+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
-| ENGINE_LOCK_ID                          | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE | LOCK_STATUS | LOCK_DATA |
-+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
-| 139859108158928:1303:139859033393640    |                869538 |      1996 | t           | NULL       | TABLE     | IX        | GRANTED     | NULL      |
-| 139859108158928:246:4:5:139859033390712 |                869538 |      1996 | t           | PRIMARY    | RECORD    | X         | GRANTED     | 15        |
-+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
-2 rows in set (0.00 sec)
+	T1
+	mysql>  select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+	| ENGINE_LOCK_ID                          | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE | LOCK_STATUS | LOCK_DATA |
+	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+	| 139859108158928:1303:139859033393640    |                869538 |      1996 | t           | NULL       | TABLE     | IX        | GRANTED     | NULL      |
+	| 139859108158928:246:4:5:139859033390712 |                869538 |      1996 | t           | PRIMARY    | RECORD    | X         | GRANTED     | 15        |
+	+-----------------------------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+-----------+
+	2 rows in set (0.00 sec)
 
-T2
-mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
-+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
-| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE              | LOCK_STATUS | LOCK_DATA |
-+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
-| 140538819522000:1074:140538711967992   |                  2474 |       111 | t           | NULL       | TABLE     | IX                     | GRANTED     | NULL      |
-| 140538819522000:17:4:5:140538711965064 |                  2474 |       111 | t           | PRIMARY    | RECORD    | X,GAP,INSERT_INTENTION | WAITING     | 15        |
-| 140538819521128:1074:140538711962040   |                  2473 |       110 | t           | NULL       | TABLE     | IX                     | GRANTED     | NULL      |
-| 140538819521128:17:4:5:140538711959000 |                  2473 |       110 | t           | PRIMARY    | RECORD    | X                      | GRANTED     | 15        |
-+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
-4 rows in set (0.00 sec)
-												
+	T2
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
+	| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE              | LOCK_STATUS | LOCK_DATA |
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
+	| 140538819522000:1074:140538711967992   |                  2474 |       111 | t           | NULL       | TABLE     | IX                     | GRANTED     | NULL      |
+	| 140538819522000:17:4:5:140538711965064 |                  2474 |       111 | t           | PRIMARY    | RECORD    | X,GAP,INSERT_INTENTION | WAITING     | 15        |
+	| 140538819521128:1074:140538711962040   |                  2473 |       110 | t           | NULL       | TABLE     | IX                     | GRANTED     | NULL      |
+	| 140538819521128:17:4:5:140538711959000 |                  2473 |       110 | t           | PRIMARY    | RECORD    | X                      | GRANTED     | 15        |
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+------------------------+-------------+-----------+
+	4 rows in set (0.00 sec)
+		
+		
+	反过来呢？
+	begin;
+	update t set d=d+1 where id=20;	
+	
+				begin;
+				select * from t where id>10 and id<=15 for update;
+				+----+------+------+
+				| id | c    | d    |
+				+----+------+------+
+				| 15 |   15 |   15 |
+				+----+------+------+
+				1 row in set (0.01 sec)
+
+	
 4.1.4 唯一索引范围非等值查询&order by
 
 	session A

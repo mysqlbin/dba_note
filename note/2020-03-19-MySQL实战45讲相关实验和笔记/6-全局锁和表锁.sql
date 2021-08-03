@@ -1,6 +1,7 @@
 
 
 表锁
+	
 	表锁的语法: lock tables … read/write。
 	释放表锁: unlock tables; 也可以在客户端断开的时候自动释放。
 	lock tables 语法除了会限制别的线程的读写外，也限定了本线程接下来的操作对象。

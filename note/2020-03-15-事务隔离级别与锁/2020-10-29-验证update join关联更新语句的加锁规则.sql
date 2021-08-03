@@ -655,14 +655,16 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 
 	4.1 update join关联更新的语句加锁规则如下：
 		
-		RR/RC事务隔离级别下，驱动表的数据都是加写锁； 
-		
-		RC事务隔离级别下，关联到的被驱动表的数据不加锁；
-		RR事务隔离级别下，关联到的被驱动表的数据加读锁；
-		
-			跟 insert into select 语句一样，RC事务隔离级别下， select 的语句不加锁； RR事务隔离级别下，select 的语句加读锁。
-		
-	4.2 update join 关联更新还是要拆分成多个小事务，事务快速提交，持有锁的时间就越少，从库也不会有延迟。
+			RR/RC事务隔离级别下，驱动表的数据都是加写锁； 
+			
+			RC事务隔离级别下，关联到的被驱动表的数据不加锁；
+			RR事务隔离级别下，关联到的被驱动表的数据加读锁；
+			
+				跟 insert into select 语句一样，RC事务隔离级别下， select 的语句不加锁； RR事务隔离级别下，select 的语句加读锁。
+			
+	4.2 update join 关联更新还是要拆分成多个小事务，事务快速提交，持有锁的时间就越少，从库也不会有延迟或者延迟也会更小。
+	
+	
 		
 	
 	

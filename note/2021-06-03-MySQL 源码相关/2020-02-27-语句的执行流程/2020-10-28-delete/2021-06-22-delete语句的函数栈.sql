@@ -334,15 +334,8 @@
 
 	https://developer.aliyun.com/article/40971   [MySQL 学习] Innodb Optimistic Delete 简述
 
-	https://blog.csdn.net/weixin_33714884/article/details/89627823
+	https://blog.csdn.net/weixin_33714884/article/details/89627823  MySQL Innodb Purge简介
 
-	https://blog.csdn.net/weixin_39853523/article/details/110713852   insert时调用本身字段_MySQL RC级别下并发insert锁超时问题 - 源码分析
-
-	https://zhuanlan.zhihu.com/p/52098868  MySQL RC级别下并发insert锁超时问题 - 现象分析和解释
-	https://zhuanlan.zhihu.com/p/52100378  MySQL RC级别下并发insert锁超时问题 - 源码分析
-	https://zhuanlan.zhihu.com/p/52234835  MySQL RC级别下并发insert锁超时问题 - 案例验证
-
-	
 
 8. 小结
 
@@ -360,20 +353,8 @@
 	6. 先对主键索引的记录打删除标记，再对二级索引的记录打删除标记。
 	
 
-后面要看看insert 和 update语句的函数栈。
-	
-更新数据的栈帧
-		
-	更新主键索引的情况
-		先删除再插入
-		ha_innobase::update_row -> row_update_for_mysql -> row_upd_step -> row_upd -> row_upd_clust_step -> row_upd_clust_rec_by_insert -> btr_cur_del_mark_set_clust_rec -> row_ins_index_entry
 
 
-	更新非主键值，但是影响二级索引的情况
-		ha_innobase::update_row -> row_update_for_mysql -> row_upd_step -> row_upd -> row_upd_sec_step -> row_upd_sec_index_entry -> btr_cur_del_mark_set_sec_rec -> row_ins_sec_index_entry
-		
-		row_upd_sec_step： 如果在行更新中更改了二级索引记录，则更新二级索引记录或如果这是删除，则删除它。
-		
 		
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------	
 		

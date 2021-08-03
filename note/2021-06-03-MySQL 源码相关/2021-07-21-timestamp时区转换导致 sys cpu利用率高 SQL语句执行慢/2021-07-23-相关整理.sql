@@ -41,3 +41,17 @@ timestamp 转换：
 		2. time_zone：设置为实际的时区的话，比如‘+08:00’，那么使用使用MySQL自己的方法进行转换。对应转换函数 Time_zone_offset::gmt_sec_to_TIME
 	
 	实际上Time_zone_system和Time_zone_offset均继承于Time_zone类，并且实现了Time_zone类的虚函数进行了重写，因此上层调用都是Time_zone::gmt_sec_to_TIME。
+
+
+
+
+高并发环境下并不适合使用TIMESTAMP
+
+	这一点MySql的文档中有明确的说明：
+		Note
+		If set to SYSTEM, every MySQL function call that requires a time zone calculation makes a system library call to determine the current system time zone. 
+		This call may be protected by a global mutex, resulting in contention.
+		
+		虽然通过TIMESTAMP可以自动转换时区，代价是当MySQL参数time_zone=system时每次都会尝试获取一个全局锁，这在高并发的环境下无疑是致命的，可能会导致线程上下文频繁切换，CPU使用率暴涨，系统响应变慢甚至假死。
+		
+	https://dev.mysql.com/doc/refman/5.7/en/time-zone-support.html	

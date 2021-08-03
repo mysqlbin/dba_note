@@ -143,7 +143,7 @@ select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOC
 		idx_order_no: record lock: ['123456', 1] + primary: record lock: [1]
 		
 		
-		不需要持有普通索引 idx_status 的锁。 --准确的说，是对 普通索引 idx_status 的记录持有隐式锁。
+		不需要持有普通索引 idx_status 的锁。
 		
 	----------------------------------------------------------------------
 	

@@ -768,5 +768,51 @@
 	使用GDB调试源码，自己也会更有底气解释某个原理/实践对不对。
 	
 	
+select age,name,createTime from  t_20210722 where createTime='2021-07-17 15:14:08';
+(Blocked)	
+	
+(gdb) b Time_zone_system::gmt_sec_to_TIME
+Breakpoint 2 at 0x163a1d4: file /usr/local/mysql/sql/tztime.cc, line 1092.
+(gdb) c
+Continuing.
+[Switching to Thread 0x7f94f40bb700 (LWP 8268)]
+
+Breakpoint 2, Time_zone_system::gmt_sec_to_TIME (this=0x2d23c68 <tz_SYSTEM>, tmp=0x7f94f40ba220, t=1626508039) at /usr/local/mysql/sql/tztime.cc:1092
+1092	  time_t tmp_t= (time_t)t;
+(gdb) c
+Continuing.
+
+Breakpoint 2, Time_zone_system::gmt_sec_to_TIME (this=0x2d23c68 <tz_SYSTEM>, tmp=0x7f94f40b8880, t=1626506048) at /usr/local/mysql/sql/tztime.cc:1092
+1092	  time_t tmp_t= (time_t)t;
+(gdb) bt
+#0  Time_zone_system::gmt_sec_to_TIME (this=0x2d23c68 <tz_SYSTEM>, tmp=0x7f94f40b8880, t=1626506048) at /usr/local/mysql/sql/tztime.cc:1092
+#1  0x0000000000f135b9 in Time_zone::gmt_sec_to_TIME (this=0x2d23c68 <tz_SYSTEM>, tmp=0x7f94f40b8880, tv=...) at /usr/local/mysql/sql/tztime.h:60
+#2  0x0000000000ef8b8d in Field_timestampf::get_date_internal (this=0x7f94f0061e20, ltime=0x7f94f40b8880) at /usr/local/mysql/sql/field.cc:5986
+#3  0x0000000000ef753b in Field_temporal_with_date::val_str (this=0x7f94f0061e20, val_buffer=0x7f94f40b88f0, val_ptr=0x7f94f40b88f0) at /usr/local/mysql/sql/field.cc:5401
+#4  0x0000000000ed0c59 in Field::val_str (this=0x7f94f0061e20, str=0x7f94f40b88f0) at /usr/local/mysql/sql/field.h:864
+#5  0x0000000000eece4e in Field::send_text (this=0x7f94f0061e20, protocol=0x7f94f0020910) at /usr/local/mysql/sql/field.cc:1722
+#6  0x0000000001455236 in Protocol_text::store (this=0x7f94f0020910, field=0x7f94f0061e20) at /usr/local/mysql/sql/protocol_classic.cc:1415
+#7  0x0000000000f55b0b in Item_field::send (this=0x7f94f0044ee0, protocol=0x7f94f0020910, buffer=0x7f94f40b8ca0) at /usr/local/mysql/sql/item.cc:7806
+#8  0x00000000014d9ad7 in THD::send_result_set_row (this=0x7f94f001f770, row_items=0x7f94f0043b38) at /usr/local/mysql/sql/sql_class.cc:4695
+#9  0x00000000014d4162 in Query_result_send::send_data (this=0x7f94f0063530, items=...) at /usr/local/mysql/sql/sql_class.cc:2725
+#10 0x00000000014f1233 in end_send (join=0x7f94f00638c8, qep_tab=0x7f94f0064fa8, end_of_records=false) at /usr/local/mysql/sql/sql_executor.cc:2927
+#11 0x00000000014edf39 in evaluate_join_record (join=0x7f94f00638c8, qep_tab=0x7f94f0064e30) at /usr/local/mysql/sql/sql_executor.cc:1645
+#12 0x00000000014ed379 in sub_select (join=0x7f94f00638c8, qep_tab=0x7f94f0064e30, end_of_records=false) at /usr/local/mysql/sql/sql_executor.cc:1297
+#13 0x00000000014ecbfa in do_select (join=0x7f94f00638c8) at /usr/local/mysql/sql/sql_executor.cc:950
+#14 0x00000000014eab61 in JOIN::exec (this=0x7f94f00638c8) at /usr/local/mysql/sql/sql_executor.cc:199
+#15 0x0000000001583b64 in handle_query (thd=0x7f94f001f770, lex=0x7f94f0021a90, result=0x7f94f0063530, added_options=0, removed_options=0) at /usr/local/mysql/sql/sql_select.cc:184
+#16 0x000000000153996f in execute_sqlcom_select (thd=0x7f94f001f770, all_tables=0x7f94f0045010) at /usr/local/mysql/sql/sql_parse.cc:5144
+#17 0x000000000153339d in mysql_execute_command (thd=0x7f94f001f770, first_level=true) at /usr/local/mysql/sql/sql_parse.cc:2816
+#18 0x000000000153a849 in mysql_parse (thd=0x7f94f001f770, parser_state=0x7f94f40ba690) at /usr/local/mysql/sql/sql_parse.cc:5570
+#19 0x00000000015302d8 in dispatch_command (thd=0x7f94f001f770, com_data=0x7f94f40badf0, command=COM_QUERY) at /usr/local/mysql/sql/sql_parse.cc:1484
+#20 0x000000000152f20c in do_command (thd=0x7f94f001f770) at /usr/local/mysql/sql/sql_parse.cc:1025
+#21 0x000000000165f7c8 in handle_connection (arg=0x526a7a0) at /usr/local/mysql/sql/conn_handler/connection_handler_per_thread.cc:306
+#22 0x0000000001ce7612 in pfs_spawn_thread (arg=0x45cc910) at /usr/local/mysql/storage/perfschema/pfs.cc:2190
+#23 0x00007f95008bfea5 in start_thread () from /lib64/libpthread.so.0
+#24 0x00007f94ff7859fd in clone () from /lib64/libc.so.6
+
+
+
+
 	
 	
