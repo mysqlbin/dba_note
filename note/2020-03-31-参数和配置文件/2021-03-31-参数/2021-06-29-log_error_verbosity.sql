@@ -3,7 +3,7 @@
 2. log_error_verbosity
 3. 相关参考
 4. 小结
-
+5. other 
 
 
 
@@ -164,3 +164,25 @@
 	从MySQL 5.7.2开始，首选log_error_verbosity系统变量，而不是使用log-warnings选项或log_warnings系统变量，这个参数从MySQL 8.0.3开始被移除了：
 
 		This system variable was removed in MySQL 8.0.3. Use the log_error_verbosity system variable instead.
+
+
+5. other 
+
+	5.7有大量爆[Note] Got an error reading communication packets
+	
+	朝露昙花(672885382) 2021/8/3 14:27:25
+	现在对比下来相关参数就一个 log_warnings 不一样
+
+	朝露昙花(672885382) 2021/8/3 14:27:31
+	5.6是1 5.7是2
+
+	朝露昙花(672885382) 2021/8/3 14:27:53
+	实际问题不大，就是刷日志刷的烦
+
+	A群主-吴炳锡@知数堂(82565387)  15:06:59
+	这个是一个提示, 需要 log_warnings >1 才会显示
+	
+	
+	
+	
+	
