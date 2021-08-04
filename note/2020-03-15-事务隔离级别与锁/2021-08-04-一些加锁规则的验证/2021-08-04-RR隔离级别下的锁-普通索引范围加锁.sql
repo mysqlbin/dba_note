@@ -163,6 +163,7 @@
 		
 	
 3.1 环境
+	
 	root@mysqldb 09:34:  [(none)]> select version();
 	+-----------+
 	| version() |
@@ -188,6 +189,7 @@
 	1 row in set (0.07 sec)
 
 3.2 实验目的
+	
 	验证 c>=15 and c<=20 和 c>=15 and c<20 的加锁区别 
 
 3.3 c>=15 and c<=20

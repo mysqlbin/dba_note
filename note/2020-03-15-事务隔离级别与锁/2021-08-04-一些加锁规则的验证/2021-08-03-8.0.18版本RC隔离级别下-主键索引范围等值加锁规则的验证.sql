@@ -261,7 +261,69 @@
 
 	RR隔离级别下，session B 不会被阻塞。
 	
+
+
+
+3.0 
+
+	update t set d=100 where id>=2 and  id<=3;
+
+	root@mysqldb 16:33:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 139835056597608:1063:139834941305512  |                  3744 |        92 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 139835056597608:6:4:3:139834941302472 |                  3744 |        92 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 2         |
+	| 139835056597608:6:4:4:139834941302472 |                  3744 |        92 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 3         |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	3 rows in set (0.00 sec)
 	
+	begin;
+	delete from t where id=4;
+				begin;
+				update t set d=100 where id>=2 and  id<=3;
+				Query OK, 2 rows affected (0.00 sec)
+				Rows matched: 2  Changed: 2  Warnings: 0
+		
+	
+	
+	
+	
+	
+	begin;
+	select * from t where id>=2 and  id<=3 lock in share mode;
+	
+	root@mysqldb 16:35:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 139835056597608:1063:139834941305512  |       421310033308264 |        92 | t           | NULL       | TABLE     | IS            | GRANTED     | NULL      |
+	| 139835056597608:6:4:3:139834941302472 |       421310033308264 |        92 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 2         |
+	| 139835056597608:6:4:4:139834941302472 |       421310033308264 |        92 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 3         |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	3 rows in set (0.00 sec)
+
+
+	begin;
+	delete from t where id=4;
+				begin;
+				select * from t where id>=2 and  id<=3 lock in share mode;
+				(Blocked)
+				
+	root@mysqldb 16:33:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 139835056597608:1063:139834941305512  |                  3750 |        92 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 139835056597608:6:4:5:139834941302472 |                  3750 |        92 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 4         |
+	| 139835056598480:1063:139834941311464  |       421310033309136 |        94 | t           | NULL       | TABLE     | IS            | GRANTED     | NULL      |
+	| 139835056598480:6:4:3:139834941308536 |       421310033309136 |        94 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 2         |
+	| 139835056598480:6:4:4:139834941308536 |       421310033309136 |        94 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 3         |
+	| 139835056598480:6:4:5:139834941308880 |       421310033309136 |        94 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | WAITING     | 4         |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	6 rows in set (0.00 sec)
+
+								
 3. 小结
 	
 	RC隔离级别下，主键索引范围等值查询，需要访问到不满足条件的第一行记录为止，并且加锁，语句执行结束后，会把不满足条件的记录锁进行释放。
