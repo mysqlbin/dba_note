@@ -4,11 +4,20 @@
 2. RC隔离级别
 	2.1 实验1--全表扫描加锁	
 	2.2 实验2--主键索引范围等值加锁并且有对最后一行记录加锁
-	3.3 实验3--主键索引范围等值加锁并且没有对最后一行记录加锁同时后有数据删除操作
-	3.4 实验4--主键索引范围等值加锁并且有对最后一行记录加锁同时后有数据插入
-	3.5 实验5--主键索引范围等值加锁并且有对最后一行记录加锁同时先有数据插入
-	3.6 实验6--主键索引范围等值加锁并且没有对最后一行记录加锁同时先有数据删除操作 
-3. 小结
+	2.3 实验3--主键索引范围等值加锁并且没有对最后一行记录加锁同时后有数据删除操作
+	2.4 实验4--主键索引范围等值加锁并且有对最后一行记录加锁同时后有数据插入
+	2.5 实验5--主键索引范围等值加锁并且有对最后一行记录加锁同时先有数据插入
+	2.6 实验6--主键索引范围等值加锁并且没有对最后一行记录加锁同时先有数据删除操作 
+	
+	-----------------------------------------------------------------------------
+	
+	2.7 实验7--主键索引范围加锁
+	
+	
+3.0 用更新语句做验证
+	3.1 等值范围更新--先根据主键索引删除数据再等值范围更新加锁
+
+4. 小结
 
 
 1. 表结构和数据的初始化
@@ -38,7 +47,7 @@
 	;;
 	DELIMITER ;
 	
-	root@mysqldb 17:52:  [zst]> select * from t;
+	mysql> select * from t;
 	+----+------+------+
 	| id | c    | d    |
 	+----+------+------+
@@ -262,13 +271,62 @@
 	RR隔离级别下，session B 不会被阻塞。
 	
 
+2.7 实验7--主键索引范围加锁
 
+	
+	begin;
+	select * from t where id>3 and id<5 lock in share mode;
 
-3.0 
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 139835056597608:1063:139834941305512  |       421310033308264 |       133 | t           | NULL       | TABLE     | IS            | GRANTED     | NULL      |
+	| 139835056597608:6:4:5:139834941302472 |       421310033308264 |       133 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 4         |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	2 rows in set (0.00 sec)
+
+	---------------------------------------------------------------------------------------------------------------------------------------------------------------
+	lock in share mode：
+		session A           session B
+		begin;
+		update t set d=100 where id=5;
+
+							begin;
+							select * from t where id>3 and id<5 lock in share mode;
+							(Blocked)
+							
+		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		| 139835056597608:1063:139834941305512  |                  3839 |       133 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+		| 139835056597608:6:4:6:139834941302472 |                  3839 |       133 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 5         |
+		| 139835056598480:1063:139834941311464  |       421310033309136 |       134 | t           | NULL       | TABLE     | IS            | GRANTED     | NULL      |
+		| 139835056598480:6:4:5:139834941308536 |       421310033309136 |       134 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 4         |
+		| 139835056598480:6:4:6:139834941308880 |       421310033309136 |       134 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | WAITING     | 5         |
+		-- 被主键索引 id=5 的记录锁阻塞。
+		+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		5 rows in set (0.00 sec)
+
+	---------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	update:
+		session A           session B
+		begin;
+		update t set d=100 where id=5;
+
+							begin;
+							update t set d=100  where id>3 and id<5;
+							(Query Ok)
+							
+	
+
+3.0 用更新语句做验证
 
 	update t set d=100 where id>=2 and  id<=3;
 
-	root@mysqldb 16:33:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
 	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
@@ -278,22 +336,25 @@
 	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 	3 rows in set (0.00 sec)
 	
+	
+3.1 等值范围更新--先根据主键索引删除数据再等值范围更新加锁
+
 	begin;
 	delete from t where id=4;
+	
 				begin;
 				update t set d=100 where id>=2 and  id<=3;
 				Query OK, 2 rows affected (0.00 sec)
 				Rows matched: 2  Changed: 2  Warnings: 0
 		
+	-----------------------------------------------------
 	
-	
-	
-	
+	对比 lock in share mode;
 	
 	begin;
 	select * from t where id>=2 and  id<=3 lock in share mode;
 	
-	root@mysqldb 16:35:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
 	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
@@ -310,7 +371,7 @@
 				select * from t where id>=2 and  id<=3 lock in share mode;
 				(Blocked)
 				
-	root@mysqldb 16:33:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
 	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
@@ -324,15 +385,15 @@
 	6 rows in set (0.00 sec)
 
 								
-3. 小结
+4. 小结
 	
-	RC隔离级别下，主键索引范围等值查询，需要访问到不满足条件的第一行记录为止，并且加锁，语句执行结束后，会把不满足条件的记录锁进行释放。
-	-- 算是理解了。
-	
-	
-	
-	
-	
-	
-	
-	
+	主键索引:
+		
+		主键索引的范围(等值)查询(lock in share mode、for update模式)加锁：
+			需要访问到不满足条件的第一行记录为止，并且加锁，语句执行结束后，会把不满足条件的记录锁进行释放。
+			
+		
+		update语句主键索引(等值)范围更新加锁：
+			不需要访问到不满足条件的第一行记录为止。
+		
+		
