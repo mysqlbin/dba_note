@@ -370,6 +370,82 @@
 	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
 	6 rows in set (0.00 sec)
 
+
+
+3.2 等值范围更新--先根据主键索引更新数据再等值范围更新加锁
+	
+	session A                    session B
+	begin;     
+	update t set d=100 where id=2;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  3 |    3 |    3 |
+	+----+------+------+
+	1 row in set (0.00 sec)
+
+							    begin;
+								delete from t where id<=1;
+								(Blocked)
+								-- 有尾点延伸的问题。
+
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 139835056597608:1064:139834941305512  |                  3947 |       165 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 139835056597608:7:4:2:139834941302472 |                  3947 |       165 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 1         |
+	| 139835056597608:7:4:3:139834941302816 |                  3947 |       165 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | WAITING     | 2         |
+	
+	| 139835056598480:1064:139834941311464  |                  3946 |       166 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 139835056598480:7:4:3:139834941308536 |                  3946 |       166 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 2         |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	5 rows in set (0.00 sec)
+
+
+	------------------------------------------------------------------------------
+	session A                    session B
+	begin;     
+	SELECT * FROM t where id=2 for update;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  3 |    3 |    3 |
+	+----+------+------+
+	1 row in set (0.00 sec)
+
+							    begin;
+								delete from t where id<=1;
+								(Blocked)
+								
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 139835056597608:1064:139834941305512  |                  3944 |       165 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 139835056597608:7:4:2:139834941302472 |                  3944 |       165 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 1         |
+	| 139835056597608:7:4:3:139834941302816 |                  3944 |       165 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | WAITING     | 2         |
+	
+	| 139835056598480:1064:139834941311464  |                  3943 |       166 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 139835056598480:7:4:3:139834941308536 |                  3943 |       166 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 2         |
+	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	5 rows in set (0.00 sec)
+
+	
+	session A                    session B
+	begin;     
+	update t set d=100 where id=2;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  3 |    3 |    3 |
+	+----+------+------+
+	1 row in set (0.00 sec)
+
+							    begin;
+								update t set d=100 where id<=1;
+								(Query Ok)
+	
 								
 4. 小结
 	
