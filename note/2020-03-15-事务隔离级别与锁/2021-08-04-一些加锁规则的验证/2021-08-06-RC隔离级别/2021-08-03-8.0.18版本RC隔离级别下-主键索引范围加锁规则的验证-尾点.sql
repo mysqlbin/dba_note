@@ -352,20 +352,6 @@
 	对比 lock in share mode;
 	
 	begin;
-	select * from t where id>=2 and  id<=3 lock in share mode;
-	
-	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
-	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
-	| ENGINE_LOCK_ID                        | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
-	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
-	| 139835056597608:1063:139834941305512  |       421310033308264 |        92 | t           | NULL       | TABLE     | IS            | GRANTED     | NULL      |
-	| 139835056597608:6:4:3:139834941302472 |       421310033308264 |        92 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 2         |
-	| 139835056597608:6:4:4:139834941302472 |       421310033308264 |        92 | t           | PRIMARY    | RECORD    | S,REC_NOT_GAP | GRANTED     | 3         |
-	+---------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
-	3 rows in set (0.00 sec)
-
-
-	begin;
 	delete from t where id=4;
 				begin;
 				select * from t where id>=2 and  id<=3 lock in share mode;
@@ -391,9 +377,9 @@
 		
 		主键索引的范围(等值)查询(lock in share mode、for update模式)加锁：
 			需要访问到不满足条件的第一行记录为止，并且加锁，语句执行结束后，会把不满足条件的记录锁进行释放。
-			
+			--尾点延伸
 		
 		update语句主键索引(等值)范围更新加锁：
 			不需要访问到不满足条件的第一行记录为止。
-		
+			--没有尾点延伸
 		
