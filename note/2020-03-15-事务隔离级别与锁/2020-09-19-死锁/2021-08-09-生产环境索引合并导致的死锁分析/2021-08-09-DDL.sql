@@ -282,16 +282,34 @@ CREATE TABLE `table_league_club_member` (
 		
 									1. 先根据 where nPlayerID=124442 查询记录	
 										锁住where nPlayerID=124442的2行记录, 锁住对应的主键 ID=7723和7961。
-										
+										-- 持有ID=7723和ID=7961的记录锁
 									
 	2. 再根据 where nClubID=666138 查询记录
-		申请锁住where nClubID=666138的17行记录，持有nClubID=666138的idx_nClubID索引记录锁
+		申请锁住where nClubID=666138的17行记录
+		-- 持有nClubID=666138的idx_nClubID索引记录锁
 		-- 在等 ID= 7961 的主键索引记录锁
 		
 									2. 再根据 where nClubID=666138 查询记录	
 										申请锁住where nClubID=666138的17行记录，持有nClubID=666138的idx_nClubID索引记录锁
 										-- 在等 idx_nClubID 普通索引记录锁：(nClubID=666138, ID=7961)
 
+										
+																
+	根据死锁分析出来的加锁规则				
+	session A          		session B	
+
+	持有nClubID=666138的idx_nClubID索引记录锁
+							
+							持有ID=7961的主键索引记录锁
+							
+	在等ID=7961的主键索引记录锁
+	
+							在等nClubID=666138的idx_nClubID索引记录锁
+						
+							-- 初步明白了  UPDATE `table_league_club_member` SET `nLeCard` = nLeCard + $nCount WHERE `nClubID` = 666138 AND `nPlayerID` = 124442; 语句 
+							-- 为什么先持有主键ID的记录锁
+							-- 默认情况下，都是先对二级索引的记录加锁
+					
 				
 	begin;							begin;									
 	UPDATE `table_league_club_member` SET `nLeCard` = 0 WHERE `nClubID` = 666138 AND `nPlayerID` = 124440;
