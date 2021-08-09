@@ -67,7 +67,11 @@ select * from t1 where c>=10 and c<=11 for update;
 	+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-----------------------+
 	1 row in set, 1 warning (0.00 sec)
 
+	语句的加锁范围
 
+		c: next-key lock: (5, 10]
+		primary: record lock: [10]
+		c: next-key lock: (10, 15]
 
 	(gdb) b lock_rec_lock_fast
 	Breakpoint 2 at 0x1942d51: file /usr/local/mysql/storage/innobase/lock/lock0lock.cc, line 1871.

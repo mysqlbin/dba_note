@@ -68,6 +68,10 @@
 
 5. 修改/更新
 	
+	db.table_league_user_pic_small.update({nPlayerId:120022},{$unset:{"createTime" : "2021-06-08 14:15:17"}})
+	db.table_league_user_pic_large.update({nPlayerId:120022},{$unset:{"createTime" : "2021-06-08 14:15:17"}})
+
+	
 	
 6. 查询
 	db.foo.find()   # 查询返回所有文档
