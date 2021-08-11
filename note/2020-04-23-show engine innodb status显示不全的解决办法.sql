@@ -9,3 +9,5 @@ mysql> pager less
 PAGER set to 'less'
 
 mysql> show engine innodb status\G
+
+

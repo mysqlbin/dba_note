@@ -1,17 +1,17 @@
 
-
-1. 数据库版本和隔离级别
-2. 表的DDL
-2. 表的DDL
-3. 存储过程
-4. 业务的死锁日志
-5. 语句的执行计划和经过where条件过滤后得到的结果
-6. 死锁过程分析
-7. 解决本案例死锁
-8. 在8.0版本中用performance_schema.data_locks表查看语句的加锁情况
-9. 相关参考
-10. 未完成
-11. 看看打断点的函数调用栈	
+大纲
+	1. 数据库版本和隔离级别
+	2. 表的DDL
+	2. 表的DDL
+	3. 存储过程
+	4. 业务的死锁日志
+	5. 语句的执行计划和经过where条件过滤后得到的结果
+	6. 死锁过程分析
+	7. 解决本案例死锁
+	8. 在8.0版本中用performance_schema.data_locks表查看语句的加锁情况
+	9. 相关参考
+	10. 未完成
+	11. 看看打断点的函数调用栈	
 
 
 1. 数据库版本和隔离级别
@@ -22,10 +22,10 @@
 2. 表的DDL
 CREATE TABLE `table_league_club_member` (
   `ID` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引',
-  `nClubID` int(11) NOT NULL COMMENT '俱乐部ID',
-  `nPlayerID` int(11) NOT NULL COMMENT '用户ID',
+  `nClubID` int(11) NOT NULL COMMENT '',
+  `nPlayerID` int(11) NOT NULL COMMENT '',
   .......................................................
-  `szBan` text COMMENT 'JSON数据，包含禁止的ID',
+  `szBan` text COMMENT '',
   PRIMARY KEY (`ID`),
   KEY `idx_nPlayerID` (`nPlayerID`) USING BTREE,
   KEY `idx_nClubID` (`nClubID`) USING BTREE,
