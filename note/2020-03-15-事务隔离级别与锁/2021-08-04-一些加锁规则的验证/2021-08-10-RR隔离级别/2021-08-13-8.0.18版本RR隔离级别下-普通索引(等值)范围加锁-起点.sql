@@ -1,7 +1,7 @@
 
 
 1. 表结构和数据的初始化
-2. RC隔离级别
+2. RR隔离级别
 	2.0 分别用lock in share mode模式和update语句做验证
 	2.1 等值范围查询--先根据二级索引更新数据再等值范围查询加锁
 	2.2 范围查询--先根据二级索引更新数据再等值范围查询加锁
@@ -53,16 +53,24 @@
 	5 rows in set (0.00 sec)
 	
 	
-2. RC隔离级别
+2. RR隔离级别
 
-	mysql> select @@session.transaction_isolation;
-	+---------------------------------+
-	| @@session.transaction_isolation |
-	+---------------------------------+
-	| READ-COMMITTED                  |
-	+---------------------------------+
+	mysql> show global variables like '%iso%';
+	+-----------------------+-----------------+
+	| Variable_name         | Value           |
+	+-----------------------+-----------------+
+	| transaction_isolation | REPEATABLE-READ |
+	+-----------------------+-----------------+
+	1 row in set (0.01 sec)
+
+	mysql> select version();
+	+-----------+
+	| version() |
+	+-----------+
+	| 8.0.18    |
+	+-----------+
 	1 row in set (0.00 sec)
-	
+
 
 2.0 分别用lock in share mode模式和update语句做验证
 	

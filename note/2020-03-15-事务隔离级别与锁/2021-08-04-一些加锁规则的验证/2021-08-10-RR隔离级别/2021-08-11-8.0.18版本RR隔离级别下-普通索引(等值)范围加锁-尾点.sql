@@ -1,8 +1,44 @@
 
-1. 表结构和数据的初始化
+1. 环境、表结构和数据的初始化
 
-3.1 环境
+2.0 用 lock in share mode语句做验证
 	
+	2.1 等值范围查询--先根据二级索引删除数据再等值范围查询加锁
+	2.2 等值范围查询--先根据二级索引等值范围查询加锁再删除数据
+	2.2.2 等值范围查询--先根据二级索引等值范围查询加锁再根据主键索引更新数据
+	2.3 等值范围查询--先根据二级索引更新数据再等值范围查询加锁
+	2.4 等值范围查询--先根据主键索引更新数据再等值范围查询加锁
+
+	2.5 范围查询--先根据二级索引删除数据再范围查询加锁
+	2.6 范围查询--先范围查询加锁再根据二级索引删除数据
+	2.7 范围查询--先范围查询加锁再根据主键索引删除数据
+	2.8 范围查询--先范围查询加锁再根据二级索引更新数据
+	2.9 范围查询--先范围查询加锁再根据主键索引更新数据
+	2.10 范围查询--先根据主键索引更新数据再范围查询加锁
+	2.11 范围查询--先根据主键索引更新数据再范围查询加锁
+	2.12 范围查询--先根据主键索引更新数据再范围查询加锁
+	
+
+3.0 用update和delete语句做验证
+	3.1 等值范围更新--先根据二级索引删除数据再等值范围更新加锁
+	3.2 等值范围删除--先根据二级索引删除数据再等值范围删除加锁
+	3.3 等值范围删除--先根据主键索引删除数据再等值范围删除加锁
+	3.4 等值范围更新--先根据主键索引删除数据再等值范围更新加锁
+	3.5 等值范围更新--先对主键索引的记录加锁再等值范围更新加锁
+	3.6 等值范围更新--先根据主键索引更新数据再等值范围更新加锁
+	3.6.2 等值范围更新--先等值范围更新加锁再根据主键索引更新数据
+	3.7 等值范围更新--先等值范围更新加锁再根据二级索引更新数据
+
+4. 小结	
+
+	4.1 各自的加锁规则 
+	4.2 for update和lock in share mode 语句 跟 update、delete语句在范围更新中，加的行锁规则是不一样的。
+	4.3 范围加锁总结
+	
+	
+1. 环境、表结构和数据的初始化
+
+
 	mysql> select version();
 	+-----------+
 	| version() |
@@ -29,44 +65,44 @@
 
 
 
-DROP table IF EXISTS `t`;
-CREATE TABLE `t` (
-  `id` bigint(11) NOT NULL AUTO_INCREMENT,
-  `c` int(11) DEFAULT NULL,
-  `d` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `c` (`c`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+	DROP table IF EXISTS `t`;
+	CREATE TABLE `t` (
+	  `id` bigint(11) NOT NULL AUTO_INCREMENT,
+	  `c` int(11) DEFAULT NULL,
+	  `d` int(11) DEFAULT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `c` (`c`)
+	) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
-DROP PROCEDURE IF EXISTS `idata`;
-DELIMITER ;;
-CREATE DEFINER=`root`@`localhost` PROCEDURE `idata`()
-begin
-  declare i int;
-  set i=1;
-	start transaction;
-  while(i<=5) do
-	INSERT INTO t (c,d) values (i,i);
-	set i=i+1;
-  end while;
-	commit;
-end
-;;
-DELIMITER ;
+	DROP PROCEDURE IF EXISTS `idata`;
+	DELIMITER ;;
+	CREATE DEFINER=`root`@`localhost` PROCEDURE `idata`()
+	begin
+	  declare i int;
+	  set i=1;
+		start transaction;
+	  while(i<=5) do
+		INSERT INTO t (c,d) values (i,i);
+		set i=i+1;
+	  end while;
+		commit;
+	end
+	;;
+	DELIMITER ;
 
-call idata();
+	call idata();
 
-mysql> select * from t;
-+----+------+------+
-| id | c    | d    |
-+----+------+------+
-|  1 |    1 |    1 |
-|  2 |    2 |    2 |
-|  3 |    3 |    3 |
-|  4 |    4 |    4 |
-|  5 |    5 |    5 |
-+----+------+------+
-5 rows in set (0.00 sec)
+	mysql> select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  2 |    2 |    2 |
+	|  3 |    3 |    3 |
+	|  4 |    4 |    4 |
+	|  5 |    5 |    5 |
+	+----+------+------+
+	5 rows in set (0.00 sec)
 
 
 
@@ -188,7 +224,7 @@ mysql> select * from t;
 ------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 			
-2.4 范围查询--先根据二级索引删除数据再范围查询加锁
+2.5 范围查询--先根据二级索引删除数据再范围查询加锁
 
 	session A           session B	
 	begin;
@@ -215,7 +251,7 @@ mysql> select * from t;
 	8 rows in set (0.00 sec)
 
 
-2.5 范围查询--先范围查询加锁再根据二级索引删除数据
+2.6 范围查询--先范围查询加锁再根据二级索引删除数据
 
 	session A           session B	
 	begin;
@@ -241,7 +277,7 @@ mysql> select * from t;
 	
 	
 
-2.6 范围查询--先范围查询加锁再根据主键索引删除数据
+2.7 范围查询--先范围查询加锁再根据主键索引删除数据
 
 	session A           session B	
 	begin;
@@ -268,7 +304,7 @@ mysql> select * from t;
 	7 rows in set (0.00 sec)
 
 
-2.7 范围查询--先范围查询加锁再根据二级索引更新数据
+2.8 范围查询--先范围查询加锁再根据二级索引更新数据
 
 	session A           session B	
 	begin;
@@ -293,7 +329,7 @@ mysql> select * from t;
 	6 rows in set (0.00 sec)
 
 
-2.8 范围查询--先范围查询加锁再根据主键索引更新数据
+2.9 范围查询--先范围查询加锁再根据主键索引更新数据
 
 	session A           session B	
 	begin;
@@ -305,7 +341,7 @@ mysql> select * from t;
 
 
 
-2.9 范围查询--先根据主键索引更新数据再范围查询加锁
+2.10 范围查询--先根据主键索引更新数据再范围查询加锁
 
 	session A           session B	
 	begin;
@@ -316,7 +352,7 @@ mysql> select * from t;
 						(Query Ok)	
 
 
-2.10 范围查询--先根据主键索引更新数据再范围查询加锁
+2.11 范围查询--先根据主键索引更新数据再范围查询加锁
 	session A           session B	
 	begin;
 	update t set d=100 where id=3;
@@ -326,7 +362,7 @@ mysql> select * from t;
 						(Query Ok)	
 						
 	
-2.11 范围查询--先根据主键索引更新数据再范围查询加锁
+2.12 范围查询--先根据主键索引更新数据再范围查询加锁
 	
 	session A           session B	
 	begin;
@@ -626,7 +662,7 @@ mysql> select * from t;
 
 		
 		
-3.7 范围更新--先根据二级索引删除数据再范围更新加锁
+3.8 范围更新--先根据二级索引删除数据再范围更新加锁
 	
 	session A       session B
 	begin;
@@ -654,7 +690,7 @@ mysql> select * from t;
 	8 rows in set (0.00 sec)
 
 		
-3.8 范围更新--先根据主键索引删除数据再范围更新加锁
+3.9 范围更新--先根据主键索引删除数据再范围更新加锁
 	
 	session A       session B
 	begin;
@@ -682,7 +718,7 @@ mysql> select * from t;
 	7 rows in set (0.02 sec)
 
 
-3.9 范围更新--先范围更新加锁再根据普通索引删除加锁
+3.10 范围更新--先范围更新加锁再根据普通索引删除加锁
 	
 	session A       session B
 	begin;
@@ -706,7 +742,7 @@ mysql> select * from t;
 	6 rows in set (0.00 sec)
 
 
-3.10 范围更新--先根据主键索引更新数据再范围更新加锁
+3.11 范围更新--先根据主键索引更新数据再范围更新加锁
 
 
 	session A       session B
@@ -935,7 +971,7 @@ mysql> select * from t;
 													
 					
 
-	4.3 范围加锁：
+	4.3 范围加锁总结
 		lock in share mode模式和for update模式，对不满足条件的二级索引记录加锁，不需要回到主键索引记录上加锁。
 		update语句，对不满足条件的二级索引记录加锁，需要回到主键索引记录上加锁。
 			-- delete 语句呢
