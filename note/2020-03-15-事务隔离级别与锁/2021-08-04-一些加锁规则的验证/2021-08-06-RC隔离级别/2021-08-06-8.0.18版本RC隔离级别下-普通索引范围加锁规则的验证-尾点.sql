@@ -2,12 +2,14 @@
 
 1. 表结构和数据的初始化
 2. RC隔离级别
-	2.0 用 lock in share mode语句做验证
+	2.0 用 lock in share mode和for update语句做验证
 	2.1 等值范围查询--先根据二级索引删除数据再等值范围查询加锁
 	2.2 等值范围查询--先根据二级索引等值范围查询加锁再删除数据
 	2.3 等值范围查询--先根据主键索引删除数据再等值范围查询加锁
 	2.4 等值范围查询--先根据主键索引更新数据再等值范围查询加锁
-
+	
+	
+	
 	----------------------------------------------------------
 	
 	2.5 范围查询--先根据二级索引删除数据再范围查询加锁
@@ -96,8 +98,8 @@
 	1 row in set (0.00 sec)
 	
 
-2.0 用 lock in share mode语句做验证
-
+2.0 用 lock in share mode和for update语句做验证
+	
 	mysql> desc select * from t where c>=2 and  c<=3 lock in share mode;
 	+----+-------------+-------+------------+-------+---------------+------+---------+------+------+----------+-----------------------+
 	| id | select_type | table | partitions | type  | possible_keys | key  | key_len | ref  | rows | filtered | Extra                 |
@@ -169,8 +171,37 @@
 
 	-- 普通索引的范围等值查询, 需要访问到不满足条件的第一个值为止, 并且需要加锁.
 	
+	
+	------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
+	session A           session B	
+	begin;
+	delete from t where c=4;
+	
+						begin;
+						select * from t where c>=2 and  c<=3 for update;
+						(Blocked)	
+											
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 140375342886352:1068:140375234775528   |                 53027 |        62 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 140375342886352:11:5:3:140375234772600 |                 53027 |        62 | t           | c          | RECORD    | X,REC_NOT_GAP | GRANTED     | 2, 2      |
+	| 140375342886352:11:5:4:140375234772600 |                 53027 |        62 | t           | c          | RECORD    | X,REC_NOT_GAP | GRANTED     | 3, 3      |
+	| 140375342886352:11:4:3:140375234772944 |                 53027 |        62 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 2         |
+	| 140375342886352:11:4:4:140375234772944 |                 53027 |        62 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 3         |
+	| 140375342886352:11:5:5:140375234773288 |                 53027 |        62 | t           | c          | RECORD    | X,REC_NOT_GAP | WAITING     | 4, 4      |
+	-- 普通索引的范围等值查询, 需要访问到不满足条件的第一个值为止, 并且需要加锁.
+	| 140375342885480:1068:140375234769576   |                 53022 |        63 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 140375342885480:11:5:5:140375234766536 |                 53022 |        63 | t           | c          | RECORD    | X,REC_NOT_GAP | GRANTED     | 4, 4      |
+	| 140375342885480:11:4:5:140375234766880 |                 53022 |        63 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 4         |
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	9 rows in set (0.00 sec)
+											
+										
 2.2 等值范围查询--先根据二级索引等值范围查询加锁再删除数据
-
+	
 	session A		session B	
 	begin;
 	select * from t where c>=2 and  c<=3 lock in share mode;
@@ -216,6 +247,34 @@
 	-- 普通索引的范围等值查询, 需要访问到不满足条件的第一个值为止, 并且需要加锁, 不会把不满足条件的锁释放掉.
 	
 	
+	------------------------------------------------------------------------------------------------------------------------------------------------------------
+		
+	session A		session B	
+	begin;
+	select * from t where c>=2 and  c<=3 for update;
+	
+	T1 
+					begin;
+					delete from t where c=4;
+					
+
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 140375342886352:1068:140375234775528   |                 53021 |        62 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 140375342886352:11:5:5:140375234772600 |                 53021 |        62 | t           | c          | RECORD    | X,REC_NOT_GAP | WAITING     | 4, 4      |
+	-- 被二级索引 c=4 的记录锁阻塞。
+	| 140375342885480:1068:140375234769576   |                 53020 |        63 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 140375342885480:11:5:3:140375234766536 |                 53020 |        63 | t           | c          | RECORD    | X,REC_NOT_GAP | GRANTED     | 2, 2      |
+	| 140375342885480:11:5:4:140375234766536 |                 53020 |        63 | t           | c          | RECORD    | X,REC_NOT_GAP | GRANTED     | 3, 3      |
+	| 140375342885480:11:5:5:140375234766536 |                 53020 |        63 | t           | c          | RECORD    | X,REC_NOT_GAP | GRANTED     | 4, 4      |
+	| 140375342885480:11:4:3:140375234766880 |                 53020 |        63 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 2         |
+	| 140375342885480:11:4:4:140375234766880 |                 53020 |        63 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 3         |
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	8 rows in set (0.00 sec)
+					
+	
 2.3 等值范围查询--先根据主键索引删除数据再等值范围查询加锁
 
 	session A           session B	
@@ -246,6 +305,34 @@
 	
 	-- 普通索引的范围等值查询, 需要访问到不满足条件的第一个值为止, 并且需要加锁.
 	
+	------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	session A           session B	
+	begin;
+	delete from t where id=4;
+
+						begin;
+						select * from t where c>=2 and  c<=3 for update;
+						(Blocked)
+						
+
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	| 140375342886352:1068:140375234775528   |                 53018 |        62 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 140375342886352:11:5:3:140375234772600 |                 53018 |        62 | t           | c          | RECORD    | X,REC_NOT_GAP | GRANTED     | 2, 2      |
+	| 140375342886352:11:5:4:140375234772600 |                 53018 |        62 | t           | c          | RECORD    | X,REC_NOT_GAP | GRANTED     | 3, 3      |
+	| 140375342886352:11:4:3:140375234772944 |                 53018 |        62 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 2         |
+	| 140375342886352:11:4:4:140375234772944 |                 53018 |        62 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 3         |
+	| 140375342886352:11:5:5:140375234773288 |                 53018 |        62 | t           | c          | RECORD    | X,REC_NOT_GAP | WAITING     | 4, 4      |
+	-- 被二级索引 c=4 的记录锁阻塞。
+	| 140375342885480:1068:140375234769576   |                 53017 |        63 | t           | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+	| 140375342885480:11:4:5:140375234766536 |                 53017 |        63 | t           | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 4         |
+	| 140375342885480:11:5:5:140375234766880 |                 53017 |        62 | t           | c          | RECORD    | X,REC_NOT_GAP | GRANTED     | 4, 4      |
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+	9 rows in set (0.00 sec)
+
 
 2.4 等值范围查询--先根据主键索引更新数据再等值范围查询加锁
 	session A           session B	
@@ -256,7 +343,18 @@
 						select * from t where c>=2 and  c<=3 lock in share mode;
 						(Query Ok)
 						
+	
+------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+	session A           session B	
+	begin;
+	update t set d=100 where id=4;
+
+						begin;
+						select * from t where c>=2 and  c<=3 for update;
+						(Query Ok)
 						
+	
 2.5 范围查询--先根据二级索引删除数据再范围查询加锁
 
 	session A           session B	
@@ -286,8 +384,7 @@
 	-- 普通索引的范围查询, 需要访问到不满足条件的第一个值为止, 并且需要加锁, 不会把不满足条件的锁释放掉.
 
 
-						
-
+					
 2.6 范围查询--先范围查询加锁再根据二级索引删除数据
 
 	session A           session B	
@@ -587,9 +684,7 @@
 		primary key record lock: id=4
 	
 
-	-- 3.5、3.6、3.7 做对比，发现select .. for update语句和update语句 跟 delete语句的加锁规则还真不一样。
-	-- 哪里不一样
-	
+
 3.6.2 等值范围更新--先等值范围更新加锁再根据主键索引更新数据
 
 	session A           session B
