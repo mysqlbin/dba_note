@@ -684,8 +684,6 @@
 	
 3.6 小结
 
-	
-	
 	c>=15 and c<=20的加锁范围
 		lock in share mode模式
 			加锁的基本单位是 next-key lock, c>=15 的加锁范围: c: next-key lock: (10,15]

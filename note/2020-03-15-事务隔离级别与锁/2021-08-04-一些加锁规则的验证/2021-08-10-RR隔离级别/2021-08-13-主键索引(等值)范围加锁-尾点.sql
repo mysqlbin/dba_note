@@ -375,7 +375,8 @@
 		-- 算是理解了。
 		
 	2. lock in share mode、for update、update、delete模式下都没有尾点延伸。
-	
+		8.0.18 之前的版本，在RR隔离级别有尾点延伸的问题。
+		
 	
 5. 未完成
 
