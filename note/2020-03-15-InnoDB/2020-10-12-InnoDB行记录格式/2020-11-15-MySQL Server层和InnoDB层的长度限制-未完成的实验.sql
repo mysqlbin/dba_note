@@ -518,7 +518,9 @@
 		-- 读懂了这篇文章，就可以解决我的疑问; 好文
 		-- https://mp.weixin.qq.com/s/tNA_-_MoYt1fJT0icyKbMg       MVCC原理探究及MySQL源码实现分析   这篇文章也是他的
 		-- 花了这么多时间，就要弄清楚来; 
-
+    https://mp.weixin.qq.com/s/uCiizaoeu5qKF7mt25SDAg   说说 VARCHAR 背后的那些事
+	
+	   
 9. 在线修改行记录格式为Compact
 
 	mysql> select version();
