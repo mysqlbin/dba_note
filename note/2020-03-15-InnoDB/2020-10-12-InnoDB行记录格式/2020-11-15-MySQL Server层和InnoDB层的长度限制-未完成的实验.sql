@@ -19,9 +19,16 @@
 6. text和blog字段的其它测试
 	6.1 text
 	6.2 blob
+	
 7. 问题
 8. 相关参考
 9. 在线修改行记录格式为Compact
+10. 三种报错
+	10.1 错误1 创建表报maximum row size > 65535
+	10.2 错误2 创建表报Row size too large (> 8126)
+	10.3 错误3 表创建成功但是插入报 Row size too large (> 8126)
+
+
 	
 
 1. MySQL Server 的长度限制	
@@ -350,8 +357,9 @@
         单个字段的数据长度大于8098个字节才会字段溢出、才会有行溢出、数据页溢出。
         -- 可以做为案例来讲解，体现了自己对行记录格式的深入研究...
 
-	
-	
+	4. 建表的时候分别在Server层和InnoDB层做长度限制，数据的插入也有限制
+		65535、8126、8098
+
 	利用空闲时间，一个知识点花了4天的时间，可以，
 	把一个知识点搞懂，比用4天时间看不同的内容强太多; 
 
@@ -517,7 +525,9 @@
 		-- 读懂了这篇文章，就可以解决我的疑问; 好文
 		-- https://mp.weixin.qq.com/s/tNA_-_MoYt1fJT0icyKbMg       MVCC原理探究及MySQL源码实现分析   这篇文章也是他的
 		-- 花了这么多时间，就要弄清楚来; 
-
+    https://mp.weixin.qq.com/s/uCiizaoeu5qKF7mt25SDAg   说说 VARCHAR 背后的那些事
+	
+	   
 9. 在线修改行记录格式为Compact
 
 	mysql> select version();
@@ -606,3 +616,22 @@
 
 	注意，如果要修改现有表的行模式为compressed或dynamic，必须先将文件格式设置成 Barracuda：set global innodb_file_format=Barracuda；
 	再用 ALTER TABLE tablename ROW_FORMAT=dynamic；去修改才能生效，否则修改无效却无提示。
+
+
+
+10. 三种报错
+	
+	10.1 错误1 创建表报 maximum row size > 65535
+		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535
+
+
+	10.2 错误2 创建表报Row size too large (> 8126)
+		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
+
+
+	10.3 错误3 表创建成功但是插入报 Row size too large (> 8126)
+
+		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. 
+		In current row format, BLOB prefix of 768 bytes is stored inline.
+
+

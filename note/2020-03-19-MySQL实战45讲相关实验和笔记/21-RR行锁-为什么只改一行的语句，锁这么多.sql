@@ -3,10 +3,13 @@
 1. 意向锁 
 2. 加锁规则		
 3. 环境	 
-4.1.1 唯一索引等值查询间隙锁
-4.1.2 主键索引范围锁																								
-4.1.3 优化了唯一索引范围 bug 
-4.2.1 非唯一索引等值锁
+
+	4.1.1 唯一索引等值查询间隙锁
+	4.1.2 主键索引范围锁																								
+	4.1.3 优化了唯一索引范围 bug 
+	4.2.1 非唯一索引等值锁
+	
+	
 1. 意向锁 
 	InnoDB特有，加载在表级别上的锁。
    意向锁是什么： 是加载在数据表B+树结构的根节点， 也就是对整个表加意向锁。
@@ -17,51 +20,41 @@
 	由于 InnoDB 存储引擎支持的是行级别的锁， 因此意向锁其实不会阻塞除全表扫描以外的任何请求。
    # 这里可能通过例子来验证。
 
-2. 加锁规则		   
-	两个原则：
-	 a). 原则 1：加锁的基本单位是 next-key lock。
-					 next-key lock 是前开后闭区间（5, 10]。
-	 b). 原则 2：普通索引查找，要向右遍历, 遍历过程中被访问到的对象才会加锁。
-				 范围查询, 都需要向右遍历
-				 
-	索引上等值查询的两个优化：
-	 c). 优化 1：索引上等值查询, 给唯一索引加锁的时候，next-key lock退化为行锁。
-	 d). 优化 2：索引上等值查询, 向右遍历时且如果最后一个值不满足等值条件的时候，next-key lock 会退化为间隙锁。
-	 
-	bug：
-	 e). 一个 bug：唯一索引上的范围查询，会访问到不满足条件的第一个值为止。
+2. 加锁规则		
+	
+	参考笔记：《21-加锁规则更新小结.sql》
+	
 	 
 3. 环境	 
 
-root@mysqldb 09:34:  [(none)]> show global variables like '%isolation%';
-+-----------------------+-----------------+
-| Variable_name         | Value           |
-+-----------------------+-----------------+
-| transaction_isolation | REPEATABLE-READ |
-+-----------------------+-----------------+
-1 row in set (0.20 sec)
+	mysql> show global variables like '%isolation%';
+	+-----------------------+-----------------+
+	| Variable_name         | Value           |
+	+-----------------------+-----------------+
+	| transaction_isolation | REPEATABLE-READ |
+	+-----------------------+-----------------+
+	1 row in set (0.20 sec)
 
-root@mysqldb 09:34:  [(none)]> select @@transaction_isolation;
-+-------------------------+
-| @@transaction_isolation |
-+-------------------------+
-| REPEATABLE-READ         |
-+-------------------------+
-1 row in set (0.07 sec)
+	mysql> select @@transaction_isolation;
+	+-------------------------+
+	| @@transaction_isolation |
+	+-------------------------+
+	| REPEATABLE-READ         |
+	+-------------------------+
+	1 row in set (0.07 sec)
 
-mysql> select version();
-+------------+
-| version()  |
-+------------+
-| 5.7.22-log |
-+------------+
-1 row in set (0.00 sec)
+	mysql> select version();
+	+------------+
+	| version()  |
+	+------------+
+	| 5.7.22-log |
+	+------------+
+	1 row in set (0.00 sec)
 
 
-select * from information_schema.innodb_locks\G;
-select * from information_schema.innodb_lock_waits\G;
-SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
-
+	select * from information_schema.innodb_locks\G;
+	select * from information_schema.innodb_lock_waits\G;
+	SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 
 
 4.1.1 唯一索引等值查询间隙锁
@@ -138,7 +131,8 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 
 
 	
-4.1.2 主键索引范围锁																								
+4.1.2 主键索引范围锁
+																								
 	session A                                  session B                session C                     session D                                                                                                   
 	begin;
 	select * from t where id>=10 and id<11 for update;
@@ -200,6 +194,7 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 
 																																																										
 4.1.3 唯一索引范围 bug： 
+
 尾点延伸  
 	session A                                        session B                                     session B                                                                                                                                                                        
 	begin;
@@ -240,9 +235,6 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 		  lock_data: 20
 		2 rows in set, 1 warning (0.02 sec)
 
-		ERROR: 
-		No query specified
-
 		mysql> select * from information_schema.innodb_lock_waits\G;
 		*************************** 1. row ***************************
 		requesting_trx_id: 276792769
@@ -250,9 +242,6 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 		  blocking_trx_id: 276792766
 		 blocking_lock_id: 276792766:2081:3:6
 		1 row in set, 1 warning (0.00 sec)
-
-		ERROR: 
-		No query specified
 
 		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 		+--------------+-------------+--------------------------------+-------------------+--------------------+
@@ -355,9 +344,6 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 		  lock_data: 5, 5
 		2 rows in set, 1 warning (0.00 sec)
 
-		ERROR: 
-		No query specified
-
 		mysql> select * from information_schema.innodb_lock_waits\G;
 		*************************** 1. row ***************************
 		requesting_trx_id: 276792874
@@ -365,9 +351,6 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 		  blocking_trx_id: 421269807599696
 		 blocking_lock_id: 421269807599696:2081:4:3
 		1 row in set, 1 warning (0.00 sec)
-
-		ERROR: 
-		No query specified
 
 		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 		+--------------+-------------+-----------------------------+-------------------+--------------------+
@@ -380,8 +363,8 @@ SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mo
 
 	
 4.2.2 非唯一索引范围锁：
-
-	root@mysqldb 11:00:  [test_Db]> select * from t;
+	
+	mysql> select * from t;
 	+----+------+------+
 	| id | c    | d    |
 	+----+------+------+
