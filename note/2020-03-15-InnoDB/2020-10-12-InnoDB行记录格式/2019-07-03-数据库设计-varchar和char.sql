@@ -1,5 +1,5 @@
 
-验证 tchar:
+验证 char:
 	drop table if exists tchar;
 	CREATE TABLE `tchar` (
 	  `id` int(10) unsigned NOT NULL DEFAULT '0',
@@ -26,7 +26,7 @@
 	5 rows in set (0.00 sec)
 
 
-验证 tvarchar:
+验证 varchar:
 	CREATE TABLE `tvarchar` (
 	  `id` int(10) unsigned NOT NULL DEFAULT '0',
 	  `c1` varchar(20) NOT NULL DEFAULT '',
