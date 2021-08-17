@@ -125,4 +125,19 @@
 3. 小结
 	修改行格式需要重建表。
 	
+		
+	shell> ls -lht table_league_club_game_score_detail.ibd 
+	-rw-r----- 1 mysql mysql 104M 8月  17 15:43 table_league_club_game_score_detail.ibd
+
+
+	mysql> set global innodb_file_format=Antelope;
+	Query OK, 0 rows affected, 1 warning (0.00 sec)
+
+	mysql> ALTER TABLE table_league_club_game_score_detail ROW_FORMAT=Compact;
+	Query OK, 0 rows affected (20.74 sec)
+	Records: 0  Duplicates: 0  Warnings: 0
+
+	还原回去：
+		set global innodb_file_format=Barracuda;
+		ALTER TABLE table_league_club_game_score_detail ROW_FORMAT=dynamic;
 	
