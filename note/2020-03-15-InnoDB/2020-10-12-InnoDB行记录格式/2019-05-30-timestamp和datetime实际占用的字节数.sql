@@ -56,4 +56,7 @@ mysql> select LENGTH(CreateTime_datetime),CreateTime_datetime from words_test wh
 1 row in set (0.00 sec)
 
 
+LENGTH：是获取字符串的个数
+
+
 

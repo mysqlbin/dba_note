@@ -146,6 +146,7 @@
 
 
 		2.2.2 int(20).zerofill
+			
 			DROP TABLE IF EXISTS `table_data_type_int_zerofill_20`;
 			CREATE TABLE `table_data_type_int_zerofill_20` (
 			  `id` int(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '主键Id',

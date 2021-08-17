@@ -40,6 +40,7 @@ mysql> show global variables like '%innodb_file_format%';
 3 rows in set (0.00 sec)
 
 
+---------------------------------------------------------------
 
 mysql> show global variables like '%innodb_default_row_format%';
 +---------------------------+---------+

@@ -336,12 +336,15 @@
 	-- Dynamic和Compact行记录格式，两者可以建立字段的个数没差别;	
 		
 3.3 utf8、Compact、TEXT
+
 	的确可以创建有且仅含有 196 个 TEXT 字段的表。
 	
 3.4 utf8、Compact、blob
+
 	的确可以创建有且仅含有 196 个 blob 字段的表。
 	
 3.5 utf8、Compact、longtext
+	
 	的确可以创建有且仅含有 196 个 longtext 字段的表。
 
 
@@ -358,7 +361,7 @@
         -- 可以做为案例来讲解，体现了自己对行记录格式的深入研究...
 
 	4. 建表的时候分别在Server层和InnoDB层做长度限制，数据的插入也有限制
-		65535、8126、8098
+		65535、8126、8126、8098
 
 	利用空闲时间，一个知识点花了4天的时间，可以，
 	把一个知识点搞懂，比用4天时间看不同的内容强太多; 
@@ -477,16 +480,17 @@
 			答：是的。
 			参考笔记：《2020-11-18-行溢出的进阶.sql》
 			
-	2. MySQL 大字段溢出导致数据回写失败
+	2. MySQL 插入数据的总字节数大于8126导致数据写入失败
+		
 		Row size too large (> 8126). Changing some ... ... 。
-		这个怎么复现
-		估计是 innodb_strict_mode=OFF 的场景下才会出现
 		-- 复现了，参考笔记：《2020-11-18-insert出现8126的错误-latin1 varchar(100) Compact.sql》和 《2020-11-18-insert出现8126的错误-latin1 varchar(100) dynamic.sql》
-	
+		
+		
 	3. 参数innodb_strict_mode
 		参考笔记：《2020-11-18-innodb_strict_mode.sql》
 		
 	4. text、blob、longtext 各自可以存储多少字节的数据
+		
 		参考笔记：《2020-11-17-text文本型》
 		
 	5. 理解某篇文章通过修改row_format=dynamic解决插入数据报错问题
@@ -495,6 +499,7 @@
 			修改参数：
 				innodb_file_format=BARRACUDA
 				row_format=dynamic
+		-- 可以做为案例来讲解，体现了自己对行记录格式的深入研究。
 		
 		按照这种算法，查询之前某个出问题的用户 Blob 字段占用为 7602 「表中有 48 个 blob 字段」，加上其它的占用超过 8kB 就导致 了 Row size too large (> 8126). Changing some ... ... 。
 		-- 这里理解了。
@@ -517,6 +522,7 @@
 		ALTER TABLE `t_role_90`  ROW_FORMAT=DYNAMIC;  -- 会重建表吗？ 根据原理，是重建表。
 	
 8. 相关参考
+
 	https://dev.mysql.com/doc/refman/5.7/en/column-count-limit.html
 	https://mp.weixin.qq.com/s/w3ij101jzDlbu93i5J7uQg           故障分析 | MySQL TEXT 字段的限制
 	https://mp.weixin.qq.com/s/_aAZ2jTlw6ymCQ092qYkww        	技术分享 | MySQL 字段长度限制的计算方法
@@ -590,7 +596,8 @@
 	1 row in set (0.00 sec)
 
 ------------------------------------------------------------------------------------------------------------------
-	原有表的行记录格式还是Dynamic
+
+	-- 原有表的行记录格式还是Dynamic
 		mysql> select ROW_FORMAT from information_schema.tables where TABLE_SCHEMA='test_db' and  TABLE_NAME='table_20201116';
 		+------------+
 		| ROW_FORMAT |
@@ -612,11 +619,14 @@
 
 		mysql> INSERT INTO `test_db`.`table_20201116` (`id`) VALUES ('2001');
 		Query OK, 1 row affected (0.01 sec)
-
+		-- set global innodb_file_format=Barracuda; 那岂不是会影响其它表的行记录格式？
+		-- 目前来看，不会。
+		
+		
 
 	注意，如果要修改现有表的行模式为compressed或dynamic，必须先将文件格式设置成 Barracuda：set global innodb_file_format=Barracuda；
 	再用 ALTER TABLE tablename ROW_FORMAT=dynamic；去修改才能生效，否则修改无效却无提示。
-
+	
 
 
 10. 三种报错
@@ -631,7 +641,9 @@
 
 	10.3 错误3 表创建成功但是插入报 Row size too large (> 8126)
 
-		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. 
-		In current row format, BLOB prefix of 768 bytes is stored inline.
+		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.
+		
+		
+		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
 
-
+	

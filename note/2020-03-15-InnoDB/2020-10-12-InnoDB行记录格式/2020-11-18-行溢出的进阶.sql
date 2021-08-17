@@ -4,6 +4,7 @@
 	2个字段的数据长度都溢出，那么2个字段都有对应的20字节的指针保留在行记录中吗
 	
 初始化表结构和数据	
+	
 	CREATE TABLE t_20201118_15 (
 		a VARCHAR(9000),
 		b VARCHAR(9000)
@@ -23,7 +24,8 @@
 
 
 查看使用了多少个大对象页
-	[root@localhost ~]# python innodb_page_info/py_innodb_page_info.py -v /home/mysql/3306/data/test_db/t_20201118_15.ibd 
+
+	shell> python innodb_page_info/py_innodb_page_info.py -v /home/mysql/3306/data/test_db/t_20201118_15.ibd 
 	page offset 00000000, page type <File Space Header>
 	page offset 00000001, page type <Insert Buffer Bitmap>
 	page offset 00000002, page type <File Segment inode>
