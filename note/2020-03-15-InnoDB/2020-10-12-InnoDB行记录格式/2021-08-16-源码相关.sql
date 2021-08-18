@@ -40,6 +40,11 @@ in the index record. */
 	(BTR_EXTERN_FIELD_REF_SIZE * 2)
 	
 
+-- 叶子索引页单行记录的最大大小
+/* maximum allowed size of a record on a leaf page */
+	ulint	page_rec_max;
+	
+	
 -- mysql-5.7.26\storage\innobase\dict\dict0dict.cc
 
 /****************************************************************//**
@@ -200,7 +205,8 @@ dict_index_too_big_for_tree(
 		}
 add_field_size:
 		rec_max_size += field_max_size;
-
+		
+		-- 检查叶子索引页的大小限制
 		/* Check the size limit on leaf pages. */
 		if (rec_max_size >= page_rec_max) {
 			ib::error_or_warn(strict)
