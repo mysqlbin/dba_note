@@ -1,4 +1,8 @@
 
+
+测试环境的数据库版本是5.7，行记录格式为dynamic
+老系统的环境的数据库版本是5.6，行记录格式为compact
+
 SET GLOBAL innodb_file_format=Antelope;
 
 
@@ -108,6 +112,8 @@ null,
 'a3',
 'a4'
 );
+
+utf8字符集下，1个数字算1个字节吗
 
 [root@localhost ~]# python innodb_page_info/py_innodb_page_info.py -v /home/mysql/mysql3306/data/niuniuh5_db/table_02.ibd 
 page offset 00000000, page type <File Space Header>
