@@ -78,9 +78,28 @@
 		  `a` varchar(21845) DEFAULT NULL COMMENT '...',
 		  PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;
-		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
+		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. 
+			This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
+			-- 记录的最大长度限制不包括BLOB等字段。
 
 
+			之所以将BLOB和TEXT排除在外，是因为它的内容会单独存储在其它页中。但即便如此，存储BLOB和TEXT的指针信息也需要9 ~ 12个字节，具体来说：
+			-- 这里需要验证。
+				TINYTEXT(TINYBLOB): 9 字节
+				TEXT(BLOB): 10 字节
+				MEDIUMTEXT(MEDIUMBLOB): 11字节
+				LONGTEXT(LONGBLOB): 12字节。
+				看下面这个示例，指定了2个列，分别定义为VARCHAR和TEXT。
+
+					mysql> create table t (c1 varchar(65524) not null,c2 text not null) charset latin1;
+					ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change somecolumns to TEXT or BLOBs
+
+					mysql> create table t (c1 varchar(65523) not null,c2 text not null) charset latin1;
+					Query OK, 0 rows affected (0.13 sec)
+					
+					因为TEXT占了10个字节，所以 c1 最大可设置为 65535 - 10 - 2 = 65523。
+
+		
 		CREATE TABLE `table_20201115` (
 		  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
 		  `a` varchar(21844) DEFAULT NULL COMMENT '...',
@@ -379,7 +398,7 @@
 	+---------+
 	1 row in set (0.00 sec)
 
-	-- 单个字段的实际数据长度大于8098个字节才会行溢出; 
+	-- 大字段类型下，实际数据长度大于8098个字节才会行溢出; 
 	
 	
 ------------------------------------------------------------------------------------
@@ -681,7 +700,7 @@
 	
 	10.1 错误1 创建表报 maximum row size > 65535
 		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535
-
+			-- 即记录的最大长度限制不包括BLOB等字段。
 
 	10.2 错误2 创建表报Row size too large (> 8126)
 		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. 
