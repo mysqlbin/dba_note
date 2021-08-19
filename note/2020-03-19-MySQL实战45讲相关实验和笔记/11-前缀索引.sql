@@ -1,11 +1,11 @@
 
 
-1. idx_name(name(2)) 表示只取name字段的前2个字节
+1. idx_name(name(2)) 表示只取前2个字符
 2. 对比建立完整索引和前缀索引，前缀索引能省下多少的空间
 3. 验证前缀索引是否用得上覆盖索引
 
 
-1. idx_name(name(2)) 表示只取前2个字节
+1. idx_name(name(2)) 表示只取前2个字符
 
 	CREATE TABLE `t` (
 	  `nPlayerId` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'ID',
@@ -41,7 +41,7 @@
 	key_len = 10：2*4+2
 
 
-	 where 条件中 name='ttttttttttttt'; 值的字节数不管有没有大于`idx_name`(name(2))的前2个字节， 都是可以用上索引的。
+	 where 条件中 name='ttttttttttttt'; 值的字节数不管有没有大于`idx_name`(name(2))的前2个字符，都是可以用上索引的。
 		
 
 ---------------------------------------------------------------------------------------------------------------------------------------

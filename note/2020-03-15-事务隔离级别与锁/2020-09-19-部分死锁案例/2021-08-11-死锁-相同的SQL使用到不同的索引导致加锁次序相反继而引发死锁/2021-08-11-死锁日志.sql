@@ -20,9 +20,9 @@ mysql> select * from `yldb`.`table_club_gametable` where id=3812865;
 *** (1) WAITING FOR THIS LOCK TO BE GRANTED:
 RECORD LOCKS space id 82149 page no 38020 n bits 104 index `PRIMARY` of table `yldb`.`table_club_gametable` trx id 3834442416 lock mode S locks rec but not gap waiting
 Record lock, heap no 32 PHYSICAL RECORD: n_fields 17; compact format; info bits 0
- 0: len 8; hex 80000000003a2e01; asc      :. ;;   -- ID 3a2e01 3812865
+ 0: len 8; hex 80000000003a2e01; asc      :. ;;   -- 主键ID 3a2e01 3812865
  1: len 6; hex 0000e48cf2af; asc       ;;	      -- 事务ID   3834442415
- 2: len 7; hex 01000019ef094f; asc       O;;
+ 2: len 7; hex 01000019ef094f; asc       O;;      -- 回滚指针
  3: len 4; hex 8002ba69; asc    i;;         nPlayerID 2ba69 -> 178793
  4: len 4; hex 83f92765; asc   e;;          nClubID  3f92765 -> 66660197
  5: len 4; hex 800513d3; asc     ;;         nTableID  513d3  -> 332755
@@ -49,11 +49,11 @@ UPDATE table_club_gametable SET  nStatus = 3 ,`tEndTime`=NOW() WHERE nTableID = 
 *** (2) HOLDS THE LOCK(S):
 RECORD LOCKS space id 82149 page no 38020 n bits 104 index `PRIMARY` of table `yldb`.`table_club_gametable` trx id 3834442415 lock_mode X locks rec but not gap
 Record lock, heap no 32 PHYSICAL RECORD: n_fields 17; compact format; info bits 0
- 0: len 8; hex 80000000003a2e01; asc      :. ;;
+ 0: len 8; hex 80000000003a2e01; asc      :. ;;  -- 主键ID 3a2e01 3812865 
  1: len 6; hex 0000e48cf2af; asc       ;;        -- 事务ID  16进制：e48cf2af -> 10进制：3834442415
- 2: len 7; hex 01000019ef094f; asc       O;;
+ 2: len 7; hex 01000019ef094f; asc       O;;	 -- 回滚指针
  3: len 4; hex 8002ba69; asc    i;;
- 4: len 4; hex 83f92765; asc   'e;;
+ 4: len 4; hex 83f92765; asc   e;;
  5: len 4; hex 800513d3; asc     ;;
  6: len 4; hex 800007e6; asc     ;;
  7: len 4; hex 8000003c; asc    <;;

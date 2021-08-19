@@ -78,9 +78,28 @@
 		  `a` varchar(21845) DEFAULT NULL COMMENT '...',
 		  PRIMARY KEY (`ID`)
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;
-		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
+		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. 
+			This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
+			-- 记录的最大长度限制不包括BLOB等字段。
 
 
+			之所以将BLOB和TEXT排除在外，是因为它的内容会单独存储在其它页中。但即便如此，存储BLOB和TEXT的指针信息也需要9 ~ 12个字节，具体来说：
+			-- 这里需要验证。
+				TINYTEXT(TINYBLOB): 9 字节
+				TEXT(BLOB): 10 字节
+				MEDIUMTEXT(MEDIUMBLOB): 11字节
+				LONGTEXT(LONGBLOB): 12字节。
+				看下面这个示例，指定了2个列，分别定义为VARCHAR和TEXT。
+
+					mysql> create table t (c1 varchar(65524) not null,c2 text not null) charset latin1;
+					ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. This includes storage overhead, check the manual. You have to change somecolumns to TEXT or BLOBs
+
+					mysql> create table t (c1 varchar(65523) not null,c2 text not null) charset latin1;
+					Query OK, 0 rows affected (0.13 sec)
+					
+					因为TEXT占了10个字节，所以 c1 最大可设置为 65535 - 10 - 2 = 65523。
+
+		
 		CREATE TABLE `table_20201115` (
 		  `ID` bigint(20) unsigned NOT NULL COMMENT '索引',
 		  `a` varchar(21844) DEFAULT NULL COMMENT '...',
@@ -379,7 +398,7 @@
 	+---------+
 	1 row in set (0.00 sec)
 
-	-- 单个字段的实际数据长度大于8098个字节才会行溢出; 
+	-- 大字段类型下，实际数据长度大于8098个字节才会行溢出; 
 	
 	
 ------------------------------------------------------------------------------------
@@ -447,7 +466,46 @@
 	mysql> INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',50000),REPEAT('b',50000),REPEAT('c',50000),REPEAT('d',50000);
 	Query OK, 1 row affected (0.06 sec)
 	Records: 1  Duplicates: 0  Warnings: 0
-		
+	
+	select 50000*4 = 200000;
+	
+	mysql> select count(*) from table_20201115;
+	+----------+
+	| count(*) |
+	+----------+
+	|        1 |
+	+----------+
+	1 row in set (0.00 sec)
+
+	[root@localhost ~]# python innodb_page_info/py_innodb_page_info.py -v /home/mysql/mysql3306/data/niuniuh5_db/table_20201115.ibd 
+	page offset 00000000, page type <File Space Header>
+	page offset 00000001, page type <Insert Buffer Bitmap>
+	page offset 00000002, page type <File Segment inode>
+	page offset 00000003, page type <B-tree Node>, page level <0000>
+	page offset 00000004, page type <Uncompressed BLOB Page>
+	page offset 00000005, page type <Uncompressed BLOB Page>
+	page offset 00000006, page type <Uncompressed BLOB Page>
+	page offset 00000007, page type <Uncompressed BLOB Page>
+	page offset 00000008, page type <Uncompressed BLOB Page>
+	page offset 00000009, page type <Uncompressed BLOB Page>
+	page offset 0000000a, page type <Uncompressed BLOB Page>
+	page offset 0000000b, page type <Uncompressed BLOB Page>
+	page offset 0000000c, page type <Uncompressed BLOB Page>
+	page offset 0000000d, page type <Uncompressed BLOB Page>
+	page offset 0000000e, page type <Uncompressed BLOB Page>
+	page offset 0000000f, page type <Uncompressed BLOB Page>
+	page offset 00000010, page type <Uncompressed BLOB Page>
+	page offset 00000011, page type <Uncompressed BLOB Page>
+	page offset 00000012, page type <Uncompressed BLOB Page>
+	page offset 00000013, page type <Uncompressed BLOB Page>
+	Total number of page: 20:
+	Insert Buffer Bitmap: 1
+	Uncompressed BLOB Page: 16
+	File Space Header: 1
+	B-tree Node: 1
+	File Segment inode: 1
+	
+	--------------------------------------------------------------------------------------------------------------------------------------------
 
 	INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',70000),REPEAT('b',70000),REPEAT('c',70000),REPEAT('d',70000);
 	ERROR 1406 (22001): Data too long for column 'a' at row 1
@@ -498,20 +556,32 @@
 		-- 可以做为案例来讲解，体现了自己对行记录格式的深入研究。
 		
 		按照这种算法，查询之前某个出问题的用户 Blob 字段占用为 7602 「表中有 48 个 blob 字段」，加上其它的占用超过 8kB 就导致 了 Row size too large (> 8126). Changing some ... ... 。
+		
 		-- 有表结构设计不合理的原因。
 		-- 这里理解了。
 		-- Compact的行溢出：Compact行记录格式的多个字段行溢出，每个字段存储 768+20 字节在数据页中，超过一定数量(10字段都溢出)，报错....
-			mysql> select 8098/(768+20);
-			+---------------+
-			| 8098/(768+20) |
-			+---------------+
-			|       10.2897 |
-			+---------------+
+			mysql> select 8098/768;
+			+----------+
+			| 8098/768 |
+			+----------+
+			|  10.5443 |
+			+----------+
 			1 row in set (0.00 sec)
 		
 		-- 这种场景下，行记录格式改为  dynamic， 10个字段都溢出，每个字段存储 20 字节的指针在数据页中，不会报错。
+			
+			mysql> select 8098/20;
+			+----------+
+			| 8098/20  |
+			+----------+
+			| 404.9000 |
+			+----------+
+			1 row in set (0.00 sec)
+
 		-- 没有行溢出，但是单行的长度大于8126，Compact和Dynamic都一样报错
+			
 			-- 参考笔记：《2020-11-18-insert出现8126的错误-latin1 varchar(100) Compact.sql》和 《2020-11-18-insert出现8126的错误-latin1 varchar(100) dynamic.sql》
+			
 		
 	6. 关于参数值的修改
 
@@ -630,18 +700,21 @@
 	
 	10.1 错误1 创建表报 maximum row size > 65535
 		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535
-
+			-- 即记录的最大长度限制不包括BLOB等字段。
 
 	10.2 错误2 创建表报Row size too large (> 8126)
-		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
+		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. 
+			In current row format, BLOB prefix of 768 bytes is stored inline.
 
 
 	10.3 错误3 表创建成功但是插入报 Row size too large (> 8126)
-
-		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.
 		
+		row_format=dynamic:
+			[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.
 		
-		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
+		row_format=compact:
+			[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. 
+				In current row format, BLOB prefix of 768 bytes is stored inline.
 
 	
 11. 总结
@@ -651,20 +724,23 @@
 	3. 字段长度加起来如果超过65535，MySQL server层就会拒绝创建表
 	4. 字段长度加起来（根据溢出页指针来计算字段长度，大于40的，溢出，只算40个字节）如果超过8126，InnoDB拒绝创建表
 	5. 表结构中根据Innodb的ROW_FORMAT的存储格式确定行内保留的字节数（20 VS 768），最终确定一行数据是否小于8126，如果大于8126，报错。
-	
+		实际存储的行记录长度 > 8126
+	6. 行溢出
+		行内保留的字节数加起来大于8098个字节才会有行溢出。
+		
 	------------------------------------------------------------------------------------------------------------------------------	
 
-	1. 先在Server层判断表结构定义的字符长度是否大于 65535 字节，不超过，则执行到InnoDB存储引擎层，
-        接着判断字段长度是否大于 8126 字节，小于则建表成功;
+	1. 先在Server层判断表结构定义的字段长度加起来是否大于 65535 字节，不超过，则执行到InnoDB存储引擎层，
+        接着判断字段长度加起来是否大于 8126 字节，小于则建表成功;
         
-    2. 数据插入的时候，存储到数据页内的单行记录的实际长度（行内保留的字节数）小于8098字节，则插入成功; 
+    2. 数据插入的时候，存储到数据页内的单行记录的实际长度（行内保留的字节数）小于8126字节，则插入成功; 
         否则，插入失败;
     
     3. other
         MySQL对于一行记录的单个字段的数据长度和整行的数据长度的处理方式是不一样的
-        单个字段的数据长度大于8098个字节才会字段溢出、才会有行溢出、数据页溢出。
+        字段长度加起来大于8098个字节才会有行溢出。
         -- 可以做为案例来讲解，体现了自己对行记录格式的深入研究...
-
+	
 	4. 建表的时候分别在Server层和InnoDB层做长度限制，数据的插入也有限制
 		65535、8126、8126、8098
 	

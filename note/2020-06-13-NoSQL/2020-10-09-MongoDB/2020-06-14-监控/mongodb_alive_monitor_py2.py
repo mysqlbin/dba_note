@@ -17,7 +17,7 @@ import time
 
 logging.basicConfig(level=logging.DEBUG,
                     format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                    filename='mysql_realtime_error_monitor.log',
+                    filename='mongodb_alive_monitor.log',
                     filemode='a')
 
 logger = logging.getLogger(__name__)
@@ -30,11 +30,11 @@ def send_mail(body, format = 'plain'):
     host = 'smtp.163.com'
     port = 465
     sender = '13202095158@163.com'
-    pwd = '......'
+    pwd = '.........'
     receiver = ['13202095158@163.com', '1224056230@qq.com']
     body = body
     msg = MIMEText(body, format, 'utf-8')
-    msg['subject'] = 'Info: MongoDB is done...'
+    msg['subject'] = 'Info: ntf MongoDB is done...'
     msg['from'] = sender
     msg['to'] = ",".join(receiver)
 

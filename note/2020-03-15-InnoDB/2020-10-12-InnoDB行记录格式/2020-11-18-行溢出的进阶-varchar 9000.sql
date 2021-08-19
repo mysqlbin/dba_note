@@ -2,7 +2,7 @@
 
 本实验目的：
 	2个字段的数据长度都溢出，那么2个字段都有对应的20字节的指针保留在行记录中吗
-	答：1个。
+	答：是的。
 	
 初始化表结构和数据	
 	
@@ -10,7 +10,8 @@
 		a VARCHAR(9000),
 		b VARCHAR(9000)
 	) ENGINE=INNODB CHARSET=LATIN1 ROW_FORMAT=compact;
-
+	
+	
 	INSERT INTO t_20201118_15 SELECT REPEAT('a',9000), REPEAT('a',9000);
 
 	select length(a), length(b) from t_20201118_15;
@@ -22,7 +23,7 @@
 	|      9000 |      9000 |
 	+-----------+-----------+
 	1 row in set (0.00 sec)
-
+	
 
 查看使用了多少个大对象页
 
@@ -40,3 +41,11 @@
 	B-tree Node: 1
 	File Segment inode: 1
 
+	
+mysql> select 768+768;
++---------+
+| 768+768 |
++---------+
+|    1536 |
++---------+
+1 row in set (0.00 sec)
