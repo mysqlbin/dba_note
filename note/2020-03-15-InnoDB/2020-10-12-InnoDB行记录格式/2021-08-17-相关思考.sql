@@ -1,18 +1,16 @@
 
 
-ALTER TABLE `t_role_90`  ROW_FORMAT=DYNAMIC; 命令是否会同步到从库不？
+1. ALTER TABLE `t_role_90`  ROW_FORMAT=DYNAMIC; 命令是否会同步到从库不？
 	不会。
 	
-
-
-MySQL的一个表最多可以有多少个字段？
+2. MySQL的一个表最多可以有多少个字段？
 	这个是1个伪命题
 	
 
-1. varchar(N) N 大于属于大对象字段
+3. varchar(N) N 大于属于大对象字段
+	在COMPACT行记录格式+有行溢出的场景下，varchar(N) 的字节长度大于768字节算是大字段。
 
-
-2. 
+4. 
 	Antelope格式下的COMPACT大字段按照 DICT_ANTELOPE_MAX_INDEX_COL_LEN（768）字节溢出页。varchar(100)没有存储为溢出页。
 
 	Barracuda的DYNAMIC和COMPRESSED格式下只有长字段才会用20字节溢出页的方式，varchar(100)也没有存储为溢出页。
