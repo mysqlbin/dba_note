@@ -12,7 +12,7 @@
 12个 VARCHAR(800)
 11个 VARCHAR(850)
 11个 VARCHAR(800)
-
+小结
 
 
 sql_mode
