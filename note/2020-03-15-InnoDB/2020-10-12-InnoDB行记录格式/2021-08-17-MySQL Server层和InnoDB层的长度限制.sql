@@ -79,10 +79,10 @@
 		) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;
 		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. 
 			This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
-			-- 记录的最大长度限制不包括BLOB等字段。
+			-- 创建表的记录的最大长度限制不包括BLOB等字段。
 
 
-			之所以将BLOB和TEXT排除在外，是因为它的内容会单独存储在其它页中。但即便如此，存储BLOB和TEXT的指针信息也需要9 ~ 12个字节，具体来说：
+			之所以将BLOB和TEXT排除在外，是因为它的内容超过长度限制后会单独存储在其它页中。但即便如此，存储BLOB和TEXT的指针信息也需要9 ~ 12个字节，具体来说：
 			-- 这里需要验证。
 				TINYTEXT(TINYBLOB): 9 字节
 				TEXT(BLOB): 10 字节
