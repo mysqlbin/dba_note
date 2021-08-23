@@ -322,10 +322,32 @@
 
 	
 3. 耗时
+	
 	11:36:14 - 12:12:29
-	10GB的数据: 24+12 = 36分钟。
+	逻辑大小：约10GB的数据: 24+12 = 36分钟。
+	物理大小：约18GB 
+		shell> df -h
+		Filesystem      Size  Used Avail Use% Mounted on
+		devtmpfs        7.8G     0  7.8G   0% /dev
+		tmpfs           7.8G     0  7.8G   0% /dev/shm
+		tmpfs           7.8G  297M  7.5G   4% /run
+		tmpfs           7.8G     0  7.8G   0% /sys/fs/cgroup
+		/dev/sda1       100G   47G   54G  47% /
+		tmpfs           1.6G     0  1.6G   0% /run/user/1001
+		tmpfs           1.6G     0  1.6G   0% /run/user/0
+		-----------------------------------------------
+		drop table t0-15;
+		
+		shell> df -h
+		Filesystem      Size  Used Avail Use% Mounted on
+		devtmpfs        7.8G     0  7.8G   0% /dev
+		tmpfs           7.8G     0  7.8G   0% /dev/shm
+		tmpfs           7.8G  297M  7.5G   4% /run
+		tmpfs           7.8G     0  7.8G   0% /sys/fs/cgroup
+		/dev/sda1       100G   29G   72G  29% /
+		tmpfs           1.6G     0  1.6G   0% /run/user/1001
 
 		
-
+	
 
 
