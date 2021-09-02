@@ -1,6 +1,20 @@
 
 
-0. 对语句执行的几个时间进行一个说明：
+大纲
+0. 对语句执行的几个时间进行一个说明
+1. 相关参数及含义 
+2. 初始化表结构和数据
+3. 验证lock_time对慢日志的影响
+	3.1 实验1
+	3.2 实验2
+	3.3 小结
+	
+4. 相关参考
+
+
+
+
+0. 对语句执行的几个时间进行一个说明
 
 	Query_time:	语句总执行时间
 
@@ -10,9 +24,41 @@
 
 	语句实际执行时间=语句总执行时间-语句锁消耗时间
 	
+	语句实际执行时间超过 long_query_time，慢查询会被记录。
 	
+	
+1. 相关参数及含义 
+	slow_query_log：
 
-1. 初始化表结构和数据
+		Slow log的开关，是否开启slow log慢日志记录
+
+	slow_query_log_file：
+
+		Slow log日志的路径
+
+	long_query_time：
+
+		慢查询的执行的时间阈值
+
+	min_examined_row_limit：
+
+		慢查询检查的行数阈值，默认值为0.
+
+	log_queries_not_using_indexes：
+
+		不走索引的查询是否被记录
+
+	log_throttle_queries_not_using_indexes：
+
+		不走索引被记录的语句条数阈值
+
+	log_slow_admin_statements：
+
+		对服务器管理语句是否进行记录。(如ALTER TABLE,ANALYZE TABLE, CHECK TABLE, CREATE INDEX, DROP INDEX, OPTIMIZE TABLE, and REPAIR TABLE.)
+
+
+
+2. 初始化表结构和数据
 	
 	DROP TABLE IF EXISTS `t_20210901`;
 	CREATE TABLE `t_20210901` (
@@ -48,9 +94,9 @@
 
 
 
-2. 验证lock_time对慢日志的影响
+3. 验证lock_time对慢日志的影响
 	
-2.1 实验1
+3.1 实验1
 	
 	mysql> show global variables like '%long_query_time%';
 	+-----------------+----------+
@@ -120,7 +166,7 @@
 ---------------------------------------------------------------------------
 
 	
-2.2 实验2
+3.2 实验2
 	
 	mysql> select * from t_20210901 limit 10000;
 	10000 rows in set (0.18 sec)
@@ -163,14 +209,15 @@
 		select * from t_20210901 limit 10000;
 
 	
-2.3 小结
+3.3 小结
+	
 	1. query_time  包含 lock_time
 	2. query_time - lock_time 的值大于 long_query_time参数的值，则会记录慢日志。
 	3. 所以有时候数据库有些查询慢是锁等待造成的，而这种情况是不会记录在slow log里的。
 	
 ----------------------------------------------------------------------------------------------------------------------------------------
 
-3. 相关参考
+4. 相关参考
 
 	http://blog.itpub.net/7728585/viewspace-2155643/	MySQL慢查询记录原理和内容解析
 

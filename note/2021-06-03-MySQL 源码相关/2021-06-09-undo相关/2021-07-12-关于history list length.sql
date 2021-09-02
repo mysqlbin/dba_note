@@ -156,7 +156,9 @@
 	#22 0x00007effba3dc9fd in clone () from /lib64/libc.so.6
 
 3. 小结
+
 	history list length 记录的是update undo log的个数，不包含insert undo.
+	
 	会在事务提交或者回滚的时候更新该值。
 	
 	但是由于很多内部事务(比如更新数据字典的信息)的存在，我们看到的值会比真实的undo个数要大。

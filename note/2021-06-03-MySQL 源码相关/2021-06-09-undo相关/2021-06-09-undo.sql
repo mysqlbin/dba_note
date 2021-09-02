@@ -113,6 +113,7 @@ trx_undo_read_v_idx
 			2. 向表中插入一行记录
 				TRX_UNDO_INSERT_REC 
 					仅将主键记入日志
+					
 				TRX_UNDO_UPD_DEL_REC
 					将主键记入日志
 					当表中有一条被标记为删除的记录和要插入的数据主键相同时，实际的操作是更新这个被标记为删除的记录。
@@ -120,6 +121,7 @@ trx_undo_read_v_idx
 			3. 更新表中的一条记录
 				TRX_UNDO_UPD_EXIST_REC 
 					原地更新：将主键和被更新了的字段内容记入日志，也就是记录键值和老值
+					
 				TRX_UNDO_DEL_MARK_REC 和 TRX_UNDO_INSERT_REC
 					当更新主键字段时 或者 非原地更新：实际执行的过程是删除旧的记录然后，再插入一条新的记录。	
 					
@@ -135,9 +137,10 @@ trx_undo_read_v_idx
 		1. 对于insert和delete，undo中会记录键值(主键索引和二级索引的值)，delete操作只是标记删除(delete mark)记录。
 	
 		2. 对于update：
+		
 			1. 原地更新：undo中会记录键值(主键索引和二级索引的值)和老值(非索引值)。
-			2. 非原地更新：
-				通过delete+insert方式进行的，则undo中记录主键值(方便查找这一行记录)，不需记录老值; 其中delete也是标记删除记录。
+			
+			2. 非原地更新：通过delete+insert方式进行，undo中会记录键值(主键索引和二级索引的值)，不需记录老值; 其中delete也是标记删除记录。
 				-- 回滚的时候，清除删除标识就行了。
 		
 			3. 对于update操作有原地更新和delete+insert两种，那么怎么区分undo记录使用的哪种方式呢？
@@ -148,7 +151,16 @@ trx_undo_read_v_idx
 		3. 二级索引的更新总是delete+insert方式进行。具体日志格式参考 trx_undo_report_row_operation 。
 
 
-
+		4. 问题：update undo log里只记录涉及到的变更字段之前的值，还是保存整条数据的前一个版本呢？
+			
+			1. 原地更新：undo中会记录键值(主键索引和二级索引的值)和老值(非索引值)。
+			
+			2. 非原地更新：通过delete+insert方式进行，undo中会记录键值(主键索引和二级索引的值)，不需记录老值; 其中delete也是标记删除记录。
+				-- 回滚的时候，清除删除标识就行了。
+					
+		5. 小结
+			undo log 不需要记录一条完整的旧版本记录。
+			
 	
 	2.5 原地更新的源码入口处
 	
@@ -206,6 +218,154 @@ trx_undo_read_v_idx
 
 
 
+	/*************************************************************//**
+	Updates a record when the update causes no size changes in its fields.
+	We assume here that the ordering fields of the record do not change.
+	@return locking or undo log related error code, or
+	@retval DB_SUCCESS on success
+	@retval DB_ZIP_OVERFLOW if there is not enough space left
+	on the compressed page (IBUF_BITMAP_FREE was reset outside mtr) */
+	dberr_t
+	btr_cur_update_in_place(
+	/*====================*/
+		ulint		flags,	/*!< in: undo logging and locking flags */
+		btr_cur_t*	cursor,	/*!< in: cursor on the record to update;
+					cursor stays valid and positioned on the
+					same record */
+		ulint*		offsets,/*!< in/out: offsets on cursor->page_cur.rec */
+		const upd_t*	update,	/*!< in: update vector */
+		ulint		cmpl_info,/*!< in: compiler info on secondary index
+					updates */
+		que_thr_t*	thr,	/*!< in: query thread */
+		trx_id_t	trx_id,	/*!< in: transaction id */
+		mtr_t*		mtr)	/*!< in/out: mini-transaction; if this
+					is a secondary index, the caller must
+					mtr_commit(mtr) before latching any
+					further pages */
+	{
+		dict_index_t*	index;
+		buf_block_t*	block;
+		page_zip_des_t*	page_zip;
+		dberr_t		err;
+		rec_t*		rec;
+		roll_ptr_t	roll_ptr	= 0;
+		ulint		was_delete_marked;
+		ibool		is_hashed;
+
+		rec = btr_cur_get_rec(cursor);
+		index = cursor->index;
+		ut_ad(rec_offs_validate(rec, index, offsets));
+		ut_ad(!!page_rec_is_comp(rec) == dict_table_is_comp(index->table));
+		ut_ad(trx_id > 0
+			  || (flags & BTR_KEEP_SYS_FLAG)
+			  || dict_table_is_intrinsic(index->table));
+		/* The insert buffer tree should never be updated in place. */
+		ut_ad(!dict_index_is_ibuf(index));
+		ut_ad(dict_index_is_online_ddl(index) == !!(flags & BTR_CREATE_FLAG)
+			  || dict_index_is_clust(index));
+		ut_ad(thr_get_trx(thr)->id == trx_id
+			  || (flags & ~(BTR_KEEP_POS_FLAG | BTR_KEEP_IBUF_BITMAP))
+			  == (BTR_NO_UNDO_LOG_FLAG | BTR_NO_LOCKING_FLAG
+			  | BTR_CREATE_FLAG | BTR_KEEP_SYS_FLAG));
+		ut_ad(fil_page_index_page_check(btr_cur_get_page(cursor)));
+		ut_ad(btr_page_get_index_id(btr_cur_get_page(cursor)) == index->id);
+
+		DBUG_PRINT("ib_cur", ("update-in-place %s (" IB_ID_FMT
+					  ") by " TRX_ID_FMT ": %s",
+					  index->name(), index->id, trx_id,
+					  rec_printer(rec, offsets).str().c_str()));
+
+		block = btr_cur_get_block(cursor);
+		page_zip = buf_block_get_page_zip(block);
+
+		/* Check that enough space is available on the compressed page. */
+		if (page_zip) {
+			if (!btr_cur_update_alloc_zip(
+					page_zip, btr_cur_get_page_cur(cursor),
+					index, offsets, rec_offs_size(offsets),
+					false, mtr)) {
+				return(DB_ZIP_OVERFLOW);
+			}
+
+			rec = btr_cur_get_rec(cursor);
+		}
+
+		/* Do lock checking and undo logging */
+		err = btr_cur_upd_lock_and_undo(flags, cursor, offsets,
+						update, cmpl_info,
+						thr, mtr, &roll_ptr);
+		if (UNIV_UNLIKELY(err != DB_SUCCESS)) {
+			/* We may need to update the IBUF_BITMAP_FREE
+			bits after a reorganize that was done in
+			btr_cur_update_alloc_zip(). */
+			goto func_exit;
+		}
+
+		if (!(flags & BTR_KEEP_SYS_FLAG)
+			&& !dict_table_is_intrinsic(index->table)) {
+			row_upd_rec_sys_fields(rec, NULL, index, offsets,
+						   thr_get_trx(thr), roll_ptr);
+		}
+
+		was_delete_marked = rec_get_deleted_flag(
+			rec, page_is_comp(buf_block_get_frame(block)));
+
+		is_hashed = (block->index != NULL);
+
+		if (is_hashed) {
+			/* TO DO: Can we skip this if none of the fields
+			index->search_info->curr_n_fields
+			are being updated? */
+
+			/* The function row_upd_changes_ord_field_binary works only
+			if the update vector was built for a clustered index, we must
+			NOT call it if index is secondary */
+
+			if (!dict_index_is_clust(index)
+				|| row_upd_changes_ord_field_binary(index, update, thr,
+								NULL, NULL)) {
+
+				/* Remove possible hash index pointer to this record */
+				btr_search_update_hash_on_delete(cursor);
+			}
+
+			rw_lock_x_lock(btr_get_search_latch(index));
+		}
+
+		assert_block_ahi_valid(block);
+		row_upd_rec_in_place(rec, index, offsets, update, page_zip);
+
+		if (is_hashed) {
+			rw_lock_x_unlock(btr_get_search_latch(index));
+		}
+
+		btr_cur_update_in_place_log(flags, rec, index, update,
+						trx_id, roll_ptr, mtr);
+
+		if (was_delete_marked
+			&& !rec_get_deleted_flag(
+				rec, page_is_comp(buf_block_get_frame(block)))) {
+			/* The new updated record owns its possible externally
+			stored fields */
+
+			btr_cur_unmark_extern_fields(page_zip,
+							 rec, index, offsets, mtr);
+		}
+
+		ut_ad(err == DB_SUCCESS);
+
+	func_exit:
+		if (page_zip
+			&& !(flags & BTR_KEEP_IBUF_BITMAP)
+			&& !dict_index_is_clust(index)
+			&& !dict_table_is_temporary(index->table)
+			&& page_is_leaf(buf_block_get_frame(block))) {
+			/* Update the free bits in the insert buffer. */
+			ibuf_update_free_bits_zip(block, mtr);
+		}
+
+		return(err);
+	}
 
 3. 事务回滚
 
@@ -542,11 +702,7 @@ trx_undo_read_v_idx
 		3, lilis	
 			
 			
-
-
-
-
-	
+		
 5. purge线程
 
 	undo回收
@@ -558,13 +714,15 @@ trx_undo_read_v_idx
 	 	
 	一条事务执行期间InnoDB对undo的处理:
 	
-		事务执行过程中: 写undo
-			1. 对于insert和delete，undo中会记录主键值，delete操作只是标记删除(delete mark)记录。
+		1. 事务执行过程中: 写undo
+			
+			1. 对于insert和delete，undo中会记录键值(主键索引和二级索引的值)，delete操作只是标记删除(delete mark)记录。
 		
 			2. 对于update：
-				1. 原地更新：undo中会记录键值和老值。
-				2. 非原地更新：
-					通过delete+insert方式进行的，则undo中记录主键值(方便查找这一行记录)，不需记录老值; 其中delete也是标记删除记录。
+			
+				1. 原地更新：undo中会记录键值(主键索引和二级索引的值)和老值(非索引值)。
+				
+				2. 非原地更新：通过delete+insert方式进行，undo中会记录键值(主键索引和二级索引的值)，不需记录老值; 其中delete也是标记删除记录。
 					-- 回滚的时候，清除删除标识就行了。
 			
 				3. 对于update操作有原地更新和delete+insert两种，那么怎么区分undo记录使用的哪种方式呢？
@@ -574,17 +732,30 @@ trx_undo_read_v_idx
 		
 			3. 二级索引的更新总是delete+insert方式进行。具体日志格式参考 trx_undo_report_row_operation 。
 
-	
-		事务提交过程中:
+
+			4. 问题：update undo log里只记录涉及到的变更字段之前的值，还是保存整条数据的前一个版本呢？
+				
+				1. 原地更新：undo中会记录键值(主键索引和二级索引的值)和老值(非索引值)。
+				
+				2. 非原地更新：通过delete+insert方式进行，undo中会记录键值(主键索引和二级索引的值)，不需记录老值; 其中delete也是标记删除记录。
+					-- 回滚的时候，清除删除标识就行了。
+			5. 小结
+				undo log 不需要记录一条完整的旧版本记录。
+				
+				
+		2. 事务提交过程中:
 		
 			会将undo信息加入purge列表(history list)，供purge线程处理。
 		
-		事务提交后:
-			purge线程真正删除，释放物理页空间。
+		3. 事务提交后:
 		
-		事务提交后，会将undo日志信息(保存在trx_rseg_t中）加入到队列purge_queue中，purge_queue是以trx->id排序的最小堆。
+			purge线程真正删除打了删除标记的记录，释放物理页空间。
+		
+			会将undo日志信息(保存在trx_rseg_t中）加入到队列purge_queue中，purge_queue是以trx->id排序的最小堆。
 			purge线程从purge_queue中获取符合条件（trx->id < oldest_view->m_low_limit_no)的undo并依次purge回收。
 			https://mp.weixin.qq.com/s/UxawgHGembMKK2lA33ZQDA
+			-- 这个暂时没有理解，个人能力没有达到。
+			
 			
 	小结
 		undo日志应该及时purge，undo日志的堆积不仅会导致回滚段空间的增长，而且delete mark的记录没有真正删除，也会影响查询的效率。	
