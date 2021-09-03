@@ -2,6 +2,7 @@
 
 1. 延迟加锁机制
 2. 在 lock_rec_convert_impl_to_expl 函数位置打断点
+3. lock_rec_convert_impl_to_expl 针对的场景是
 
 1. 延迟加锁机制
 
@@ -81,7 +82,7 @@
 
 	insert 加的是隐式锁。	
 		
-		执行 insert 语句，判断是否有和插入意向锁冲突的锁，如果有，加插入意向锁，进入锁等待；如果没有，直接写数据，不加任何锁；
+		执行 insert 语句，判断是否有和插入意向锁冲突的锁，如果有，insert语句 加插入意向锁，进入锁等待；如果没有，直接写数据，不加任何锁；
 		
 		insert 加锁，执行 insert 之后，如果没有任何冲突，在 show engine innodb status 命令中是看不到任何锁的，这是因为 insert 加的是隐式锁。
 		所以，根本就不存在之前说的先加插入意向锁，再加排他记录锁的说法，在执行 insert 语句时，什么锁都不会加。这就有点意思了，如果 insert 什么锁都不加，那么如果其他事务执行 select ... lock in share mode，它是如何阻止其他事务加锁的呢？
@@ -215,10 +216,11 @@
 
 
 
-	lock_rec_convert_impl_to_expl 针对的场景是：
+3. lock_rec_convert_impl_to_expl 针对的场景是
 
-		有A，B两个Client。A开启事务，然后插入一行记录，未提交事务。此时B开启事务，插入同样的一条记录，那么这时B查询到这行记录之前已被A插入了，并且A开始的事务还活跃，那么就会调用lock_rec_convert_impl_to_expl给A插入的记录加上一把X-LOCK。
-		然后继续调用 lock_rec_lock 给此记录加上S-LOCK，然后就产生了LOCK_WAIT。
-		https://zhuanlan.zhihu.com/p/139489272	
-		
+	有A，B两个Client。A开启事务，然后插入一行记录，未提交事务。
+	此时B开启事务，插入同样的一条记录，那么这时B查询到这行记录之前已被A插入了，并且A开始的事务还活跃，那么就会调用lock_rec_convert_impl_to_expl给A插入的记录加上一把X-LOCK。
+	然后继续调用 lock_rec_lock 给此记录加上S-LOCK，然后就产生了LOCK_WAIT。
+	https://zhuanlan.zhihu.com/p/139489272	
+	
 		

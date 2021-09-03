@@ -3,7 +3,7 @@
 1. 初始化表结构和数据
 2. insert ... select 语句的加锁 
 3. insert 循环写入
-4. insert 唯一键冲突
+4. insert 唯一键冲突导致的死锁
 5. 唯一键冲突加锁			
 6. insert into … on duplicate key update
 7. 小结
@@ -212,9 +212,9 @@
 			insert into t select * from temp_t;
 			drop table temp_t;
 
-4. insert 唯一键冲突
+4. insert 唯一键冲突导致的死锁
 
-	root@mysqldb 09:55:  [420_db]> select * from t;
+	mysql> select * from t;
 	+----+------+------+
 	| id | c    | d    |
 	+----+------+------+
@@ -225,7 +225,7 @@
 	+----+------+------+
 	4 rows in set (0.06 sec)
 
-	root@mysqldb 09:56:  [420_db]> show create table t\G;
+	mysql> show create table t\G;
 	*************************** 1. row ***************************
 		   Table: t
 	Create Table: CREATE TABLE `t` (
@@ -254,7 +254,7 @@
 
 
 	T1 
-		root@mysqldb 10:15:  [(none)]> select * from information_schema.innodb_trx\G;
+		mysql> select * from information_schema.innodb_trx\G;
 		*************************** 1. row ***************************
 							trx_id: 9499678
 						 trx_state: RUNNING
@@ -284,7 +284,7 @@
 
 	T2
 
-		root@mysqldb 10:16:  [(none)]> select * from information_schema.innodb_trx\G;
+		mysql> select * from information_schema.innodb_trx\G;
 		*************************** 1. row ***************************
 							trx_id: 9499679
 						 trx_state: LOCK WAIT
@@ -341,7 +341,7 @@
 
 	T3
 
-		root@mysqldb 10:17:  [(none)]> select * from information_schema.innodb_trx\G;
+		mysql> select * from information_schema.innodb_trx\G;
 		*************************** 1. row ***************************
 							trx_id: 9499680
 						 trx_state: LOCK WAIT
@@ -419,7 +419,7 @@
 		trx_autocommit_non_locking: 0
 		3 rows in set (0.00 sec)
 
-		root@mysqldb 10:17:  [(none)]> select * from information_schema.innodb_locks\G;
+		mysql> select * from information_schema.innodb_locks\G;
 		*************************** 1. row ***************************
 			lock_id: 9499680:27403:4:6
 		lock_trx_id: 9499680
@@ -455,7 +455,7 @@
 		  lock_data: 5
 		3 rows in set, 1 warning (0.00 sec)
 
-		root@mysqldb 10:17:  [(none)]> select * from information_schema.innodb_lock_waits\G;
+		mysql> select * from information_schema.innodb_lock_waits\G;
 		*************************** 1. row ***************************
 		requesting_trx_id: 9499680
 		requested_lock_id: 9499680:27403:4:6
@@ -470,7 +470,7 @@
 
 	
 
-		root@mysqldb 10:17:  [(none)]> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+		mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
 		+--------------+-------------+----------------------------------+-------------------+--------------------+
 		| locked_index | locked_type | waiting_query                    | waiting_lock_mode | blocking_lock_mode |
 		+--------------+-------------+----------------------------------+-------------------+--------------------+
@@ -481,6 +481,7 @@
 		
 
 		死锁日志:
+		
 			2021-04-30T10:17:30.276895+08:00 4 [Note] InnoDB: Transactions deadlock detected, dumping detailed information.
 			2021-04-30T10:17:30.276925+08:00 4 [Note] InnoDB: 
 			*** (1) TRANSACTION:
@@ -517,10 +518,30 @@
 
 			2021-04-30T10:17:30.278529+08:00 4 [Note] InnoDB: *** WE ROLL BACK TRANSACTION (2)
 					
+	
+		根据死锁日志分析加锁规则
+		
+			session A(TRANSACTION ID = 9499679)        		session B(TRANSACTION ID = 9499680)  
+			
+			对应语句：
+				insert into t values(null, 5, 5)
+															对应语句：
+																insert into t values(null, 5, 5)
+																
+			持有的锁：
+				unique key: c=5 的共享锁
+															持有的锁：
+																unique key: c=5 的共享锁
+			在等待的锁：
+				想要申请unique key: c=5 的写锁，但是被阻塞
+																													
+															在等待的锁：
+																想要申请unique key: c=5 的写锁，但是被阻塞
+																
 
-
-5. 唯一键冲突加锁			
-	root@mysqldb 09:55:  [420_db]> select * from t;
+5. 唯一键冲突加锁		
+	
+	mysql> select * from t;
 	+----+------+------+
 	| id | c    | d    |
 	+----+------+------+
@@ -531,7 +552,7 @@
 	+----+------+------+
 	4 rows in set (0.06 sec)
 
-	root@mysqldb 09:56:  [420_db]> show create table t\G;
+	mysql> show create table t\G;
 	*************************** 1. row ***************************
 		   Table: t
 	Create Table: CREATE TABLE `t` (
@@ -691,7 +712,18 @@
 													1 row in set, 3 warnings (0.02 sec)
 
 
-
+								
+	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+------------------------+
+	| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE | LOCK_STATUS | LOCK_DATA              |
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+------------------------+
+	| 140640974727784:1071:140640851653288   |                 53558 |        59 | t           | NULL       | TABLE     | IX        | GRANTED     | NULL                   |
+	| 140640974727784:14:5:6:140640851650248 |                 53558 |        59 | t           | c          | RECORD    | S         | GRANTED     | 10, 10                 |
+	| 140640974727784:14:4:1:140640851650936 |                 53558 |        59 | t           | PRIMARY    | RECORD    | X         | GRANTED     | supremum pseudo-record |
+	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+-----------+-------------+------------------------+
+	3 rows in set (0.00 sec)
+	
+	
 
 6. insert into … on duplicate key update
 
