@@ -129,8 +129,13 @@
 5. 相关参考
 
 
-    https://mp.weixin.qq.com/s/yd49Xc4pzvGnVqeptR49vA   为什么MySQL数据库要用B+树存储索引？
-    https://mp.weixin.qq.com/s/q4uq0OLYWnrdlCf5je_yzQ     为什么 MySQL 使用 B+ 树
+    https://mp.weixin.qq.com/s/yd49Xc4pzvGnVqeptR49vA    为什么MySQL数据库要用B+树存储索引？
+    https://mp.weixin.qq.com/s/q4uq0OLYWnrdlCf5je_yzQ    为什么 MySQL 使用 B+ 树
+	https://mp.weixin.qq.com/s/kRG8osOgLIenr7UeEqT7aQ 	 为什么Mongodb索引用B树，而Mysql用B+树?
+	https://mp.weixin.qq.com/s/ieGfv66GstJC2cltiE_c5g    为什么 MongoDB 使用 B 树？ 
 	
 	https://www.cnblogs.com/kaleidoscope/p/9481991.html  为什么 MongoDB （索引）使用B-树而 Mysql 使用 B+树
-	https://mp.weixin.qq.com/s/ieGfv66GstJC2cltiE_c5g    为什么 MongoDB 使用 B 树？ 
+	
+
+
+

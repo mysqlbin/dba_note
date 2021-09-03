@@ -52,7 +52,7 @@ def send_mail(body, sourceTable, format = 'plain'):
     host = 'smtp.163.com'
     port = 465
     sender = '13202095158@163.com'
-    pwd = '20190809Go'
+    pwd = ''
     receiver = ['13202095158@163.com', '1224056230@qq.com']
     body = body
     msg = MIMEText(body, format, 'utf-8')
@@ -92,7 +92,7 @@ if __name__ == '__main__':
         #client = MongoClient(['192.168.0.1:27017', '192.168.0.2:27017'], replicaSet='repl_set')
         mongoserver_uri = "mongodb://admin:123456abc@192.168.1.1:27017,192.168.1.2:27017/admin?replicaSet=repl_set"
         client = MongoClient(mongoserver_uri)
-        db = client['abc_db']
+        db = client['yldb']
 
         collection = db['{}'.format(source_table)]
 
