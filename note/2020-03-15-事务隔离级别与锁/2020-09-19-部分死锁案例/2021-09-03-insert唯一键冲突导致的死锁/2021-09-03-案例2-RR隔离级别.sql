@@ -5,6 +5,7 @@
 	2. 根据死锁日志分析加锁规则
 	3. 死锁模拟
 	4. 解决/优化办法
+	5. insert ignore into 
 
 
 1. 死锁日志
@@ -256,5 +257,72 @@
 		
 	此类insert，需要通过去除并发或者去除唯一索引去解决，核心思想就是不要触发唯一约束冲突。
 	
+	结合业务做分析：
 	
+		1. 修改唯一索引的属性，也就是删除掉唯一索引，建1个非唯一的普通索引。
+		
+		2. 用 insert ignore 语法，当数据表中已经存在唯一索引的记录，就跳过。
+		
+		
+5. insert ignore into
+
 	
+	CREATE TABLE `deadlock` (
+	  `id` bigint(12) NOT NULL AUTO_INCREMENT,
+	  `col1` varchar(24) NOT NULL,
+	  `col2` varchar(24) NOT NULL,
+	  PRIMARY KEY (`id`),
+	  UNIQUE KEY `idx_uk_tcs_user_fund_info_up` (`col1`,`col2`)
+	) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8; 
+		
+	insert into deadlock(col1,col2) values ('a',1),('a',5),('a',9);
+
+	mysql> select * from deadlock;
+	+----+------+------+
+	| id | col1 | col2 |
+	+----+------+------+
+	| 36 | a    | 1    |
+	| 37 | a    | 5    |
+	| 38 | a    | 9    |
+	+----+------+------+
+	3 rows in set (0.00 sec)
+
+		
+		session A      		session B
+		BEGIN;				BEGIN;
+
+							insert ignore into deadlock (col1,col2) values ('a','4');
+		insert ignore into deadlock(col1,col2) values ('a','4');
+		(Blocked)
+	T1
+
+							insert ignore into deadlock (col1,col2) values ('a','3');
+							
+		ERROR 1213 (40001): Deadlock found when trying to get lock; try restarting transaction		
+
+	T2
+		
+	T1		
+		root@mysqldb 18:18:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		+----------------------------------------+-----------------------+-----------+-------------+------------------------------+-----------+---------------+-------------+--------------+
+		| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME                   | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA    |
+		+----------------------------------------+-----------------------+-----------+-------------+------------------------------+-----------+---------------+-------------+--------------+
+		| 140138352831952:1072:140138273376744   |                 55056 |        59 | deadlock    | NULL                         | TABLE     | IX            | GRANTED     | NULL         |
+		| 140138352831952:15:5:5:140138273373816 |                 55056 |        59 | deadlock    | idx_uk_tcs_user_fund_info_up | RECORD    | S             | WAITING     | 'a', '4', 47 |
+		| 140138352831080:1072:140138273370792   |                 55051 |        58 | deadlock    | NULL                         | TABLE     | IX            | GRANTED     | NULL         |
+		| 140138352831080:15:5:5:140138273367752 |                 55051 |        59 | deadlock    | idx_uk_tcs_user_fund_info_up | RECORD    | X,REC_NOT_GAP | GRANTED     | 'a', '4', 47 |
+		+----------------------------------------+-----------------------+-----------+-------------+------------------------------+-----------+---------------+-------------+--------------+
+		4 rows in set (0.00 sec)
+
+	T2
+		root@mysqldb 18:20:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		+----------------------------------------+-----------------------+-----------+-------------+------------------------------+-----------+------------------------+-------------+--------------+
+		| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME                   | LOCK_TYPE | LOCK_MODE              | LOCK_STATUS | LOCK_DATA    |
+		+----------------------------------------+-----------------------+-----------+-------------+------------------------------+-----------+------------------------+-------------+--------------+
+		| 140138352831080:1072:140138273370792   |                 55051 |        58 | deadlock    | NULL                         | TABLE     | IX                     | GRANTED     | NULL         |
+		| 140138352831080:15:5:5:140138273367752 |                 55051 |        59 | deadlock    | idx_uk_tcs_user_fund_info_up | RECORD    | X,REC_NOT_GAP          | GRANTED     | 'a', '4', 47 |
+		| 140138352831080:15:5:5:140138273368096 |                 55051 |        58 | deadlock    | idx_uk_tcs_user_fund_info_up | RECORD    | X,GAP,INSERT_INTENTION | GRANTED     | 'a', '4', 47 |
+		+----------------------------------------+-----------------------+-----------+-------------+------------------------------+-----------+------------------------+-------------+--------------+
+		3 rows in set (0.00 sec)
+			
+		
