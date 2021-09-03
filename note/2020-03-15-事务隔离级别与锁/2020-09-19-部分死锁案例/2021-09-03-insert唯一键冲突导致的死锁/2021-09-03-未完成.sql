@@ -1,6 +1,4 @@
-但实际上在 READ-COMMITTED 隔离级别，也会存在 gap lock ，只发生在：唯一约束检查到有唯一冲突的时候，会加 S Next-key Lock，即对记录以及与和上一条记录之间的间隙加共享锁。
 
-作者：轻松的鱼
-链接：https://www.jianshu.com/p/db97a65294c0
-来源：简书
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+1. 有时间的话，看看这部分的源码
+	https://www.jianshu.com/p/8b0af28a7ced 这里有讲到源码部分
+	
