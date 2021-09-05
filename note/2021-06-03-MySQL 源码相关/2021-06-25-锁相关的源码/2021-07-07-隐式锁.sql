@@ -223,4 +223,5 @@
 	然后继续调用 lock_rec_lock 给此记录加上S-LOCK，然后就产生了LOCK_WAIT。
 	https://zhuanlan.zhihu.com/p/139489272	
 	
-		
+	参考案例：《2021-09-03-insert唯一键冲突导致的死锁》
+	
