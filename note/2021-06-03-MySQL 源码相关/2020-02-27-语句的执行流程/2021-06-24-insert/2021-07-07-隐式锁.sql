@@ -2,7 +2,7 @@
 
 1. 延迟加锁机制
 2. 在 lock_rec_convert_impl_to_expl 函数位置打断点
-3. lock_rec_convert_impl_to_expl 针对的场景是
+3. lock_rec_convert_impl_to_expl 针对的场景
 
 1. 延迟加锁机制
 
@@ -216,7 +216,7 @@
 
 
 
-3. lock_rec_convert_impl_to_expl 针对的场景是
+3. lock_rec_convert_impl_to_expl 针对的场景
 
 	有A，B两个Client。A开启事务，然后插入一行记录，未提交事务。
 	此时B开启事务，插入同样的一条记录，那么这时B查询到这行记录之前已被A插入了，并且A开始的事务还活跃，那么就会调用lock_rec_convert_impl_to_expl给A插入的记录加上一把X-LOCK。
