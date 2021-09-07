@@ -1,5 +1,28 @@
 
 
+大纲
+	1. 环境 
+	2. 初始化表结构和数据
+	3. 一个 insert 出现幻读的假设
+	4. 三种加锁情况
+		4.1 先select后insert
+		4.2 先insert后select
+		4.3 先insert后select - 特殊场景
+	5. 隐式锁
+	6. LATCH 锁
+	7. mini transaction
+		7.1 mini transation 主要作用：
+		7.2 mini transaction、LATCH、数据插入的函数堆栈
+		7.3 每个 mini-transaction 会遵守下面的几个规则
+		
+	8. 总结
+		8.1 latch 锁
+		8.1 insert 和 select ... lock in share mode 不会发生幻读
+		8.3 insert 语句
+
+	9. 疑问
+
+
 
 
 1. 环境 
@@ -33,7 +56,8 @@
 
 	加了插入意向锁后，插入数据之前，此时执行了 select…lock in share mode 语句（没有取到待插入的值），然后插入了数据，下一次再执行 select…lock in share mode（不会跟插入意向锁冲突），发现多了一条数据，于是又产生了幻读。会出现这种情况吗？
 
-
+	也就是 4.3 先 insert 后 select - 特殊
+	
 4. 三种加锁情况
 
 	4.1 先select后insert
@@ -63,36 +87,36 @@
 		4 rows in set (0.00 sec)
 
 									
----------------------------------------------------------------------------------------------------
+	---------------------------------------------------------------------------------------------------
 
-4.2 先insert后select 
+	4.2 先insert后select 
 
-	session A 							session B
-	begin;								begin;	
-	insert into t_20210906(id) value(30);
-										select * from t_20210906 where id = 30 lock in share mode;
-										(Blocked)
-										-- 被id=30的X锁阻塞
-	commit;	
-										select * from t_20210906 where id = 30 lock in share mode;
-										
+		session A 							session B
+		begin;								begin;	
+		insert into t_20210906(id) value(30);
+											select * from t_20210906 where id = 30 lock in share mode;
+											(Blocked)
+											-- 被id=30的X锁阻塞
+		commit;	
+											select * from t_20210906 where id = 30 lock in share mode;
+											
 
-	mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
-	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
-	| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
-	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
-	| 140138352831080:1073:140138273370792   |                 55073 |        65 | t_20210906  | NULL       | TABLE     | IX            | GRANTED     | NULL      |
-	| 140138352831080:16:4:6:140138273367752 |                 55073 |        67 | t_20210906  | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 30        |
-	| 140138352831952:1073:140138273376744   |       421613329542608 |        67 | t_20210906  | NULL       | TABLE     | IS            | GRANTED     | NULL      |
-	| 140138352831952:16:4:6:140138273373816 |       421613329542608 |        67 | t_20210906  | PRIMARY    | RECORD    | S,REC_NOT_GAP | WAITING     | 30        |
-	-- 被id=30的X锁阻塞
-	+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
-	4 rows in set (0.00 sec)
+		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+		+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		| 140138352831080:1073:140138273370792   |                 55073 |        65 | t_20210906  | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+		| 140138352831080:16:4:6:140138273367752 |                 55073 |        67 | t_20210906  | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 30        |
+		| 140138352831952:1073:140138273376744   |       421613329542608 |        67 | t_20210906  | NULL       | TABLE     | IS            | GRANTED     | NULL      |
+		| 140138352831952:16:4:6:140138273373816 |       421613329542608 |        67 | t_20210906  | PRIMARY    | RECORD    | S,REC_NOT_GAP | WAITING     | 30        |
+		-- 被id=30的X锁阻塞
+		+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		4 rows in set (0.00 sec)
 
-		
-					
-	4.3 先 insert 后 select - 特殊
+			
 						
+	4.3 先insert后select - 特殊场景
+							
 		执行 insert 语句时，从判断是否有锁冲突，到写数据，这两个操作之间还是有时间差的：	
 		
 			如果 select...lock in share mode 的请求发生在 insert 申请完插入意向锁之后，写数据之前，这时候 GAP 锁和插入意向锁是不冲突的
@@ -115,7 +139,7 @@
 												-- return 0 records
 				
 			insert into t_20210906(id) value(30);																	lock_mode X locks rec but not gap 
-			-- 因为已经申请了插入意向锁，所以插入完成
+			-- 因为已经申请了插入意向锁，所以可以插入，此时插入操作执行完成
 			
 			commit;	
 												select * from t_20210906 where id = 30 lock in share mode;			lock_modes S locks gap before rec	
@@ -124,28 +148,71 @@
 
 
 
-4. 隐式锁
+5. 隐式锁
+
 	举个例子：
 		1. 事务A 的 insert 语句在执行期间默认不对记录加显示锁，加的是隐式锁，还未提交的事务属于活跃事务
 		2. 事务B 申请的锁跟 insert语句这个活跃事务的隐式锁冲突
-		3. 此时事务B 会把事务 A 的隐式锁改为显示锁，同时 事务B 处于等待状态
+		3. 此时事务B 会把事务 A 的隐式锁改为显示锁：事务A 持有记录的X锁，同时 事务B 处于等待状态
 		
 	相关笔记：
 		《2021-07-07-隐式锁.sql》
 
-5. LATCH 锁
+6. LATCH 锁
+	
+	本文的案例分析就用到 latch 锁。
 	
 	insert 会在检查锁冲突和写数据之前，会对记录所在的页加一个 RW-X-LATCH 锁，执行完写数据之后再释放该锁(实际上写数据的操作就是写 redo log(重做日志)，将脏页加入 flush list)。
 	这个锁的释放非常快，但是这个锁足以保证在插入数据的过程中其他事务无法访问记录所在的页。
 	这个加锁过程实际上是在 mini transaction 里完成的。
 	
-	
-6. mini transaction
 
-	6.1 mini transation 主要作用：
+	假设的幻读场景如下：
+	
+		时间点	session A 							session B															LOCK
+				begin;								begin;	
+
+			T1	insert into t_20210906(id) value(30);																	lock_mode X locks gap before rec insert intention
+				-- 数据未插入
+				-- 会先对记录所在的数据页加1个 RW-X-LATCH
+				-- 然后先申请到插入意向锁
+			
+			T2										select * from t_20210906 where id = 30 lock in share mode;			lock_mode S locks gap before rec
+													
+													-- 1. 请求发生在 insert 申请完插入意向锁之后，写数据之前
+													-- 2. 申请到 gap lock：(20, 30), gap lock 和 插入意向锁不冲突
+													-- 3. return 0 records
+													-- 上面1-3的步骤，假设不成立
+													-- 因为这里会在1-3步骤之前，申请对记录所在的数据页加 RW-S-LATCH， 因为会被 RW-X-LATCH 阻塞。
+													-- (Blocked)
+												
+				
+			T3	insert into t_20210906(id) value(30);																	lock_mode X locks rec but not gap 
+				-- 因已经申请了插入意向锁，所以可以插入，此时插入操作执行完成
+				-- 释放 RW-X-LATCH
+													
+													-- 获取到 RW-S-LATCH，但是被id=30的X 记录锁阻塞
+				commit;	
+													-- session A的事务提交，此时T2可以获取到id=30的 S 记录锁
+													-- return 1 records：id=30
+													
+													----------------------------------------------------------------------------------------------------
+												
+			T4										select * from t_20210906 where id = 30 lock in share mode;			lock_modes S locks gap before rec	
+													-- session A的事务提交，此时T4可以获取到id=30的 S 记录锁
+													-- return 1 records：id=30
+													
+											
+	-- 所以幻读不成立。
+	
+	
+7. mini transaction
+
+	7.1 mini transation 主要作用
+	
 		主要用于innodb redo log 和 undo log写入，保证两种日志的ACID特性。
 	
-	6.2 mini transaction、LATCH、数据插入的函数堆栈
+	7.2 mini transaction、LATCH、数据插入的函数堆栈
 	
 		函数堆栈为：row_ins_clust_index_entry_low -> btr_cur_search_to_nth_level -> btr_cur_latch_leaves。
 		-- 后面可以根据这些函数堆栈进行扩展
@@ -199,7 +266,7 @@
 
 
 
-	6.3 每个 mini-transaction 会遵守下面的几个规则：
+	7.3 每个 mini-transaction 会遵守下面的几个规则
 
 		修改一个页需要获得该页的 X-LATCH；
 		访问一个页需要获得该页的 S-LATCH 或 X-LATCH；
@@ -207,24 +274,40 @@
 	
 
 
-总结：
-
-	insert 和 select ... lock in share mode 不会发生幻读。
+8. 总结
 	
-
-	整个流程如下：
-
-		执行 insert 语句，对要操作的页加 RW-X-LATCH，然后判断是否有和插入意向锁冲突的锁，如果有，加插入意向锁，进入锁等待；如果没有，直接写数据，不加任何锁，结束后释放 RW-X-LATCH；
-		执行 select ... lock in share mode 语句，对要操作的页加 RW-S-LATCH，如果页面上存在 RW-X-LATCH 会被阻塞
-			没有的话则判断记录上是否存在活跃的事务，如果存在，则为 insert 事务创建一个排他记录锁，并将自己加入到锁等待队列，最后也会释放 RW-S-LATCH；
+	8.1 latch 锁
+		
+		insert 会在检查锁冲突和写数据之前，会对记录所在的页加一个 RW-X-LATCH 锁，执行完写数据之后再释放该锁(实际上写数据的操作就是写 redo log(重做日志)，将脏页加入 flush list)。
+		这个锁的释放非常快，但是这个锁足以保证在插入数据的过程中其他事务无法访问记录所在的页。
+		这个加锁过程实际上是在 mini transaction 里完成的。
 		
 	
-insert 语句：
+	8.1 insert 和 select ... lock in share mode 不会发生幻读
 	
-	加的隐式锁，也就是默认不加锁。
-	插入数据前需要先申请意向插入锁。
 
+		整个流程如下：
+			-- 没有 LATCH 锁的描述
+				执行 insert 语句，判断是否有和插入意向锁冲突的锁，如果有，加插入意向锁，进入锁等待；如果没有，直接写数据，不加任何锁；
+				执行 select ... lock in share mode 语句，判断记录上是否存在活跃的事务，如果存在，则为 insert 事务创建一个排他记录锁，并将自己加入到锁等待队列；
+			
+			-- 有 LATCH 锁的描述
+				执行 insert 语句，对要操作的页加 RW-X-LATCH，然后判断是否有和插入意向锁冲突的锁，如果有，加插入意向锁，进入锁等待；如果没有，直接写数据，不加任何锁，结束后释放 RW-X-LATCH；
+				执行 select ... lock in share mode 语句，对要操作的页加 RW-S-LATCH，如果页面上存在 RW-X-LATCH 会被阻塞
+					没有的话则判断记录上是否存在活跃的事务，如果存在，则为 insert 事务创建一个排他记录锁，并将自己加入到锁等待队列，最后也会释放 RW-S-LATCH；
+				
+				-- 对数据页加latch锁
+	
+	
+	8.3 insert 语句
+	
+		insert操作不需要对数据加锁，但是插入数据前需要先申请意向插入锁。
+	
 
-
+9. 疑问
+	
+	1. latch 锁什么时候释放，语句执行结束还等事务提交再释放？
+		答：目前来看是语句执行结束就释放 latch 锁，不然会影响并发度。
+		
 
 				
