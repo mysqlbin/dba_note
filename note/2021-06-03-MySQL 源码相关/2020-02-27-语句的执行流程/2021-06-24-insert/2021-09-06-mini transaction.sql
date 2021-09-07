@@ -1,6 +1,6 @@
 
 
-1.mini transation 主要作用
+1. mini transation 主要作用
 
 2. mini-transaction遵循以下三个协议
 
@@ -20,7 +20,7 @@
 
 
 
-1.mini transation 主要作用
+1. mini transation 主要作用
 
 	主要用于innodb redo log 和 undo log写入的时候，保证两种日志的ACID特性。
 		
