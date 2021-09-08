@@ -69,7 +69,7 @@
 	T2
 							
 																						 insert into t values(null, 5, 5);
-
+																						 (Blocked)		
 			rollback;
 											Query OK, 1 row affected (27.78 sec)
 
@@ -123,7 +123,7 @@
 
 		2021-04-30T10:17:30.278148+08:00 4 [Note] InnoDB: *** (2) WAITING FOR THIS LOCK TO BE GRANTED:
 
-		RECORD LOCKS space id 27403 page no 4 n bits 72 index c of table `420_db`.`t` trx id 9499680 lock_mode X insert intention waiting
+		RECORD LOCKS space id 27403 page no 4 n bits 72 index c of table `420_db`.`t` trx id 9499680 lock_mode X insert intention waiting(不是被gap lock阻塞)
 		Record lock, heap no 1 PHYSICAL RECORD: n_fields 1; compact format; info bits 0
 		 0: len 8; hex 73757072656d756d; asc supremum;;
 
@@ -140,9 +140,9 @@
 															insert into t values(null, 5, 5)
 															
 		持有的锁：
-			unique key: c=5 的共享锁
+			unique key: c=5 的共享next-key锁(也就是next-key读锁)
 														持有的锁：
-															unique key: c=5 的共享锁
+															unique key: c=5 的共享next-key锁(也就是next-key读锁)
 		在等待的锁：
 			想要申请unique key: c=5 的写锁，但是被阻塞
 																												
