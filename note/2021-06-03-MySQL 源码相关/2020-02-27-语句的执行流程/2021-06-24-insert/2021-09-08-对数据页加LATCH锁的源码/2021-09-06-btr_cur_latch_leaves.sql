@@ -1,4 +1,8 @@
 
+
+-- mysql-5.7.26\storage\innobase\btr\btr0cur.cc
+
+-- 申请对叶子节点数据页或者数据页加LATCH锁
 /** Latches the leaf page or pages requested.
 @param[in]	block		leaf page where the search converged
 @param[in]	page_id		page id of the leaf

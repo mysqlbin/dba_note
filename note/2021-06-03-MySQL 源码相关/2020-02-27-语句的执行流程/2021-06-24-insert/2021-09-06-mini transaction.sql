@@ -1,22 +1,22 @@
 
+大纲
+	1. mini transation 主要作用
 
-1. mini transation 主要作用
+	2. mini-transaction遵循以下三个协议
 
-2. mini-transaction遵循以下三个协议
+		2.1 The FIX Rules
 
-	2.1 The FIX Rules
+		2.2 Write-Ahead Log
 
-	2.2 Write-Ahead Log
+		2.3 Force-log-at-commit
 
-	2.3 Force-log-at-commit
+	3. mtr案例
 
-3. mtr案例
+		3.1 案例1 
 
-	3.1 案例1 
-
-4. mini transaction、LATCH、数据插入的函数堆栈
-5. 每个 mini-transaction 会遵守下面的几个规则
-6. 相关参考
+	4. mini transaction、LATCH、数据插入的函数堆栈
+	5. 每个 mini-transaction 会遵守下面的几个规则
+	6. 相关参考
 
 
 
