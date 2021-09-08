@@ -2,7 +2,7 @@
 
 1. 延迟加锁机制
 2. 在 lock_rec_convert_impl_to_expl 函数位置打断点
-3. lock_rec_convert_impl_to_expl 针对的场景
+3. lock_rec_convert_impl_to_expl 针对的2个场景
 
 1. 延迟加锁机制
 
@@ -235,7 +235,8 @@
 
 		ut_ad(!trx_state_eq(trx, TRX_STATE_NOT_STARTED));
 		
-		-- 先判断 trx_state_eq 事务是否活跃，再根据 lock_rec_has_expl 判断是否存在排他记录锁，如果事务活跃且没有锁 if (!trx_state_eq && !lock_rec_has_expl) ，就为该事务加上排他记录锁。
+		-- 先判断 trx_state_eq 事务是否活跃，再根据 lock_rec_has_expl 判断是否存在排他记录锁
+		-- 如果事务活跃且没有锁 if (!trx_state_eq && !lock_rec_has_expl) ，就为该事务加上排他记录锁。
 		if (!trx_state_eq(trx, TRX_STATE_COMMITTED_IN_MEMORY)
 			&& !lock_rec_has_expl(LOCK_X | LOCK_REC_NOT_GAP,
 					  block, heap_no, trx)) {
@@ -255,14 +256,84 @@
 		DEBUG_SYNC_C("after_lock_rec_convert_impl_to_expl_for_trx");
 	}
 	
-	
 
-3. lock_rec_convert_impl_to_expl 针对的场景
 
-	有A，B两个Client。A开启事务，然后插入一行记录，未提交事务。
-	此时B开启事务，插入同样的一条记录，那么这时B查询到这行记录之前已被A插入了，并且A开始的事务还活跃，那么就会调用 lock_rec_convert_impl_to_expl 给A插入的记录加上一把X-LOCK。
-	然后继续调用 lock_rec_lock 给此记录加上S-LOCK，然后就产生了LOCK_WAIT。
-	https://zhuanlan.zhihu.com/p/139489272	
+3. lock_rec_convert_impl_to_expl 针对的2个场景
+
+	3.1 场景1
+		-- 2个插入语句，有唯一键冲突的场景
+		-- 参考案例：《2021-09-03-insert唯一键冲突导致的死锁》
+		-- 相关参考之一： https://zhuanlan.zhihu.com/p/139489272
+		1. 有A，B两个Client。
+		2. A开启事务，然后插入一行记录，未提交事务。
+		3. 此时B开启事务，插入同样的一条记录，那么这时B查询到这行记录之前已被A插入了，并且A开始的事务还活跃，那么就会调用 lock_rec_convert_impl_to_expl 给A插入的记录加上一把X-LOCK。
+			然后继续调用 lock_rec_lock 给此记录加上S-LOCK，然后就产生了LOCK_WAIT。
+		
+		CREATE TABLE `deadlock` (
+		  `id` bigint(12) NOT NULL AUTO_INCREMENT,
+		  `col1` varchar(24) NOT NULL,
+		  `col2` varchar(24) NOT NULL,
+		  PRIMARY KEY (`id`),
+		  UNIQUE KEY `idx_uk_tcs_user_fund_info_up` (`col1`,`col2`)
+		) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8; 
+			
+		insert into deadlock(col1,col2) values ('a',1),('a',5),('a',9);
+
+		mysql> select * from deadlock;
+		+----+------+------+
+		| id | col1 | col2 |
+		+----+------+------+
+		| 36 | a    | 1    |
+		| 37 | a    | 5    |
+		| 38 | a    | 9    |
+		+----+------+------+
+		3 rows in set (0.00 sec)
+
+			
+		session A      		session B
+		BEGIN;				BEGIN;
+
+		insert into deadlock (col1,col2) values ('a','4');
+							insert into deadlock(col1,col2) values ('a','4');
+							(Blocked)
+			
+		
+		
+	3.2 场景2	
+		
+		-- 先插入，再有锁定读的场景
+		
+		1. 事务A 插入一条记录且未提交
+		2. 事务B 要对这条记录加锁，会先判断记录上是否存在活跃的事务
+		3. 如果是活跃的，就会去帮事务A建立一个排他锁对象，然后自身进入等待事务A的阶段，这个步骤就是隐式锁转化为显示锁的步骤。	
 	
-	参考案例：《2021-09-03-insert唯一键冲突导致的死锁》、《2021-09-06-insert加锁分析.sql》
+		create table t_20210906(id int NOT NULL AUTO_INCREMENT , PRIMARY KEY (id));
+		insert into t_20210906(id) values(1),(10),(20),(50);
+
+		session A 							session B
+		begin;								begin;	
+		insert into t_20210906(id) value(30);
+											select * from t_20210906 where id = 30 lock in share mode;
+											(Blocked)
+											-- 被id=30的X锁阻塞
+		commit;	
+											
+											
+
+		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+		+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		| 140138352831080:1073:140138273370792   |                 55073 |        65 | t_20210906  | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+		| 140138352831080:16:4:6:140138273367752 |                 55073 |        67 | t_20210906  | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 30        |
+		| 140138352831952:1073:140138273376744   |       421613329542608 |        67 | t_20210906  | NULL       | TABLE     | IS            | GRANTED     | NULL      |
+		| 140138352831952:16:4:6:140138273373816 |       421613329542608 |        67 | t_20210906  | PRIMARY    | RECORD    | S,REC_NOT_GAP | WAITING     | 30        |
+		-- 被id=30的X锁阻塞
+		+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		4 rows in set (0.00 sec)
+			
+	
+	
+	
+	
 	

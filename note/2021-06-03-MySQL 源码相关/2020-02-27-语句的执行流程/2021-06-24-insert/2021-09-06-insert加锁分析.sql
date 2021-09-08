@@ -149,14 +149,182 @@
 
 
 5. 隐式锁
-
-	举个例子：
-		1. 事务A 的 insert 语句在执行期间默认不对记录加显示锁，加的是隐式锁，还未提交的事务属于活跃事务
-		2. 事务B 申请的锁跟 insert语句这个活跃事务的隐式锁冲突
-		3. 此时事务B 会为事务 A 创建1个锁对象：事务A 持有记录的X锁，同时 事务B 处于等待状态
-		
+	
 	相关笔记：
 		《2021-07-07-隐式锁.sql》
+
+	举个例子：
+		
+		1. 事务A 插入一条记录且未提交
+		2. 事务B 要对这条记录加锁，会先判断记录上是否存在活跃的事务
+		3. 如果是活跃的，就会去帮事务A建立一个排他锁对象，然后自身进入等待事务A的阶段，这个步骤就是隐式锁转化为显示锁的步骤。	
+	
+		create table t_20210906(id int NOT NULL AUTO_INCREMENT , PRIMARY KEY (id));
+		insert into t_20210906(id) values(1),(10),(20),(50);
+
+		session A 							session B
+		begin;								begin;	
+		insert into t_20210906(id) value(30);
+											select * from t_20210906 where id = 30 lock in share mode;
+											(Blocked)
+											-- 被id=30的X锁阻塞
+		commit;	
+											
+											
+
+		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA |
+		+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		| 140138352831080:1073:140138273370792   |                 55073 |        65 | t_20210906  | NULL       | TABLE     | IX            | GRANTED     | NULL      |
+		| 140138352831080:16:4:6:140138273367752 |                 55073 |        67 | t_20210906  | PRIMARY    | RECORD    | X,REC_NOT_GAP | GRANTED     | 30        |
+		| 140138352831952:1073:140138273376744   |       421613329542608 |        67 | t_20210906  | NULL       | TABLE     | IS            | GRANTED     | NULL      |
+		| 140138352831952:16:4:6:140138273373816 |       421613329542608 |        67 | t_20210906  | PRIMARY    | RECORD    | S,REC_NOT_GAP | WAITING     | 30        |
+		-- 被id=30的X锁阻塞
+		+----------------------------------------+-----------------------+-----------+-------------+------------+-----------+---------------+-------------+-----------+
+		4 rows in set (0.00 sec)
+		
+		结合源码验证
+		
+			我们跟一下执行 select 时的流程，如果 select 需要加锁，则会走： sel_set_rec_lock -> lock_clust_rec_read_check_and_lock -> lock_rec_convert_impl_to_expl
+		
+			-- 如果事务在记录上具有隐式 x 锁，但没有在记录上设置显式 x 锁，则为其设置一个X锁
+			-- 将隐式锁转换成显示锁，给其它事务已插入的记录加上必要的锁
+			/*********************************************************************//**
+			If a transaction has an implicit x-lock on a record, but no explicit x-lock
+			set on the record, sets one for it. */
+			static
+			void
+			lock_rec_convert_impl_to_expl(
+			/*==========================*/
+				const buf_block_t*	block,	/*!< in: buffer block of rec */
+				const rec_t*		rec,	/*!< in: user record on page */
+				dict_index_t*		index,	/*!< in: index of record */
+				const ulint*		offsets)/*!< in: rec_get_offsets(rec, index) */
+			{
+				trx_t*		trx;
+
+				ut_ad(!lock_mutex_own());
+				ut_ad(page_rec_is_user_rec(rec));
+				ut_ad(rec_offs_validate(rec, index, offsets));
+				ut_ad(!page_rec_is_comp(rec) == !rec_offs_comp(offsets));
+
+				if (dict_index_is_clust(index)) {
+					trx_id_t	trx_id;
+
+					trx_id = lock_clust_rec_some_has_impl(rec, index, offsets);
+
+					trx = trx_rw_is_active(trx_id, NULL, true);
+				} else {
+					ut_ad(!dict_index_is_online_ddl(index));
+
+					trx = lock_sec_rec_some_has_impl(rec, index, offsets);
+
+					ut_ad(!trx || !lock_rec_other_trx_holds_expl(
+							LOCK_S | LOCK_REC_NOT_GAP, trx, rec, block));
+				}
+
+				if (trx != 0) {
+					ulint	heap_no = page_rec_get_heap_no(rec);
+
+					ut_ad(trx_is_referenced(trx));
+					-- 如果事务仍然处于活动状态并且在记录上没有设置明确的 x 锁，则为其设置 1(也就是在记录上加X锁)。在引用计数为零之前无法提交 trx
+					/* If the transaction is still active and has no
+					explicit x-lock set on the record, set one for it.
+					trx cannot be committed until the ref count is zero. */
+
+					lock_rec_convert_impl_to_expl_for_trx(
+						block, rec, index, offsets, trx, heap_no);
+				}
+			}
+
+		
+			sel_set_rec_lock -> lock_clust_rec_read_check_and_lock -> lock_rec_convert_impl_to_expl->lock_rec_convert_impl_to_expl_for_trx
+			
+			
+			/*********************************************************************//**
+			Creates an explicit record lock for a running transaction that currently only
+			has an implicit lock on the record. The transaction instance must have a
+			reference count > 0 so that it can't be committed and freed before this
+			function has completed. */
+			static
+			void
+			lock_rec_convert_impl_to_expl_for_trx(
+			/*==================================*/
+				const buf_block_t*	block,	/*!< in: buffer block of rec */
+				const rec_t*		rec,	/*!< in: user record on page */
+				dict_index_t*		index,	/*!< in: index of record */
+				const ulint*		offsets,/*!< in: rec_get_offsets(rec, index) */
+				trx_t*			trx,	/*!< in/out: active transaction */
+				ulint			heap_no)/*!< in: rec heap number to lock */
+			{
+				ut_ad(trx_is_referenced(trx));
+
+				DEBUG_SYNC_C("before_lock_rec_convert_impl_to_expl_for_trx");
+
+				lock_mutex_enter();
+
+				ut_ad(!trx_state_eq(trx, TRX_STATE_NOT_STARTED));
+				
+				-- 先判断 trx_state_eq 事务是否活跃，再根据 lock_rec_has_expl 判断是否存在排他记录锁
+				-- 如果事务活跃且没有锁 if (!trx_state_eq && !lock_rec_has_expl) ，就为该事务加上排他记录锁。
+				if (!trx_state_eq(trx, TRX_STATE_COMMITTED_IN_MEMORY)
+					&& !lock_rec_has_expl(LOCK_X | LOCK_REC_NOT_GAP,
+							  block, heap_no, trx)) {
+
+					ulint	type_mode;
+
+					type_mode = (LOCK_REC | LOCK_X | LOCK_REC_NOT_GAP);
+					-- 加入锁等待队列中
+					lock_rec_add_to_queue(
+						type_mode, block, heap_no, index, trx, FALSE);
+				}
+
+				lock_mutex_exit();
+
+				trx_release_reference(trx);
+
+				DEBUG_SYNC_C("after_lock_rec_convert_impl_to_expl_for_trx");
+			}
+			
+				
+		先判断 trx_state_eq 事务是否活跃，再根据 lock_rec_has_expl 判断是否存在排他记录锁，如果事务活跃且没有锁 if (!trx_state_eq && !lock_rec_has_expl) ，就为该事务加上排他记录锁。
+
+		上文例子的流程如下：
+
+			执行 insert 语句，判断是否有和插入意向锁冲突的锁，如果有，加插入意向锁，进入锁等待；如果没有，直接写数据，不加任何锁；
+
+			执行 select * from t_20210906 where id = 30 lock in share mode; 语句执行后，判断记录上是否存在活跃的事务
+				如果存在，为 insert 事务创建一个排他记录锁，并将自己加入到锁等待队列 （函数语句 lock_rec_add_to_queue）；
+			
+			
+		-- 判断事务是否处于活跃状态
+		/**********************************************************************//**
+		Determines if a transaction is in the given state.
+		The caller must hold trx_sys->mutex, or it must be the thread
+		that is serving a running transaction.
+		A running RW transaction must be in trx_sys->rw_trx_list.
+		@return TRUE if trx->state == state */
+		UNIV_INLINE
+		bool
+		trx_state_eq(
+		/*=========*/
+			const trx_t*	trx,	/*!< in: transaction */
+			trx_state_t	state)	/*!< in: state */
+		{			
+			
+		
+		-- 判断是否有锁
+		/*********************************************************************//**
+		Checks if a transaction has a GRANTED explicit lock on rec stronger or equal
+		to precise_mode.
+		@return lock or NULL */
+		UNIV_INLINE
+		lock_t*
+		lock_rec_has_expl(
+
+
+
 
 6. LATCH 锁
 	
