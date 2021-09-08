@@ -62,7 +62,6 @@
 	隐式锁的使用
 	  A. INSERT操作只加隐式锁，不需要显示加锁。
 	  B. UPDATE,DELETE在查询时，直接对查询用的Index和主键使用显示锁，其他索引上使用隐式锁。   
-		 理论上说，可以对主键使用隐式锁的。提前使用显示锁应该是为了减少死锁的可能性。
 		 INSERT，UPDATE，DELETE对B+Tree们的操作都是从主键的B+Tree开始，因此对主键加锁可以有效的阻止死锁。
 			-- 先修改主键索引的数据，再修改二级索引的数据。
 			
@@ -80,16 +79,8 @@
 		InnoDB 在插入记录时，是不加锁的。
 		如果事务 A 插入记录且未提交，这时事务 B 尝试对这条记录加锁，事务 B 会先去判断记录上保存的事务 id 是否活跃，如果活跃的话，那么就帮助事务 A 去建立一个锁对象，然后自身进入等待事务 A 状态，这就是所谓的隐式锁转换为显式锁。
 
-	insert 加的是隐式锁。	
-		
-		执行 insert 语句，判断是否有和插入意向锁冲突的锁，如果有，insert语句 加插入意向锁，进入锁等待；如果没有，直接写数据，不加任何锁；
-		
-		insert 加锁，执行 insert 之后，如果没有任何冲突，在 show engine innodb status 命令中是看不到任何锁的，这是因为 insert 加的是隐式锁。
-		所以，根本就不存在之前说的先加插入意向锁，再加排他记录锁的说法，在执行 insert 语句时，什么锁都不会加。
-		
-		这就有点意思了，如果 insert 什么锁都不加，那么如果其他事务执行 select ... lock in share mode，它是如何阻止其他事务加锁的呢？
-		
-		执行 select ... lock in share mode 语句，判断记录上是否存在活跃的事务，如果存在，则为 insert 事务创建一个排他记录锁，并将自己加入到锁等待队列；
+	insert 语句加的是隐式锁。	
+
 
 
 
@@ -166,64 +157,112 @@
 	
 	我们跟一下执行 select 时的流程，如果 select 需要加锁，则会走： sel_set_rec_lock -> lock_clust_rec_read_check_and_lock -> lock_rec_convert_impl_to_expl
 	
-	-- 如果事务在记录上具有隐式 x 锁，但没有在记录上设置显式 x 锁，则为其设置一个
-	-- 将隐式锁转换成显示锁，给其它事务已插入的记录加上必要的锁
+		-- 如果事务在记录上具有隐式 x 锁，但没有在记录上设置显式 x 锁，则为其设置一个
+		-- 将隐式锁转换成显示锁，给其它事务已插入的记录加上必要的锁
+		/*********************************************************************//**
+		If a transaction has an implicit x-lock on a record, but no explicit x-lock
+		set on the record, sets one for it. */
+		static
+		void
+		lock_rec_convert_impl_to_expl(
+		/*==========================*/
+			const buf_block_t*	block,	/*!< in: buffer block of rec */
+			const rec_t*		rec,	/*!< in: user record on page */
+			dict_index_t*		index,	/*!< in: index of record */
+			const ulint*		offsets)/*!< in: rec_get_offsets(rec, index) */
+		{
+			trx_t*		trx;
+
+			ut_ad(!lock_mutex_own());
+			ut_ad(page_rec_is_user_rec(rec));
+			ut_ad(rec_offs_validate(rec, index, offsets));
+			ut_ad(!page_rec_is_comp(rec) == !rec_offs_comp(offsets));
+
+			if (dict_index_is_clust(index)) {
+				trx_id_t	trx_id;
+
+				trx_id = lock_clust_rec_some_has_impl(rec, index, offsets);
+
+				trx = trx_rw_is_active(trx_id, NULL, true);
+			} else {
+				ut_ad(!dict_index_is_online_ddl(index));
+
+				trx = lock_sec_rec_some_has_impl(rec, index, offsets);
+
+				ut_ad(!trx || !lock_rec_other_trx_holds_expl(
+						LOCK_S | LOCK_REC_NOT_GAP, trx, rec, block));
+			}
+
+			if (trx != 0) {
+				ulint	heap_no = page_rec_get_heap_no(rec);
+
+				ut_ad(trx_is_referenced(trx));
+				-- 如果事务仍然处于活动状态并且在记录上没有设置明确的 x 锁，则为其设置 1。在引用计数为零之前无法提交 trx
+				/* If the transaction is still active and has no
+				explicit x-lock set on the record, set one for it.
+				trx cannot be committed until the ref count is zero. */
+
+				lock_rec_convert_impl_to_expl_for_trx(
+					block, rec, index, offsets, trx, heap_no);
+			}
+		}
+
+	
+	sel_set_rec_lock -> lock_clust_rec_read_check_and_lock -> lock_rec_convert_impl_to_expl->lock_rec_convert_impl_to_expl_for_trx
+	
+	
 	/*********************************************************************//**
-	If a transaction has an implicit x-lock on a record, but no explicit x-lock
-	set on the record, sets one for it. */
+	Creates an explicit record lock for a running transaction that currently only
+	has an implicit lock on the record. The transaction instance must have a
+	reference count > 0 so that it can't be committed and freed before this
+	function has completed. */
 	static
 	void
-	lock_rec_convert_impl_to_expl(
-	/*==========================*/
+	lock_rec_convert_impl_to_expl_for_trx(
+	/*==================================*/
 		const buf_block_t*	block,	/*!< in: buffer block of rec */
 		const rec_t*		rec,	/*!< in: user record on page */
 		dict_index_t*		index,	/*!< in: index of record */
-		const ulint*		offsets)/*!< in: rec_get_offsets(rec, index) */
+		const ulint*		offsets,/*!< in: rec_get_offsets(rec, index) */
+		trx_t*			trx,	/*!< in/out: active transaction */
+		ulint			heap_no)/*!< in: rec heap number to lock */
 	{
-		trx_t*		trx;
+		ut_ad(trx_is_referenced(trx));
 
-		ut_ad(!lock_mutex_own());
-		ut_ad(page_rec_is_user_rec(rec));
-		ut_ad(rec_offs_validate(rec, index, offsets));
-		ut_ad(!page_rec_is_comp(rec) == !rec_offs_comp(offsets));
+		DEBUG_SYNC_C("before_lock_rec_convert_impl_to_expl_for_trx");
 
-		if (dict_index_is_clust(index)) {
-			trx_id_t	trx_id;
+		lock_mutex_enter();
 
-			trx_id = lock_clust_rec_some_has_impl(rec, index, offsets);
+		ut_ad(!trx_state_eq(trx, TRX_STATE_NOT_STARTED));
+		
+		-- 先判断 trx_state_eq 事务是否活跃，再根据 lock_rec_has_expl 判断是否存在排他记录锁，如果事务活跃且没有锁 if (!trx_state_eq && !lock_rec_has_expl) ，就为该事务加上排他记录锁。
+		if (!trx_state_eq(trx, TRX_STATE_COMMITTED_IN_MEMORY)
+			&& !lock_rec_has_expl(LOCK_X | LOCK_REC_NOT_GAP,
+					  block, heap_no, trx)) {
 
-			trx = trx_rw_is_active(trx_id, NULL, true);
-		} else {
-			ut_ad(!dict_index_is_online_ddl(index));
+			ulint	type_mode;
 
-			trx = lock_sec_rec_some_has_impl(rec, index, offsets);
-
-			ut_ad(!trx || !lock_rec_other_trx_holds_expl(
-					LOCK_S | LOCK_REC_NOT_GAP, trx, rec, block));
+			type_mode = (LOCK_REC | LOCK_X | LOCK_REC_NOT_GAP);
+			-- 加入锁等待队列中
+			lock_rec_add_to_queue(
+				type_mode, block, heap_no, index, trx, FALSE);
 		}
 
-		if (trx != 0) {
-			ulint	heap_no = page_rec_get_heap_no(rec);
+		lock_mutex_exit();
 
-			ut_ad(trx_is_referenced(trx));
-			-- 如果事务仍然处于活动状态并且在记录上没有设置明确的 x 锁，则为其设置 1。在引用计数为零之前无法提交 trx
-			/* If the transaction is still active and has no
-			explicit x-lock set on the record, set one for it.
-			trx cannot be committed until the ref count is zero. */
+		trx_release_reference(trx);
 
-			lock_rec_convert_impl_to_expl_for_trx(
-				block, rec, index, offsets, trx, heap_no);
-		}
+		DEBUG_SYNC_C("after_lock_rec_convert_impl_to_expl_for_trx");
 	}
-
-
+	
+	
 
 3. lock_rec_convert_impl_to_expl 针对的场景
 
 	有A，B两个Client。A开启事务，然后插入一行记录，未提交事务。
-	此时B开启事务，插入同样的一条记录，那么这时B查询到这行记录之前已被A插入了，并且A开始的事务还活跃，那么就会调用lock_rec_convert_impl_to_expl给A插入的记录加上一把X-LOCK。
+	此时B开启事务，插入同样的一条记录，那么这时B查询到这行记录之前已被A插入了，并且A开始的事务还活跃，那么就会调用 lock_rec_convert_impl_to_expl 给A插入的记录加上一把X-LOCK。
 	然后继续调用 lock_rec_lock 给此记录加上S-LOCK，然后就产生了LOCK_WAIT。
 	https://zhuanlan.zhihu.com/p/139489272	
 	
-	参考案例：《2021-09-03-insert唯一键冲突导致的死锁》
+	参考案例：《2021-09-03-insert唯一键冲突导致的死锁》、《2021-09-06-insert加锁分析.sql》
 	

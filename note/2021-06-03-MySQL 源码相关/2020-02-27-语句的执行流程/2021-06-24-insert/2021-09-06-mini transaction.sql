@@ -79,7 +79,7 @@
 	
 	所以这3个redo log成为一组，mtr包含了这一组的redo log + 1个undo log。
 
-	所以一个所谓的mtr可以包含一组redo日志，在进行崩溃恢复时这一组redo日志作为一个不可分割的整体。
+	所以一个所谓的mtr可以包含一组redo日志，在进行崩溃恢复时这一组redo日志作为一个不可分割的整体。 --理解了。
 	
 	
 4. mini transaction、LATCH、数据插入的函数堆栈
