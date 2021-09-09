@@ -1,6 +1,7 @@
 
 
 基本的代码流程如下
+
 	-- 检查是否存在和当前申请锁模式冲突的锁（lock_rec_other_has_conflicting），如果存在的话，就创建一个锁对象（RecLock::RecLock），并加入到等待队列中（RecLock::add_to_waitq），这里会进行死锁检测;
 	-- 当发现有冲突的锁时，调用函数 RecLock::add_to_waitq 进行锁等待/死锁的判断
 	-- @return DB_LOCK_WAIT, DB_DEADLOCK, or DB_QUE_THR_SUSPENDED, or DB_SUCCESS_LOCKED_REC;
