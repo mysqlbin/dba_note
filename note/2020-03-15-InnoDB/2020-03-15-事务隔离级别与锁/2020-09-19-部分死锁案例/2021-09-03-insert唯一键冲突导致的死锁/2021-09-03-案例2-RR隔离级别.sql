@@ -303,7 +303,7 @@
 	T2
 		
 	T1		
-		root@mysqldb 18:18:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 		+----------------------------------------+-----------------------+-----------+-------------+------------------------------+-----------+---------------+-------------+--------------+
 		| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME                   | LOCK_TYPE | LOCK_MODE     | LOCK_STATUS | LOCK_DATA    |
 		+----------------------------------------+-----------------------+-----------+-------------+------------------------------+-----------+---------------+-------------+--------------+
@@ -315,7 +315,7 @@
 		4 rows in set (0.00 sec)
 
 	T2
-		root@mysqldb 18:20:  [(none)]> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
+		mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
 		+----------------------------------------+-----------------------+-----------+-------------+------------------------------+-----------+------------------------+-------------+--------------+
 		| ENGINE_LOCK_ID                         | ENGINE_TRANSACTION_ID | THREAD_ID | OBJECT_NAME | INDEX_NAME                   | LOCK_TYPE | LOCK_MODE              | LOCK_STATUS | LOCK_DATA    |
 		+----------------------------------------+-----------------------+-----------+-------------+------------------------------+-----------+------------------------+-------------+--------------+
