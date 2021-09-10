@@ -46,6 +46,7 @@ SET @@SESSION.GTID_NEXT= 'AUTOMATIC' /* added by mysqlbinlog */ /*!*/;
 
 
 
+
 #表的DDL和初始化数据:
 mysql> CREATE TABLE `t` (
   `id` int(11) NOT NULL,
@@ -169,7 +170,7 @@ statement格式:
 
 	缺点：
 		存安全隐患, 可能导致主从不一致:
-			比如删除记录的语句, 主库和从库可能删除的是不同记录;
+			比如删除语句带有limit, 主库和从库可能删除的是不同记录;
 			通过做实验就能复现;
 			
 row格式:
