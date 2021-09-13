@@ -32,6 +32,7 @@
 			  1. 先判断 redo log的完整性
 				  redo 有commit标识，直接提交事务，去更新内存数据页
 				  redo 没有commit标识，但是有完整的prepare，需要判断binlog的完整性
+				  
 			  2. binlog的完整性
 				  通过binlog_checksum参数验证binlog的完整性，如果binlog是完整的，就提交事务
 				  否则，回滚事务。
