@@ -219,47 +219,50 @@
 	2021-09-10T07:01:45.953144+08:00 1263874 [Note] Aborted connection 1263874 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
 	2021-09-10T07:01:45.953144+08:00 1263875 [Note] Aborted connection 1263875 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
 	2021-09-10T07:01:45.990132+08:00 1263878 [Note] Aborted connection 1263878 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:45.990153+08:00 1263879 [Note] Aborted connection 1263879 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:45.990146+08:00 1263877 [Note] Aborted connection 1263877 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.002452+08:00 1263836 [Note] Aborted connection 1263836 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.002470+08:00 1263837 [Note] Aborted connection 1263837 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.002498+08:00 1263839 [Note] Aborted connection 1263839 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.002534+08:00 1263845 [Note] Aborted connection 1263845 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.004662+08:00 1263851 [Note] Aborted connection 1263851 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.002463+08:00 1263843 [Note] Aborted connection 1263843 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.004985+08:00 1263849 [Note] Aborted connection 1263849 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.004988+08:00 1263841 [Note] Aborted connection 1263841 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.002456+08:00 1263834 [Note] Aborted connection 1263834 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.002501+08:00 1263847 [Note] Aborted connection 1263847 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.017646+08:00 1263866 [Note] Aborted connection 1263866 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.017685+08:00 1263868 [Note] Aborted connection 1263868 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.017727+08:00 1263867 [Note] Aborted connection 1263867 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.018117+08:00 1263870 [Note] Aborted connection 1263870 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.018150+08:00 1263869 [Note] Aborted connection 1263869 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:46.150203+08:00 1323710 [Note] Aborted connection 1323710 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.50' (Got an error reading communication packets)
-	2021-09-10T07:01:47.161238+08:00 1263888 [Note] Aborted connection 1263888 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.161240+08:00 1263889 [Note] Aborted connection 1263889 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.161238+08:00 1263887 [Note] Aborted connection 1263887 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.161280+08:00 1263891 [Note] Aborted connection 1263891 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.162941+08:00 1263885 [Note] Aborted connection 1263885 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.162956+08:00 1263884 [Note] Aborted connection 1263884 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.162977+08:00 1263886 [Note] Aborted connection 1263886 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.162946+08:00 1263883 [Note] Aborted connection 1263883 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.162956+08:00 1263882 [Note] Aborted connection 1263882 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.167020+08:00 1263892 [Note] Aborted connection 1263892 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.167041+08:00 1263893 [Note] Aborted connection 1263893 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.167077+08:00 1263894 [Note] Aborted connection 1263894 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
-	2021-09-10T07:01:47.167081+08:00 1263895 [Note] Aborted connection 1263895 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
+	.................................................................................................................................................................................
 	2021-09-10T07:01:47.167103+08:00 1263896 [Note] Aborted connection 1263896 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
 	2021-09-10T07:01:47.309250+08:00 1323711 [Note] Aborted connection 1323711 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.53' (Got an error reading communication packets)
 	2021-09-10T07:01:48.317376+08:00 1263903 [Note] Aborted connection 1263903 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
-	2021-09-10T07:01:48.317428+08:00 1263907 [Note] Aborted connection 1263907 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
-	2021-09-10T07:01:48.317394+08:00 1263906 [Note] Aborted connection 1263906 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
-	2021-09-10T07:01:48.317415+08:00 1263905 [Note] Aborted connection 1263905 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
-	2021-09-10T07:01:48.317376+08:00 1263904 [Note] Aborted connection 1263904 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
-	2021-09-10T07:01:48.321977+08:00 1263898 [Note] Aborted connection 1263898 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
-	2021-09-10T07:01:48.322025+08:00 1263899 [Note] Aborted connection 1263899 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
-	2021-09-10T07:01:48.322040+08:00 1263900 [Note] Aborted connection 1263900 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
+
 	2021-09-10T07:01:48.322063+08:00 1263901 [Note] Aborted connection 1263901 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
 	2021-09-10T07:01:48.322030+08:00 1263902 [Note] Aborted connection 1263902 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
 	2021-09-10T07:01:48.462855+08:00 1323712 [Note] Aborted connection 1323712 to db: 'niynioh9_db' user: 'apph5_user' host: '172.16.0.54' (Got an error reading communication packets)
+	
+	
+	----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	
+	2021-09-13T16:58:13.072917+08:00 275945 [Note] Aborted connection 275945 to db: 'niuniuh5_db' user: 'dengpengcheng' host: '192.168.0.251' (Got an error reading communication packets)
+	2021-09-13T16:58:13.072980+08:00 275946 [Note] Aborted connection 275946 to db: 'niuniuh5_db' user: 'dengpengcheng' host: '192.168.0.251' (Got an error reading communication packets)
+	2021-09-13T16:58:13.073044+08:00 275947 [Note] Aborted connection 275947 to db: 'niuniuh5_db' user: 'dengpengcheng' host: '192.168.0.251' (Got an error reading communication packets)
+	.................................................................................................................................................................................
+	2021-09-13T16:58:13.073933+08:00 275952 [Note] Aborted connection 275952 to db: 'niuniuh5_db' user: 'dengpengcheng' host: '192.168.0.251' (Got an error reading communication packets)
+	.................................................................................................................................................................................
+	2021-09-13T16:58:13.076523+08:00 275973 [Note] Aborted connection 275973 to db: 'niuniuh5_db' user: 'dengpengcheng' host: '192.168.0.251' (Got an error reading communication packets)
+	.................................................................................................................................................................................
+	2021-09-13T16:58:13.076632+08:00 275971 [Note] Aborted connection 275971 to db: 'niuniuh5_db' user: 'dengpengcheng' host: '192.168.0.251' (Got an error reading communication packets)
+	2021-09-13T16:58:13.194914+08:00 275985 [Note] Aborted connection 275985 to db: 'niuniuh5_db' user: 'dengpengcheng' host: '192.168.0.251' (Got an error reading communication packets)
+
+		
+	set global log_warnings=1;
+	set global log_error_verbosity=2;
+
+	mysql> show global variables like '%log_warnings%';
+	+---------------+-------+
+	| Variable_name | Value |
+	+---------------+-------+
+	| log_warnings  | 1     |
+	+---------------+-------+
+	1 row in set (0.00 sec)
+
+	mysql> show global variables like '%log_error_verbosity%';
+	+---------------------+-------+
+	| Variable_name       | Value |
+	+---------------------+-------+
+	| log_error_verbosity | 2     |
+	+---------------------+-------+
+	1 row in set (0.00 sec)
+
+	---- 持续跟踪，看看是否还会  'Got an error reading communication packets' 这个提示
+	
+	
+	

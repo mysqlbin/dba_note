@@ -9,7 +9,6 @@
 8. 相关参考
 
 
-
 1. 关于skip_name_resolve参数
 	
 	当一个客户端连接上来的时候，服务端会执行主机名解释操作，当 DNS 很慢时，建立的连接也会很慢。
@@ -210,4 +209,7 @@
 	https://www.jb51.net/article/70893.htm  mysql could not be resolved: Name or service not known
 
 	https://blog.csdn.net/hwhua1986/article/details/78188231
+
+
+
 
