@@ -51,3 +51,12 @@
 	《2021-09-08-redo log的深入学习》
 	
 	
+6. 问题
+	
+	6.1 checkpoint 和 flush 都可以把脏页刷新到磁盘，两者有什么关系？
+	
+		答：真正 脏页刷新到磁盘 的操作是 flush，flush 操作会记录 checkpoint 
+	
+			checkpoint 只是1个检查点，作用是减少崩溃恢复的时间。如果 redo 写满或者内存没有可用空闲空间(或者说脏页占比达到75%)，会强制 flush，然后记录 checkpoint.
+				
+	
