@@ -83,7 +83,7 @@ trx_undo_read_v_idx
 				https://juejin.cn/book/6844733769996304392/section/6844733770071801869
 			
 
-			大多数对数据的变更操作包括INSERT/DELETE/UPDATE，其中INSERT操作在事务提交前只对当前事务可见，因此产生的Undo日志可以在事务提交后直接删除（谁会对刚插入的数据有可见性需求呢！！）
+			大多数对数据的变更操作包括INSERT/DELETE/UPDATE，其中insert 操作在事务提交前只对当前事务可见，因此，事务提交后，就可以把产生的undo日志直接删除（谁会对刚插入的数据有可见性需求呢！！）
 			
 			而对于UPDATE/DELETE则需要维护多版本信息，在InnoDB里，UPDATE和DELETE操作产生的Undo日志被归成一类，即update_undo。
 				http://mysql.taobao.org/monthly/2015/04/01/	
