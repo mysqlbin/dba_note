@@ -621,6 +621,7 @@
 		
 	binlog_row_image=FULL and binlog_format=mixed ：    加锁，写binlog
 		
+	是否记录binlog，跟 binlog_format 参数的设置有关系。
 		
 	其中，binlog_format=ROW 格式下，会修改 .ibd 文件 
 
