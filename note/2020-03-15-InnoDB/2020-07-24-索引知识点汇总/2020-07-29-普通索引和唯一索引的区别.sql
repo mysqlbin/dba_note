@@ -11,13 +11,9 @@
 	
 	RR隔离级别下加锁的角度：
 	
-		索引上的等值查询：
-			唯一索引会加行锁
-			普通索引会加next-key锁
-			
-		范围查询呢
-			
-			
+		唯一索引会加行锁
+		普通索引会加next-key锁
+		
 	change buffer的角度：
 		唯一索引用不到change buffer优化
 		普通索引可以用到change buffer优化。
