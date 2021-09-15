@@ -24,8 +24,9 @@
 			2. 不能保证主从数据实时一致，也无法控制从库的延迟时间，因此不适用于要求主从数据实时同步的场景
 				例如：为了分解读写压力，同一程序写主库读从库，但要求读到的数据与读主库相同，异步复制不能满足这种强数据一致性需求
 		
-	1.2 半同步复制（semi-sync replication） 		
-	为了解决异步复制的缺点，在5.5版本引入了半同步复制（semi-sync replication）
+	1.2 半同步复制（semi-sync replication） 	
+		
+		为了解决异步复制的缺点，在5.6版本引入了半同步复制（semi-sync replication）
 		semi-sync的设计：
 			1. 事务提交的时候，主库把 binlog发送给从库；
 			2. 从库收到 binlog 以后，发回给主库一个 ack，表示收到了；
@@ -113,10 +114,12 @@
 
 	
 6. 小结
-	after commit:
+	after commit(半同步复制)
+		5.5 版本开始支持
 		在存储引擎层提交之后才把 binlog发送给从库, 从库确认接收到之后, 返回一个 ack 给主库, 这时候主库的事务执行完成.
 		
-	after sync
+	after sync(增强半同步复制)
+		5.7 版本开始支持
 		在写入binlog之后,存储引擎层提交之前把binlog发送给从库, 从库把 binlog 写入到 relay log后, 再返回一个 ack 应答给主库, 这时候主库的事务执行完成.
 		
 	dump thread过程分析:
@@ -129,8 +132,4 @@
 		mysql5.7之后新增ack线程：
 			1. master dump thread 发送binlog events 给 slave 的IO thread，开启ack线程等待 slave 的ack反馈，dump 线程继续向slaveIO thread发送下一个事务的binlog。
 			2. slave 接受binlog events 写入relay log ，返回 ack 消息给master ack线程，然后给session返回commit ok。
-		
-系统变量 
-参数变量
 
-	
