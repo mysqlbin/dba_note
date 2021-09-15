@@ -150,6 +150,7 @@
 		
 		
 	4. 从库参数设置不合理造成的延迟
+	
 		主要是 sync_relay_log 这个 relay log 刷盘的参数, 因为sync_relay_log设置为1会导致大量relay log刷盘操作。
 		关闭log_slave_updates，同时innodb_flush_log_at_trx_commit 设置为2
 				
