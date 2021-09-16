@@ -12,6 +12,7 @@
 6. 主从延迟的原因和对应的解决方案
 7. 相关参考
 8. 小结
+9. Online DDL为什么会容易造成主从延迟
 
 
 
@@ -186,4 +187,9 @@
 		relay log 也就是中继日志
 		
 		
+9. Online DDL为什么会容易造成主从延迟
+	
+	Online DDL在主库执行完成才会写binlog，接着发送binlog event给从库的IO线程，IO线程接收后写入本地的relay log，然后从库的SQL线程应用relay log 开始执行DDL语句，
+	假设DDL主库执行耗时10秒，在从库执行耗时15秒，那么延迟会0开始递增到15秒，接着降为0。
+	DDL的binlog event有记录DDL的实际耗时。
 
