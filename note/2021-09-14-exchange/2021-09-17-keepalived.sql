@@ -21,3 +21,9 @@
 	--- 192.168.0.242 ping statistics ---
 	1 packets transmitted, 1 received, 0% packet loss, time 0ms
 	rtt min/avg/max/mdev = 0.026/0.026/0.026/0.000 ms
+
+
+小结：
+	基于 keepalived 的高可用方式，简单不要太简单。
+	
+	
