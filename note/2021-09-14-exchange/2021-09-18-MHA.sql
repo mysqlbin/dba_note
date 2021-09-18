@@ -24,23 +24,39 @@
 	
 	
 	MHA Manager会定时探测集群中的master节点，当master出现故障时，MHA的工作流程如下：
-	
-		1. 从宕机崩溃的master保存二进制日志事件（binlog events）;
-
-		2. 识别含有最新更新的slave，接着做以下操作
-
-			1. 应用差异的中继日志（relay log）到其他的slave，保证所有从库的数据一致
 		
-			2. 应用从master保存的二进制日志事件（binlog events）；
-
-			3. 提升有最新更新的slave为新的master；
-
-		3. 使其他的slave连接新的master进行复制；
+		1. 从宕机的主库保存二进制日志
+		2. 识别含有最新更新的从库，接着做以下操作
+			1. 应用差异的中继日志到其它的从库上，保证所有的从库数据一致
+			2. 应用从主库保存的二进制日志
+			3. 提升有最新更新的从库成为新的主库
+		3. 其它从库指向新的主库进行复制 
 		4. 至此，主从切换完成。
 		
+		
+		--上面的原理还没能口述出来。
+		
 	
+小结
 
-mha manager 的作用相当于 keepliaved，都会去探测master是否宕机。
-
-
-
+	mha manager 的作用相当于 keepliaved，都会去探测master是否宕机。
+	
+	理解了 MHA 补全日志的逻辑就算差不多理解了MHA的切换逻辑
+		补全日志的逻辑:
+			最新更新的Slave也就是relay log最多的Slave:
+				1. 保存故障Master的binlog，只取最新Slave之后的部分
+				2. 先等自身的realy log应用完成 
+				3. 再应用从故障Master保存的binlog
+			其它Slave:
+				1. 跟最新更新的Slave 生成差异 relay log
+				2. 把保存的故障master的binlog 并 scp 到Slave 的工作目录下
+				3. 先等自身的realy log应用完成
+				4. 再应用与最新更新的Slave产生的差异 relay log
+				5. 最后从应用故障master保存的binlog
+				
+				主要补relay log、补binlog：先应用 自身的relay log、差异的relay log、缺失的binlog。
+				
+		故障切换后，会自动建立新的主从关系。	
+		
+		
+	
