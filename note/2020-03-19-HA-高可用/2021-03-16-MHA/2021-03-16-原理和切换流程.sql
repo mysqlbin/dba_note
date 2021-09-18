@@ -59,6 +59,8 @@
 3. 高可用架构MHA有什么样的不足和风险点
 
 	MHA作为传统复制下的高可用霸主，在今天的GTID环境下，开始慢慢走向没落，更多的人开始开始选择replication-manager或者orchestrator等高可用解决方案
+	-- replication-manager或者orchestrator 用的人并不多。
+	
 	不足及风险点：
 		1、failover依赖于外部脚本，比如VIP切换需要自己编写脚本实现
 		2、MHA启动后只检测主库是否正常，并不检查从库状态及主从延迟
@@ -99,17 +101,17 @@
 	
 
 4. 基本工作原理
-	（1）从宕机崩溃的master保存二进制日志事件（binlog events）;
+	1. 从宕机崩溃的master保存二进制日志事件（binlog events）;
 
-	（2）识别含有最新更新的slave；
+	2. 识别含有最新更新的slave；
 
-	（3）应用差异的中继日志（relay log）到其他的slave；
+	3. 应用差异的中继日志（relay log）到其他的slave；
 
-	（4）应用从master保存的二进制日志事件（binlog events）；
+	4. 应用从master保存的二进制日志事件（binlog events）；
 
-	（5）提升一个slave为新的master；
+	5. 提升一个slave为新的master；
 
-	（6）使其他的slave连接新的master进行复制；
+	6. 使其他的slave连接新的master进行复制；
 
 
 5. MHA切换原理的5个阶段
