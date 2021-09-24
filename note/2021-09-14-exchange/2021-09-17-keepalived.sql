@@ -1,5 +1,8 @@
 
 版本：
+	keepalived-2.0.10
+	https://www.keepalived.org/download.html
+	Keepalived for Linux - Version 2.0.10 - November 12, 2018 - MD5SUM:={ac93d7eb5b69a9fbf7494fcf27b39ccf}
 	
 
 基本原理：

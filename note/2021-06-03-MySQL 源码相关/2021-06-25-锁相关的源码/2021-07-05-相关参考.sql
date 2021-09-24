@@ -1,6 +1,9 @@
 
 
-
+	
+	https://zhuanlan.zhihu.com/p/412358771	InnoDB 事务锁源码分析
+		-- 写得不错
+	
 	http://mysql.taobao.org/monthly/2016/01/01/
 	
 	https://blog.csdn.net/fly43108622/article/details/89473828

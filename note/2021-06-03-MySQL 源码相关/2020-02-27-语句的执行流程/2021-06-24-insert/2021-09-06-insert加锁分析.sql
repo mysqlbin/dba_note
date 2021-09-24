@@ -9,7 +9,7 @@
 		4.2 先insert后select
 		4.3 先insert后select - 特殊场景
 	5. 隐式锁
-	6. LATCH 锁
+	6. 用到LATCH锁的案例
 	7. mini transaction
 		7.1 mini transation 主要作用：
 		7.2 mini transaction、LATCH、数据插入的函数堆栈
@@ -326,7 +326,7 @@
 
 
 
-6. LATCH 锁
+6. 用到LATCH锁的案例
 	
 	本文的案例分析就用到 latch 锁。
 	
@@ -372,7 +372,7 @@
 													
 											
 	-- 所以幻读不成立。
-	
+	-- 同时验证了 LATCH 锁的作用：保证并发线程可以安全的操作临界资源。
 	
 7. mini transaction
 
@@ -446,11 +446,34 @@
 	
 	8.1 latch 锁
 		
-		insert 会在检查锁冲突和写数据之前，会对记录所在的页加一个 RW-X-LATCH 锁，执行完写数据之后再释放该锁(实际上写数据的操作就是写 redo log(重做日志)，将脏页加入 flush list)。
+		insert 会在检查锁冲突和写数据之前，会对记录所在的页加一个 RW-X-LATCH 锁，执行完写数据之后再释放该锁(实际上写数据的操作就是写 redo log(重做日志)，修改数据页之后成为脏页)。
 		这个锁的释放非常快，但是这个锁足以保证在插入数据的过程中其他事务无法访问记录所在的页。
 		这个加锁过程实际上是在 mini transaction 里完成的。
 		
-	
+		有一个transaction，依次做了insert，select...for update及update操作，这3个操作分别对应3个mtr，每个 mtr完成：
+			-- 1个DML语句对应1个MTR
+			
+			开启1个事务	
+			
+				开启1个MTR
+				
+					在btree查找目标record，加相关 page latch；
+					
+					加目标record lock，修改对应record(写redo、修改数据页之后成为脏页)
+					
+					释放 page latch
+					
+				提交MTR
+				
+			提交事务，释放行锁
+			
+			
+			
+		latch 是内存锁，是用来对数据页加锁; 因为访问数据页把数据页加载到内存中，所以是对内存的数据页进行加锁。
+		
+		
+		
+		
 	8.1 insert 和 select ... lock in share mode 不会发生幻读
 	
 
@@ -471,11 +494,14 @@
 	
 		insert操作不需要对数据加锁，但是插入数据前需要先申请意向插入锁。
 	
+		
 
 9. 疑问
 	
 	1. latch 锁什么时候释放，语句执行结束还等事务提交再释放？
 		答：目前来看是语句执行结束就释放 latch 锁，不然会影响并发度。
-		
+			-- 没毛病。
+			
+			
 
 				

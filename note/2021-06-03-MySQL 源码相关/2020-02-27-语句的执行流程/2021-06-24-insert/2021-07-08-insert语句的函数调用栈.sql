@@ -219,7 +219,8 @@
 			ut_ad(trx && lock2);
 			ut_ad(lock_get_type_low(lock2) == LOCK_REC);
 
-			-- 首先要判断这两个锁对象是否属于同一个事务，如果属于同一个事务，则不冲突；并且 判断是否存在表锁冲突，如果不存在，需要进行锁兼容性矩阵的初步检测	
+			-- 首先要判断这两个锁对象是否属于同一个事务，如果属于同一个事务，则不冲突；
+			-- 并且 判断是否存在表锁冲突，如果不存在，需要进行锁兼容性矩阵的初步检测	
 			if (trx != lock2->trx
 				&& !lock_mode_compatible(static_cast<lock_mode>(
 								 LOCK_MODE_MASK & type_mode),
