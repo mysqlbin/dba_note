@@ -1,4 +1,4 @@
-
+ 
 
 1. key列
 	表示语句使用到的索引
@@ -7,8 +7,12 @@
 	预计扫描的行数
 	
 3. extra
-	是否使用到覆盖索引
-	是否有group by分组使用到了临时表(using temporary) 
-	using filesort ：无法利用索引完成排序，如果排序需要的空间大于sort_buffer_size，就需要产生磁盘临时表。
-	是否有使用到索引合并
+	using index: 是否使用到覆盖索引
+	using temporary： group by分组字段没有索引，使用到了临时表
+	using filesort ：排序字段没有索引，如果排序需要的空间大于sort_buffer_size，就需要产生磁盘临时表。
+	Using intersect：使用到了索引合并扫描
+	using join buffer: 被驱动表的关联字段没有索引
+	
+	
+	
 	
