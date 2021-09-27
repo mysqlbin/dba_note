@@ -28,9 +28,7 @@
 	
 	
 	MHA Manager会定时探测集群中的master节点，当master出现故障时，MHA的工作流程如下：
-		
-		--上面的原理还没能口述出来。
-		
+				
 		
 		比如有 A、B、C这3个节点
 		
@@ -43,16 +41,15 @@
 				1. 保存故障Master的binlog，只取最新Slave之后的部分
 				2. 先等自身的realy log应用完成
 				3. 再应用从故障Master保存的binlog
-				4. 绑定虚拟IP，提供对外服务
+				4. 绑定虚拟IP(192.168.1.100)，提供对外服务
 				
 			C库会做以下操作：
 				
-				1. 跟最新更新的Slave 生成差异 relay log
-				2. 把保存的故障master的binlog 并 scp 到Slave 的工作目录下
-				3. 先等自身的realy log应用完成
-				4. 再应用与最新更新的Slave产生的差异 relay log
-				5. 最后从应用故障master保存的binlog		
-				6. 作为从库连接到新的主库进行复制
+				1. 跟最新更新的Slave 生成差异的 relay log
+				2. 先等自身的realy log应用完成
+				3. 再应用差异的 relay log
+				4. 最后从应用故障master保存的binlog		
+				5. 作为从库连接到新的主库进行复制
 			
 			
 				
