@@ -49,8 +49,7 @@
 	  `tEndTime` timestamp(3) NULL DEFAULT '0000-00-00 00:00:00.000' COMMENT '结束时间',
 	  `nPlayerID` int(11) NOT NULL COMMENT '玩家ID',
 	  PRIMARY KEY (`ID`),
-	  KEY `idx_tEndTime` (`tEndTime`),
-	  KEY `idx_nPlayerId` (`nPlayerID`)
+	  KEY `idx_tEndTime` (`tEndTime`)
 	) ENGINE=InnoDB AUTO_INCREMENT=5540561 DEFAULT CHARSET=utf8mb4 COMMENT='明细战绩表（按游戏类型分麻将，字牌，纸牌，按人数分类）';
 
 
