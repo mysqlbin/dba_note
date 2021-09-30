@@ -1,11 +1,20 @@
 
 
 
+ib_warn_row_too_big
+dict_index_too_big_for_tree
+
+dict_index_add_to_cache_w_vcol
+	-> dict_index_too_big_for_tree
+		-> ib_warn_row_too_big
+
+	
 /**********************************************************************
 Issue a warning that the row is too big. */
 void
 ib_warn_row_too_big(const dict_table_t*	table)
 {
+	-- 如果 prefix 为 true，则把 blob 字段的前768字节存储在行记录中。
 	/* If prefix is true then a 768-byte prefix is stored
 	locally for BLOB fields. Refer to dict_table_get_format() */
 	const bool prefix = (dict_tf_get_format(table->flags)
@@ -236,4 +245,187 @@ add_field_size:
 
 	return(FALSE);
 }
+
+
+
+
+
+/** Adds an index to the dictionary cache, with possible indexing newly
+added column.
+@param[in,out]	table	table on which the index is
+@param[in,out]	index	index; NOTE! The index memory
+			object is freed in this function!
+@param[in]	add_v	new virtual column that being added along with
+			an add index call
+@param[in]	page_no	root page number of the index
+@param[in]	strict	TRUE=refuse to create the index
+			if records could be too big to fit in
+			an B-tree page
+@return DB_SUCCESS, DB_TOO_BIG_RECORD, or DB_CORRUPTION */
+dberr_t
+dict_index_add_to_cache_w_vcol(
+	dict_table_t*		table,
+	dict_index_t*		index,
+	const dict_add_v_col_t* add_v,
+	ulint			page_no,
+	ibool			strict)
+{
+	dict_index_t*	new_index;
+	ulint		n_ord;
+	ulint		i;
+
+	ut_ad(index);
+	ut_ad(mutex_own(&dict_sys->mutex) || dict_table_is_intrinsic(table));
+	ut_ad(index->n_def == index->n_fields);
+	ut_ad(index->magic_n == DICT_INDEX_MAGIC_N);
+	ut_ad(!dict_index_is_online_ddl(index));
+	ut_ad(!dict_index_is_ibuf(index));
+
+	ut_d(mem_heap_validate(index->heap));
+	ut_a(!dict_index_is_clust(index)
+	     || UT_LIST_GET_LEN(table->indexes) == 0);
+
+	if (!dict_index_find_cols(table, index, add_v)) {
+
+		dict_mem_index_free(index);
+		return(DB_CORRUPTION);
+	}
+
+	/* Build the cache internal representation of the index,
+	containing also the added system fields */
+
+	if (index->type == DICT_FTS) {
+		new_index = dict_index_build_internal_fts(table, index);
+	} else if (dict_index_is_clust(index)) {
+		new_index = dict_index_build_internal_clust(table, index);
+	} else {
+		new_index = dict_index_build_internal_non_clust(table, index);
+	}
+
+	/* Set the n_fields value in new_index to the actual defined
+	number of fields in the cache internal representation */
+
+	new_index->n_fields = new_index->n_def;
+	new_index->trx_id = index->trx_id;
+	new_index->set_committed(index->is_committed());
+	new_index->allow_duplicates = index->allow_duplicates;
+	new_index->nulls_equal = index->nulls_equal;
+	new_index->disable_ahi = index->disable_ahi;
+
+	if (dict_index_too_big_for_tree(table, new_index, strict)) {
+
+		if (strict) {
+			dict_mem_index_free(new_index);
+			dict_mem_index_free(index);
+			return(DB_TOO_BIG_RECORD);
+		} else if (current_thd != NULL) {
+			/* Avoid the warning to be printed
+			during recovery. */
+			ib_warn_row_too_big(table);
+		}
+	}
+
+	n_ord = new_index->n_uniq;
+
+	/* Flag the ordering columns and also set column max_prefix */
+
+	for (i = 0; i < n_ord; i++) {
+		const dict_field_t*	field
+			= dict_index_get_nth_field(new_index, i);
+
+		/* Check the column being added in the index for
+		the first time and flag the ordering column. */
+		if (field->col->ord_part == 0 ) {
+			field->col->max_prefix = field->prefix_len;
+			field->col->ord_part = 1;
+		} else if (field->prefix_len == 0) {
+			/* Set the max_prefix for a column to 0 if
+			its prefix length is 0 (for this index)
+			even if it was a part of any other index
+			with some prefix length. */
+			field->col->max_prefix = 0;
+		} else if (field->col->max_prefix != 0
+			   && field->prefix_len
+			   > field->col->max_prefix) {
+			/* Set the max_prefix value based on the
+			prefix_len. */
+			field->col->max_prefix = field->prefix_len;
+		}
+		ut_ad(field->col->ord_part == 1);
+	}
+
+	new_index->stat_n_diff_key_vals =
+		static_cast<ib_uint64_t*>(mem_heap_zalloc(
+			new_index->heap,
+			dict_index_get_n_unique(new_index)
+			* sizeof(*new_index->stat_n_diff_key_vals)));
+
+	new_index->stat_n_sample_sizes =
+		static_cast<ib_uint64_t*>(mem_heap_zalloc(
+			new_index->heap,
+			dict_index_get_n_unique(new_index)
+			* sizeof(*new_index->stat_n_sample_sizes)));
+
+	new_index->stat_n_non_null_key_vals =
+		static_cast<ib_uint64_t*>(mem_heap_zalloc(
+			new_index->heap,
+			dict_index_get_n_unique(new_index)
+			* sizeof(*new_index->stat_n_non_null_key_vals)));
+
+	new_index->stat_index_size = 1;
+	new_index->stat_n_leaf_pages = 1;
+
+	/* Add the new index as the last index for the table */
+
+	UT_LIST_ADD_LAST(table->indexes, new_index);
+	new_index->table = table;
+	new_index->table_name = table->name.m_name;
+	new_index->search_info = btr_search_info_create(new_index->heap);
+
+	new_index->page = page_no;
+	rw_lock_create(index_tree_rw_lock_key, &new_index->lock,
+		       SYNC_INDEX_TREE);
+
+	/* Intrinsic table are not added to dictionary cache instead are
+	cached to session specific thread cache. */
+	if (!dict_table_is_intrinsic(table)) {
+		dict_sys->size += mem_heap_get_size(new_index->heap);
+	}
+
+	/* Check if key part of the index is unique. */
+	if (dict_table_is_intrinsic(table)) {
+
+		new_index->rec_cache.fixed_len_key = true;
+		for (i = 0; i < new_index->n_uniq; i++) {
+
+			const dict_field_t*	field;
+			field = dict_index_get_nth_field(new_index, i);
+
+			if (!field->fixed_len) {
+				new_index->rec_cache.fixed_len_key = false;
+				break;
+			}
+		}
+
+		new_index->rec_cache.key_has_null_cols = false;
+		for (i = 0; i < new_index->n_uniq; i++) {
+
+			const dict_field_t*	field;
+			field = dict_index_get_nth_field(new_index, i);
+
+			if (!(field->col->prtype & DATA_NOT_NULL)) {
+				new_index->rec_cache.key_has_null_cols = true;
+				break;
+			}
+		}
+	}
+
+	dict_mem_index_free(index);
+
+	return(DB_SUCCESS);
+}
+
+
+
+
 
