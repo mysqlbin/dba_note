@@ -16,8 +16,8 @@
 	desc SELECT
 		COUNT(DISTINCT(users.nPlayerId)) activeNum
 	FROM
-		aiuaiuh9_db.table_user users
-	LEFT JOIN aiuaiuh9_db.table_league_club_game_score_detail detail ON users.nPlayerId = detail.nPlayerId
+		niuniuh5_db.table_user users
+	LEFT JOIN niuniuh5_db.table_league_club_game_score_detail detail ON users.nPlayerId = detail.nPlayerId
 	WHERE
 		users.extendCode = 123314
 	AND detail.tEndTime >= '2021-07-30 00:00:00'
@@ -26,7 +26,7 @@
 	| id | select_type | table  | partitions | type   | possible_keys          | key     | key_len | ref                          | rows    | filtered | Extra       |
 	+----+-------------+--------+------------+--------+------------------------+---------+---------+------------------------------+---------+----------+-------------+
 	|  1 | SIMPLE      | detail | NULL       | ALL    | idx_tEndTime           | NULL    | NULL    | NULL                         | 4979724 |    18.59 | Using where |
-	|  1 | SIMPLE      | users  | NULL       | eq_ref | PRIMARY,idx_extendCode | PRIMARY | 4       | aiuaiuh9_db.detail.nPlayerID |       1 |     5.00 | Using where |
+	|  1 | SIMPLE      | users  | NULL       | eq_ref | PRIMARY,idx_extendCode | PRIMARY | 4       | niuniuh5_db.detail.nPlayerID |       1 |     5.00 | Using where |
 	+----+-------------+--------+------------+--------+------------------------+---------+---------+------------------------------+---------+----------+-------------+
 	2 rows in set, 1 warning (0.00 sec)
 
@@ -55,7 +55,7 @@
 
 4. 慢查询原因
 	
-	mysql> desc select count(*) from aiuaiuh9_db.table_user users where users.extendCode = 123314;
+	mysql> desc select count(*) from niuniuh5_db.table_user users where users.extendCode = 123314;
 	+----+-------------+-------+------------+------+----------------+----------------+---------+-------+------+----------+-------------+
 	| id | select_type | table | partitions | type | possible_keys  | key            | key_len | ref   | rows | filtered | Extra       |
 	+----+-------------+-------+------------+------+----------------+----------------+---------+-------+------+----------+-------------+
@@ -63,7 +63,7 @@
 	+----+-------------+-------+------------+------+----------------+----------------+---------+-------+------+----------+-------------+
 	1 row in set, 1 warning (0.00 sec)
 	
-	mysql> select count(*) from aiuaiuh9_db.table_user users where users.extendCode = 123314;
+	mysql> select count(*) from niuniuh5_db.table_user users where users.extendCode = 123314;
 	+----------+
 	| count(*) |
 	+----------+
@@ -91,8 +91,8 @@
 		desc SELECT
 			COUNT(DISTINCT(users.nPlayerId)) activeNum
 		FROM
-			aiuaiuh9_db.table_user users
-		LEFT JOIN aiuaiuh9_db.table_league_club_game_score_detail detail ON users.nPlayerId = detail.nPlayerId
+			niuniuh5_db.table_user users
+		LEFT JOIN niuniuh5_db.table_league_club_game_score_detail detail ON users.nPlayerId = detail.nPlayerId
 		WHERE
 			users.extendCode = 123314
 		AND detail.tEndTime >= '2021-07-30 00:00:00'
@@ -101,7 +101,7 @@
 		| id | select_type | table  | partitions | type | possible_keys              | key            | key_len | ref                         | rows | filtered | Extra                              |
 		+----+-------------+--------+------------+------+----------------------------+----------------+---------+-----------------------------+------+----------+------------------------------------+
 		|  1 | SIMPLE      | users  | NULL       | ref  | PRIMARY,idx_extendCode     | idx_extendCode | 5       | const                       |    9 |   100.00 | Using index                        |
-		|  1 | SIMPLE      | detail | NULL       | ref  | idx_tEndTime,idx_nPlayerId | idx_nPlayerId  | 4       | aiuaiuh9_db.users.nPlayerId | 1633 |    26.25 | Using index condition; Using where |
+		|  1 | SIMPLE      | detail | NULL       | ref  | idx_tEndTime,idx_nPlayerId | idx_nPlayerId  | 4       | niuniuh5_db.users.nPlayerId | 1633 |    26.25 | Using index condition; Using where |
 		+----+-------------+--------+------------+------+----------------------------+----------------+---------+-----------------------------+------+----------+------------------------------------+
 		2 rows in set, 1 warning (0.00 sec)
 
