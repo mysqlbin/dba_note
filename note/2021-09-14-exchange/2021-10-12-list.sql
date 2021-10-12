@@ -15,6 +15,6 @@ MySQL：
 	
 MongoDB：
 	
-	4台MongoDB数据库，2个副本集模式
+	6台MongoDB数据库，2个副本集模式
 
 
