@@ -1,5 +1,4 @@
 
-简单描述MySQL MVCC机制
 
 1. MVCC 就是多版本控制，基于 read view + undo 实现MVCC
 	
