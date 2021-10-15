@@ -1,5 +1,5 @@
 
-机器配置
+最好的机器配置
 
 	内存大小  CPU	 磁盘类型   			顺序写的IOPS   顺序读的IOPS   混合随机读写的IOPS
 	64GB      32核   1000GB的SSD			10000		   9990			  r=4986,w=5003
@@ -20,11 +20,11 @@ fpmmm 的 mysql queries executed 指标
 	
 日常			
 	QPS: 1000左右
-	TPS: 100左右
+	TPS: 80、90左右
 	
 	delete: 2多
-	insert: 60多
-	update: 40多
+	insert: 50多
+	update: 30多
 	
 	
 
