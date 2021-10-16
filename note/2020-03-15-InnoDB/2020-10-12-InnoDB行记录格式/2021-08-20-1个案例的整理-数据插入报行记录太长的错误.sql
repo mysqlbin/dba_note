@@ -207,3 +207,7 @@
 			" ROW_FORMAT=COMPRESSED ": ""
 			, prefix ? DICT_MAX_FIXED_COL_LEN : 0);
 	}
+
+	-- 可以讲讲这部分的源码
+	
+	
