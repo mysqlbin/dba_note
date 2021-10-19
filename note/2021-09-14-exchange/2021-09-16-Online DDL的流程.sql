@@ -18,3 +18,9 @@
 
 
 重要的2个文件：临时文件、临时日志文件 
+
+
+
+| 274408 | root  | localhost  | NULL | Query  |   54 | copy to tmp table  | alter table `abc_db`.`table_detail_log` change trade_return_data trade_return_data text |
+
+

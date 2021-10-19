@@ -29,7 +29,7 @@ sysbench /usr/local/share/sysbench/tests/include/oltp_legacy/oltp.lua \
 --mysql-host=192.168.1.12 \
 --mysql-port=3306 \
 --mysql-user=sysbench \
---mysql-password='1234Abc&' \
+--mysql-password='' \
 --mysql-db=sbtest \
 --num-threads=16 \
 --oltp-table-size=5000000 \
