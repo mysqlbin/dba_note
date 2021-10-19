@@ -97,6 +97,8 @@ Disk stats (read/write):
 
 
 
+磁盘IO能力不行，压测的TPS、QPS上不去多少。
+
 
 
 

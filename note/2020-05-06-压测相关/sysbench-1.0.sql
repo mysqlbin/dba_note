@@ -13,6 +13,8 @@ yum -y install  make automake libtool pkgconfig libaio-devel vim-common
 
 ./autogen.sh
 
+sudo -i
+
 sudo ./configure --with-mysql-includes=/usr/local/mysql/include --with-mysql-libs=/usr/local/mysql/lib && make && make install
 
 

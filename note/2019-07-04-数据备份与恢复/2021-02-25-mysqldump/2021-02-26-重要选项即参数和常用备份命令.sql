@@ -44,7 +44,7 @@
 	–no-create-info：        
 		表示不需要导出表结构
 	
-	–set-gtid-purged=off：   
+	-–set-gtid-purged=off：   
 		表示不输出跟 GTID 相关的信息；
 		--
 		-- GTID state at the beginning of the backup 
