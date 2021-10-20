@@ -20,7 +20,7 @@ set global innodb_flush_log_at_trx_commit=0;
 ./sysbench --mysql-host=192.168.1.12 --mysql-port=3306 --mysql-user=sysbench --mysql-password='' --test=tests/db/oltp.lua --oltp_tables_count=15 --oltp-table-size=2000000 --rand-init=on prepare
 
 
-purge binary logs to 'mysql-bin.000116';  
+purge binary logs to 'mysql-bin.000176';  
 
 
 

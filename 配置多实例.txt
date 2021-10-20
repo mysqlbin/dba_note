@@ -43,7 +43,11 @@ netstat -nalp |grep mysqld
 
 
 
+/usr/local/mysql8/bin/mysqld --defaults-file=/data_volume/mysql3307/my3307.cnf --initialize-insecure
+
+/usr/local/mysql8/bin/mysqld --defaults-file=/data_volume/mysql3307/my3307.cnf &
 
 
+/data_volume/mysql3307/data/
 
 
