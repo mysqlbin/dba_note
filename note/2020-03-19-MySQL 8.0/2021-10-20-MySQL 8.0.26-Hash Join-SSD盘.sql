@@ -55,8 +55,6 @@
 	1 row in set (0.00 sec)
 
 
-	
-	
 1.1 被驱动表没有索引-使用的是BNL算法
 
 	初始化表结构和数据
@@ -335,9 +333,9 @@ call idata();
 3. 执行耗时对比
 
 
-				有索引			无索引
-	MySQL5.7	0.09s			10 min 22.98 sec
-	MySQL8.0	0.05s           0.54s
+					有索引			无索引
+	MySQL5.7.26		0.09s			10 min 22.98 sec (BNL算法)
+	MySQL8.0.26		0.05s           0.54s (hash join算法)
 
 	
 

@@ -46,5 +46,6 @@ MySQL 8.0:
 		https://dev.mysql.com/doc/refman/8.0/en/grant.html
 
 
-
+	create user 'root'@'%' identified by '123456abc';
+	grant all privileges on *.* to 'root'@'%' with grant option;
 
