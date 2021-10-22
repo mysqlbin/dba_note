@@ -18,7 +18,7 @@ set global sync_binlog=0;
 set global innodb_flush_log_at_trx_commit=0;
 
 
-./sysbench --mysql-host=192.168.1.12 --mysql-port=3307 --mysql-user=sysbench --mysql-password='1234Abc&' --test=tests/db/oltp.lua --oltp_tables_count=15 --oltp-table-size=2000000 --rand-init=on prepare
+./sysbench --mysql-host=192.168.1.12 --mysql-port=3307 --mysql-user=sysbench --mysql-password='' --test=tests/db/oltp.lua --oltp_tables_count=15 --oltp-table-size=2000000 --rand-init=on prepare
 
 
 purge binary logs to 'mysql-bin.000176';  
@@ -116,7 +116,7 @@ purge binary logs to 'mysql-bin.000084';
 
 
 ./sysbench --mysql-host=192.168.1.12 --mysql-port=3307 --mysql-user=sysbench \
---mysql-password='1234Abc&' --test=tests/db/oltp.lua --oltp_tables_count=15 \
+--mysql-password='' --test=tests/db/oltp.lua --oltp_tables_count=15 \
 --oltp-table-size=2000000 --num-threads=5 --oltp-read-only=off \
 --report-interval=10 --rand-type=uniform --max-time=1800 \
  --max-requests=0 --percentile=99 run >> /home/coding001/log/sysbench_oltpX_5_11_vision8.log &

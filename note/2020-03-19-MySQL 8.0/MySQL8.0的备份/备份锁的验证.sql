@@ -22,6 +22,7 @@ DML
 
 DDL 
 	truncate 
+		
 		LOCK INSTANCE FOR BACKUP; 
 													truncate table test_20191101.t_2103;
 													(Blocked)	
