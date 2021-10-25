@@ -111,7 +111,6 @@ sysbench --test=/usr/local/share/sysbench/oltp_write_only.lua \
 --db-driver=mysql run >> /home/coding001/log/sysbench_oltpX_32_11_vesion7_notAHI.log &
 
 
-[coding001@db-a ~]$ rm -rf /home/coding001/log/sysbench_oltpX_32_11_vesion7_notAHI.log
 [coding001@db-a ~]$ tail -f /home/coding001/log/sysbench_oltpX_32_11_vesion7_notAHI.log
 [ 50s ] thds: 32 tps: 395.90 qps: 2375.48 (r/w/o: 0.00/1583.69/791.79) lat (ms,95%): 121.08 err/s: 0.00 reconn/s: 0.00
 [ 60s ] thds: 32 tps: 422.70 qps: 2525.92 (r/w/o: 0.00/1680.51/845.41) lat (ms,95%): 110.66 err/s: 0.00 reconn/s: 0.00
