@@ -79,6 +79,8 @@ buf_pool_from_bpage(
 buffer pool mutex 是对整个缓冲池加锁，还是对 instance 加锁？
     对 instance。
 	
+	
+	
 /********************************************************************//**
 Moves a page to the start of the buffer pool LRU list if it is too old.
 This high-level function can be used to prevent an important page from
