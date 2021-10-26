@@ -1,42 +1,44 @@
-Last time write locked in file /export/home/pb2/build/sb_0-33648028-1555164244.06/mysql-5.7.26/storage/innobase/btr/btr0cur.cc line 976
-	
-	mtr_sx_lock(dict_index_get_lock(index), mtr);
 
-
-
-Last time read locked in file btr0cur.cc line 1008
-
-	root_leaf_rw_latch = btr_cur_latch_for_root_leaf(latch_mode);
-
-
-
-Mutex at 0x367d3f8, Mutex BUF_POOL created buf0buf.cc:1731, lock var 0
-
-	mutex_create(LATCH_ID_BUF_POOL, &buf_pool->mutex);
-
-
-	--Thread 140701152139008 has waited at buf0buf.cc line 3510 for 0.00 seconds the semaphore:
+1. show engine innodb status 查看到 mutex 争用频率
+	Last time write locked in file /export/home/pb2/build/sb_0-33648028-1555164244.06/mysql-5.7.26/storage/innobase/btr/btr0cur.cc line 976
 		
-		buf_pool_mutex_enter(buf_pool);
+		mtr_sx_lock(dict_index_get_lock(index), mtr);
+
+
+
+	Last time read locked in file btr0cur.cc line 1008
+
+		root_leaf_rw_latch = btr_cur_latch_for_root_leaf(latch_mode);
+
+
+
+	Mutex at 0x367d3f8, Mutex BUF_POOL created buf0buf.cc:1731, lock var 0
+
+		mutex_create(LATCH_ID_BUF_POOL, &buf_pool->mutex);
+
+
+		--Thread 140701152139008 has waited at buf0buf.cc line 3510 for 0.00 seconds the semaphore:
+			
+			buf_pool_mutex_enter(buf_pool);
+			
+			这意味着它已经等待了0秒。在这个场景下，争用很快消失
+			
+			
+			
+	SX-lock on RW-latch at 0x7ff72c00c990 created in file dict0dict.cc line 2737
+
+		rw_lock_create(index_tree_rw_lock_key, &new_index->lock,
+				  SYNC_INDEX_TREE);
 		
-		这意味着它已经等待了0秒。在这个场景下，争用很快消失
-		
-		
-		
-SX-lock on RW-latch at 0x7ff72c00c990 created in file dict0dict.cc line 2737
-
-	rw_lock_create(index_tree_rw_lock_key, &new_index->lock,
-		      SYNC_INDEX_TREE);
-	
 
 
-我们需要查看的文件有：
+	我们需要查看的文件有：
 
-	btr0cur.cc
+		btr0cur.cc
 
-	dict0dict.cc
+		dict0dict.cc
 
-	buf0buf.cc
+		buf0buf.cc
 
 
 5.7.26
@@ -101,6 +103,7 @@ buffer pool包含：
 		
 		
 lru list 包含：
+	
 	冷数据和热数据
 	对 buffer pool instance的 lru list 加 mutex，会阻塞 instance 下所有的DML请求吗
 		-- 自己也整理下
