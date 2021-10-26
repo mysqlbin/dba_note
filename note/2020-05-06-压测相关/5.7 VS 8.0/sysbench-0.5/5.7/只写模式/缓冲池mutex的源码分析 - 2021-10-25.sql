@@ -40,7 +40,6 @@ SX-lock on RW-latch at 0x7ff72c00c990 created in file dict0dict.cc line 2737
 
 
 
-
 将page变成young的函数，变成young就是插入到LRU列表的头部。
 /********************************************************************//**
 Moves a page to the start of the buffer pool LRU list. This high-level
@@ -66,6 +65,20 @@ buf_page_make_young(
 }
 
 
+-- 获取数据页所在的缓冲池实例
+/******************************************************************//**
+Returns the buffer pool instance given a page instance
+@return buf_pool */
+UNIV_INLINE
+buf_pool_t*
+buf_pool_from_bpage(
+/*================*/
+	const buf_page_t*	bpage); /*!< in: buffer pool page */
+	
+	
+buffer pool mutex 是对整个缓冲池加锁，还是对 instance 加锁？
+    对 instance。
+	
 /********************************************************************//**
 Moves a page to the start of the buffer pool LRU list if it is too old.
 This high-level function can be used to prevent an important page from
