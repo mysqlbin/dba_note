@@ -10,6 +10,18 @@ MySQL关键参数：双1，innodb_buffer_pool_size=12GB，innodb_buffer_pool_ins
 8.0.26   576   		685			1248
 
 
+
+24个线程下的TPS             缓冲池的参数组合 
+
+832 						innodb_buffer_pool_size=12GB，innodb_buffer_pool_instances=3
+861							innodb_buffer_pool_size=12GB，innodb_buffer_pool_instances=6
+1066						innodb_buffer_pool_size=12GB，innodb_buffer_pool_instances=12
+
+
+5.7.26下，缓冲池实例mutex 争用相对较频繁，目前看来增大 innodb_buffer_pool_instances 可以进一步提高性能。
+
+innodb_buffer_pool_instances 设置太小，锁冲突集中; 设置太大，维护成本升高。
+
 只写的情况下，TPS 8.0 比 5.7的要好
 
 

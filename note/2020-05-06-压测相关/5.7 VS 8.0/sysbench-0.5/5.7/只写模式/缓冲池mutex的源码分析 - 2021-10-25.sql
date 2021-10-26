@@ -39,30 +39,99 @@ SX-lock on RW-latch at 0x7ff72c00c990 created in file dict0dict.cc line 2737
 	buf0buf.cc
 
 
+5.7.26
+	将page变成young的函数，变成young就是插入到LRU列表的头部。
+	/********************************************************************//**
+	Moves a page to the start of the buffer pool LRU list. This high-level
+	function can be used to prevent an important page from slipping out of
+	the buffer pool. */
+	void
+	buf_page_make_young(
+	/*================*/
+		buf_page_t*	bpage)	/*!< in: buffer block of a file page */
+	{
+		buf_pool_t*	buf_pool = buf_pool_from_bpage(bpage);
+		
+		-- 对数据页所在的缓冲池实例加mutex锁
+		buf_pool_mutex_enter(buf_pool);
 
-将page变成young的函数，变成young就是插入到LRU列表的头部。
-/********************************************************************//**
-Moves a page to the start of the buffer pool LRU list. This high-level
-function can be used to prevent an important page from slipping out of
-the buffer pool. */
-void
-buf_page_make_young(
-/*================*/
-	buf_page_t*	bpage)	/*!< in: buffer block of a file page */
-{
-	buf_pool_t*	buf_pool = buf_pool_from_bpage(bpage);
-	
-	-- 添加 BP 缓冲池 mutex锁
-	buf_pool_mutex_enter(buf_pool);
+		ut_a(buf_page_in_file(bpage));
+		
+		-- 移动old列表的数据页到young列表
+		buf_LRU_make_block_young(bpage);
+		
+		-- 释放数据页所在的缓冲池实例的mutex锁
+		buf_pool_mutex_exit(buf_pool);
+	}
 
-	ut_a(buf_page_in_file(bpage));
+8.0.26
+	/** Moves a page to the start of the buffer pool LRU list. This high-level
+	function can be used to prevent an important page from slipping out of
+	the buffer pool.
+	@param[in,out]	bpage	buffer block of a file page */
+	void buf_page_make_young(buf_page_t *bpage) {
+	  buf_pool_t *buf_pool = buf_pool_from_bpage(bpage);
 	
-	-- 移动old列表的数据页到young列表
-	buf_LRU_make_block_young(bpage);
+	  -- 对数据页所在的缓冲池实例的lru list加mutex锁
+	  mutex_enter(&buf_pool->LRU_list_mutex);
+
+	  ut_a(buf_page_in_file(bpage));
+
+	  buf_LRU_make_block_young(bpage);
 	
-	-- 释放 BP 缓冲池 mutex锁
-	buf_pool_mutex_exit(buf_pool);
-}
+	  -- 释放数据页所在的缓冲池实例的 lru list mutex锁
+	  mutex_exit(&buf_pool->LRU_list_mutex);
+	}
+	
+
+buffer pool包含：
+	lru list
+	free list 
+	diry list 
+	change bufer 
+	double buffer 
+	
+	对 buffer pool instance加 mutex，会阻塞 instance 下所有的DML请求吗
+		-- 自己也整理下
+		从lru list的冷数据区域把数据页移动到热数据区域中，需要加 buffer pool mutex
+		
+		修改数据的时候，需要把数据页写入flush list, 需要加 buffer pool mutex
+		
+		因此，会阻塞 instance 下所有的DML请求。
+		
+		
+lru list 包含：
+	冷数据和热数据
+	对 buffer pool instance的 lru list 加 mutex，会阻塞 instance 下所有的DML请求吗
+		-- 自己也整理下
+		
+		要更新的数据页不在LRU里：
+			DML的时候，会产生脏页，那么这些脏页要加入flush list   如果flush list加了mutex，DML的请求会受到影响	
+			
+		要更新的数据页在LRU里
+			LRU上的数据页，DML更新这些数据页，这些数据页也只是使用链表加入到flush list   如有 mutex 要研究下这个流程
+
+
+
+https://www.cnblogs.com/jishuxiaobai/p/5940209.html	
+	
+8.0最重要的一个改进就是：终于把全局大锁buffer pool mutex拆分了，各个链表由其专用的mutex保护，大大提升了访问扩展性。
+
+原来的一个大mutex被拆分成多个为free_list, LRU_list, zip_free, 和zip_hash单独使用mutex:
+
+	批量扫描LRU（buf_do_LRU_batch）: buf_pool_t::LRU_list_mutex
+
+	批量扫描FLUSH_LIST（buf_do_flush_list_batch）: buf_pool_t::flush_list_mutex
+
+	脏页加入到flush_list(buf_flush_insert_into_flush_list): buf_pool_t::flush_list_mutex
+
+	脏页写回磁盘后，从flush list上移除(buf_flush_write_complete): buf_pool_t::flush_state_mutex/flush_list_mutex
+
+	从LRU上驱逐Page(buf_LRU_free_page):buf_pool_t::LRU_list_mutex， 及buf_pool_t::free_list_mutex(buf_LRU_block_free_non_file_page)
+
+	buf_flush_LRU_list_batch 使用mutex_enter_nowait 来获取block锁，如果获取失败，说明正被其他session占用，忽略该block.
+
+	
 
 
 -- 获取数据页所在的缓冲池实例
@@ -102,3 +171,58 @@ buf_page_make_young_if_needed(
 		buf_page_make_young(bpage);
 	}
 }
+
+
+
+
+/******************************************************************//**
+Remove or flush all the dirty pages that belong to a given tablespace
+inside a specific buffer pool instance. The pages will remain in the LRU
+list and will be evicted from the LRU list as they age and move towards
+the tail of the LRU list. */
+static
+void
+buf_flush_dirty_pages(
+/*==================*/
+	buf_pool_t*	buf_pool,	/*!< buffer pool instance */
+	ulint		id,		/*!< in: space id */
+	FlushObserver*	observer,	/*!< in: flush observer */
+	bool		flush,		/*!< in: flush to disk if true otherwise
+					remove the pages without flushing */
+	const trx_t*	trx)		/*!< to check if the operation must
+					be interrupted */
+{
+	dberr_t		err;
+
+	do {
+		buf_pool_mutex_enter(buf_pool);
+
+		err = buf_flush_or_remove_pages(
+			buf_pool, id, observer, flush, trx);
+
+		buf_pool_mutex_exit(buf_pool);
+
+		ut_ad(buf_flush_validate(buf_pool));
+
+		if (err == DB_FAIL) {
+			os_thread_sleep(2000);
+		}
+
+		if (err == DB_INTERRUPTED && observer != NULL) {
+			ut_a(flush);
+
+			flush = false;
+			err = DB_FAIL;
+		}
+
+		/* DB_FAIL is a soft error, it means that the task wasn't
+		completed, needs to be retried. */
+
+		ut_ad(buf_flush_validate(buf_pool));
+
+	} while (err == DB_FAIL);
+
+	ut_ad(err == DB_INTERRUPTED
+	      || buf_pool_get_dirty_pages_count(buf_pool, id, observer) == 0);
+}
+
