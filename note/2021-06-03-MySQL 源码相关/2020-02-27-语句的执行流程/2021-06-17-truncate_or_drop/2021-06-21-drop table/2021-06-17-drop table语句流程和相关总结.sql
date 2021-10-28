@@ -60,10 +60,10 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		3.1 如果dirty page属于drop table，那么就直接从flush list中remove掉；
 			-- 对应 buf_flush_or_remove_pages 函数
 		3.2 如果删除的脏页page个数超过了#define BUF_LRU_DROP_SEARCH_SIZE 1024 这个数目的话，释放buffer pool mutex，flush list mutex，释放cpu资源：
-			释放flush list mutex；
-			释放buffer pool mutex；
-			强制通过 pthread_yield 进行一次OS context switch，释放剩余的cpu时间片；
-			
+				释放flush list mutex；
+				释放buffer pool mutex；
+				此时可以正常读写。
+				强制通过 pthread_yield 进行一次OS context switch，释放剩余的cpu时间片。
 		3.3 重新持有buffer pool mutex；
 		3.4 重新持有flush list mutex；
 		
@@ -166,30 +166,43 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	如何删除大表?
 
 		1. 在游戏业务的停服更新期间，直接做表的 drop table操作。
+			-- 大表的话，分别在主从操作，避免导致从库延迟。
 		2. 在业务低峰期通过 pt-atchiver 归档。
 		3. 不要直接drop 热点表，可以先rename，过一段时间再做drop表操作。
 		
 	别人的小结：	
 	
 		一、知道了删除大表耗时的几个位置在drop表时我们就可以对其今进行优化
+		
 			1.优化删除.ibd慢：做硬连接删除，然后使用Linux truncate命令逐步缩小.ibd_bak文件进行删除
+			
 			2.优化释放AHI慢：此处暂时没有想到好的方法，网上有些人说临时关闭AHI，这个关闭可以在线通过innodb_adaptive_hash_index=off立即清空AHI，这样就不会清理AHI了，
 				但是所有页面是否要循环取决于版本(percona-5.6.44版本没有if (ahi)这个判断，所以无论是否关闭AHI都会循环调用,oracle-mysql5.7.17这个版本有if (ahi)这个判断，
 				所以关闭AHI是可以生效的，其他版本是否有这个判断，请自行判断)，这个参数在线关闭是否会影响线上环境，需要根据各自的业务和环境来进行选择
+				
 			3.优化释放索引段加载描述符页面到bufferpool慢，还是用SSD来解决吧，普通磁盘性能实在是差差差...
-			4.drop表会清理bufferpool脏页，但是不会清理bufferpool数据页，所以对于热点表还是先采取rename方式，在进行删除操作
+			
+			4.drop表会清理 flush list脏页，但是不会清理bufferpool lru list数据页，所以对于热点表还是先采取rename方式，在进行删除操作
 			
 		二、删除索引并不会释放表空间，这部分索引只是还给了表的free列表，并没有清理
 		三、drop表或者删除索引的时候只会将XDES描述符页面(每256个区加载一个XDES页面)加载到bufferpool，在释放extent过程中通过xdes_init方法来重新初始化该XDES描述符内对应区的属性，将其置为干净可用状态，在整个	过程中数据和索引页面不会加载到bufferpool
-		四、drop表期间会持有row_mysql_lock_data_dictionary数据字典锁，这个锁是一个全局锁，对于后续操作数据字典的都会阻塞，例如create、show create、select等操作，
-			被阻塞的SQL状态表现为Opening tables，drop表这个SQL的状态为 checking permissions ,这个锁会在删除表时获取直到将.ibd文件删除才会用row_mysql_unlock_data_dictionary释放，另外truncate table也会走这个持这个锁的流程
-			将.ibd文件删除才会用row_mysql_unlock_data_dictionary释放  
+		四、
+			drop表期间会持有 row_mysql_lock_data_dictionary 数据字典锁，这个锁是一个全局锁，对于后续操作数据字典的都会阻塞，例如create、show create、select等操作，
+			被阻塞的SQL状态表现为Opening tables，drop表这个SQL的状态为 checking permissions ,这个锁会在删除表时获取直到将.ibd文件删除才会用 row_mysql_unlock_data_dictionary 释放，另外truncate table也会走这个持这个锁的流程
+			将.ibd文件删除才会用 row_mysql_unlock_data_dictionary 释放  
 			-- 理解了。
 			
 		五、看了truncate流程后，对于允许drop或者truncate的表，优选drop,原因如下:
-			1.truncate table与mysql版本有很大关系，版本不同影响很大,5.6(本人percona-5.6.29) truncate是真正的删除.ibd文件然后重建，5.7(本人percona-5.7.26)是释放所有的索引树然后重用该ibd文件,也就是说5.6可以采用硬连接来消除删除.ibd这段时间，但是5.7不行，因为是重用该.ibd文件，硬连接空间会随着.ibd一同释放
-			2.truncate table不管5.6还是5.7都会立即清理bufferpool的数据页和脏页，而drop table只立即释放脏页面
-			3.由上可知如果业务允许最好采用drop+create清理表，drop表可以通过硬连接+bufferpool数据页后台清理来降低持有数据字典这个全局锁的时间，进而降低对业务的影响	
+			1. truncate table与mysql版本有很大关系，版本不同影响很大,5.6(本人percona-5.6.29) truncate是真正的删除.ibd文件然后重建，5.7(本人percona-5.7.26)是释放所有的索引树然后重用该ibd文件,也就是说5.6可以采用硬连接来消除删除.ibd这段时间，但是5.7不行，因为是重用该.ibd文件，硬连接空间会随着.ibd一同释放
+			2.
+				truncate table不管5.6还是5.7都会立即清理该表在buffer pool的数据页和脏页，而drop table只立即释放脏页面
+				
+			3.truncate table 时会扫lru列表中所有的页面，期间会持有全局锁
+				持锁时间不仅与表大小有关，也与当前数据库lru中数据页面数量有关，lru中页面越多，持锁时间越长，即便是一个空表也会有这个过程导致夯死数据库
+				lru大小不要与bufferpool大小直接挂钩，bufferpool大未必lru列表大，lru列表是随着数据访问量逐步增加的
+				所以评估一张表truncate耗时可以依据innodb status中的LRU len长度以及表的.ibd文件来判断。
+	
+			4. 由上可知如果业务允许最好采用drop+create清理表，drop表可以通过硬连接+bufferpool数据页后台清理来降低持有数据字典这个全局锁的时间，进而降低对业务的影响	
 					
 	
 5. 生产环境清空表数据实践
