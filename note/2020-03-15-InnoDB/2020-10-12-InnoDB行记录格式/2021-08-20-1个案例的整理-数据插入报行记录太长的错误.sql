@@ -7,7 +7,7 @@
 	2.3 解决办法
 3. 小结
 4. 源码部分
-
+5. dynamic多个字段溢出
 
 
 0. 环境
@@ -137,7 +137,7 @@
 			
 			因此，把行记录格式改为 dynamic 可以彻底解决这个问题。
 			
-			-- 对于行溢出的字段，只会存储20个字节的指针到行记录中，溢出的字段会存储到大对象页中
+			-- 行记录格式为dynamic, 对于行溢出的字段，只会存储20个字节的指针到行记录中，溢出的字段会存储到大对象页中
 			
 		
 	2.3 解决办法
@@ -210,4 +210,64 @@
 
 	-- 可以讲讲这部分的源码
 	
+5. dynamic多个字段溢出
+
+	drop table  if exists table_20211103;
+	CREATE TABLE `table_20211103` (
+	  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引',
+	  `a` blob COMMENT '...',
+	  `b` blob COMMENT '...',
+	  `c` blob COMMENT '...',
+	  `d` blob COMMENT '...',
+	  `a1` blob COMMENT '...',
+	  `a2` blob COMMENT '...',
+	  `a3` blob COMMENT '...',
+	  `a4` blob COMMENT '...',
+	  `a5` blob COMMENT '...',
+	  `a6` blob COMMENT '...',
+	  `a7` blob COMMENT '...',
+	  `a8` blob COMMENT '...',
+	  `a9` blob COMMENT '...',
+	  `a10` blob COMMENT '...',
+	  PRIMARY KEY (`ID`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=dynamic;
+
+	INSERT INTO `table_20211103` 
+	(`a`, `b`, `c`, `d`, `a1`, `a2`, `a3`, `a4`, `a5`, `a6`, `a7`, `a8`, `a9`, `a10`) 
+	VALUES (
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000),
+	REPEAT('a',3000)
+	);
 	
+	
+	shell> python innodb_page_info/py_innodb_page_info.py -v /home/mysql/mysql3306/data/test_db/table_20211103.ibd 
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	page offset 00000000, page type <Freshly Allocated Page>
+	Total number of page: 16:
+	Freshly Allocated Page: 16

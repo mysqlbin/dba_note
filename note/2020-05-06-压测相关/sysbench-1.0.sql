@@ -35,7 +35,7 @@ create  database sbtest DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4
 
 
 
-create user 'sysbench'@'%' identified by '';
+create user 'sysbench'@'%' identified by '123456aA$';
 grant all privileges on *.* to 'sysbench'@'%' with grant option;
 			
 
