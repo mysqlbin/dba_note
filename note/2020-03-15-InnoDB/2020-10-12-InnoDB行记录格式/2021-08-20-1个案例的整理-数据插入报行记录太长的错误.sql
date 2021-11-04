@@ -109,6 +109,10 @@
 		ERROR 1118 (42000): Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. 
 			In current row format, BLOB prefix of 768 bytes is stored inline.
 		
+		
+		行记录长度大于 8126，在当前compact行格式格式下，大字段溢出，会把数据的前768个字节+20个字节的指针保留在行记录内
+		解决办法：可以把行记录格式改为 dynamic
+	
 		-- 问题和原因
 			某天的下午5点多业务日志报数据插入失败，多个 blob 大字段发生了行溢出，导致行内保留的字节数大于8126，产生SQL语句插入失败的问题。
 		
