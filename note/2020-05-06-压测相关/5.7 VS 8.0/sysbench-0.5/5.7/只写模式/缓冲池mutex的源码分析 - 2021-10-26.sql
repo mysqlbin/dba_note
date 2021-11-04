@@ -121,10 +121,15 @@
 4. 8.0版本把全局大锁buffer pool mutex拆分
 
 	https://www.cnblogs.com/jishuxiaobai/p/5940209.html	
-		
+	https://dev.mysql.com/worklog/task/?id=8423
+	
+	https://bugs.mysql.com/bug.php?id=75534
+		The main idea is to split buffer pool mutex into several mutexes: separate mutex 
+			for free_list, LRU_list, zip_free, and zip_hash.
+
 	8.0最重要的一个改进就是：终于把全局大锁buffer pool mutex拆分了，各个链表由其专用的mutex保护，大大提升了访问扩展性。
 
-	原来的一个大mutex被拆分成多个为free_list, LRU_list, zip_free, 和zip_hash单独使用mutex:
+	原来的一个大mutex被拆分成多个为 free_list, LRU_list, zip_free, 和zip_hash单独使用mutex:
 
 		批量扫描LRU（buf_do_LRU_batch）: buf_pool_t::LRU_list_mutex
 

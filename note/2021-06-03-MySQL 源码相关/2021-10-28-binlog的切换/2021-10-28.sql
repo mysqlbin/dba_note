@@ -35,6 +35,9 @@ Query OK, 0 rows affected (1.48 sec)
 
 24个GB的binlog，耗时 1.48s
 
+100个GB的binlog, 耗时约 7秒，在这7秒期间导致数据库无法写入。
+
+
 
 mysql>  show binary logs;
 +------------------+------------+
@@ -90,4 +93,41 @@ mysql>  show binary logs;
 											begin;
 purge binary logs to 'mysql-bin.000399';  
 											delete from t1 where id=1;
+
+
+
+
+源码分析
+
+	《2021-10-28 - 源码相关.sql》
+	《2021-10-28 - 简化版代码.sql》
+
+
+expire_logs_days参数是怎么生效的：
+
+	expire_logs_days参数表示保留几天的binlog。
+	binlog 文件切换的时候就去计算一下purge_time(当前时间-expire_logs_days)
+	
+binlog文件切换的时机：
+	1. binlog log文件写满
+	2. 数据库重启
+	3. 执行 flush log 命令。
+	
+	
+3. 概括：
+	1. 在日志切换期间需要获取全局mutex，此时数据库无法写入
+	2. 收集所有要清理binlog文件中的gtid，并维护到gtid_purged，期间无法写入
+	3. 删除binlog文件操作涉及到剧烈io波动，如果文件数很多，需要花费较长的时间，此时会影响业务的响应时间
+		-- 验证下，删除大量的binlog，占用的磁盘IO如何
+
+
+相关参考
+
+	https://mp.weixin.qq.com/s/XSnFkuYzIlGWMaXIl-oPeQ
+
+	https://www.jianshu.com/p/8611e248a493
+
+	https://blog.csdn.net/weixin_30490029/article/details/113168543  mysql expire_mysql expire_logs_days是怎么生效的
+
+
 
