@@ -248,8 +248,6 @@ add_field_size:
 
 
 
-
-
 /** Adds an index to the dictionary cache, with possible indexing newly
 added column.
 @param[in,out]	table	table on which the index is
