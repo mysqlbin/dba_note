@@ -7,3 +7,4 @@ https://dev.mysql.com/doc/refman/5.7/en/innodb-parameters.html#sysvar_innodb_con
 
 http://blog.itpub.net/7728585/viewspace-2140446/	MYSQL INNODB innodb_thread_concurrency相关参数理解
 
+https://cloud.tencent.com/developer/article/1404073  MySQL 大量sleeping before entering InnoDB 故障诊断

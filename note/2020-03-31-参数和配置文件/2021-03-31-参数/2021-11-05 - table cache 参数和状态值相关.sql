@@ -9,7 +9,8 @@
 5. table_open_cache参数设置太大和太小的影响
 6. 相关参考
 7. 别人面试问到 table_open_cache 参数怎么优化
-8. open_files_limit 参数
+8. 生产环境的参数和状态值
+9. open_files_limit 参数
 
 	
 
@@ -165,41 +166,7 @@
 	统计文件总数的时候，应该考虑 Innodb_num_open_files+Open_files，这个总数如果接近进程能够打开的最大文件数(open_files_limit)的话则可能出现报错。
 	
 
-		mysql> show global variables like '%open%';
-		+----------------------------+-------+
-		| Variable_name              | Value |
-		+----------------------------+-------+
-		| have_openssl               | YES   |
-		| innodb_open_files          | 995   |
-		| open_files_limit           | 5000  |
-		| table_open_cache           | 995   |
-		| table_open_cache_instances | 16    |
-		+----------------------------+-------+
-		5 rows in set (0.00 sec)
-		
-		
-		mysql> show global status like '%open%';
-		+----------------------------+------------+
-		| Variable_name              | Value      |
-		+----------------------------+------------+
-		| Com_ha_open                | 0          |
-		| Com_show_open_tables       | 0          |
-		| Innodb_num_open_files      | 995        |			
-		| Open_files                 | 36         |
-		| Open_streams               | 0          |
-		| Open_table_definitions     | 95         |
-		| Open_tables                | 461        |
-		| Opened_files               | 5043098    |
-		| Opened_table_definitions   | 2495414    |
-		| Opened_tables              | 3809174    |
-		| Slave_open_temp_tables     | 0          |
-		| Table_open_cache_hits      | 2264210422 |
-		| Table_open_cache_misses    | 3139536    |
-		| Table_open_cache_overflows | 2372071    |
-		+----------------------------+------------+
-		14 rows in set (0.00 sec)
-		
-	
+
 
 
 4. 如何判断 table_open_cache 大小是否够用
@@ -208,7 +175,7 @@
 		
 		Opened_tables  : 
 			The number of tables that have been opened. If Opened_tables is big, your table_open_cache value is probably too small.
-			表示历史上反复打开的所有表数量
+			表示历史上打开的所有表数量
 			如果 Opened_tables 值特别高，表明 table cache 很可能不够用所致。
 			
 		open_tables    : 
@@ -288,7 +255,143 @@
 	
 ------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-8. open_files_limit 参数
+8. 生产环境的参数和状态值
+	show global variables like '%open%';
+	show global variables like '%table_definition_cache%';
+	show global status like '%open%';
+
+	具有分表场景的主库
+		mysql> show global variables like '%open%';
+		+----------------------------+-------+
+		| Variable_name              | Value |
+		+----------------------------+-------+
+		| have_openssl               | YES   |
+		| innodb_open_files          | 995   |
+		| open_files_limit           | 5000  |
+		| table_open_cache           | 995   |
+		| table_open_cache_instances | 16    |
+		+----------------------------+-------+
+		5 rows in set (0.00 sec)
+
+		mysql> show global variables like '%table_definition_cache%';
+		+------------------------+-------+
+		| Variable_name          | Value |
+		+------------------------+-------+
+		| table_definition_cache | 897   |
+		+------------------------+-------+
+		1 row in set (0.00 sec)
+
+		mysql> show global status like '%open%';
+		+----------------------------+------------+
+		| Variable_name              | Value      |
+		+----------------------------+------------+
+		| Com_ha_open                | 0          |
+		| Com_show_open_tables       | 0          |
+		| Innodb_num_open_files      | 905        |
+		| Open_files                 | 40         |
+		| Open_streams               | 0          |
+		| Open_table_definitions     | 897        |
+		| Open_tables                | 992        |
+		| Opened_files               | 2536903    |
+		| Opened_table_definitions   | 1183624    |
+		| Opened_tables              | 1152862    |
+		| Slave_open_temp_tables     | 0          |
+		| Table_open_cache_hits      | 2275679755 |
+		| Table_open_cache_misses    | 576516     |
+		| Table_open_cache_overflows | 567281     |
+		+----------------------------+------------+
+		14 rows in set (0.00 sec)
+
+
+	具有分表场景的从库
+		-- 从库有业务读取
+		mysql> show global variables like '%open%';
+		+----------------------------+-------+
+		| Variable_name              | Value |
+		+----------------------------+-------+
+		| have_openssl               | YES   |
+		| innodb_open_files          | 995   |
+		| open_files_limit           | 5000  |
+		| table_open_cache           | 995   |
+		| table_open_cache_instances | 16    |
+		+----------------------------+-------+
+		5 rows in set (0.00 sec)
+
+		mysql> show global variables like '%table_definition_cache%';
+		+------------------------+-------+
+		| Variable_name          | Value |
+		+------------------------+-------+
+		| table_definition_cache | 897   |
+		+------------------------+-------+
+		1 row in set (0.00 sec)
+
+		mysql> show global status like '%open%';
+		+----------------------------+------------+
+		| Variable_name              | Value      |
+		+----------------------------+------------+
+		| Com_ha_open                | 0          |
+		| Com_show_open_tables       | 0          |
+		| Innodb_num_open_files      | 995        |
+		| Open_files                 | 38         |
+		| Open_streams               | 0          |
+		| Open_table_definitions     | 897        |
+		| Open_tables                | 603        |
+		| Opened_files               | 5050798    |
+		| Opened_table_definitions   | 2497766    |
+		| Opened_tables              | 3811089    |
+		| Slave_open_temp_tables     | 0          |
+		| Table_open_cache_hits      | 2264943755 |
+		| Table_open_cache_misses    | 3140819    |
+		| Table_open_cache_overflows | 2373212    |
+		+----------------------------+------------+
+		14 rows in set (0.00 sec)
+
+
+	没有分表的主库
+		mysql> show global variables like '%open%';
+		+----------------------------+----------+
+		| Variable_name              | Value    |
+		+----------------------------+----------+
+		| have_openssl               | DISABLED |
+		| innodb_open_files          | 2048     |
+		| open_files_limit           | 15000    |
+		| table_open_cache           | 2048     |
+		| table_open_cache_instances | 1        |
+		+----------------------------+----------+
+		5 rows in set (0.00 sec)
+
+		mysql> show global variables like '%table_definition_cache%';
+		+------------------------+-------+
+		| Variable_name          | Value |
+		+------------------------+-------+
+		| table_definition_cache | 1424  |
+		+------------------------+-------+
+		1 row in set (0.00 sec)
+
+		mysql> show global status like '%open%';
+		+----------------------------+-----------+
+		| Variable_name              | Value     |
+		+----------------------------+-----------+
+		| Com_ha_open                | 0         |
+		| Com_show_open_tables       | 0         |
+		| Innodb_num_open_files      | 153       |
+		| Open_files                 | 34        |
+		| Open_streams               | 0         |
+		| Open_table_definitions     | 177       |
+		| Open_tables                | 276       |
+		| Opened_files               | 1942629   |
+		| Opened_table_definitions   | 392271    |
+		| Opened_tables              | 196331    |
+		| Slave_open_temp_tables     | 0         |
+		| Table_open_cache_hits      | 149183794 |
+		| Table_open_cache_misses    | 285       |
+		| Table_open_cache_overflows | 0         |
+		+----------------------------+-----------+
+		14 rows in set (0.00 sec)
+
+
+
+9. open_files_limit 参数
 
 	含义：	
 		mysql 进程能打开的文件数量。
