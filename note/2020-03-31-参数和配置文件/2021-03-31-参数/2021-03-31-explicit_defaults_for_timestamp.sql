@@ -2,8 +2,9 @@
 1. explicit_defaults_for_timestamp=OFF and timestamp NOT NULL
 2. explicit_defaults_for_timestamp=OFF and timestamp NULL DEFAULT NULL
 3. explicit_defaults_for_timestamp=ON and timestamp NULL DEFAULT NULL
-4. 小结
-5. 相关参考
+4. explicit_defaults_for_timestamp=OFF and timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+5. 小结
+6. 相关参考
 
 
 
@@ -170,22 +171,63 @@
 	
 	explicit_defaults_for_timestamp=ON and timestamp NULL DEFAULT NULL： 不会改变表结构。
 
-4. 小结
+
+4. explicit_defaults_for_timestamp=OFF and timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+
+	mysql> show global variables like '%explicit_defaults_for_timestamp%'; 
+	+---------------------------------+-------+
+	| Variable_name                   | Value |
+	+---------------------------------+-------+
+	| explicit_defaults_for_timestamp | OFF   |
+	+---------------------------------+-------+
+	1 row in set (0.08 sec)
+
+
+	CREATE TABLE `table_abcdgoods` (
+	  `ID` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+	  `aaaaaaaaa` int(12) NOT NULL COMMENT '',
+	  `bbbbbbb` int(12) NOT NULL COMMENT '',
+	  `cccccccc` int(12) NOT NULL COMMENT '',
+	  `num` int(12) NOT NULL COMMENT '',
+	  `lastOpTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后操作时间',
+	  PRIMARY KEY (`ID`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+	
+
+	mysql> show create table table_abcdgoods\G;
+	*************************** 1. row ***************************
+		   Table: table_abcdgoods
+	Create Table: CREATE TABLE `table_abcdgoods` (
+	  `ID` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+	  `aaaaaaaaa` int(12) NOT NULL,
+	  `bbbbbbb` int(12) NOT NULL,
+	  `cccccccc` int(12) NOT NULL,
+	  `num` int(12) NOT NULL,
+	  `lastOpTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '最后操作时间',
+	  PRIMARY KEY (`ID`)
+	) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+	1 row in set (0.00 sec)
+
+	
+5. 小结
 	
 	MySQL的参数 explicit_defaults_for_timestamp  默认是OFF.
 	explicit_defaults_for_timestamp 变量会直接影响表结构，也就是说 explicit_defaults_for_timestamp 的作用时间  --遇到了。
 	
 	explicit defaults for timestamp: 时间戳的显式默认值
 	
-	
 	explicit_defaults_for_timestamp=OFF and timestamp NOT NULL：会改变表结构。
+	
+	explicit_defaults_for_timestamp=OFF and timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP：不会改变表结构。
+	
 	explicit_defaults_for_timestamp=OFF and timestamp NULL DEFAULT NULL: 不会改变表结构。
+	
 	explicit_defaults_for_timestamp=ON and timestamp NULL DEFAULT NULL： 不会改变表结构。
 	
 	
 	
 
-5. 相关参考
+6. 相关参考
 
 	https://www.cnblogs.com/JiangLe/p/6956865.html  mysql explicit_defaults_for_timestamp 变量的作用
 	https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html#sysvar_explicit_defaults_for_timestamp
@@ -194,4 +236,8 @@
 	https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_explicit_defaults_for_timestamp
 		Default Value	ON
 
+	https://mp.weixin.qq.com/s/vNOolZAvY_QkQ88bb7Cb5w		技术分享 | MySQL 的 TIMESTAMP 类型字段非空和默认值属性的影响
+	https://mp.weixin.qq.com/s/nFO6xOuzfh8kOYDj99xE0g  		故障分析 | MySQL 迁移后 timestamp 列 cannot be null
+	
+	
 	
