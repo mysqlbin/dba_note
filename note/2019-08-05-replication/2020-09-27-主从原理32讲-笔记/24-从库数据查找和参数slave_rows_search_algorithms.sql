@@ -217,9 +217,10 @@
 				但是一个 DELETE_ROWS_EVENT 可能包含了多行数据，Event最大为8K左右。
 				因此使用Ht --> Hash over the entire table的方式，将会从原来的每行数据进行一次全表扫描变为每个Event才进行一次全表扫描。
 				从而减少了全表扫描的次数，提升复制从库的效率
-				
+				-- 理解了。
 
 	如果遇到没有索引的表做delete大事务，可以使用参数 slave_rows_search_algorithms 做优化：
+		-- 小表可以用，大表还是会慢。
 		stop slave sql_thread;
 		SET GLOBAL slave_rows_search_algorithms = 'INDEX_SCAN,HASH_SCAN';  # 即时生效。
 		start slave sql_thread;
