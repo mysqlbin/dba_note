@@ -14,14 +14,17 @@
 
 
 50W行记录
-	从库查找方式   'INDEX_SCAN,TABLE_SCAN'   'INDEX_SCAN,HASH_SCAN'  
-	耗时            			                    158S  
-
+	从库查找方式   'INDEX_SCAN,TABLE_SCAN'   						'INDEX_SCAN,HASH_SCAN'  
+	耗时            2000s=33分钟(1W行要40秒/5W行要200s=3.5分钟)			 158S  
+					5W行延迟200s
 
 520W行记录
 	从库查找方式   'INDEX_SCAN,TABLE_SCAN'   'INDEX_SCAN,HASH_SCAN'  
-	耗时                                 		约 5613S
+	耗时                                 		约 5613S = 93分钟 = 1个半小时 
+	
+
 
 	
-	
-	
+50W行左右的小表可以用，大表还是会慢。
+
+
