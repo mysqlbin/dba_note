@@ -174,7 +174,8 @@
 	
 	从库查找方式   'INDEX_SCAN,TABLE_SCAN'   'INDEX_SCAN,HASH_SCAN'  
 	耗时            估计要1300S                     147S  
-
+	
+	有10倍左右的性能提升。
 	
 5. 小结
 

@@ -24,7 +24,10 @@
 		8.1 pt-osc
 		8.2 gh-ost	
 	9. 5.7 Online DDL的执行耗时	
+	10. 3种Online DDL方案耗时对比
+	11. Online DDL延迟情况
 
+	
 0. 环境
 
 	mysql> select version();
@@ -172,13 +175,14 @@
 	mysql> call idata();
 	Query OK, 0 rows affected (47.09 sec)
 	
-	slave:
-		Seconds_Behind_Master: 47
-	-- 验证了DML大事务造成的延迟，其延迟不会从0开始增加，而是直接从主库执行了多久开始。比如主库执行这个事务耗时20秒，那么延迟就从20开始，这是因为query event中没有准确的执行时间，可以参考第8节和第27节。
-	-- 从库的延迟时间就从DML事务在主库执行完成的时间开始。
-	-- 说明了 Seconds_Behind_Master 不是完全准确.
-	-- 同时事务在从库的执行时间为60秒， Seconds_Behind_Master依次增大至80秒，然后跌0。
-	
+		从库slave 执行 show slave status\G;
+		-- Seconds_Behind_Master: 47
+		-- 验证了DML大事务造成的延迟，其延迟不会从0开始增加，而是直接从主库执行了多久开始。比如主库执行这个事务耗时20秒，那么延迟就从20开始，这是因为query event中没有准确的执行时间，可以参考第8节和第27节。
+		-- 从库的延迟时间就从DML事务在主库执行完成的时间开始。
+		-- 说明了 Seconds_Behind_Master 不是完全准确.
+		-- 同时事务在从库的执行时间为60秒， Seconds_Behind_Master依次增大至80秒，然后跌0。
+		
+		
 2. slave1的相关参数
 
 	show global variables like '%master_info_repository%';
@@ -880,12 +884,12 @@ Successfully altered `consistency_db`.`t_20201021`.
 		mysql> call idata();
 		Query OK, 0 rows affected (47.09 sec)
 		
-		slave:
-			Seconds_Behind_Master: 47
-		-- 验证了DML大事务造成的延迟，其延迟不会从0开始增加，而是直接从主库执行了多久开始。比如主库执行这个事务耗时20秒，那么延迟就从20开始，从库执行耗时30秒，那么此时延迟为50，这是因为query event中没有准确的执行时间，可以参考第8节和第27节。
-		-- 说明了 Seconds_Behind_Master 不是完全准确.
 		
-		-- 未完成：验证下DDL的延迟
+		从库slave 执行 show slave status\G;
+			-- Seconds_Behind_Master: 47
+			-- 验证了DML大事务造成的延迟，其延迟不会从0开始增加，而是直接从主库执行了多久开始。比如主库执行这个事务耗时20秒，那么延迟就从20开始，从库执行耗时30秒，那么此时延迟为50，这是因为query event中没有准确的执行时间，可以参考第8节和第27节。
+			-- 说明了 Seconds_Behind_Master 不是完全准确.
+			-- 未完成：验证下DDL的延迟
 		
 	7.2 两者的执行耗时
 		pt-osc：耗时22分22秒
@@ -1306,4 +1310,536 @@ Successfully altered `consistency_db`.`t_20201021`.
 	Online DDL: 添加字段和删除字段的耗时一样。
 	
 	
+10. 3种Online DDL方案耗时对比
+	工具            	 耗时
+	pt-osc            	22分22秒			
+	gh-ost     			22分25秒 22m25s
+	Online DDL      	13分36秒
 	
+11. Online DDL延迟情况
+
+	主库执行耗时
+		mysql> alter table niuniuh5_db.table_web_loginlog add index idx_szTime_loginIp(`szTime`, `loginIp`);
+		Query OK, 0 rows affected (28.21 sec)
+		Records: 0  Duplicates: 0  Warnings: 0
+	
+	主库执行完成，从库查看延迟情况
+	
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+
+						   Last_Errno: 0
+						   Last_Error: 
+						 Skip_Counter: 0
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+					  Until_Condition: None
+					   Until_Log_File: 
+						Until_Log_Pos: 0
+				   Master_SSL_Allowed: No
+
+				Seconds_Behind_Master: 0
+		Master_SSL_Verify_Server_Cert: No
+
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+				   Master_Retry_Count: 86400
+
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+				 Replicate_Rewrite_DB: 
+						 Channel_Name: 
+				   Master_TLS_Version: 
+		1 row in set (0.00 sec)
+
+		ERROR: 
+		No query specified
+
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+					  Replicate_Do_DB: 
+				  Replicate_Ignore_DB: 
+				   Replicate_Do_Table: 
+			   Replicate_Ignore_Table: 
+			  Replicate_Wild_Do_Table: 
+		  Replicate_Wild_Ignore_Table: 
+						   Last_Errno: 0
+						   Last_Error: 
+						 Skip_Counter: 0
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+					  Until_Condition: None
+					   Until_Log_File: 
+						Until_Log_Pos: 0
+				   Master_SSL_Allowed: No
+				   Master_SSL_CA_File: 
+				   Master_SSL_CA_Path: 
+					  Master_SSL_Cert: 
+					Master_SSL_Cipher: 
+					   Master_SSL_Key: 
+				Seconds_Behind_Master: 1
+		Master_SSL_Verify_Server_Cert: No
+						Last_IO_Errno: 0
+						Last_IO_Error: 
+					   Last_SQL_Errno: 0
+					   Last_SQL_Error: 
+		  Replicate_Ignore_Server_Ids: 
+					 Master_Server_Id: 1
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+				   Master_Retry_Count: 86400
+						  Master_Bind: 
+			  Last_IO_Error_Timestamp: 
+			 Last_SQL_Error_Timestamp: 
+					   Master_SSL_Crl: 
+				   Master_SSL_Crlpath: 
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+				 Replicate_Rewrite_DB: 
+						 Channel_Name: 
+				   Master_TLS_Version: 
+		1 row in set (0.00 sec)
+
+		ERROR: 
+		No query specified
+
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+					  Replicate_Do_DB: 
+				  Replicate_Ignore_DB: 
+				   Replicate_Do_Table: 
+			   Replicate_Ignore_Table: 
+			  Replicate_Wild_Do_Table: 
+		  Replicate_Wild_Ignore_Table: 
+						   Last_Errno: 0
+						   Last_Error: 
+						 Skip_Counter: 0
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+					  Until_Condition: None
+					   Until_Log_File: 
+						Until_Log_Pos: 0
+				   Master_SSL_Allowed: No
+				   Master_SSL_CA_File: 
+				   Master_SSL_CA_Path: 
+					  Master_SSL_Cert: 
+					Master_SSL_Cipher: 
+					   Master_SSL_Key: 
+				Seconds_Behind_Master: 2
+		Master_SSL_Verify_Server_Cert: No
+						Last_IO_Errno: 0
+						Last_IO_Error: 
+					   Last_SQL_Errno: 0
+					   Last_SQL_Error: 
+		  Replicate_Ignore_Server_Ids: 
+					 Master_Server_Id: 1
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+				   Master_Retry_Count: 86400
+						  Master_Bind: 
+			  Last_IO_Error_Timestamp: 
+			 Last_SQL_Error_Timestamp: 
+					   Master_SSL_Crl: 
+				   Master_SSL_Crlpath: 
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+				 Replicate_Rewrite_DB: 
+						 Channel_Name: 
+				   Master_TLS_Version: 
+		1 row in set (0.00 sec)
+
+		ERROR: 
+		No query specified
+
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+
+						 Skip_Counter: 0
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+
+				Seconds_Behind_Master: 3
+		Master_SSL_Verify_Server_Cert: No
+
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+				   Master_Retry_Count: 86400
+
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+				 Replicate_Rewrite_DB: 
+						 Channel_Name: 
+				   Master_TLS_Version: 
+		1 row in set (0.00 sec)
+
+
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+
+						 Skip_Counter: 0
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+
+				Seconds_Behind_Master: 4
+		Master_SSL_Verify_Server_Cert: No
+
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+				 Replicate_Rewrite_DB: 
+						 Channel_Name: 
+				   Master_TLS_Version: 
+		1 row in set (0.00 sec)
+
+		ERROR: 
+		No query specified
+
+		mysql> mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+
+				Seconds_Behind_Master: 10
+		Master_SSL_Verify_Server_Cert: No
+
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+				   Master_Retry_Count: 86400
+				   
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+		1 row in set (0.00 sec)
+		
+
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+
+		  Replicate_Wild_Ignore_Table: 
+						   Last_Errno: 0
+						   Last_Error: 
+						 Skip_Counter: 0
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+
+				Seconds_Behind_Master: 12
+
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+				   Master_Retry_Count: 86400
+
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+				 Replicate_Rewrite_DB: 
+						 Channel_Name: 
+				   Master_TLS_Version: 
+		1 row in set (0.00 sec)
+
+
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+
+						 Skip_Counter: 0
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+
+				Seconds_Behind_Master: 17
+		Master_SSL_Verify_Server_Cert: No
+
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+				   Master_Retry_Count: 86400
+
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+						
+		1 row in set (0.00 sec)
+
+
+
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+
+
+				Seconds_Behind_Master: 22
+		Master_SSL_Verify_Server_Cert: No
+
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+				   Master_Retry_Count: 86400
+
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+						
+		1 row in set (0.00 sec)
+		
+
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+					  Until_Condition: None
+
+				Seconds_Behind_Master: 23
+		Master_SSL_Verify_Server_Cert: No
+
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+				   Master_Retry_Count: 86400
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+						
+		1 row in set (0.00 sec)
+
+
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554671
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+
+				  Exec_Master_Log_Pos: 188554458
+					  Relay_Log_Space: 188555198
+					  Until_Condition: None
+					   Until_Log_File: 
+						Until_Log_Pos: 0
+				   Master_SSL_Allowed: No
+
+				Seconds_Behind_Master: 24
+		Master_SSL_Verify_Server_Cert: No
+
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: altering table
+				   Master_Retry_Count: 86400
+
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560740,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+
+		1 row in set (0.00 sec)
+
+
+		mysql> show slave status\G;
+		*************************** 1. row ***************************
+					   Slave_IO_State: Waiting for master to send event
+						  Master_Host: 192.168.1.10
+						  Master_User: repl_user
+						  Master_Port: 3306
+						Connect_Retry: 60
+					  Master_Log_File: mysql-bin.000294
+				  Read_Master_Log_Pos: 188554692
+					   Relay_Log_File: db-b-relay-bin.000170
+						Relay_Log_Pos: 188554905
+				Relay_Master_Log_File: mysql-bin.000294
+					 Slave_IO_Running: Yes
+					Slave_SQL_Running: Yes
+
+				  Exec_Master_Log_Pos: 188554692
+					  Relay_Log_Space: 188555198
+
+				Seconds_Behind_Master: 0
+		Master_SSL_Verify_Server_Cert: No
+
+						  Master_UUID: 7664fad8-49fd-11e8-a546-4201c0a8010a
+					 Master_Info_File: mysql.slave_master_info
+							SQL_Delay: 0
+				  SQL_Remaining_Delay: NULL
+			  Slave_SQL_Running_State: Slave has read all relay log; waiting for more updates
+				   Master_Retry_Count: 86400
+
+				   Retrieved_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:13797-4560741
+					Executed_Gtid_Set: 7664fad8-49fd-11e8-a546-4201c0a8010a:1-4560741,
+		90e79fc1-49fd-11e8-a6dd-4201c0a8010b:1-1511832
+						Auto_Position: 1
+
+		1 row in set (0.00 sec)
+

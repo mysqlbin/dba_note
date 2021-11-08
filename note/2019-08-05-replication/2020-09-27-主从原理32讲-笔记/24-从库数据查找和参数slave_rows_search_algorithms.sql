@@ -199,8 +199,8 @@
 	假设 tusers 表有 100W 行记录， 执行 删除全表的数据：delete from tusers;
 	在这个列子中没有主键和唯一键，也没有普通索引；
 	因此，在从库执行的时候，每一行数据的更改都需要进行全表扫描，即进行了100W次的全表扫描，所以从库延迟会非常大；
-	即每一行数据的更改都需要进行一次全表扫描，这种问题就非常严重了。
-	
+		即每一行数据的更改都需要进行一次全表扫描，这种问题就非常严重了。
+		
 	因此，也得到一个结论：从库每条数据都需要索引定位查找数据，如果没有索引，意味着每条数据都需要做一次全表扫描匹配记录。
 	
 	因此，需要做 hash scan 做优化：
@@ -259,6 +259,7 @@
 	3. 每次看/复习/深入学习都有不一样的体会，也就是说理解得更好了，就差口头描述出来了。--加油。
 	
 9. 相关参考
+	
 	https://dev.mysql.com/doc/refman/5.7/en/replication-options-slave.html#sysvar_slave_rows_search_algorithms   # 官方文档是最好的参考资料
 	
 	https://www.jianshu.com/p/d6586baaf76e    从库数据查找和参数slave_rows_search_algorithms
