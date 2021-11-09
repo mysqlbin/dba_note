@@ -13,3 +13,8 @@ https://segmentfault.com/a/1190000018176119?utm_source=tag-newest    GDB 调试 
 
 http://c.biancheng.net/gdb/
 
+
+32：kill
+
+
+

@@ -5,7 +5,11 @@
 
 1. use db切换数据库的源码部分
 	
-	com_use入口函数
+	com_use
+		-> build_completion_hash
+		
+		
+	入口函数为 com_use
 
 		/* mysql-5.7.26\client\mysql.cc */
 			/* ARGSUSED */
@@ -110,7 +114,7 @@
 		  return 0;
 		}
 
-	build_completion_hash函数
+	build_completion_hash 函数
 		/* Build up the completion hash */
 		/* 构建哈希表 */
 		/* Build up the completion hash */
@@ -170,7 +174,7 @@
 			}
 		  }
 		  /* hash all table names */
-		  /* 给当前库所有的表名构建哈希索引 */
+		  /* 给当前库所有的表名构建哈希索引, 通过 show tables 获取当前所在数据库的所有表*/
 		  if (mysql_query(&mysql,"show tables")==0)
 		  {
 			if (!(tables = mysql_store_result(&mysql)))

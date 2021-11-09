@@ -14,12 +14,17 @@
 
 
 1. 前言
+
 	对于DML语句来讲其数据的更改将被放到对应的Event中。
+	
 	比如Delete语句会将所有删除数据的before_image放到DELETE_ROWS_EVENT中，从库只要读取这些before_image进行数据查找，然后调用相应的Delete的操作就可以完成数据的删除了。
 	
 2. 5.6新参数 slave_rows_search_algorithms
 	
+	https://dev.mysql.com/doc/refman/5.7/en/replication-options-replica.html#sysvar_slave_rows_search_algorithms
+	
 	这个参数主要用于在从库确认如何查找数据
+	
 	其中决定如何查找数据以及通过哪个索引查找正是通过参数 slave_rows_search_algorithms的设置和表中是否有合适的索引共同决定的，并不是完成由参数slave_rows_search_algorithms决定。
 
 	参数由三个值的组合组成：TABLE_SCAN, INDEX_SCAN, HASH_SCAN，使用组合包括：
@@ -33,6 +38,14 @@
 		3. TABLE_SCAN,HASH_SCAN
 
 		4. TABLE_SCAN,INDEX_SCAN,HASH_SCAN (等价于INDEX_SCAN, HASH_SCAN)
+		
+		5. 矩阵示意图
+			Index used / option value				INDEX_SCAN,HASH_SCAN	INDEX_SCAN,TABLE_SCAN
+			Primary key or unique key			Index scan				Index scan
+			(Other) Key							Hash scan over index	Index scan
+			No index							Hash scan				Table scan
+			
+			
 	
 3. 主库和从库数据查找方式的对比
 

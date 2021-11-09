@@ -1,7 +1,8 @@
 
 1. 描述
-2. delete 删除大表数据的造成从库延迟很大的解决方案
-3. 小结
+2. delete 删除大表的造成从库的解决案例
+3. 详情
+4. 小结
 
 1. 描述
 		
@@ -37,6 +38,7 @@
 			之后从库也有长事务，同时从库有延迟现象
 			
 		4. 通过主库的慢查询日志和mysqlbinlog解析binlog发现这是一个delete大事务
+			
 			也可以通过 information_schema.innodb_trx 命令来看事务执行的开始时间和操作了多少行数据。
 			
 		
@@ -59,6 +61,9 @@
 			
 			然后及时止损， 执行 stop slave; 命令会卡住一会，因为在这种情况下执行该命令会回滚数据， 数据回滚完成后， stop slave; 也能停止下来了。
 		
+		3. 在从库对表添加主键索引
+			
+			
 	1. 没有索引就添加索引
 	2. 根据情况修改从库数据查找的参数
 		一般用于表中没有任何索引的情况下。******
@@ -136,7 +141,7 @@
 			
 			
 	查看延迟情况
-		-- 查系统表
+		-- 查系统表information_schema的 innodb_trx 表
 		mysql> select * from information_schema.innodb_trx\G;
 		*************************** 1. row ***************************
 							trx_id: 272902411
@@ -179,15 +184,7 @@
 				Relay_Master_Log_File: mysql-bin.000297
 					 Slave_IO_Running: Yes
 					Slave_SQL_Running: Yes
-					  Replicate_Do_DB: 
-				  Replicate_Ignore_DB: 
-				   Replicate_Do_Table: 
-			   Replicate_Ignore_Table: 
-			  Replicate_Wild_Do_Table: 
-		  Replicate_Wild_Ignore_Table: 
-						   Last_Errno: 0
-						   Last_Error: 
-						 Skip_Counter: 0
+				
 				  Exec_Master_Log_Pos: 8186
 					  Relay_Log_Space: 202354871
 
@@ -316,72 +313,38 @@
 	
 4. 小结
 	
-	监控长事务
-	巡检脚本项中加入判断没有主键和没有二级索引的表
+	1. 监控长事务
+	
+	2. 巡检脚本项中加入判断没有主键和没有二级索引的表
 		SELECT t.table_schema,t.table_name FROM information_schema.tables AS t LEFT JOIN   
 				(SELECT DISTINCT table_schema, table_name FROM information_schema.`KEY_COLUMN_USAGE` ) AS kt ON 
 				kt.table_schema=t.table_schema AND kt.table_name = t.table_name WHERE t.table_schema NOT IN 
 				('mysql', 'information_schema', 'performance_schema', 'sys') AND kt.table_name IS NULL;		
 	
-	除了技术总监和DBA，还给其它相关研发人员操作生产环境数据的权限
+	3. 除了技术总监和DBA，还给其它相关研发人员操作生产环境数据的权限
 	
-	INDEX_SCAN,HASH_SCAN 的生效时机
+	4. 数据库层面的深入理解+实验
+		从库应用中继日志进行数据查找的方式，如果是Hash查找，在50W行左右以下的小表，耗时150秒左右。
+		大表不适合用。
 		
-		stop slave;
-		SET GLOBAL slave_rows_search_algorithms = 'INDEX_SCAN,HASH_SCAN';
-		start slave;
+	5. 主从延迟的排查 
 		
+		1. sql_thread卡在哪里
 		
-	优化点：
-		mysql> show global variables like '%log_slave_updates%';
-		+-------------------+-------+
-		| Variable_name     | Value |
-		+-------------------+-------+
-		| log_slave_updates | ON    |
-		+-------------------+-------+
-		1 row in set (0.00 sec)
+		2. 根据 Master_Log_File: mysql-bin.000017,  Exec_Master_Log_Pos/end_log_pos 50398187  ; 这个去主库上去解析binlog
+			[root@env27 logs]# mysqlbinlog -vv --base64-output=decode-rows --stop-position=50398187 mysql-bin.000017 > 1.sql
+			
+			-- 最快的办法就是查看慢日志。
 
+		3. 根据 Relay_Log_File: relay-bin.000042  Relay_Log_Pos:50398400 去从库上找：
 
+			[root@env29 data]# mysqlbinlog -vv --base64-output=decode-rows --start-position=50398400 relay-bin.000042 > 2.sql
+
+		4. select * from information_schema.innodb_trx\G; --查看正在执行中的事务情况。
 		
-		
-	4. sql_thread卡在哪里
-	
-	1. 根据 Master_Log_File: mysql-bin.000017,  Exec_Master_Log_Pos/end_log_pos 50398187  ; 这个去主库上去解析binlog
-		[root@env27 logs]# mysqlbinlog -vv --base64-output=decode-rows --stop-position=50398187 mysql-bin.000017 > 1.sql
-
-
-	2. 根据 Relay_Log_File: relay-bin.000042  Relay_Log_Pos:50398400 去从库上找：
-
-		[root@env29 data]# mysqlbinlog -vv --base64-output=decode-rows --start-position=50398400 relay-bin.000042 > 2.sq
-
-	3. select * from information_schema.innodb_trx\G; --查看正在执行中的事务。
-	
-	4. 查看主库的慢日志	
-		
+			
 		
 
-
-mysql> show create table niuniuh5_db.table_web_loginlog_debug\G;
-*************************** 1. row ***************************
-       Table: table_web_loginlog_debug
-Create Table: CREATE TABLE `table_web_loginlog_debug` (
-  `nPlayerId` int(11) NOT NULL,
-  `nClubID` int(11) NOT NULL DEFAULT '0' COMMENT '俱乐部ID',
-  `szNickName` varchar(64) DEFAULT NULL,
-  `nAction` int(11) NOT NULL DEFAULT '0',
-  `szTime` timestamp NULL DEFAULT NULL,
-  `loginIp` varchar(64) DEFAULT NULL,
-  `strRe1` varchar(128) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
-1 row in set (0.00 sec)
-
-mysql> select count(*) from niuniuh5_db.table_web_loginlog_debug;
-+----------+
-| count(*) |
-+----------+
-|  5265967 |
-+----------+
-1 row in set (1.65 sec)
 
 
 	
