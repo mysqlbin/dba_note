@@ -183,7 +183,8 @@
 			表示当前正被打开的 table 数量
 			
 		通过以上两个值来判断 table_open_cache 是否到达瓶颈：
-			当缓存中的值 open_tables 临近到了 table_open_cache 值的时候，说明表缓存池快要满了; 但 Opened_tables 还在一直有新的增长 这说明你还有很多未被缓存的表
+			当状态值 open_tables 临近到了 table_open_cache 参数值的时候，说明表缓存池快要满了; 
+			状态值 Opened_tables 还在一直有新的增长 这说明你还有很多未被缓存的表;
 			这时可以适当增加 table_open_cache 的大小
 			-- 这个总结不错。
 		

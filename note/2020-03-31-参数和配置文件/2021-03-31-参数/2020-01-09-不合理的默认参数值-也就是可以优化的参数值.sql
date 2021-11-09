@@ -15,10 +15,18 @@ InnoDB参数:
 		BP缓冲池的查询命中率会下降到 95%.
 		
 	innodb_buffer_pool_size = 128MB
+		太小了。
+		
 	innodb_rollback_on_timeout = OFF
+		锁等待超时之后，只回滚导致锁等待超时的SQL没有语句，没有回滚整个事务
+		
 	innodb_print_all_deadlocks = OFF
+		不在错误日志中打印死锁信息
+		
 	innodb_data_file_path = ibdata1:12MB:autoextend
+	
 	innodb_log_file_size = 48MB
+		
 		
 	innodb_io_capacity = 200
 		用于告诉InnoDB所在主机的磁盘IO能力, 用于控制每次刷多少脏页到磁盘
