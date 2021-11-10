@@ -6,3 +6,4 @@
 3. 对比 binlog + 位点，也可以知道从库落后主库多少日志
 
 
+参考：《2021-11-08 - seconds_behind_master的计算方式.sql》
