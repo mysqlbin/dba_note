@@ -89,13 +89,15 @@ static void rename_index_in_cache(dict_index_t *index, const char *new_name) {
 
 
 
+D:\mysqlbin\mysql_source_code\mysql-5.7.26\storage\innobase\dict\dict0stats.cc
 
-dict_stats_drop_index
+	dict_stats_drop_index
 
 rename_indexes_in_cache
 
 https://qcsdn.com/article/334002.html
 
+https://developer.aliyun.com/article/41182	Innodb drop index 流程小记
 
 
 alter table t1 drop index c;
