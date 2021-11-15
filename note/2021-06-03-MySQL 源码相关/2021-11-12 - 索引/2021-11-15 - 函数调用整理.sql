@@ -524,7 +524,7 @@ dict_index_remove_from_cache
 		ut_ad(index->magic_n == DICT_INDEX_MAGIC_N);
 		ut_ad(mutex_own(&dict_sys->mutex));
 
-
+		........................................................................
 
 		dict_mem_index_free(index);
 	}
