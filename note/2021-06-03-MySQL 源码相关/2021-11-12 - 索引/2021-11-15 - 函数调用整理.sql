@@ -504,12 +504,6 @@ dict_index_remove_from_cache
 	}
 
 
-
-
-
-
-
-
 	/**********************************************************************//**
 	Removes an index from the dictionary cache. */
 	static
@@ -530,106 +524,7 @@ dict_index_remove_from_cache
 		ut_ad(index->magic_n == DICT_INDEX_MAGIC_N);
 		ut_ad(mutex_own(&dict_sys->mutex));
 
-		/* No need to acquire the dict_index_t::lock here because
-		there can't be any active operations on this index (or table). */
 
-		if (index->online_log) {
-			ut_ad(index->online_status == ONLINE_INDEX_CREATION);
-			row_log_free(index->online_log);
-		}
-
-		/* We always create search info whether or not adaptive
-		hash index is enabled or not. */
-		info = btr_search_get_info(index);
-		ut_ad(info);
-
-		/* We are not allowed to free the in-memory index struct
-		dict_index_t until all entries in the adaptive hash index
-		that point to any of the page belonging to his b-tree index
-		are dropped. This is so because dropping of these entries
-		require access to dict_index_t struct. To avoid such scenario
-		We keep a count of number of such pages in the search_info and
-		only free the dict_index_t struct when this count drops to
-		zero. See also: dict_table_can_be_evicted() */
-
-		do {
-			ulint ref_count = btr_search_info_get_ref_count(info, index);
-
-			if (ref_count == 0) {
-				break;
-			}
-
-			/* Sleep for 10ms before trying again. */
-			os_thread_sleep(10000);
-			++retries;
-
-			if (retries % 500 == 0) {
-				/* No luck after 5 seconds of wait. */
-				ib::error() << "Waited for " << retries / 100
-					<< " secs for hash index"
-					" ref_count (" << ref_count << ") to drop to 0."
-					" index: " << index->name
-					<< " table: " << table->name;
-			}
-
-			/* To avoid a hang here we commit suicide if the
-			ref_count doesn't drop to zero in 600 seconds. */
-			if (retries >= 60000) {
-				ut_error;
-			}
-		} while (srv_shutdown_state == SRV_SHUTDOWN_NONE || !lru_evict);
-
-		rw_lock_free(&index->lock);
-
-		/* The index is being dropped, remove any compression stats for it. */
-		if (!lru_evict && DICT_TF_GET_ZIP_SSIZE(index->table->flags)) {
-			mutex_enter(&page_zip_stat_per_index_mutex);
-			page_zip_stat_per_index.erase(index->id);
-			mutex_exit(&page_zip_stat_per_index_mutex);
-		}
-
-		/* Remove the index from the list of indexes of the table */
-		UT_LIST_REMOVE(table->indexes, index);
-
-		/* Remove the index from affected virtual column index list */
-		if (dict_index_has_virtual(index)) {
-			const dict_col_t*	col;
-			const dict_v_col_t*	vcol;
-
-			for (ulint i = 0; i < dict_index_get_n_fields(index); i++) {
-				col =  dict_index_get_nth_col(index, i);
-				if (dict_col_is_virtual(col)) {
-					vcol = reinterpret_cast<const dict_v_col_t*>(
-						col);
-
-					/* This could be NULL, when we do add virtual
-					column, add index together. We do not need to
-					track this virtual column's index */
-					if (vcol->v_indexes == NULL) {
-						continue;
-					}
-
-					dict_v_idx_list::iterator	it;
-
-					for (it = vcol->v_indexes->begin();
-						 it != vcol->v_indexes->end(); ++it) {
-						dict_v_idx_t	v_index = *it;
-						if (v_index.index == index) {
-							vcol->v_indexes->erase(it);
-							break;
-						}
-					}
-				}
-
-			}
-		}
-
-		size = mem_heap_get_size(index->heap);
-
-		ut_ad(!dict_table_is_intrinsic(table));
-		ut_ad(dict_sys->size >= size);
-
-		dict_sys->size -= size;
 
 		dict_mem_index_free(index);
 	}
