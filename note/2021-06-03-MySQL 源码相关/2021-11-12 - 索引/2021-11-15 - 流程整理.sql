@@ -56,23 +56,26 @@
 		1. 检查索引是否可以删除, 并且标记所有要删除的索引(设置index->to_be_dropped = 1)
 			index->to_be_dropped = 1 ： 只是标记这个索引将要被删除，不涉及到对索引的记录打删除标记。 
 			
-		2. 删除所有需要删除的索引，首先在数据字典中通过重命名标记它们：
+		2. 删除所有需要删除的索引，
+			1. 首先在数据字典中通过重命名标记它们：
 				对将需要drop的index，在数据字典(information_schema.INNODB_SYS_INDEXES)里rename成 TEMP_INDEX_PREFIX 前缀+index名
 				
-		3. 设置 index->page = FIL_NULL
-		
-		4. 从数据词典 information_schema.INNODB_SYS_FIELDS、information_schema.INNODB_SYS_INDEXES 中删除索引项相关记录，并释放索引树
+			2. 	设置 index->page = FIL_NULL
+				Mark the index dropped in the data dictionary cache
+				标记数据字典缓存中删除的索引。
+				
+		3. 从数据词典 information_schema.INNODB_SYS_FIELDS、information_schema.INNODB_SYS_INDEXES 中删除索引项相关记录，并释放索引树
 			
 			其中释放索引树的过程：
 				1. 先删除非根节点(btr_free_but_not_root)
 				2. 再删除根节点(btr_free_root)。
 				3. btr_free_but_not_root 中会先释放 leaf segment 再释放 non-leaf segment
 				
-		5. 从 dictionary cache 中删除索引
+		4. 从 dictionary cache 中删除索引
 		
-		6. 提交事务，删除索引操作完成。
+		5. 提交事务，删除索引操作完成。
 		
-		7. 由于被drop的索引段已经被设置为free，因此可以重用Page。
+		6. 由于被drop的索引段已经被设置为free，因此可以重用Page。
 		
 		
 	
