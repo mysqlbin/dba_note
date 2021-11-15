@@ -89,76 +89,44 @@ static void rename_index_in_cache(dict_index_t *index, const char *new_name) {
 
 
 
+D:\mysqlbin\mysql_source_code\mysql-5.7.26\storage\innobase\dict\dict0stats.cc
 
-dict_stats_drop_index
+	dict_stats_drop_index
 
 rename_indexes_in_cache
 
 https://qcsdn.com/article/334002.html
 
+https://developer.aliyun.com/article/41182	Innodb drop index 流程小记
 
 
 alter table t1 drop index c;
 
-mysql> show create table t1\G;
-*************************** 1. row ***************************
-       Table: t1
-Create Table: CREATE TABLE `t1` (
+show create table t1\G;
+
+drop table t1;
+
+CREATE TABLE `t1` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT,
   `c` int(11) DEFAULT NULL,
   `d` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `c` (`c`)
-) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4
-1 row in set (0.00 sec)
+  KEY `idx_c` (`c`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
-ERROR: 
-No query specified
+insert into t1(`c`,`d`) values(1,1);
+insert into t1(`c`,`d`) values(3,3);
+insert into t1(`c`,`d`) values(5,5);
 
-mysql> SELECT * FROM T1;
-+----+------+------+
-| id | c    | d    |
-+----+------+------+
-|  1 |    1 |    1 |
-|  3 |    3 |    3 |
-|  5 |    5 |    5 |
-+----+------+------+
-3 rows in set (0.00 sec)
-
-
-
-mysql> show create table t11\G;
-*************************** 1. row ***************************
-       Table: t11
-Create Table: CREATE TABLE `t11` (
-  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增ID',
-  `t1` int(10) NOT NULL,
-  `t2` int(10) NOT NULL,
-  `order_no` varchar(64) NOT NULL DEFAULT '' COMMENT 'order no',
-  `status` int(10) NOT NULL,
-  `createtime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发生时间',
-  PRIMARY KEY (`ID`),
-  KEY `idx_order_no` (`order_no`),
-  KEY `idx_status` (`status`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4
-1 row in set (0.00 sec)
-
-ERROR: 
-No query specified
-
-mysql> select * from t11;
-+----+----+----+----------+--------+---------------------+
-| ID | t1 | t2 | order_no | status | createtime          |
-+----+----+----+----------+--------+---------------------+
-|  2 |  2 |  2 | 123789   |      0 | 2021-07-12 11:38:13 |
-|  3 |  3 |  3 | 123789   |      0 | 2021-07-12 11:39:55 |
-+----+----+----+----------+--------+---------------------+
-2 rows in set (0.00 sec)
+SELECT * FROM t1;
 
 
 
 
-alter table t11 drop index idx_status;
+
+alter table t1 drop index idx_c;
+
+
 
 
 fil_index_tree_is_freed() 函数在重新分配索引根页面时返回假阴性，已被用于释放索引树的改进逻辑所取代。 此补丁还删除了传递给 dict_drop_index_tree() 的冗余参数。 （错误＃19710798）
