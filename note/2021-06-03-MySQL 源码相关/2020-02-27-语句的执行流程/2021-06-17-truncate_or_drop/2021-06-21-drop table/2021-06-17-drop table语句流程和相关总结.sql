@@ -110,48 +110,54 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 2. 整个DROP TABLE过程可以简单地概括为
 	
 	0. 申请MDL写锁
-		
+	
 	1. 获取dict_sys->mutex这个数据字典的全局锁，会阻塞后台线程和用户线程
 		-- 函数：ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_lock_data_dictionary
 		
 	2. 启动一个InnoDB DDL事务
 		-- 函数：ha_innobase::delete_table->row_drop_table_for_mysql->trx_start_for_ddl
 		
-	3. 从系统表中清理信息
+	3. 设置 table->to_be_dropped = true
+	
+	4. 从系统表中清理表信息
 		
-		拼接了一个巨大的SQL，用来从系统表中清理信息，会释放索引树。
+		拼接了一个巨大的SQL，用来从系统表中清理信息，会释放索引树(主键索引树、二级索引树)。
 		
 		从数据字典缓存中删除表
 		
-	4. lazy drop逻辑，清理buffer pool的flush list，会多次持有和释放buffer pool mutex以及flush list mutex，释放cpu资源：
+	5. lazy drop逻辑，清理buffer pool的flush list，会多次持有和释放buffer pool mutex以及flush list mutex，释放cpu资源：
 			
-		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace->buf_LRU_flush_or_remove_pages
+		ha_innobase::delete_table
+			->row_drop_table_for_mysql
+				->row_drop_single_table_tablespace
+					->fil_delete_tablespace
+						->buf_LRU_flush_or_remove_pages
 		
 			参考笔记：《2021-06-17-drop table删除脏页的流程-buf_LRU_flush_or_remove_pages.sql》
-			3.1 buf_LRU_flush_or_remove_pages
-			3.1.1 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages
-			3.1.2 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages
-			3.1.3 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->buf_pool_mutex_enter
-			3.1.4 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->->buf_flush_or_remove_pages
+			buf_LRU_flush_or_remove_pages
+				buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages
+				buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages
+				buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->buf_pool_mutex_enter
+				buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->->buf_flush_or_remove_pages
 		
-	5. 写入MLOG_FILE_DELETE类型的redo日志
+	6. 写入MLOG_FILE_DELETE类型的redo日志
 		
-	6. unlink ibd文件
+	7. unlink ibd文件
 		
 		-- 删除ibd文件。
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace->os_file_delete
 		-- C语言unlink()函数：删除文件
 		
-	7. 提交InnoDB DLL事务
+	8. 提交InnoDB DLL事务
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->trx_commit_for_mysql
 		
-	8. 释放dict_sys->mutex	
+	9. 释放dict_sys->mutex	
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_unlock_data_dictionary
 		
-	9. 释放MDL写锁。
+	10. 释放MDL写锁。
 	
 	
-	10. 注意：数据字典这把大锁，会阻塞后台线程和用户线程 
+	11. 注意：数据字典这把大锁，会阻塞后台线程和用户线程 
 	
 	
 	

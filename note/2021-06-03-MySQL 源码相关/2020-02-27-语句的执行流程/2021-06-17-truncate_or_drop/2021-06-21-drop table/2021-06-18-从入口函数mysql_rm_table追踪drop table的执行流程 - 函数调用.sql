@@ -294,8 +294,7 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 		@param[in]	name		Table name
 		@param[in]	trx		Transaction handle
 		@param[in]	drop_db		true=dropping whole database
-		@param[in]	nonatomic	Whether it is permitted to release
-		and reacquire dict_operation_lock    /* 是否允许释放和重新获取dict_operation_lock */
+		@param[in]	nonatomic	Whether it is permitted to release and reacquire dict_operation_lock    /* 是否允许释放和重新获取dict_operation_lock */
 		@param[in,out]	handler		Table handler
 		@return error code or DB_SUCCESS */
 		dberr_t
