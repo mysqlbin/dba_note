@@ -1,9 +1,18 @@
 
+
+
 https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	C语言中，每个栈帧对应着一个未运行完的函数。栈帧中保存了该函数的返回地址和局部变量。
 	从逻辑上讲，栈帧就是一个函数执行的环境：函数参数、函数的局部变量、函数执行完后返回到哪里等等。
+
+
+
+
+
 	
 大纲
+	
+	0. 函数接口 buf_LRU_flush_or_remove_pages 
 	0. drop table同步模式
 	1. drop table懒加载模式
 	2. 整个DROP TABLE过程可以简单地概括为
@@ -14,11 +23,39 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	7. 相关思考
 	
 	
+0. 函数接口 buf_LRU_flush_or_remove_pages 
+
+	函数接口 buf_LRU_flush_or_remove_pages 用于确认是否维护 LRU list，其中有三种类型：
+
+
+	/** Algorithm to remove the pages for a tablespace from the buffer pool.
+		See buf_LRU_flush_or_remove_pages(). */
+		enum buf_remove_t {
+			BUF_REMOVE_ALL_NO_WRITE,    /*!< Remove all pages from the buffer
+							pool, don't write or sync to disk */  
+			BUF_REMOVE_FLUSH_NO_WRITE,  /*!< Remove only, from the flush list,
+							don't write or sync to disk */
+			BUF_REMOVE_FLUSH_WRITE      /*!< Flush dirty pages to disk only
+							don't remove from the buffer pool */
+		};
+
+
+	drop为：     BUF_REMOVE_FLUSH_NO_WRITE ，需要维护flush list，不回写数据
+	trunacte为： BUF_REMOVE_ALL_NO_WRITE ，  需要维护flush list和lru list，不回写数据
+
+	作者：重庆八怪
+	链接：https://www.jianshu.com/p/a956a3e30eb6
+	来源：简书
+	著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+
 	
 0. drop table同步模式
 	
 	MySQL在5.5.23版本之前的处理方式即同步模式:
+	
 		当要drop table的时候，会在整个操作过程中持有buffer pool的mutex，然后扫描两次LRU链表，把属于这个table的page失效掉，buffer pool中page的个数越多，持有mutex时间就会越长，对在线业务的影响也就越明显。
+		
 	简短看下核心处理代码:
 	
 		fil_delete_tablespace
@@ -89,6 +126,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	3. 更新数据字典，包括内存中的数据和mysql库下的数据字典表
 		-- 拼接了一个巨大的SQL，用来从系统表中清理信息
 		
+		
 	4. lazy drop逻辑，清理buffer pool的flush list，会多次持有和释放buffer pool mutex以及flush list mutex，释放cpu资源：
 			
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace->buf_LRU_flush_or_remove_pages
@@ -114,6 +152,9 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_unlock_data_dictionary
 		
 	9. 释放MDL写锁。
+	
+	
+	10. 数据字典这把大锁，会阻塞后台线程和用户线程   ********************
 	
 	不足之处：没有讲到清理AHI
 
