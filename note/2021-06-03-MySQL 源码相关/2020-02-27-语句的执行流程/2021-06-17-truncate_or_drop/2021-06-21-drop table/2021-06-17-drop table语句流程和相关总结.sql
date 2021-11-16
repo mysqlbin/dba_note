@@ -1,13 +1,7 @@
 
-
-
 https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	C语言中，每个栈帧对应着一个未运行完的函数。栈帧中保存了该函数的返回地址和局部变量。
 	从逻辑上讲，栈帧就是一个函数执行的环境：函数参数、函数的局部变量、函数执行完后返回到哪里等等。
-
-
-
-
 
 	
 大纲
@@ -123,9 +117,11 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	2. 启动一个InnoDB DDL事务
 		-- 函数：ha_innobase::delete_table->row_drop_table_for_mysql->trx_start_for_ddl
 		
-	3. 更新数据字典，包括内存中的数据和mysql库下的数据字典表
-		-- 拼接了一个巨大的SQL，用来从系统表中清理信息
+	3. 从系统表中清理信息
 		
+		拼接了一个巨大的SQL，用来从系统表中清理信息，会释放索引树。
+		
+		从数据字典缓存中删除表
 		
 	4. lazy drop逻辑，清理buffer pool的flush list，会多次持有和释放buffer pool mutex以及flush list mutex，释放cpu资源：
 			
@@ -141,6 +137,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	5. 写入MLOG_FILE_DELETE类型的redo日志
 		
 	6. unlink ibd文件
+		
 		-- 删除ibd文件。
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace->os_file_delete
 		-- C语言unlink()函数：删除文件
@@ -154,10 +151,9 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	9. 释放MDL写锁。
 	
 	
-	10. 数据字典这把大锁，会阻塞后台线程和用户线程   ********************
+	10. 注意：数据字典这把大锁，会阻塞后台线程和用户线程 
 	
-	不足之处：没有讲到清理AHI
-
+	
 	
 
 
@@ -165,25 +161,26 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 
 	1. Drop table 要做的主要有3件事：
 	
-		把硬盘上的这个文件删了
+		1. 把表在内存缓冲池的脏页删了
+		
+		2. 把MySQL元数据字典中这张表关联信息删了，同时释放索引树
+		
+		3. 把硬盘上的这个文件删了
 
-		把表在内存缓冲池的脏页删了
-
-		把MySQL元数据字典中这张表关联信息删了
-
+	
 
 	2. 可能会引起的风险有2种：
 		
-		MySQL长时间阻塞其他事务执行，大量请求堆积，实例假死。(数据字典全局锁、内存缓冲池锁)
+		MySQL长时间阻塞其他事务执行，大量请求堆积，实例假死。(数据字典全局锁是一把大锁、内存缓冲池锁)
 		
 		磁盘IO被短时间大量占用，数据库性能明显下降(IO)
 
 
 	3. 解决和避免的方法3种：
 	
-		io占用的问题，对这个表建一个硬链，使Drop table 表的时候并没有真的去磁盘上删那个巨大的ibd文件，事后再用truncate的方式慢慢的删除这个文件，如果是SSD盘和卡,drop table后再直接rm文件也没问题
+		1. io占用的问题，对这个表建一个硬链，使Drop table 表的时候并没有真的去磁盘上删那个巨大的ibd文件，事后再用truncate的方式慢慢的删除这个文件，如果是SSD盘和卡,drop table后再直接rm文件也没问题
 
-		内存和IO占用的问题，升级MySQL版本
+		2. 内存和IO占用的问题，升级MySQL版本
 
 			MySQL 5.5.23 引入了 lazy drop table 来优化改进了drop 操作影响(改进，改进，并没有说完全消除!!!拐杖敲黑板3次)
 
@@ -191,18 +188,23 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 			
 			MySQL8.0 解决了truncate table 的风险
 		
-		业务停服期间做drop table操作。
+		3. 业务停服期间做drop table操作。
 		
 		
 	4. 持有的锁
+	
 		MDL写锁，数据字典的全局排他锁->BP缓冲池排他锁。
 		
 	
 4. 小结
+
 	持有的锁：
-		MDL写锁、数据字典的全局排他锁->BP缓冲池排他锁。
-		
-		DML请求都需要访问BP内存缓冲池，如果内存缓冲池被锁住了，自然阻塞所有的DML请求，QPS降为0。
+	
+		MDL写锁、数据字典的全局排他锁、BP缓冲池排他锁。
+
+		数据字典的全局排他锁：会阻塞后台线程和用户线程。
+		BP缓冲池排他锁：      DML请求都需要访问BP内存缓冲池，如果内存缓冲池被锁住了，自然阻塞所有的DML请求，QPS降为0。
+	
 	
 	如何删除大表?
 
@@ -226,7 +228,9 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 			4.drop表会清理 flush list脏页，但是不会清理bufferpool lru list数据页，所以对于热点表还是先采取rename方式，在进行删除操作
 			
 		二、删除索引并不会释放表空间，这部分索引只是还给了表的free列表，并没有清理
+		
 		三、drop表或者删除索引的时候只会将XDES描述符页面(每256个区加载一个XDES页面)加载到bufferpool，在释放extent过程中通过xdes_init方法来重新初始化该XDES描述符内对应区的属性，将其置为干净可用状态，在整个	过程中数据和索引页面不会加载到bufferpool
+		
 		四、
 			drop表期间会持有 row_mysql_lock_data_dictionary 数据字典锁，这个锁是一个全局锁，对于后续操作数据字典的都会阻塞，例如create、show create、select等操作，
 			被阻塞的SQL状态表现为Opening tables，drop表这个SQL的状态为 checking permissions ,这个锁会在删除表时获取直到将.ibd文件删除才会用 row_mysql_unlock_data_dictionary 释放，另外truncate table也会走这个持这个锁的流程
@@ -317,16 +321,19 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		不是。
 	
 	2.  pt操作后drop旧表的操作 
-		drop表会带来的问题  会把整个库锁住  整个系统会在drop表期间不可用
+	
+		drop表会带来的问题：会短暂的把整个库锁住  整个系统会在drop表期间不可用
 		--[no]drop-old-table             Drop the original table after renaming it (default yes)
 		 
 		系统会短暂不可用，在意的话做pt-osc加上不删除旧表的选项，停服更新的时候删除旧表，不过一般都在业务低期做表的变更
 		 
 	
 	3. 从磁盘上删除表空间是在哪1个步骤？
+	
 		 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace->os_file_delete
 	
 	4. 锁自适应哈希索引是在哪个步骤？
+	
 		锁自适应哈希索引这个步骤会锁BP缓冲池吗
 		buf_LRU_flush_or_remove_pages
 		
@@ -338,6 +345,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 			-- 在删除脏页之前清理AHI。
 
 	5. BP变大，意味着AHI所占用的空间也变大。当DROP TABLE时，InnoDB引擎还会删除表对应的AHI（自适应哈希索引）。而这个过程需要持有一把数据字典的互斥锁、读写锁。
+	
 		-- 删除表对应的AHI需要持有一把数据字典的互斥锁、读写锁？
 		-- 我看源码并不是这样的。
 	

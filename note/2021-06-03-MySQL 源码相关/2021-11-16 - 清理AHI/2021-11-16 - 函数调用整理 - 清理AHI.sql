@@ -28,6 +28,7 @@
 
 
 2. 部分核心函数
+	
 	2.1 btr_free_but_not_root
 
 		/* NOTE: page hash indexes are dropped when a page is freed inside
@@ -42,7 +43,7 @@
 
 	2.2 btr_search_drop_page_hash_when_freed
 	
-		-- 当页面从缓冲池中被逐出或在文件段中被释放时，删除任何可能指向可能在缓冲池中的索引页的自适应哈希索引条目
+		-- 当页面从缓冲池中被逐出或在文件段中被释放时，删除任何可能指向在缓冲池中的索引页的自适应哈希索引条目(ahi在buffer pool缓冲池中)
 		
 		/** Drop any adaptive hash index entries that may point to an index
 		page that may be in the buffer pool, when a page is evicted from the

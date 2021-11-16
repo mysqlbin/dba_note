@@ -1,4 +1,6 @@
 
+0. 初始化表结构和数据
+1. drop table语句的栈帧
 
 
 0. 初始化表结构和数据
@@ -73,8 +75,7 @@
 																													|                             |__ buf_flush_try_yield
 																													|                             |__ buf_flush_list_mutex_exit
 																													|__ buf_pool_mutex_exit
-																													
-																												
+																																																	
 	2.1 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages
 	2.2 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages
 	2.3 buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->buf_pool_mutex_enter
