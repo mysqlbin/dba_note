@@ -276,6 +276,11 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	mysql> truncate table t4;
 	Query OK, 0 rows affected (0.34 sec)
 	
+	-----------------------------------------
+	
+	机器配置：4 CPU、16GB 内存，100GB的SSD盘。
+	
+	
 	-- truncate table = drop table + create table;
 	-- 3个月前已经把这几个表的数据，按日期写入每天的日期表中，然后这4个表最近3个月都没有数据写入，也没有对表进行读操作。
 	-- 在BP缓冲池LRU链表中没有数据，也没有脏页，所以drop table会很快。
