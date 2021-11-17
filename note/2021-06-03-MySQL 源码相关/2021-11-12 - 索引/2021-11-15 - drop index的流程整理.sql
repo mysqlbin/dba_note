@@ -67,10 +67,8 @@
 		3. 从数据词典 information_schema.INNODB_SYS_FIELDS、information_schema.INNODB_SYS_INDEXES 中删除索引项相关记录，并释放索引树
 			
 			其中释放索引树的过程：
-				1. 先删除非根节点(btr_free_but_not_root)	
-					同时清理非根节点数据页对应的AHI项
-				2. 再删除根节点(btr_free_root)。
-					同时清理根节点数据页对应的AHI项 
+				1. 先删除非根节点(btr_free_but_not_root), 同时清理非根节点数据页对应的AHI项
+				2. 再删除根节点(btr_free_root), 同时清理根节点数据页对应的AHI项 
 				3. btr_free_but_not_root 中会先释放 leaf segment 再释放 non-leaf segment
 				
 		4. 从 dictionary cache 中删除索引
