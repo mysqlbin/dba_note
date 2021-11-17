@@ -126,7 +126,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		
 	5. 从系统表中清理表信息
 		
-		拼接了一个巨大的SQL，用来从系统表中清理信息，会释放索引树(主键索引树、二级索引树)。
+		拼接了一个巨大的SQL，用来从系统表中清理信息，会释放索引树(主键索引树、二级索引树), 同时清理AHI项。
 		
 		从数据字典缓存中删除表
 		
@@ -134,7 +134,8 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	6. row_drop_single_table_tablespace 删除表空间
 	
 		lazy drop逻辑，清理buffer pool的flush list，会多次持有和释放buffer pool mutex以及flush list mutex，释放cpu资源：
-		
+			-- 这样的处理能让其他业务请求有机会获得大锁的可能，从而业务的请求不会掉底，减少阻塞用户线程的时间。
+			
 		ha_innobase::delete_table
 			->row_drop_table_for_mysql
 				->row_drop_single_table_tablespace
@@ -189,7 +190,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	3. 解决和避免的方法3种：
 	
 		1. io占用的问题，对这个表建一个硬链，使Drop table 表的时候并没有真的去磁盘上删那个巨大的ibd文件，事后再用truncate的方式慢慢的删除这个文件，如果是SSD盘和卡,drop table后再直接rm文件也没问题
-			为存在IO利用率高的情况。
+			不存在IO利用率高的情况。
 			
 		2. 内存和IO占用的问题，升级MySQL版本
 
@@ -214,19 +215,20 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		MDL写锁、数据字典的全局排他锁、BP缓冲池排他锁。
 
 		数据字典的全局排他锁：
-			会阻塞DML语句、不会阻塞查询语句，这个影响很大。
+			会阻塞DML语句(处于 opening tables 状态)、不会阻塞查询语句，这个影响很大。
 		
 		BP缓冲池排他锁：      
 			内存缓冲池锁是淘汰1024个脏页后就释放锁，然后反复做这个操作，直到这个表的脏页淘汰完成，这个影响不大。
 			
 	
-	如何删除大表?
+	如何优雅地删除大表?
 
-		1. 在游戏业务的停服更新期间，直接做表的 drop table操作。
+		1. 在游戏业务的停服更新期间，直接做表的 drop table 操作。
 			-- 大表的话，分别在主从操作，避免导致从库延迟。
+			
 		2. 在业务低峰期通过 pt-atchiver 归档。
 		
-		3. 不要直接drop 热点表，可以先rename，过一段时间再做drop表操作。
+		3. 不要直接 drop 热点表，因为热点表存在脏页，如果脏页太多，大于1024个，会反复锁内存， 可以先rename，过一段时间再做drop表操作。
 		
 		
 	别人的小结：	
@@ -341,13 +343,21 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		
 		不是。
 	
-	2.  pt操作后drop旧表的操作 
 	
-		drop表会带来的问题：会短暂的把整个库锁住  整个系统会在drop表期间不可用
-		--[no]drop-old-table             Drop the original table after renaming it (default yes)
+	2.  pt操作后drop旧表的操作会带来的问题：会短暂的把整个库锁住  整个系统会在drop表期间不可用？
+	
+		
+		 如果是大表，还是要谨慎，drop table期间会对数据字典加全局的排他锁，会阻塞DML语句、不会阻塞查询语句。
 		 
-		系统会短暂不可用，在意的话做pt-osc加上不删除旧表的选项，停服更新的时候删除旧表，不过一般都在业务低期做表的变更
+		 解决办法：
 		 
+			1. 做pt-osc加上不删除旧表的选项(--[no]drop-old-table             Drop the original table after renaming it (default yes))
+			
+			2. 看业务：一般游戏业务有停机窗口，可以在停服期间做drop table操作。
+			
+			3. 旧表可以先用 pt-archive 做小批量删除数据，最后再做drop table。
+		 
+	
 	
 	3. 从磁盘上删除表空间是在哪1个步骤？
 	

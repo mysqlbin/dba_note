@@ -149,6 +149,9 @@
 	
 	https://www.cnblogs.com/kaleidoscope/p/9481991.html  为什么 MongoDB （索引）使用B-树而 Mysql 使用 B+树
 	
-
+	
+	https://docs.mongodb.com/manual/indexes/
+		MongoDB indexes use a B-tree data structure
+	
 
 

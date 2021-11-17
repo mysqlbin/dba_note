@@ -171,8 +171,23 @@
 	(gdb) c
 	Continuing.
 	
-	
-
+	Sql_cmd_alter_table::execute
+	-> mysql_alter_table
+		-> mysql_inplace_alter_table
+			-> handler::ha_commit_inplace_alter_table 
+				-> ha_innobase::commit_inplace_alter_table
+					-> commit_cache_norebuild
+						-> row_merge_drop_indexes_dict
+							-> que_eval_sql
+								-> que_run_threads
+									-> que_run_threads_low
+										-> que_thr_step
+											-> row_upd_step
+												-> row_upd
+													-> row_upd_clust_step
+														-> dict_drop_index_tree
+															-> btr_free_if_exists
+															
 5. b btr_cur_del_mark_set_sec_rec
 
 	在 设置record的delete标志位 的入口函数打断点

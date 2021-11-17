@@ -1,0 +1,88 @@
+
+ha_innobase::prepare_inplace_alter_table
+	
+	check_if_can_drop_indexes:
+		/* Check if the indexes can be dropped. */
+		-- 检查索引是否可以删除。 
+		
+		/* Flag all indexes that are to be dropped. */
+		-- 标记所有要删除的索引
+		设置index->to_be_dropped = 1		
+		
+
+		
+ha_innobase::commit_inplace_alter_table
+	-> commit_try_norebuild  
+		/* Drop any indexes that were requested to be dropped.
+		Flag them in the data dictionary first. */
+		-- 删除所有请求删除的索引。首先在数据字典中标记它们 
+		
+		-> row_merge_rename_index_to_drop
+			/* We use the private SQL parser of Innobase to generate the
+				query graphs needed in renaming indexes. */
+			-- 重命名字典中要删除的索引，将需要drop的index 在数据词典(information_schema.INNODB_SYS_INDEXES)里rename成 TEMP_INDEX_PREFIX 前缀+index名
+			static const char rename_index[] =
+					"PROCEDURE RENAME_INDEX_PROC () IS\n"
+					"BEGIN\n"
+					"UPDATE SYS_INDEXES SET NAME=CONCAT('"
+					TEMP_INDEX_PREFIX_STR "',NAME)\n"
+					"WHERE TABLE_ID = :tableid AND ID = :indexid;\n"
+					"END;\n";
+					
+			
+				
+	-> commit_cache_norebuild 
+		-- 设置索引页为 FIL_NULL
+		index->page = FIL_NULL;
+		
+		-> row_merge_drop_indexes_dict
+			"BEGIN\n"
+			"found := 1;\n"
+			"OPEN index_cur;\n"
+			"WHILE found = 1 LOOP\n"
+			"  FETCH index_cur INTO ixid;\n"
+			"  IF (SQL % NOTFOUND) THEN\n"
+			"    found := 0;\n"
+			"  ELSE\n"
+			"    DELETE FROM SYS_FIELDS WHERE INDEX_ID=ixid;\n"
+			"    DELETE FROM SYS_INDEXES WHERE CURRENT OF index_cur;\n"
+			"  END IF;\n"
+			"END LOOP;\n"
+			"CLOSE index_cur;\n"
+			
+			-> que_eval_sql
+				.....
+					-> dict_drop_index_tree
+						-> btr_free_if_exists
+																
+																
+			-- 从数据词典 information_schema.INNODB_SYS_FIELDS、information_schema.INNODB_SYS_INDEXES 中删除索引项相关记录，并释放索引树
+		
+		-> dict_index_remove_from_cache
+		-> trx_commit_for_mysql
+			
+			
+			
+删除二级索引的具体流程如下：			
+	Sql_cmd_alter_table::execute
+		-> mysql_alter_table
+			-> mysql_inplace_alter_table
+				-> handler::ha_commit_inplace_alter_table 
+					-> ha_innobase::commit_inplace_alter_table
+						-> commit_try_norebuild  
+							-> row_merge_rename_index_to_drop
+						-> commit_cache_norebuild
+							-> row_merge_drop_indexes_dict
+								-> que_eval_sql
+									-> que_run_threads
+										-> que_run_threads_low
+											-> que_thr_step
+												-> row_upd_step
+													-> row_upd
+														-> row_upd_clust_step
+															-> dict_drop_index_tree
+																-> btr_free_if_exists
+																
+																
+																
+		
