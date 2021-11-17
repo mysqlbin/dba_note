@@ -109,24 +109,32 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	
 2. 整个DROP TABLE过程可以简单地概括为
 	
-	0. 申请MDL写锁
-	
-	1. 获取dict_sys->mutex这个数据字典的全局锁，会阻塞后台线程和用户线程
+	0. 申请持有表的MDL写锁
+		-- 不能对该表执行DML操作和查询操作
+		
+	1. 获取dict_sys->mutex这个数据字典的全局锁
 		-- 函数：ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_lock_data_dictionary
+		-- 阻塞DML语句，不会阻塞查询语句 
 		
 	2. 启动一个InnoDB DDL事务
 		-- 函数：ha_innobase::delete_table->row_drop_table_for_mysql->trx_start_for_ddl
 		
 	3. 设置 table->to_be_dropped = true
 	
-	4. 从系统表中清理表信息
+	4. row_add_table_to_background_drop_list
+		-- 这里还不理解
+		
+	5. 从系统表中清理表信息
 		
 		拼接了一个巨大的SQL，用来从系统表中清理信息，会释放索引树(主键索引树、二级索引树)。
 		
 		从数据字典缓存中删除表
 		
-	5. lazy drop逻辑，清理buffer pool的flush list，会多次持有和释放buffer pool mutex以及flush list mutex，释放cpu资源：
-			
+	
+	6. row_drop_single_table_tablespace 删除表空间
+	
+		lazy drop逻辑，清理buffer pool的flush list，会多次持有和释放buffer pool mutex以及flush list mutex，释放cpu资源：
+		
 		ha_innobase::delete_table
 			->row_drop_table_for_mysql
 				->row_drop_single_table_tablespace
@@ -139,30 +147,27 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 				buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages
 				buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->buf_pool_mutex_enter
 				buf_LRU_flush_or_remove_pages->buf_LRU_remove_pages->buf_flush_dirty_pages->->buf_flush_or_remove_pages
+			
+			
+	7. 写入MLOG_FILE_DELETE类型的redo日志
 		
-	6. 写入MLOG_FILE_DELETE类型的redo日志
-		
-	7. unlink ibd文件
+	8. unlink ibd文件
 		
 		-- 删除ibd文件。
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace->os_file_delete
 		-- C语言unlink()函数：删除文件
 		
-	8. 提交InnoDB DLL事务
+	9. 提交InnoDB DLL事务
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->trx_commit_for_mysql
 		
-	9. 释放dict_sys->mutex	
+	10. 释放dict_sys->mutex	
 		-- ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_unlock_data_dictionary
 		
-	10. 释放MDL写锁。
-	
-	
-	11. 注意：数据字典这把大锁，会阻塞后台线程和用户线程 
+	11. 释放表的MDL写锁。
 	
 	
 	
-
-
+	
 3. drop table的风险和避免方法
 
 	1. Drop table 要做的主要有3件事：
@@ -173,19 +178,19 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		
 		3. 把硬盘上的这个文件删了
 
-	
 
-	2. 可能会引起的风险有2种：
+	2. 可能会引起的风险：
 		
-		MySQL长时间阻塞其他事务执行，大量请求堆积，实例假死。(数据字典全局锁是一把大锁、内存缓冲池锁)
+		MySQL长时间阻塞其他事务执行，大量请求堆积，实例假死。(数据字典全局锁是一把大的全局排他锁，内存缓冲池锁是淘汰1024个脏页后就释放锁，然后反复做这个操作，直到这个表的脏页淘汰完成)
 		
-		磁盘IO被短时间大量占用，数据库性能明显下降(IO)
+		磁盘IO被短时间大量占用，数据库性能明显下降(IO)   -- 不存在。
 
 
 	3. 解决和避免的方法3种：
 	
 		1. io占用的问题，对这个表建一个硬链，使Drop table 表的时候并没有真的去磁盘上删那个巨大的ibd文件，事后再用truncate的方式慢慢的删除这个文件，如果是SSD盘和卡,drop table后再直接rm文件也没问题
-
+			为存在IO利用率高的情况。
+			
 		2. 内存和IO占用的问题，升级MySQL版本
 
 			MySQL 5.5.23 引入了 lazy drop table 来优化改进了drop 操作影响(改进，改进，并没有说完全消除!!!拐杖敲黑板3次)
@@ -208,40 +213,45 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	
 		MDL写锁、数据字典的全局排他锁、BP缓冲池排他锁。
 
-		数据字典的全局排他锁：会阻塞后台线程和用户线程。
-		BP缓冲池排他锁：      DML请求都需要访问BP内存缓冲池，如果内存缓冲池被锁住了，自然阻塞所有的DML请求，QPS降为0。
-	
+		数据字典的全局排他锁：
+			会阻塞DML语句、不会阻塞查询语句，这个影响很大。
+		
+		BP缓冲池排他锁：      
+			内存缓冲池锁是淘汰1024个脏页后就释放锁，然后反复做这个操作，直到这个表的脏页淘汰完成，这个影响不大。
+			
 	
 	如何删除大表?
 
 		1. 在游戏业务的停服更新期间，直接做表的 drop table操作。
 			-- 大表的话，分别在主从操作，避免导致从库延迟。
 		2. 在业务低峰期通过 pt-atchiver 归档。
+		
 		3. 不要直接drop 热点表，可以先rename，过一段时间再做drop表操作。
+		
 		
 	别人的小结：	
 	
 		一、知道了删除大表耗时的几个位置在drop表时我们就可以对其今进行优化
 		
-			1.优化删除.ibd慢：做硬连接删除，然后使用Linux truncate命令逐步缩小.ibd_bak文件进行删除
+			1. 优化删除.ibd慢：做硬连接删除，然后使用Linux truncate命令逐步缩小.ibd_bak文件进行删除
 			
-			2.优化释放AHI慢：此处暂时没有想到好的方法，网上有些人说临时关闭AHI，这个关闭可以在线通过innodb_adaptive_hash_index=off立即清空AHI，这样就不会清理AHI了，
+			2. 优化释放AHI慢：此处暂时没有想到好的方法，网上有些人说临时关闭AHI，这个关闭可以在线通过innodb_adaptive_hash_index=off立即清空AHI，这样就不会清理AHI了，
 				但是所有页面是否要循环取决于版本(percona-5.6.44版本没有if (ahi)这个判断，所以无论是否关闭AHI都会循环调用,oracle-mysql5.7.17这个版本有if (ahi)这个判断，
 				所以关闭AHI是可以生效的，其他版本是否有这个判断，请自行判断)，这个参数在线关闭是否会影响线上环境，需要根据各自的业务和环境来进行选择
 				
-			3.优化释放索引段加载描述符页面到bufferpool慢，还是用SSD来解决吧，普通磁盘性能实在是差差差...
+			3. 优化释放索引段加载描述符页面到bufferpool慢，还是用SSD来解决吧，普通磁盘性能实在是差差差...
 			
-			4.drop表会清理 flush list脏页，但是不会清理bufferpool lru list数据页，所以对于热点表还是先采取rename方式，在进行删除操作
+			4. drop表会清理 flush list脏页，但是不会清理bufferpool lru list数据页，所以对于热点表还是先采取rename方式，在进行删除操作
 			
 		二、删除索引并不会释放表空间，这部分索引只是还给了表的free列表，并没有清理
 		
 		三、drop表或者删除索引的时候只会将XDES描述符页面(每256个区加载一个XDES页面)加载到bufferpool，在释放extent过程中通过xdes_init方法来重新初始化该XDES描述符内对应区的属性，将其置为干净可用状态，在整个	过程中数据和索引页面不会加载到bufferpool
 		
 		四、
-			drop表期间会持有 row_mysql_lock_data_dictionary 数据字典锁，这个锁是一个全局锁，对于后续操作数据字典的都会阻塞，例如create、show create、select等操作，
-			被阻塞的SQL状态表现为Opening tables，drop表这个SQL的状态为 checking permissions ,这个锁会在删除表时获取直到将.ibd文件删除才会用 row_mysql_unlock_data_dictionary 释放，另外truncate table也会走这个持这个锁的流程
-			将.ibd文件删除才会用 row_mysql_unlock_data_dictionary 释放  
-			-- 理解了。
+			drop表期间会持有 row_mysql_lock_data_dictionary 数据字典锁，这个锁是一个全局锁，对于后续操作数据字典的都会阻塞，例如create、show create、DML等操作，不会阻塞查询语句，
+			被阻塞的SQL状态表现为 Opening tables ，drop表这个SQL的状态为 checking permissions ,这个锁会在删除表时获取直到将.ibd文件删除才会用 row_mysql_unlock_data_dictionary 释放
+			另外truncate table也会走这个持这个锁的流程，将.ibd文件删除才会用 row_mysql_unlock_data_dictionary 释放  
+			-- 验证了，理解了。
 			
 		五、看了truncate流程后，对于允许drop或者truncate的表，优选drop,原因如下:
 			1. truncate table与mysql版本有很大关系，版本不同影响很大,5.6(本人percona-5.6.29) truncate是真正的删除.ibd文件然后重建，5.7(本人percona-5.7.26)是释放所有的索引树然后重用该ibd文件,也就是说5.6可以采用硬连接来消除删除.ibd这段时间，但是5.7不行，因为是重用该.ibd文件，硬连接空间会随着.ibd一同释放
@@ -343,10 +353,11 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	
 		 ha_innobase::delete_table->row_drop_table_for_mysql->row_drop_single_table_tablespace->fil_delete_tablespace->os_file_delete
 	
-	4. 锁自适应哈希索引是在哪个步骤？
+		
+	4. 清理自适应哈希索引是在哪个步骤？
 	
-		锁自适应哈希索引这个步骤会锁BP缓冲池吗
-		buf_LRU_flush_or_remove_pages
+
+		buf_LRU_flush_or_remove_pages函数中的注释：
 		
 			在我们尝试一个一个地删除页面之前，我们首先尝试批量删除页面哈希索引条目以提高效率。 
 				先删除表对应的AHI，再淘汰表在BP缓冲池中的脏页。
@@ -354,12 +365,19 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 			我们在下面一一去除剩余的页面哈希条目。
 			？？？ 没有看到有清除数据表的AHI啊？ 不在 buf_LRU_flush_or_remove_pages 接口函数中
 			-- 在删除脏页之前清理AHI。
-
+	
+		答：先释放索引树，释放索引树的这个过程会清理自适应哈希索引，最后在删除表空间的时候，会先淘汰脏页。
+		
+		
+		
+		问题：清理自适应哈希索引这个步骤会锁BP缓冲池吗
+		答：不会。
+		
 	5. BP变大，意味着AHI所占用的空间也变大。当DROP TABLE时，InnoDB引擎还会删除表对应的AHI（自适应哈希索引）。而这个过程需要持有一把数据字典的互斥锁、读写锁。
 	
 		-- 删除表对应的AHI需要持有一把数据字典的互斥锁、读写锁？
-		-- 我看源码并不是这样的。
-	
+		-- 我看源码并不是这样的。通过自己的验证：源码+实验，发现这个描述不对。
+
 
 	6. 跟踪了代码，没有发现有调用 buf_LRU_drop_page_hash_for_tablespace 函数来删除AHI。
 
@@ -372,3 +390,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		
 		mysql> drop table t3;
 		Query OK, 0 rows affected (0.08 sec)
+		
+		答：释放索引树的时候会清理ahi.
+		
+	

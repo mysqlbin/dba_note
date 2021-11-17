@@ -220,16 +220,18 @@
 			参考笔记: <2020-10-22-DML事务在从库延迟的现象追踪.sql>
 		
 	
-	13. opening_table 
-	
-	
-	14. converting HEAP to ondisk
-	
-		该线程正在将内部临时表从 MEMORY 表转换为磁盘表, 考虑优化SQL或者增加tmp_table_size参数的大小
-		参考笔记：《2020-07-07-converting HEAP to ondisk.sql》
+	13. Opening tables
+
+		The thread is trying to open a table. This is should be very fast procedure, unless something prevents opening. 
+		For example, an ALTER TABLE or a LOCK TABLE statement can prevent opening a table until the statement is finished. 
 		怎么知道SQL语句使用到了磁盘临时表估辅助排序？
 			通过 show profiles 查看。
 	
+	15. checking permissions 
+		The thread is checking whether the server has the required privileges to execute the statement.
+
+		线程正在检查服务器是否具有执行语句所需的权限。
+		
 3. Show proceslist时发现大量的sleep，有什么风险吗，该如何处理？
 
 	答：
@@ -273,5 +275,5 @@
 	
 	http://www.bubuko.com/infodetail-3089022.html   MySQL线程状态详解
 	
-	
+	https://dev.mysql.com/doc/refman/5.7/en/query-cache-thread-states.html
 	
