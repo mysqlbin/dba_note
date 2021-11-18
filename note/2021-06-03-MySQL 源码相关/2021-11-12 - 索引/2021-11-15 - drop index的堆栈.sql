@@ -6,6 +6,7 @@
 5. b btr_cur_del_mark_set_sec_rec
 
 1. 初始化表结构和数据
+
 	DROP TABLE IF EXISTS  t1;
 
 	CREATE TABLE `t1` (
@@ -14,13 +15,12 @@
 	  `d` int(11) DEFAULT NULL,
 	  PRIMARY KEY (`id`),
 	  KEY `idx_c` (`c`)
-	) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
+	) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 	insert into t1(`c`,`d`) values(1,1);
 	insert into t1(`c`,`d`) values(3,3);
 	insert into t1(`c`,`d`) values(5,5);
 
-	SELECT * FROM t1;
 
 
 2. b dict_drop_index_tree
