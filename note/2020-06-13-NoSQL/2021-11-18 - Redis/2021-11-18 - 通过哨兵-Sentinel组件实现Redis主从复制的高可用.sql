@@ -675,6 +675,7 @@
 		   40) "14369115"
 			
 10. 客户端程序
+	
 	客户端程序如何感知当前主redis的ip地址和端口呢？
 		redis-sentinel提供了接口，请求任何一个sentinel，发送SENTINEL get-master-addr-by-name <master name>就能得到当前主redis的ip和port。
 		也可以参考 redis_sentinel_connect.py 脚本实现
