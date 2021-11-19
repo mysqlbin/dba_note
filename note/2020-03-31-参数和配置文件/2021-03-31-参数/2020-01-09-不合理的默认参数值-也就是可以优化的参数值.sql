@@ -18,10 +18,11 @@ InnoDB参数:
 		太小了。
 		
 	innodb_rollback_on_timeout = OFF
-		锁等待超时之后，只回滚导致锁等待超时的SQL没有语句，没有回滚整个事务
+		锁等待超时之后，只回滚导致锁等待超时的SQL没有语句，没有回滚整个事务，会导致长事务的存在。
 		
 	innodb_print_all_deadlocks = OFF
 		不在错误日志中打印死锁信息
+		是否可以动态开启和关闭？
 		
 	innodb_data_file_path = ibdata1:12MB:autoextend
 	
@@ -32,6 +33,7 @@ InnoDB参数:
 		用于告诉InnoDB所在主机的磁盘IO能力, 用于控制每次刷多少脏页到磁盘
 		建议设置磁盘的IOPS
 		
+	
 	
 	explicit_defaults_for_timestamp=OFF
 		
