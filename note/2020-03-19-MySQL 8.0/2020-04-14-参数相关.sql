@@ -36,19 +36,21 @@
 			
 	
 2. 移除和不可设置的参数
-	1. 关闭 query cache: 
-		故没有 query_cache_size, query_cache_type 这两个参数
 
+	1. 移除 query cache: 
+		故没有 query_cache_size, query_cache_type 这两个参数
+		
 	2. internal_tmp_disk_storage_engine:
+	
 		在新版本中，磁盘临时表的存储引擎默认使用innodb，故 internal_tmp_disk_storage_engine 已经被移除。
 	
 	3. innodb_undo_tablespaces = 95
 		默认为2, 可以动态添加undo 表空间的数量
 		
-	4. innodb_locks_unsafe_for_binlog
+	4. 移除innodb_locks_unsafe_for_binlog参数
 		root@mysqldb 10:43:  [sbtest]> show global variables like '%innodb_locks_unsafe_for_binlog%';
 		Empty set (0.00 sec)
-	
+		 
 	5. myisam存储引擎模块
 		show global VARIABLES like '%myisam%'
 		

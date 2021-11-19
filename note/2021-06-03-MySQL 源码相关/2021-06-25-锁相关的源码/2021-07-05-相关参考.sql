@@ -3,6 +3,11 @@
 	
 	https://zhuanlan.zhihu.com/p/412358771	InnoDB 事务锁源码分析
 		-- 写得不错
+	https://mp.weixin.qq.com/s/MfVmJPvwSfFlSxaOdYkvfg
+	
+	https://zhuanlan.zhihu.com/p/139489272	MySQL Innodb行锁剖析
+	
+	http://mysql.taobao.org/monthly/2017/06/07/
 	
 	http://mysql.taobao.org/monthly/2016/01/01/
 	
@@ -10,7 +15,7 @@
 
 	https://blog.csdn.net/weixin_28733651/article/details/113287018	mysql锁兼容矩阵_InnoDB行锁兼容性矩阵
 
-	https://zhuanlan.zhihu.com/p/139489272	MySQL Innodb行锁剖析
+
 
 	https://blog.csdn.net/zxz1580977728/article/details/109400915	【数据库篇】MySQL源码分析之row_search_mvcc详细分析（Page加载及索引分析）
 

@@ -4,6 +4,7 @@
 2. InnoDB锁定读实现
 3. ha_innobase::index_read 函数实现如下
 4. 行锁加锁流程(lock_rec_lock)
+5. prebuilt->select_lock_type
 
  
 1. InnoDB锁结构实现
@@ -49,7 +50,7 @@
 		struct lock_t {
 			trx_t*		trx;		/* 锁所在的事务 */
 			dict_index_t*	index;		/* 锁对应的索引 */
-			lock_t*		hash;		/* 由于所有的锁都是存储在一个HASH结构中 */
+			lock_t*		hash;		/* 由于所有的锁都是存储在一个内存的HASH结构中 */
 												/* 因此此字段表示单链表下一个结构，解决冲突 */
 			union {
 				lock_table_t	tab_lock;/* 表锁 */
@@ -57,10 +58,23 @@
 			} un_member;			/* 锁由于一个UNION存储 */
 			ib_uint32_t	type_mode;	/* 用于存储锁类型，锁模式，锁标记等 */
 		};
+		
+		/** 表锁定义 */
+		struct lock_table_t {
+			dict_table_t*	table;		/*!< database table in dictionary
+							cache */
+			UT_LIST_NODE_T(lock_t)
+					locks;		/*!< list of locks on the same
+							table */
+			/** Print the table lock into the given output stream
+			@param[in,out]	out	the output stream
+			@return the given output stream. */
+			std::ostream& print(std::ostream& out) const;
+};
 
 		/* 行锁定义 */
 		struct lock_rec_t {
-			ib_uint32_t	space;		/* 表空间号tablespace */
+			ib_uint32_t	space;		/* 表空间ID */
 			ib_uint32_t	page_no;	/* 页号 */
 			ib_uint32_t	n_bits;		/* 锁位图大小，并且位图是放在lock_t结构之后的 */
 		};
@@ -198,5 +212,17 @@
 
 
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+5. prebuilt->select_lock_type
+	
+	ulint		select_lock_type;/*!< LOCK_NONE, LOCK_S, or LOCK_X */
+	
+	prebuilt->select_lock_type表示加锁的类型：
+		LOCK_NONE表示不加锁
+		LOCK_S表示加S锁（比方说执行SELECT ... LOCK IN SHARE MODE时）
+		LOCK_X表示加X锁（比方说执行SELECT ... FOR UPDATE、DELETE、UPDATE时）。
+
 
 

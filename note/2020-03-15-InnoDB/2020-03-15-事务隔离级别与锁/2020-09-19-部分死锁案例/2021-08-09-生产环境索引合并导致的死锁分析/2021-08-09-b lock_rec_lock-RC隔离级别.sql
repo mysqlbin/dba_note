@@ -328,7 +328,7 @@ Breakpoint 2, lock_rec_lock (impl=false, mode=1027, block=0x7fd1e7115378, heap_n
 #0  lock_rec_lock (impl=false, mode=1027, block=0x7fd1e7115378, heap_no=144, index=0x684b920, thr=0x68577f8) at /usr/local/mysql/storage/innobase/lock/lock0lock.cc:2040
 -- 锁二级索引 idx_nClubID 对应的 主键索引的记录
 #1  0x000000000194dcd5 in lock_clust_rec_read_check_and_lock (flags=0, block=0x7fd1e7115378, rec=0x7fd1e8f3b595 "", index=0x684b920, offsets=0x7fd1d81ab800, mode=LOCK_X, gap_mode=1024, thr=0x68577f8) at /usr/local/mysql/storage/innobase/lock/lock0lock.cc:6414
--- 根据二级索引查找主键索引的记录
+-- 根据二级索引查找主键索引的记录(回表函数)
 #2  0x0000000001a4b095 in row_sel_get_clust_rec_for_mysql (prebuilt=0x6856d80, sec_index=0x684dba0, rec=0x7fd1e8f28369 "\200", thr=0x68577f8, out_rec=0x7fd1d81ac090, offsets=0x7fd1d81ac068, offset_heap=0x7fd1d81ac070, vrow=0x0, mtr=0x7fd1d81abb20)
     at /usr/local/mysql/storage/innobase/row/row0sel.cc:3649
 #3  0x0000000001a4f94a in row_search_mvcc (buf=0x6846b70 "\371+\036", mode=PAGE_CUR_GE, prebuilt=0x6856d80, match_mode=1, direction=0) at /usr/local/mysql/storage/innobase/row/row0sel.cc:5773
