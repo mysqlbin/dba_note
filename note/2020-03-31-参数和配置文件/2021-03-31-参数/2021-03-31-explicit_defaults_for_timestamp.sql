@@ -214,7 +214,7 @@
 	MySQL的参数 explicit_defaults_for_timestamp  默认是OFF.
 	explicit_defaults_for_timestamp 变量会直接影响表结构，也就是说 explicit_defaults_for_timestamp 的作用时间  --遇到了。
 	
-	explicit defaults for timestamp: 时间戳的显式默认值
+	explicit defaults for timestamp: 定义时间戳的显式默认值
 	
 	explicit_defaults_for_timestamp=OFF and timestamp NOT NULL：会改变表结构。
 	
