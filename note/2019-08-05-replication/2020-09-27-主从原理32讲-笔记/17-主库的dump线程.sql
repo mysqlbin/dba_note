@@ -43,6 +43,7 @@
 	2.1 对于 position mode 模式和 gtid auto_position mode 模式获取从库的信息是不一样的，调用的接口也不一样
 	2.2 position 模式
 		使用的是 IO 线程传输过来的 master log name 和 master log position 进行主库 binary log 的定位
+		
 	3.3 gtid auto_position 模式
 		使用的是 从库的 gtid set 信息进行主库 binary log 文件的查找，然后使用 gtid set 在 binary log 文件内部进行过滤查找具体的位置
 		在这种模式下 master log name 和 master log position 是没有用处的
@@ -86,7 +87,7 @@
 				
 				扫描方式就是先扫描最后一个 binary log 拿到 PREVIOUS_GTIDS_LOG_EVENT，然后检查需要拉取的 GTID 是否在此之后，是就结束 
 				否则检查上一个 binary log 文件同样拿到 PREVIOUS_GTIDS_LOG_EVENT，同样检查需要拉取的GTID 是否在此之后，如此循环直到找到为止
-				PREVIOUS_GTIDS_LOG_EVE ： 
+				PREVIOUS_GTIDS_LOG_EVENT ： 
 					表示当前binlog文件之前已经执行过的GTID集合，记录在Binlog文件头
 					
 			3. 如果没有找到则会报错	
@@ -96,7 +97,7 @@
 	3.9 循环每一个 binary log 文件，读取 event 
 		在前面的步骤中已经找到 binary log 文件，这就是 dump 线程读取的起点       *******
 		接下来就是读取 binary log 的 event 了， 如果是当前 binary log 读取完了所有的 event 后 dump 线程就需要堵塞等待唤醒了，阻塞期间
-		还会醒来发送心跳 event 给从库，如果有事务提交那么就会唤醒 dump 线程进行发送 event
+		还会醒来发送心跳 event 给从库，如果有事务提交那么就会唤醒 dump 线程进行发送 event  *****************************
 		
 	3.10 进行三项检查
 		检查 gtid event，如果 auto_position = on 不能是匿名的，否则报错

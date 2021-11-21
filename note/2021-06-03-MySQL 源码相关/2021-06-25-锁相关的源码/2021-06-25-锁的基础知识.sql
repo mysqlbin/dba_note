@@ -220,9 +220,9 @@
 	ulint		select_lock_type;/*!< LOCK_NONE, LOCK_S, or LOCK_X */
 	
 	prebuilt->select_lock_type表示加锁的类型：
-		LOCK_NONE表示不加锁
-		LOCK_S表示加S锁（比方说执行SELECT ... LOCK IN SHARE MODE时）
-		LOCK_X表示加X锁（比方说执行SELECT ... FOR UPDATE、DELETE、UPDATE时）。
+		LOCK_NONE   表示不加锁
+		LOCK_S      表示加S锁（比方说执行SELECT ... LOCK IN SHARE MODE时）
+		LOCK_X      表示加X锁（比方说执行SELECT ... FOR UPDATE、DELETE、UPDATE时）。
 
 
 

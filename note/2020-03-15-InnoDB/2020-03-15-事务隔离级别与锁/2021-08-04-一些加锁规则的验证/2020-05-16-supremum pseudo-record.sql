@@ -11,9 +11,11 @@
 
 0. 什么是supremum pseudo-record
 
-	InnoDB给每个索引加了一个不存在的最大值 supremum, 相当于比索引中最大值还大，可以理解最后一行记录之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
+	InnoDB给每个索引加了一个不存在的最大值 supremum, 相当于比索引中最大值还大
 	
-	总的来说就是每个索引页不存在的最大值。
+	可以理解最后一行记录之后的间隙锁， LOCK_DATA列值将显示伪记录(supremum pseudo-record)。
+	
+	总的来说就是每个索引(数据)页不存在的记录最大值。
 	
 	
 	https://phpor.net/blog/post/3186  关于mysql锁的学习

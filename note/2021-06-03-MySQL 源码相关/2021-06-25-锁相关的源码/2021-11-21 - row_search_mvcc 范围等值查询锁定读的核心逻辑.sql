@@ -96,19 +96,19 @@ E:\github\mysql-5.7.26\storage\innobase\row\row0sel.cc
 				
 				-- 间隙锁
 				if (set_also_gap_locks && !(srv_locks_unsafe_for_binlog || trx->isolation_level <= TRX_ISO_READ_COMMITTED) && prebuilt->select_lock_type != LOCK_NONE && !dict_index_is_spatial(index)) {
-
+		
 					/* Try to place a gap lock on the index record only if innodb_locks_unsafe_for_binlog option is not set or this session is not using a READ COMMITTED isolation level. */
-					仅当 innodb_locks_unsafe_for_binlog 选项未设置或此会话未使用 READ COMMITTED 隔离级别时，才尝试在索引记录上放置间隙锁(总的来说就是RR可重复读隔离级别)
+					/*
+					仅当 innodb_locks_unsafe_for_binlog 选项未设置(innodb_locks_unsafe_for_binlog=OFF)或此会话未使用 READ COMMITTED 隔离级别时，
+					才尝试在索引记录上放置间隙锁(总的来说就是RR可重复读隔离级别)
+					*/
+					
+					/*
 					如何解决幻读的:
 						MySQL在RR隔离级别引入gap lock，把2条记录中间的gap锁住，避免其他事务写入(例如在二级索引上锁定记录1-3之间的gap，那么其他会话无法在这个gap间插入数据)
-
-					
+					*/
 					
 					- LOCK_GAP 512
-
-					只锁住索引记录之间或者第一条索引记录前或者最后一条索引记录之后的范围，并不锁住记录本身。  --《4.1.1 唯一索引等值查询间隙锁》
-
-					例如在RR隔离级别下，非唯一索引条件上的等值当前读，会在等值记录上加NEXT-KEY LOCK同时锁住行和前面范围的记录，同时会在后面一个值上加LOCK\_GAP锁住下一个值前面的范围。
 					
 					err = sel_set_rec_lock(
 						pcur,
@@ -124,7 +124,8 @@ E:\github\mysql-5.7.26\storage\innobase\row\row0sel.cc
 						goto lock_wait_or_error;
 					}
 				}
-
+				
+				/* btr_pcur_store_position*(: 存储游标的位置 */
 				btr_pcur_store_position(pcur, &mtr);
 				
 				ut_ad(pcur->rel_pos == BTR_PCUR_ON);
@@ -137,7 +138,11 @@ E:\github\mysql-5.7.26\storage\innobase\row\row0sel.cc
 		} else if (match_mode == ROW_SEL_EXACT_PREFIX) {
 
 			if (!cmp_dtuple_is_prefix_of_rec(search_tuple, rec, offsets)) {
-			
+				/* Try to place a gap lock on the index record only if innodb_locks_unsafe_for_binlog option is not set or this session is not using a READ COMMITTED isolation level. */
+				/*
+				仅当 innodb_locks_unsafe_for_binlog 选项未设置(innodb_locks_unsafe_for_binlog=OFF)或此会话未使用 READ COMMITTED 隔离级别时，
+				才尝试在索引记录上放置间隙锁(总的来说就是RR可重复读隔离级别)
+				*/
 				-- 间隙锁
 				if (set_also_gap_locks && !(srv_locks_unsafe_for_binlog || trx->isolation_level <= TRX_ISO_READ_COMMITTED) && prebuilt->select_lock_type != LOCK_NONE && !dict_index_is_spatial(index)) {
 
@@ -163,6 +168,11 @@ E:\github\mysql-5.7.26\storage\innobase\row\row0sel.cc
 				to BTR_PCUR_BEFORE, to reflect that the position of
 				the persistent cursor is before the found/stored row
 				(pcur->old_rec). */
+				
+				/*
+					找到的记录不匹配，但可以用作 NEXT 记录 (index_next)。 
+					将相对位置设置为 BTR_PCUR_BEFORE，以反映持久游标的位置在找到/存储的行之前（pcur->old_rec）
+				*/
 				ut_ad(pcur->rel_pos == BTR_PCUR_ON);
 				pcur->rel_pos = BTR_PCUR_BEFORE;
 
@@ -171,23 +181,23 @@ E:\github\mysql-5.7.26\storage\innobase\row\row0sel.cc
 			}
 
 		}
+		
+	
+		ulint		select_lock_type;/*!< LOCK_NONE, LOCK_S, or LOCK_X */   /* 锁的模式 */
 
-
-		ulint		select_lock_type;/*!< LOCK_NONE, LOCK_S, or LOCK_X */
-
-
-		-- 添加行锁：LOCK_S 或者 LOCK_X
+		
+		-- 开始添加行锁(在这之前是先加gap锁)：LOCK_S 或者 LOCK_X
 		
 		if (prebuilt->select_lock_type != LOCK_NONE) {   
 			
-				 -- 锁定义，需要根据 lock_type 加相应的锁 ：LOCK_ORDINARY、LOCK_REC_NOT_GAP
+				 -- 锁定义，需要根据 lock_type 加相应的锁(行锁类型) ：LOCK_ORDINARY、LOCK_REC_NOT_GAP
 				 
 				ulint	lock_type;;
 				
 				if (!set_also_gap_locks   --没有间隙锁
 					|| srv_locks_unsafe_for_binlog
 					|| trx->isolation_level <= TRX_ISO_READ_COMMITTED
-					|| (unique_search && !rec_get_deleted_flag(rec, comp))  -- unique_search 表示唯一索引查找
+					|| (unique_search && !rec_get_deleted_flag(rec, comp))  -- unique_search 表示唯一二级索引查找
 					|| dict_index_is_spatial(index)) {
 					
 					-- 唯一查询，加 LOCK_REC_NOT_GAP 锁(行锁)
@@ -214,7 +224,7 @@ E:\github\mysql-5.7.26\storage\innobase\row\row0sel.cc
 					lock_type = LOCK_REC_NOT_GAP;
 				}
 				
-				-- 前面判断行锁的加锁类型：LOCK_ORDINARY、LOCK_REC_NOT_GAP
+				-- 前面判断行锁的加锁类型：LOCK_ORDINARY(next-key lock)、LOCK_REC_NOT_GAP(行锁)
 				
 				-- 进行加锁
 				err = sel_set_rec_lock(pcur,
@@ -248,7 +258,7 @@ E:\github\mysql-5.7.26\storage\innobase\row\row0sel.cc
 				case DB_SUCCESS:
 					break;
 					
-				-- 加锁不成功，因为有锁等待
+				-- 加锁不成功，因为有锁等待，处理锁等等
 				case DB_LOCK_WAIT:
 					/* Lock wait for R-tree should already
 					be handled in sel_set_rtr_rec_lock() */
@@ -269,7 +279,7 @@ E:\github\mysql-5.7.26\storage\innobase\row\row0sel.cc
 					a deadlock and the transaction had to wait then
 					release the lock it is waiting on. */
 
-					-- 检查是否加锁成功，加锁不成功看看是否有死锁、锁等待
+					-- 检查是否加锁成功，如果加锁不成功看看是否有死锁、锁等待
 					
 					err = lock_trx_handle_wait(trx);
 
