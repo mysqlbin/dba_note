@@ -5,7 +5,7 @@
 4. 参数lock_wait_timeout=10下的MDL锁超时
 5. 小结
 6. 相关参考
-
+7. 查杀MDL锁的SQL语句
 
 1. 初始化表结构和数据
 	CREATE TABLE `t` (
@@ -269,4 +269,31 @@
 	https://www.cnblogs.com/ivictor/p/9460147.html  MySQL 5.7中如何定位DDL被阻塞的问题
 
 	
- 
+7. 查杀MDL锁的SQL语句
+
+	八怪师兄(22389860) 2021/10/29 9:13:07
+	@小徐 应该查一下 大于最大 MDL LOCK 等待 之前的一个事务，通过事务的启动时间来查。
+
+	八怪师兄(22389860) 2021/10/29 9:13:12
+	我处理过很多次了
+
+	八怪师兄(22389860) 2021/10/29 9:14:52
+	select trx_id,trx_operation_state,trx_mysql_thread_id process_id,trx_started,
+	to_seconds(now())-to_seconds(trx_started) trx_es_time,
+	user,db,host,state,Time,info current_sql
+	from information_schema.innodb_trx t1,information_schema.processlist t2,performance_schema.threads  t3
+	where t1.trx_mysql_thread_id=t2.id 
+	and   t1.trx_mysql_thread_id=t3.PROCESSLIST_ID
+	and   t1.trx_mysql_thread_id!=connection_id()
+	and   to_seconds(now())-to_seconds(t1.trx_started) >=
+	(select max(time) from information_schema.processlist where STATE like 'Waiting for%');
+
+	八怪师兄(22389860) 2021/10/29 9:15:00
+	这个语句 你收录 一下 备用
+
+	八怪师兄(22389860) 2021/10/29 9:16:05
+	偶尔被堵塞者是 SQL线程和 或者 MGR的applier 通道 可能查不到 就去掉最后的 那个and 条件 按照事务的 先后启动顺序来杀。我发现 MDL LOCK等待 不比 row lock等待的案例少。基本持平
+
+	八怪师兄(22389860) 2021/10/29 9:16:24
+	生活小妙招 记住了。。
+

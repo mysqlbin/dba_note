@@ -121,6 +121,7 @@
 			|  4 |    3 |    3 |
 			+----+------+------+
 			2 rows in set (0.00 sec)
+			(事务内相同的2次查询，后一次看到了前一次没有看到的行记录，所以说幻读主要是针对insert.)
 			
 		T1时刻持有的锁	
 			mysql> select ENGINE_LOCK_ID,ENGINE_TRANSACTION_ID,THREAD_ID,OBJECT_NAME,INDEX_NAME,LOCK_TYPE,LOCK_MODE,LOCK_STATUS,LOCK_DATA from performance_schema.data_locks;
@@ -551,9 +552,6 @@
 
 
 
-
-RR级别：扫描到的数据都会加行锁和间隙锁 
-RC级别：扫描到的数据都会加行锁，但是不满足条件的数据，没有到commit阶段，就会释放，违反了两阶段加锁原则 全表扫描一直指的是扫描主键索引。
 
 
 

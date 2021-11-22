@@ -1,5 +1,7 @@
 	
-	这里要结合之前的实验来看
+	这里要结合之前的实验来看：
+		《2020-05-16-supremum pseudo-record.sql》
+		《2021-11-22 - 加锁的函数调用栈 - supremum.sql》
 	
 	/*-------------------------------------------------------------*/
 	/* PHASE 4: Look for matching records in a loop */
@@ -84,7 +86,7 @@
 		/*
 			如果当前读取的记录是Supremum记录，则在下边这些条件成立的时候就会为记录添加一个类型为LOCK_ORDINARY的锁，其实也就是next-key锁:
 				set_also_gap_locks是TRUE
-				innodb_locks_unsafe_for_binlog=ON & 事务隔离级别为 REPEATABLE READ
+				innodb_locks_unsafe_for_binlog=OFF & 事务隔离级别为 REPEATABLE READ
 				本次读取属于加锁读
 		*/
 	
