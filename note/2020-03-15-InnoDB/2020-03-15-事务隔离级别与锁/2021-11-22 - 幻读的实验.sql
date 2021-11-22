@@ -4,6 +4,7 @@
 2. READ-COMMITTED 下的二级索引
 3. REPEATABLE-READ下的二级索引
 4. REPEATABLE-READ下的主键索引
+5. 小结
 
 
 1. 初始化表结构和数据
@@ -239,6 +240,10 @@
 	1 row in set, 3 warnings (0.00 sec)
 	
 	
+	
+5. 小结
+	幻读针对 insert，事务内相同的两次查询，后一次看到了前一次没有看到的行记录。
+	解决幻读的方式：使用RR可重复读事务隔离级别。
 	
 	
 	
