@@ -220,45 +220,45 @@ select * from t1 where c>=10 and c<=11 for update;
 	
 4. 小结
 
+	4.1 RR隔离级别
+		1. 本案例在RR隔离级别下的函数调用栈：
 
-	1. 函数调用栈：
-
-		二级索引：
-			ha_innobase::index_read
-				->row_search_mvcc
-					->sel_set_rec_lock
-						->lock_sec_rec_read_check_and_lock
-							->lock_rec_lock
-								->lock_rec_lock_fast
-		主键索引:
-		
-			ha_innobase::index_read
-				->row_search_mvcc
-					->row_sel_get_clust_rec_for_mysql
-						->lock_clust_rec_read_check_and_lock
-							->lock_rec_lock
-								->lock_rec_lock_fast
+			二级索引：
+				ha_innobase::index_read
+					->row_search_mvcc
+						->sel_set_rec_lock
+							->lock_sec_rec_read_check_and_lock
+								->lock_rec_lock
+									->lock_rec_lock_fast
+			主键索引:
+			
+				ha_innobase::index_read
+					->row_search_mvcc
+						->row_sel_get_clust_rec_for_mysql
+							->lock_clust_rec_read_check_and_lock
+								->lock_rec_lock
+									->lock_rec_lock_fast
 
 
-		
-		二级索引：
-		
-			ha_innobase::index_next
-			->ha_innobase::general_fetch
-				->row_search_mvcc
-					->sel_set_rec_lock
-						->lock_sec_rec_read_check_and_lock
-							->lock_rec_lock
-								->lock_rec_lock_fast	
-	2. 语句的加锁范围
+			
+			二级索引：
+			
+				ha_innobase::index_next
+				->ha_innobase::general_fetch
+					->row_search_mvcc
+						->sel_set_rec_lock
+							->lock_sec_rec_read_check_and_lock
+								->lock_rec_lock
+									->lock_rec_lock_fast	
+		2. 语句的加锁范围
 
-		c: next-key lock: (5, 10]
-		primary: record lock: [10]
-		c: next-key lock: (10, 15]
-		
-		-- 不需要锁 ID=15 这一行记录。
-		
-		
-		
-		
-		
+			c: next-key lock: (5, 10]
+			primary: record lock: [10]
+			c: next-key lock: (10, 15]
+			
+			-- 不需要锁 ID=15 这一行记录。
+			
+			
+			
+			
+			

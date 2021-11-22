@@ -31,3 +31,5 @@ ha_innobase::build_template(
 二级索引的加锁，回到主键索引加的都是行锁
 
 
+回表函数
+	row_sel_get_clust_rec_for_mysql

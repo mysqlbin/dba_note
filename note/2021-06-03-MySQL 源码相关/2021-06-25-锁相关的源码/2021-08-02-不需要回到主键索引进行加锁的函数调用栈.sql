@@ -187,6 +187,7 @@
 	-- 锁主键索引的记录
 	#2  0x000000000194dcd5 in lock_clust_rec_read_check_and_lock (flags=0, block=0x7fc063a3e3a8, rec=0x7fc064b4409d "\200", index=0x7fc050958cb0, offsets=0x7fc0700e3ee0, mode=LOCK_S, gap_mode=1024, thr=0x7fc0509a0e30)
 		at /usr/local/mysql/storage/innobase/lock/lock0lock.cc:6414
+	-- 回表函数
 	#3  0x0000000001a4b095 in row_sel_get_clust_rec_for_mysql (prebuilt=0x7fc0509a0690, sec_index=0x7fc0509598e0, rec=0x7fc064b4808c "\200", thr=0x7fc0509a0e30, out_rec=0x7fc0700e4770, offsets=0x7fc0700e4748, offset_heap=0x7fc0700e4750, vrow=0x0, mtr=0x7fc0700e4200)
 		at /usr/local/mysql/storage/innobase/row/row0sel.cc:3649
 	#4  0x0000000001a4f94a in row_search_mvcc (buf=0x7fc0509a00f0 <incomplete sequence \375>, mode=PAGE_CUR_GE, prebuilt=0x7fc0509a0690, match_mode=1, direction=0) at /usr/local/mysql/storage/innobase/row/row0sel.cc:5773
