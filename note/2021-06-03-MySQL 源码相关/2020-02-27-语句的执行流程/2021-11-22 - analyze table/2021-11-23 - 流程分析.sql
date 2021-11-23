@@ -9,34 +9,40 @@
 
 
 请求重新计算统计信息的方式：
-	
+		
 	1. 当手动执行ANALYZE TABLE
 	
-	2. 进入到自动重新计算后台线程(每隔10秒计算一次？)
+	2. 进入到自动重新计算后台线程(后台线程每隔10秒执行一次？)
 	
 	
-		持久化统计信息在以下情况会被自动更新(把表的ID加入到 recalc_pool 中)：
+		持久化统计信息在以下情况会被自动更新(先把表的ID加入到 recalc_pool 中)：
 		
 		1. INNODB_STATS_AUTO_RECALC=ON 情况下，表中10%的数据被修改：
 				1. 通过 delete 删除数据
 				2. 通过 update 更新并且有更新二级索引的数据
-				-- 只要满足其中1个条件就会统计到修改表的行数中，表中10%的数据被修改 ，会把表的ID加入到 recalc_pool 中。
+				-- 只要满足其中1个条件就会统计到修改表的行数中，当表中10%的数据被修改 ，就会把表的ID加入到 recalc_pool 中。
 				
 			2. 添加/删除字段、添加索引  -- 需要加入到 recalc_pool 吗？
 			
 		
 	
 	3. 打开的表的stats不存在
+	
+	D:\mysqlbin\mysql_source_code\mysql-5.7.26\storage\innobase\dict\dict0stats.cc
+	
+	dict_stats_update() 函数
+	
 	/* Persistent recalculation requested, called from
-	1) ANALYZE TABLE, or
-	2) the auto recalculation background thread, or
-	3) open table if stats do not exist on disk and auto recalc
-	   is enabled 
+		1) ANALYZE TABLE, or
+		2) the auto recalculation background thread, or
+		3) open table if stats do not exist on disk and auto recalc
+		   is enabled 
+		   
 	请求重新计算统计值的方式：
 		1. 当手动执行ANALYZE TABLE
-		2. 进入到自动重新计算后台线程(每隔10秒一次)
+		2. 进入到自动重新计算后台线程(后台线程每隔10秒执行一次？)
 		3. 打开的表的stats不存在
-	 */	   
+	*/	   
 	
 
 dict_stats_thread 多久运行一次？
@@ -45,19 +51,18 @@ row_update_for_mysql_using_upd_graph
 	-> row_update_statistics_if_needed
 
 
-1. recalc_pool
 
-	所有需要被重新计算的表会加入到recalc_pool中，recalc_pool初始化大小为128，随后如果需要再被扩大。
-
-2. 将表加入到 recalc_pool
+1. 将表的ID加入到 recalc_pool
 	
-	2.1 在做完DML后，会调用函数 row_update_for_mysql_using_upd_graph 判断，只要满足下面其中1个条件就会直接进入 row_update_statistics_if_needed 函数是否需要更新统计信息 ：
+	1.1 所有需要被重新计算的表会加入到recalc_pool中，recalc_pool初始化大小为128，随后如果需要再被扩大。
+	
+	1.2 在做完DML后，会调用函数 row_update_for_mysql_using_upd_graph 判断，只要满足下面其中1个条件就会直接进入 row_update_statistics_if_needed 函数判断是否需要更新统计信息 ：
 
 		1. 只会在DELETE或者UPDATE有更改到索引列，如果只更新到非索引列，那就不会影响统计信息。
 		2. delete肯定会影响到所有列
 		
 			
-	2.2 row_update_statistics_if_needed 函数
+	1.3 row_update_statistics_if_needed 函数
 		
 		1. 开启了持久化统计信息
 			1. 如果修改表的行数超过10%，会启用自动重新计算统计信息
@@ -68,12 +73,20 @@ row_update_for_mysql_using_upd_graph
 			当发现修改的记录超过6.25%(1/16)时，更新统计信息 dict_stats_update(table, DICT_STATS_RECALC_TRANSIENT)->dict_stats_update_transient
 
 
-3. dict stats 后台线程如何处理
+2. dict stats 后台线程如何处理
 	
 	
 	如果该表在10秒内 已经计算过一次，那么就把该表重新放到 recalc_pool 尾部，不做任何处理(等待下一次统计)。
 	否则： 否则真正进入 dict_stats_update 修改统计值
 	实际上 DICT_STATS_RECALC_PERSISTENT 类型的状态信息更新，也会由 ANALYZE TABLE 发起
+
+
+3. dict_stats_update()函数，在传参为DICT_STATS_RECALC_PERSISTENT时，做三件事：
+
+	1. 检查 dict_stats_persistent_storage_check() 检查相关系统表是否存在，不存在报错
+	2. dict_stats_update_persistent(table) 更新表的统计信息
+		先更新聚集索引，再更新二级索引，均调用函数 dict_stats_analyze_index.
+	3. dict_stats_save(table) 将统计信息更新到持久化存储系统表中
 
 
 
