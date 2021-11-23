@@ -204,7 +204,7 @@
 
 5. 举一反三
 	
-	select * from mysql.innodb_table_stats  where database_name='aiuaiuh5_modb' where last_update < DATE_SUB(NOW(), INTERVAL 3 DAY);
+	select * from mysql.innodb_table_stats  where database_name='aiuaiuh5_modb' and last_update < DATE_SUB(NOW(), INTERVAL 3 DAY);
 
 	把表统计信息的时间小于当前时间3天的，加入到监控中。
 	

@@ -177,7 +177,7 @@
 	
 	验证了 show index from 中的 Cardinality 并不是从 innodb_index_stats 中获得， 而是从   information_schema.statistics 获得。
 
-	innodb_index_stats 和 show index from 中的 Cardinality  并不是实时同步的，而是触发了索引统计信息之后innodb_index_stats.Cardinality值才会改变。
+	innodb_index_stats 和 show index from 中的 Cardinality  并不是实时同步的，而是触发了索引统计信息之后 innodb_index_stats.Cardinality 值才会改变。
 	
 	据说 innodb_index_stats 的字段统计值会有几秒的延迟。
 	

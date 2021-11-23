@@ -2,11 +2,12 @@
 
 		
 表现如下：
-
+	
     use db不能进入数据库
+	
     schema.processlist来看有大量的 Waiting for table flush
 	
-	说明了执行 use DB; 命令 需要关闭这个库下的所有表;
+	说明了执行 use DB; 命令 需要关闭这个库下的所有打开的表;
 
 
 参考:

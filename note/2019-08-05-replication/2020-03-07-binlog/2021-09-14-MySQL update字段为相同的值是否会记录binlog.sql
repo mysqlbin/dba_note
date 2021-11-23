@@ -622,6 +622,11 @@
 	binlog_row_image=FULL and binlog_format=mixed ：    加锁，写binlog
 		
 	是否记录binlog，跟 binlog_format 参数的设置有关系。
+	
+	基于row模式时，server层匹配到要更新的记录，发现新值和旧值一致，不做更新，就直接返回，也不记录binlog。
+
+	基于 statement 或者 mixed格式，MySQL执行 update 语句，并把更新语句记录到binlog。
+		
 		
 	其中，binlog_format=ROW 格式下，会修改 .ibd 文件 
 
