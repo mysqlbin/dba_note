@@ -83,7 +83,7 @@ explain.Extra=Using index condition; Using where; Using temporary; Using filesor
 强制让优化器选择索引 idx_nClubID_bRobot_tEndTime:
 	虽然扫描的行数很多, 2139552/10896 = 196, 跟优化器默认选择的索引扫描的行数大了196倍
 	同时SQL语句使用到了临时表和排序, 但是这里的需求是只取10条记录
-	从SQL的执行效率来看, 这个场景下, 强制使用索引往往是更好的选择.
+	从SQL的执行效率来看, 这个场景下, 强制使用索引 idx_nClubID_bRobot_tEndTime 往往是更好的选择.
 	
 
 
