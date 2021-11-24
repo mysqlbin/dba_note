@@ -74,7 +74,7 @@ row_update_for_mysql_using_upd_graph
 	如果该表在10秒内 已经计算过一次，那么就把该表重新放到 recalc_pool 尾部，不做任何处理(等待下一次统计)。
 	否则： 否则真正进入 dict_stats_update 修改统计值
 	实际上 DICT_STATS_RECALC_PERSISTENT 类型的状态信息更新，也会由 ANALYZE TABLE 发起
-
+	
 
 
 参考源码级相关文章：
