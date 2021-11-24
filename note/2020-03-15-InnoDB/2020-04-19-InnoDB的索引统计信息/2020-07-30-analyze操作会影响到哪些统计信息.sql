@@ -1,7 +1,6 @@
 
 
-1. 更新 information_schema.tables 的 index_length 字段值：
-	analyze table 会更新 information_schema.tables 中的 index_length 字段值
+1. 更新 information_schema.tables 的 index_length 和 table_rows 字段值
 	
 2. 更新 mysql.innodb_table_stats 和 mysql.innodb_index_stats 的表和索引的统计信息
 	包括主键索引、所有的二级索引

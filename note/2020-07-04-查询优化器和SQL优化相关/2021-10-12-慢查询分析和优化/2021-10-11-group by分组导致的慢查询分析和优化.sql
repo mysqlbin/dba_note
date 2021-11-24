@@ -240,7 +240,8 @@
 	+---------------+------------------------+----------------------------+---------------------+--------------+------------+-------------+-----------------------------------+
 	8 rows in set (0.00 sec)
 
-
+	-- 数据表Table_DiamondActionLog 只有insert和select操作，因此不需要加入到修改表的行数中，自然不会有当表修改的行数大于10%时，会自动更新表和索引的统计信息。
+	
 	analyze table yldb.table_diamondactionlog;
 
 	mysql> analyze table yldb.table_diamondactionlog;

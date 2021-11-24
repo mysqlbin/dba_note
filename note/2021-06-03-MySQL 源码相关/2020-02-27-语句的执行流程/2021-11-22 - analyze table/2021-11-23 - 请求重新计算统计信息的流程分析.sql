@@ -29,6 +29,7 @@
 		1. INNODB_STATS_AUTO_RECALC=ON 情况下，只要满足下面的(1)或者(2)的其中1个条件就会统计到修改表的行数中，当表中10%的数据被修改 ，就会把表的ID加入到 recalc_pool 中。：
 			(1). 通过 delete 删除数据
 			(2). 通过 update 更新并且有更新二级索引的数据
+			-- 所以，数据表只有insert的场景，是不会加入到修改表的行数中的。
 			
 		2. 添加/删除字段、添加索引。  
 			
@@ -59,7 +60,7 @@
 		
 		1.1 所有需要被重新计算的表会加入到recalc_pool中，recalc_pool初始化大小为128，随后如果需要再被扩大。
 		
-		1.2 在做完DML后，会调用函数 row_update_for_mysql_using_upd_graph 判断，只要满足下面其中1个条件就会直接进入 row_update_statistics_if_needed 函数判断是否需要更新统计信息 ：
+		1.2 在做完DML后，会调用函数 row_update_for_mysql_using_upd_graph 判断，只要满足下面的其中1个条件就会直接进入 row_update_statistics_if_needed 函数判断是否需要更新统计信息 ：
 
 			1. 只会在DELETE或者UPDATE有更改到索引列，如果只更新到非索引列，那就不会影响统计信息。
 			2. delete肯定会影响到所有列
@@ -69,7 +70,7 @@
 			
 			1. 开启了持久化统计信息
 				1. 如果修改表的行数超过10%，会启用自动重新计算统计信息
-				2. 把表的ID放进 recalc_pool ，发送 dict_stats_event 事件给 dict_stats_thread 后台线程，并将修改计数器table->stat_modified_counter重置为0.
+				2. 把表的ID放进 recalc_pool ，发送 dict_stats_event 事件给 dict_stats_thread 后台线程，并将修改计数器 table->stat_modified_counter 重置为0.
 				3. 以上条件不满足，直接return，不进行下面的判断
 				
 			2. 没有开启持久化统计信息
