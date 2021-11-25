@@ -27,7 +27,7 @@
 	2. 进入到自动重新计算后台线程，持久化统计信息在以下情况会被自动更新(先把表的ID加入到 recalc_pool 中)：
 			
 		1. INNODB_STATS_AUTO_RECALC=ON 情况下，执行DML语句后，当表中10%的数据被修改 ，就会把表的ID加入到 recalc_pool 中：
-			其中，update语句如果只更新到非索引列，那就不会影响统计信息
+			其中，update语句如果只更新到非索引列，那就不会调用该函数，从而不会影响统计信息
 			
 		2. 添加/删除字段、添加索引。  
 			
@@ -58,8 +58,8 @@
 		
 		1.1 所有需要被重新计算的表会加入到recalc_pool中，recalc_pool初始化大小为128，随后如果需要再被扩大。
 		
-		1.2 在做完DML后，会调用函数 row_update_for_mysql_using_upd_graph 判断，只要满足下面的其中1个条件就会直接进入 row_update_statistics_if_needed 函数判断是否需要更新统计信息 ：
-			其中，update语句如果只更新到非索引列，那就不会影响统计信息
+		1.2 在做完DML后，会调用 row_update_statistics_if_needed 函数判断是否需要更新统计信息 ：
+			其中，update语句如果只更新到非索引列，那就不会调用该函数，从而不会影响统计信息
 		
 				
 		1.3 row_update_statistics_if_needed 函数
@@ -90,9 +90,6 @@
 			先更新聚集索引，再更新二级索引，均调用函数 dict_stats_analyze_index.
 			
 		3. 将统计信息更新到持久化存储系统表中(dict_stats_save(table) )
-
-
-
 
 
 

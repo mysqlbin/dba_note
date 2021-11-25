@@ -204,7 +204,7 @@
 
 6. 小结
 	
-	添加/删除索引不会重建表，也不会修改索引的统计信息。
+	删除索引不会重建表，也不会修改索引的统计信息。
 
 	analyze table 会更新 information_schema.tables 中的 index_length 字段值。
 		
