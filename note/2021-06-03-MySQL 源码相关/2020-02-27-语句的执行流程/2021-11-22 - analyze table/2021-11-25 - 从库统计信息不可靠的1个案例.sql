@@ -67,9 +67,10 @@
 	|    94092 |
 	+----------+
 	1 row in set (0.06 sec)
+	
+	
 
-
-4. 表在从库更新统计信息的最新时间
+4. 表在从库更新统计信息的最后一次更新时间
 	
 	mysql> select * from mysql.innodb_table_stats  where database_name='niuniuh5_db' and table_name="table_third_order";
 	+---------------+-------------------+---------------------+---------+----------------------+--------------------------+
