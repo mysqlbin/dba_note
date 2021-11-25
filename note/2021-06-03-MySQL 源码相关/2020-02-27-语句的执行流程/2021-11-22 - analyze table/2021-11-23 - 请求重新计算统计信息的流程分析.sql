@@ -5,6 +5,7 @@
 4. 参考源码级相关文章
 5. 其它待解决
 6. 小结
+7. 如何预防从库的统计信息不够新
 
 
 1. 前言
@@ -100,6 +101,7 @@
 	https://developer.aliyun.com/article/41045
 	https://tusundong.top/post/empty_cardinality_bug.html	
 	http://mysql.taobao.org/monthly/2020/03/08/
+	http://mysql.taobao.org/monthly/2020/12/05/
 	
 
 5. 其它待解决
@@ -147,6 +149,7 @@
 			| niuniuh5_db   | table_clublogscore20210824        | 2021-11-24 08:26:06 |      0 |                    1 |                        4 |
 			| niuniuh5_db   | table_clubgamescoredetail20210824 | 2021-11-24 08:20:45 |      0 |                    1 |                        6 |
 			
+			-- 下面3个表是按日期分表的场景
 			| niuniuh5_db   | table_third_score_detail20211123  | 2021-11-23 23:59:43 |  98154 |                 1764 |                      772 |
 			| niuniuh5_db   | table_clublogscore20211123        | 2021-11-23 22:56:31 | 118714 |                  931 |                     1092 |
 			| niuniuh5_db   | table_clubgamescoredetail20211123 | 2021-11-23 22:30:13 |  80136 |                 2277 |                     1736 |
@@ -166,10 +169,21 @@
 	这里要总结下。
 	------------------------------------------------------------------------------------------------------------------------------------
 	
-	什么是统计信息？ 
+	什么是索引统计信息？ 
 		就是表中各个索引的基数，MySQL 优化器选择索引依赖于索引统计信息。
 		
 		
+7. 如何预防从库的统计信息不够新
+	
+	1. 把表统计信息的时间小于当前时间15天的，加入到监控中。
+		select concat("analyze table ", table_name, ";") from mysql.innodb_table_stats  where database_name='niuniuh5_db' and last_update < DATE_SUB(NOW(), INTERVAL 3 DAY);
+		
+	2. 停服更新，对在从库指定的业务表，执行一遍 analyze table 操作。
+	
+	3. 添加定时器，每天的1号、15号，对在从库指定的业务表，执行一遍 analyze table 操作。
+		这个操作要避开备份的时间。
 		
 		
-		
+8. 案例
+	
+	

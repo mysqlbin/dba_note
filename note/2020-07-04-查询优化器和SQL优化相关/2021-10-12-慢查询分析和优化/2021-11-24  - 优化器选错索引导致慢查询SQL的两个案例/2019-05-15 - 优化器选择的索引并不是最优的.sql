@@ -32,6 +32,17 @@
 
 2. 格式化慢查询SQL 
 
+	先利用覆盖索引查询把最大ID和最小ID查询，避免回表，然后带入where 条件中：where  ID >= 7265116 AND ID <= 9116059
+	
+	mysql> select 9116059-7265116;
+	+-----------------+
+	| 9116059-7265116 |
+	+-----------------+
+	|         1850943 |
+	+-----------------+
+	1 row in set (0.00 sec)
+
+
 	SELECT
 		temp.nClubID,
 		temp.nPlayerId,
@@ -122,6 +133,8 @@
 
 
 6. 通过force index 强制使用主键索引
+	-- 应该先用 analyze table 语句重新计算索引统计信息的
+	
 	mysql> desc select temp.nClubID,temp.nPlayerId,users.szThirdAccount szNickName,temp.nRound,temp.nValidBet, temp.nResultMoney  from (  select detail.nClubID,detail.nPlayerId,count(detail.nRound) nRound,SUM(detail.nValidBet) nValidBet, SUM(detail.nResultMoney) nResultMoney from Table_ClubGameScoreDetail detail force index(`PRIMARY`) where detail.ID>=7265116 and detail.ID<=9116059   and detail.nClubID=10002 and detail.bRobot=0  and detail.nGameType in (9,10,11,12,13,14,15,16,17,110,111)  and detail.tEndTime>='2019-05-07 00:00:00'  and detail.tEndTime<='2019-05-13 23:59:59'  GROUP BY detail.nClubID,detail.nPlayerId  limit 0,10 )temp left join table_user users on temp.nPlayerId=users.nPlayerID;
 	+----+-------------+------------+------------+--------+----------------------------------------+---------+---------+----------------+---------+----------+----------------------------------------------+
 	| id | select_type | table      | partitions | type   | possible_keys                          | key     | key_len | ref            | rows    | filtered | Extra                                        |
@@ -132,6 +145,27 @@
 	+----+-------------+------------+------------+--------+----------------------------------------+---------+---------+----------------+---------+----------+----------------------------------------------+
 	3 rows in set, 1 warning (0.00 sec)
 
+	mysql> select 9116059-7265116;
+	+-----------------+
+	| 9116059-7265116 |
+	+-----------------+
+	|         1850943 |
+	+-----------------+
+	1 row in set (0.00 sec)
+	
+	
+	mysql> select 3514838 / 1850943;
+	+-------------------+
+	| 3514838 / 1850943 |
+	+-------------------+
+	|            1.8989 |
+	+-------------------+
+	1 row in set (0.00 sec)
+	
+	执行计划中，使用到主键索引，预计扫描的行数比实际的行数要多2倍，明显索引统计信息不准确了。
+	
+	
+	
 	mysql> select temp.nClubID,temp.nPlayerId,users.szThirdAccount szNickName,temp.nRound,temp.nValidBet, temp.nResultMoney  from (  select detail.nClubID,detail.nPlayerId,count(detail.nRound) nRound,SUM(detail.nValidBet) nValidBet, SUM(detail.nResultMoney) nResultMoney from Table_ClubGameScoreDetail detail force index(`PRIMARY`) where detail.ID>=7265116 and detail.ID<=9116059   and detail.nClubID=10002 and detail.bRobot=0  and detail.nGameType in (9,10,11,12,13,14,15,16,17,110,111)  and detail.tEndTime>='2019-05-07 00:00:00'  and detail.tEndTime<='2019-05-13 23:59:59'  GROUP BY detail.nClubID,detail.nPlayerId  limit 0,10 )temp left join table_user users on temp.nPlayerId=users.nPlayerID;
 	+---------+-----------+-------------+--------+-----------+--------------+
 	| nClubID | nPlayerId | szNickName  | nRound | nValidBet | nResultMoney |
@@ -160,3 +194,11 @@
 			同时SQL语句使用到了临时表和排序, 但是这里的需求是只取10条记录
 			从SQL的执行效率来看, 这个场景下, 强制使用主键索引往往是更好的选择.
 			
+		
+		mysql> select 1850943/152608;
+		+----------------+
+		| 1850943/152608 |
+		+----------------+
+		|        12.1287 |
+		+----------------+
+		1 row in set (0.00 sec)
