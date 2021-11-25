@@ -88,3 +88,24 @@ Breakpoint 2, dict_stats_save (table_orig=0x7f58f096ce40, only_for_index=0x0) at
 #12 0x0000000001ce7612 in pfs_spawn_thread (arg=0x64db6d0) at /usr/local/mysql/storage/perfschema/pfs.cc:2190
 #13 0x00007f591b197ea5 in start_thread () from /lib64/libpthread.so.0
 #14 0x00007f591a05d9fd in clone () from /lib64/libc.so.6
+
+
+
+
+
+/*
+	将表的统计信息返回给MySQL解释器，在handle对象的各个领域
+*/
+/*********************************************************************//**
+Returns statistics information of the table to the MySQL interpreter,
+in various fields of the handle object.
+@return HA_ERR_* error code or 0 */
+
+int
+ha_innobase::info_low(
+/*==================*/
+	uint	flag,	/*!< in: what information is requested */
+	bool	is_analyze)
+{
+
+
