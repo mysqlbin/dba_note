@@ -422,10 +422,11 @@
 			
 
 7. 小结
+
 	了解了 stat_name 和 stat_value 的具体含义，就可以协助我们排查SQL执行时为什么没有使用合适的索引:
-	例如某个索引 n_diff_pfxNN 的 stat_value 远小于实际值，查询优化器认为该索引选择度较差，就有可能导致使用错误的索引。
-	通过 innodb_index_stats表信息获取联合索引的distinct之后的数量, 跟主键的distinct之后的数量做对比, 获取判断这个联合索引的区分度
-	
+		例如某个索引 n_diff_pfxNN 的 stat_value 远小于实际值，查询优化器认为该索引选择度较差，就有可能导致使用错误的索引。
+		通过 innodb_index_stats表信息获取联合索引的distinct之后的数量, 跟主键的distinct之后的数量做对比, 获取判断这个联合索引的区分度
+		
 	新增一行记录之后的20秒内，本案例的统计信息都没有自动更新，说明没有触发索引的统计信息。
 	
 	同时验证了show index from中的基数从information_schema.statistics中获得。	

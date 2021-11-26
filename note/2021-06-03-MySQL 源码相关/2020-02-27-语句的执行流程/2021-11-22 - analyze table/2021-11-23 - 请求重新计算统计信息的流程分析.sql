@@ -173,11 +173,12 @@
 7. 如何预防从库的统计信息不够新
 	
 	1. 把表统计信息的时间小于当前时间15天的，加入到监控中。
+		
 		select concat("analyze table ", table_name, ";") from mysql.innodb_table_stats  where database_name='niuniuh5_db' and last_update < DATE_SUB(NOW(), INTERVAL 3 DAY);
 		
-	2. 停服更新，对在从库指定的业务表，执行一遍 analyze table 操作。
+	2. 停服更新，在主库对指定的业务表，执行一遍 analyze table 操作。
 	
-	3. 添加定时器，每天的1号、15号，对在从库指定的业务表，执行一遍 analyze table 操作。
+	3. 添加定时器，每天的1号、15号，对在从库对指定的业务表，执行一遍 analyze table 操作。
 		这个操作要避开备份的时间。
 		
 		
