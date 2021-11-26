@@ -12,6 +12,10 @@ mysql> select hostname_max,client_max,user_max,ts_min,ts_max,ts_cnt,Query_time_s
 3 rows in set (0.00 sec)
 
 
+Query_time_max = 7.28826，drop table 删除旧表的操作会对数据字典加排他锁，从而阻塞DML请求。
+
+
+
 CREATE DEFINER=``@`%` PROCEDURE `pr_club_write_score_detail9`(
  IN $nClubID INT(11)
 ,IN $nTableID INT(11)
