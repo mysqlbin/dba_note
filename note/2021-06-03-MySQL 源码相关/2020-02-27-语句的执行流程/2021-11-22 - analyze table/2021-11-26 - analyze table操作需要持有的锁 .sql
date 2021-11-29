@@ -3,14 +3,14 @@
 
 
 
-1. MDL读锁
+1. MDL读锁，阻塞别的线程对这个表的DDL操作
 
 2. 持有 InnoDB 表的 read only 锁，短暂的阻塞用户写入更新删除（DML）的操作
 	待收集完成表和索引的统计信息后，释放 read only 锁。
 	-- lock_type=TL_READ_NO_INSERT：表示加 read only 锁，阻塞DML请求。
 
 3. flush 锁：
-	flush tables 关闭打开的表，如果该表有慢查询，analyze table 操作会被阻塞，同时阻塞接下来其它线程对该表的访问。
+	flush tables 关闭实例下所以线程打开的这个表，如果该表有慢查询，analyze table 操作会被阻塞，同时阻塞接下来其它线程对该表的访问。
 
 
 一些小结：
