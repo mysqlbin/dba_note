@@ -115,5 +115,7 @@ select * from T where id in (a,b,d,c,e,f); id是主键。
 		主要看总数据量和in里面的数据量之比
 
 
+结合45讲的第18章节。
+
 
 
