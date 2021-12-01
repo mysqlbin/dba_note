@@ -106,18 +106,18 @@ shell> tail -f general.log
 
 假设我们现在的目标是在 db1 库下，复制一个跟表 t 相同的表 r，具体的执行步骤如下：
 
-1. 执行 create table r like t，创建一个相同表结构的空表
-2. 执行 alter table r discard tablespace，这时候 r.ibd 文件会被删除；
-3. 执行 flush table t for export，这时候 db1 目录下会生成一个 t.cfg 文件；
-	执行完 flsuh table 命令之后，db1.t 整个表处于只读状态，直到执行 unlock tables 命令后才释放读锁；
-	
-4. 在 db1 目录下执行 cp t.cfg r.cfg; cp t.ibd r.ibd；这两个命令（这里需要注意的是，拷贝得到的两个文件，MySQL 进程要有读写权限）；
-5. 执行 unlock tables，这时候 t.cfg 文件会被删除；
-6. 执行 alter table r import tablespace，将这个 r.ibd 文件作为表 r 的新的表空间，由于这个文件的数据内容和 t.ibd 是相同的，所以表 r 中就有了和表 t 相同的数据。
-	在执行 import tablespace 的时候，为了让文件里的表空间 id 和数据字典中的一致，会修改 r.ibd 的表空间 id。
-	而这个表空间 id 存在于每一个数据页中。
-	因此，如果是一个很大的文件（比如 TB 级别），每个数据页都需要修改，所以你会看到这个 import 语句的执行是需要一些时间的。
-	当然，如果是相比于逻辑导入的方法，import 语句的耗时是非常短的。
+	1. 执行 create table r like t，创建一个相同表结构的空表
+	2. 执行 alter table r discard tablespace，这时候 r.ibd 文件会被删除；
+	3. 执行 flush table t for export，这时候 db1 目录下会生成一个 t.cfg 文件；
+		执行完 flsuh table 命令之后，db1.t 整个表处于只读状态，直到执行 unlock tables 命令后才释放读锁；
+		
+	4. 在 db1 目录下执行 cp t.cfg r.cfg; cp t.ibd r.ibd；这两个命令（这里需要注意的是，拷贝得到的两个文件，MySQL 进程要有读写权限）；
+	5. 执行 unlock tables，这时候 t.cfg 文件会被删除；
+	6. 执行 alter table r import tablespace，将这个 r.ibd 文件作为表 r 的新的表空间，由于这个文件的数据内容和 t.ibd 是相同的，所以表 r 中就有了和表 t 相同的数据。
+		在执行 import tablespace 的时候，为了让文件里的表空间 id 和数据字典中的一致，会修改 r.ibd 的表空间 id。
+		而这个表空间 id 存在于每一个数据页中。
+		因此，如果是一个很大的文件（比如 TB 级别），每个数据页都需要修改，所以你会看到这个 import 语句的执行是需要一些时间的。
+		当然，如果是相比于逻辑导入的方法，import 语句的耗时是非常短的。
 	
 实践:
 	sbtest.sbtest1
