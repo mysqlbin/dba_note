@@ -6,11 +6,11 @@ statement、row、mixed
 含义：
 	statement 在 binlog 中记录的是 SQL 的原始语句
 	row 在 binlog 中记录的行
-	mixed 是一种折衷方案，是statement和row的结合，MySQL 会自动判断选择的是statement还是row
+	mixed 是statement和row的结合，MySQL 会自动判断选择的是statement还是row
 	
 优点
 	statement 写 binlog 占用的磁盘空间少
-	row： 可以保证主从数据的一致性
+	row： 可以保证主从数据的一致性、方便做了误操作之后的闪回操作。
 
 缺点：
 	statement 和 mixed 格式可以会导致主从数据不一致。
