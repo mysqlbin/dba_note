@@ -6,9 +6,10 @@
 	支持分页不
 	
 	需要创建索引不
-	
+		支持二级索引
+		
 	数据结构
-	
+		
 	分区？
 		CREATE TABLE lineorder_flat
 		ENGINE = MergeTree

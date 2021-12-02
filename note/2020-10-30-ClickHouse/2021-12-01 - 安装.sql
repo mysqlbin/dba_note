@@ -2,6 +2,8 @@
 
 
 
+随着数据量的上升，OLAP一直是被讨论的话题，虽然 druid，能够解决OLAP问题，但是 druid，kylin 也是需要和 hadoop 全家桶一起用的
+
 
 centOS 在线安装，此时版本 19.17.2 revision 5442
 	-- 添加官方存储库

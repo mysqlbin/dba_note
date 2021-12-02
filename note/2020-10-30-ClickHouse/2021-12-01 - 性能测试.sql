@@ -33,10 +33,6 @@ Clickhouse信息
 	SSBM (Star Schema Benchmark) Population Generator (Version 1.0.0)
 	Copyright Transaction Processing Performance Council 1994 - 2000
 
-
-
-
-
 	使用 -s 100 dbgen 生成 6 亿行（67 GB），而使用 -s 1000 生成 60 亿行（这需要很多时间）
 
 		
@@ -212,6 +208,78 @@ Clickhouse信息
 	ORDER BY (LO_ORDERDATE, LO_ORDERKEY)
 	SETTINGS index_granularity = 8192 │
 	└────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
+	
+	
+	SELECT partition_id,name,table,database FROM system.parts WHERE table = 'lineorder_flat'
+	localhost.localdomain :) SELECT partition_id,name,table,database FROM system.parts WHERE table = 'lineorder_flat'
+
+	SELECT
+		partition_id,
+		name,
+		table,
+		database
+	FROM system.parts
+	WHERE table = 'lineorder_flat'
+
+	Query id: eb2e885f-2c02-4c6a-ae74-3037ee5c6d0d
+
+	┌─partition_id─┬─name───────────┬─table──────────┬─database─┐
+	│ 1992         │ 1992_3_894_3   │ lineorder_flat │ ch_db    │
+	│ 1992         │ 1992_895_925_2 │ lineorder_flat │ ch_db    │
+	│ 1992         │ 1992_926_931_1 │ lineorder_flat │ ch_db    │
+	│ 1992         │ 1992_932_937_1 │ lineorder_flat │ ch_db    │
+	│ 1992         │ 1992_938_938_0 │ lineorder_flat │ ch_db    │
+	│ 1992         │ 1992_939_939_0 │ lineorder_flat │ ch_db    │
+	│ 1992         │ 1992_940_940_0 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_4_158_2   │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_164_300_2 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_304_941_2 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_942_971_2 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_972_977_1 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_978_983_1 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_984_988_1 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_989_993_1 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_994_994_0 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_995_995_0 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_996_996_0 │ lineorder_flat │ ch_db    │
+	│ 1993         │ 1993_997_997_0 │ lineorder_flat │ ch_db    │
+	│ 1994         │ 1994_415_506_2 │ lineorder_flat │ ch_db    │
+	│ 1994         │ 1994_511_797_2 │ lineorder_flat │ ch_db    │
+	│ 1994         │ 1994_798_828_2 │ lineorder_flat │ ch_db    │
+	│ 1994         │ 1994_829_834_1 │ lineorder_flat │ ch_db    │
+	│ 1994         │ 1994_835_840_1 │ lineorder_flat │ ch_db    │
+	│ 1994         │ 1994_841_841_0 │ lineorder_flat │ ch_db    │
+	│ 1994         │ 1994_842_842_0 │ lineorder_flat │ ch_db    │
+	│ 1994         │ 1994_843_843_0 │ lineorder_flat │ ch_db    │
+	│ 1995         │ 1995_2_855_3   │ lineorder_flat │ ch_db    │
+	│ 1995         │ 1995_856_861_1 │ lineorder_flat │ ch_db    │
+	│ 1995         │ 1995_862_867_1 │ lineorder_flat │ ch_db    │
+	│ 1995         │ 1995_868_868_0 │ lineorder_flat │ ch_db    │
+	│ 1995         │ 1995_869_869_0 │ lineorder_flat │ ch_db    │
+	│ 1996         │ 1996_1_715_2   │ lineorder_flat │ ch_db    │
+	│ 1996         │ 1996_716_746_2 │ lineorder_flat │ ch_db    │
+	│ 1996         │ 1996_747_752_1 │ lineorder_flat │ ch_db    │
+	│ 1996         │ 1996_753_758_1 │ lineorder_flat │ ch_db    │
+	│ 1996         │ 1996_759_764_1 │ lineorder_flat │ ch_db    │
+	│ 1996         │ 1996_765_770_1 │ lineorder_flat │ ch_db    │
+	│ 1996         │ 1996_771_771_0 │ lineorder_flat │ ch_db    │
+	│ 1996         │ 1996_772_772_0 │ lineorder_flat │ ch_db    │
+	│ 1997         │ 1997_60_583_3  │ lineorder_flat │ ch_db    │
+	│ 1997         │ 1997_586_626_2 │ lineorder_flat │ ch_db    │
+	│ 1997         │ 1997_627_627_0 │ lineorder_flat │ ch_db    │
+	│ 1997         │ 1997_628_628_0 │ lineorder_flat │ ch_db    │
+	│ 1997         │ 1997_629_629_0 │ lineorder_flat │ ch_db    │
+	│ 1997         │ 1997_630_630_0 │ lineorder_flat │ ch_db    │
+	│ 1998         │ 1998_631_661_2 │ lineorder_flat │ ch_db    │
+	│ 1998         │ 1998_662_667_1 │ lineorder_flat │ ch_db    │
+	│ 1998         │ 1998_668_673_1 │ lineorder_flat │ ch_db    │
+	│ 1998         │ 1998_674_679_1 │ lineorder_flat │ ch_db    │
+	│ 1998         │ 1998_680_680_0 │ lineorder_flat │ ch_db    │
+	│ 1998         │ 1998_681_681_0 │ lineorder_flat │ ch_db    │
+	│ 1998         │ 1998_682_682_0 │ lineorder_flat │ ch_db    │
+	└──────────────┴────────────────┴────────────────┴──────────┘
+
+	53 rows in set. Elapsed: 0.065 sec. 
 
 
 
@@ -413,6 +481,13 @@ Q3.4
 	
 	localhost.localdomain :) SELECT C_CITY,S_CITY, toYear(LO_ORDERDATE) AS year, sum(LO_REVENUE) AS revenue FROM lineorder_flat WHERE (C_CITY = 'UNITED KI1' OR C_CITY = 'UNITED KI5') AND (S_CITY = 'UNITED KI1' OR S_CITY = 'UNITED KI5') AND toYYYYMM(LO_ORDERDATE) = 199712 GROUP BY C_CITY, S_CITY, year ORDER BY year ASC, revenue DESC;
 
+	┌─C_CITY─────┬─S_CITY─────┬─year─┬───revenue─┐
+	│ UNITED KI1 │ UNITED KI1 │ 1997 │ 481119563 │
+	│ UNITED KI5 │ UNITED KI5 │ 1997 │ 386477033 │
+	│ UNITED KI5 │ UNITED KI1 │ 1997 │ 378048353 │
+	│ UNITED KI1 │ UNITED KI5 │ 1997 │ 366630529 │
+	└────────────┴────────────┴──────┴───────────┘
+
 	4 rows in set. Elapsed: 0.065 sec. Processed 7.75 million rows, 63.41 MB (120.03 million rows/s., 982.50 MB/s.)
 
 
@@ -435,18 +510,4 @@ Q4.3
 
 
 	
-	
-相关参考
-			
-	https://www.dazhuanlan.com/zhou1222/topics/1632487   clickhouse单机安装及配置
 
-	https://clickhouse.com/docs/en/getting-started/example-datasets/star-schema/
-
-	https://mp.weixin.qq.com/s/n26OqBVmc2GK04NQ2ljCaQ   Clickhouse 亿级数据性能测试
-	
-	https://mp.weixin.qq.com/s/f9j_b0L0m7zUcxEdKOGUGA	ClickHouse性能测试
-
-
-	https://mp.weixin.qq.com/s/2CzggQdHvBGX1-yCBz-1Bg	基于开源应用快速构建HTAP系统
-
-	
