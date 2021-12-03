@@ -1,7 +1,18 @@
 
 
+1. 异步复制存在数据丢失的问题
+2. after commit(半同步复制)
+3. after sync(增强半同步复制、loss-less-semi-synchronous-replication)
+4. 小结
 
-after commit(半同步复制)
+
+1. 异步复制存在数据丢失的问题
+	
+	如果主库掉电，HA切换到从库后，有些 binlog还来不及发给从库，所以有丢失数据的风险。
+		
+
+
+2. after commit(半同步复制)
 	
 	5.6 版本开始支持
 	
@@ -20,7 +31,7 @@ after commit(半同步复制)
 		2. 可能会导致主库事务响应变慢。
 		
 	
-after sync(增强半同步复制、loss-less-semi-synchronous-replication)
+3. after sync(增强半同步复制、loss-less-semi-synchronous-replication)
 	5.7 版本开始支持
 	
 	工作原理：
@@ -33,18 +44,16 @@ after sync(增强半同步复制、loss-less-semi-synchronous-replication)
 		假设主库在写入engine之后宕机，HA切换到从库后，因为binlog已经写入到从库relay log, 因此不会造成数据丢失。
 		
 	
-	从库的事务会比主库的事务多：
-		
-		在主库事务binlog写入之后，如果已经发送binlog给从库并写入relay log，还没来得急把 ack 发送给主库，此时宕机，主库的事务被回滚，但是这个事务在从库是写入成功的。
-	
-		
 	缺点：
 	
 		1. 可能会导致主库事务响应变慢。
 		
+		2. 从库的事务会比主库的事务多：
+			
+			在主库事务binlog写入之后，如果已经发送binlog给从库并写入relay log，还没来得急把 ack 发送给主库，此时宕机，主库的事务被回滚，但是这个事务在从库是写入成功的。
+		
 
-
-小结：
+4. 小结
 
 	binlog写入只是做write操作，即写入到操作系统页的页缓冲中，并没有做fsync操作。
 	
