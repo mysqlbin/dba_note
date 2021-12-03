@@ -121,7 +121,10 @@
 	https://www.jianshu.com/p/59c6ecb46fe5    MySQL 5.7中sync_binlog参数和半同步中after_commit和after_sync的区别
 	
 	https://mp.weixin.qq.com/s/t-LSbDeGvVX_OIFHy4YDRA   半同步复制after_sync模式下的一则客户端断开问题分析
-
+	
+	http://mysql.taobao.org/monthly/2017/04/01/         MySQL · 源码分析 · MySQL 半同步复制数据一致性分析
+	
+	
 	
 6. 小结
 	after commit(半同步复制)

@@ -139,7 +139,8 @@ mha-version: 0.58
 					apply_diff_relay_logs ：识别差异的中继日志事件并将其差异的事件应用于其它slave。
 					filter_mysqlbinlog ：去除不必要的ROLLBACK事件（MHA已不再使用这个工具）。
 					purge_relay_logs ：清除中继日志（不会阻塞SQL线程）。
-					save_binary_logs ：保存和复制master的二进制日志。
+					save_binary_logs ：保存和复制master的二进制日志，用于补全最新从库跟宕机主库的差异binlog。
+					
 			
 						
 2.4 安装MHA Manager	

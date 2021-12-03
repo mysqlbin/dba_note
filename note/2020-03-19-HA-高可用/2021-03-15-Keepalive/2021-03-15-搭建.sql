@@ -298,7 +298,7 @@
 8. 测试:
 8.1 测试 VIP所在节点 mysql shutdown
 	在 kp04 上执行:
-		shell> /etc/init.d stop
+		shell> /etc/init.d/mysql stop
 		
 		shell> tail -f /var/log/messages
 			Nov  1 16:32:22 kp04 Keepalived_vrrp[22121]: Script `vs_mysql_41` now returning 1
@@ -460,6 +460,7 @@
 
 	
 13. Note: 
+
 	1. 不需要在 backup.sh 脚本中执行这3个状态:
 		/usr/local/mysql/bin/mysql -uroot -p123456abc -S /tmp/mysql.sock -e "set global event_scheduler=0;"
 		/usr/local/mysql/bin/mysql -uroot -p123456abc -S /tmp/mysql.sock -e "set global read_only=1;"
