@@ -3,6 +3,7 @@ max_execution_time参数
 
 	控制select查询语句执行的最大时间
 	可以作为过载保护的一种方法。
+	可以全局设置、会话设置.
 
 	Command-Line Format		--max-execution-time=#
 	System Variable			max_execution_time

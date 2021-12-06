@@ -62,34 +62,37 @@
 		
 		
 生产环境演示
-在线减少 InnoDB buffer pool size： 从10G缩减到8G
-mysql > SET GLOBAL innodb_buffer_pool_size = 8589934592;     #耗时: 0.091s		
 
--- 看看日志记录
+	在线减少 InnoDB buffer pool size： 从10G缩减到8G
+	mysql > SET GLOBAL innodb_buffer_pool_size = 8589934592;     #耗时: 0.091s		
 
-2019-03-01T09:37:07.362785+08:00 0 [Note] InnoDB: Resizing buffer pool from 10737418240 to 8589934592 (unit=134217728).
-2019-03-01T09:37:07.362819+08:00 0 [Note] InnoDB: Disabling adaptive hash index.
-2019-03-01T09:37:07.403130+08:00 0 [Note] InnoDB: disabled adaptive hash index.
-2019-03-01T09:37:07.403177+08:00 0 [Note] InnoDB: Withdrawing blocks to be shrunken.
-2019-03-01T09:37:07.403187+08:00 0 [Note] InnoDB: buffer pool 0 : start to withdraw the last 65528 blocks.
-2019-03-01T09:37:07.427227+08:00 1167661 [Note] InnoDB: Requested to resize buffer pool. (new size: 8589934592 bytes)
-2019-03-01T09:37:07.435654+08:00 0 [Note] InnoDB: buffer pool 0 : withdrawing blocks. (65528/65528)
-2019-03-01T09:37:07.435676+08:00 0 [Note] InnoDB: buffer pool 0 : withdrew 65528 blocks from free list. Tried to relocate 0 pages (65528/65528).
-2019-03-01T09:37:07.436506+08:00 0 [Note] InnoDB: buffer pool 0 : withdrawn target 65528 blocks.
-2019-03-01T09:37:07.436523+08:00 0 [Note] InnoDB: buffer pool 1 : start to withdraw the last 65528 blocks.
-2019-03-01T09:37:07.487056+08:00 0 [Note] InnoDB: buffer pool 1 : withdrawing blocks. (65528/65528)
-2019-03-01T09:37:07.487084+08:00 0 [Note] InnoDB: buffer pool 1 : withdrew 65528 blocks from free list. Tried to relocate 0 pages (65528/65528).
-2019-03-01T09:37:07.488008+08:00 0 [Note] InnoDB: buffer pool 1 : withdrawn target 65528 blocks.
-2019-03-01T09:37:07.488031+08:00 0 [Note] InnoDB: Latching whole of buffer pool.
-2019-03-01T09:37:07.488053+08:00 0 [Note] InnoDB: buffer pool 0 : resizing with chunks 40 to 32.
-2019-03-01T09:37:07.507333+08:00 0 [Note] InnoDB: buffer pool 0 : 8 chunks (65528 blocks) were freed.
-2019-03-01T09:37:07.507423+08:00 0 [Note] InnoDB: buffer pool 1 : resizing with chunks 40 to 32.
-2019-03-01T09:37:07.526689+08:00 0 [Note] InnoDB: buffer pool 1 : 8 chunks (65528 blocks) were freed.
-2019-03-01T09:37:07.526773+08:00 0 [Note] InnoDB: Completed to resize buffer pool from 10737418240 to 8589934592.
-2019-03-01T09:37:07.526785+08:00 0 [Note] InnoDB: Re-enabled adaptive hash index.
-2019-03-01T09:37:07.526794+08:00 0 [Note] InnoDB: Completed resizing buffer pool at 190301 9:37:07.
+	-- 看看日志记录
 
+	2019-03-01T09:37:07.362785+08:00 0 [Note] InnoDB: Resizing buffer pool from 10737418240 to 8589934592 (unit=134217728).
+	2019-03-01T09:37:07.362819+08:00 0 [Note] InnoDB: Disabling adaptive hash index.
+	2019-03-01T09:37:07.403130+08:00 0 [Note] InnoDB: disabled adaptive hash index.
+	2019-03-01T09:37:07.403177+08:00 0 [Note] InnoDB: Withdrawing blocks to be shrunken.
+	2019-03-01T09:37:07.403187+08:00 0 [Note] InnoDB: buffer pool 0 : start to withdraw the last 65528 blocks.
+	2019-03-01T09:37:07.427227+08:00 1167661 [Note] InnoDB: Requested to resize buffer pool. (new size: 8589934592 bytes)
+	2019-03-01T09:37:07.435654+08:00 0 [Note] InnoDB: buffer pool 0 : withdrawing blocks. (65528/65528)
+	2019-03-01T09:37:07.435676+08:00 0 [Note] InnoDB: buffer pool 0 : withdrew 65528 blocks from free list. Tried to relocate 0 pages (65528/65528).
+	2019-03-01T09:37:07.436506+08:00 0 [Note] InnoDB: buffer pool 0 : withdrawn target 65528 blocks.
+	2019-03-01T09:37:07.436523+08:00 0 [Note] InnoDB: buffer pool 1 : start to withdraw the last 65528 blocks.
+	2019-03-01T09:37:07.487056+08:00 0 [Note] InnoDB: buffer pool 1 : withdrawing blocks. (65528/65528)
+	2019-03-01T09:37:07.487084+08:00 0 [Note] InnoDB: buffer pool 1 : withdrew 65528 blocks from free list. Tried to relocate 0 pages (65528/65528).
+	2019-03-01T09:37:07.488008+08:00 0 [Note] InnoDB: buffer pool 1 : withdrawn target 65528 blocks.
+	2019-03-01T09:37:07.488031+08:00 0 [Note] InnoDB: Latching whole of buffer pool.
+	2019-03-01T09:37:07.488053+08:00 0 [Note] InnoDB: buffer pool 0 : resizing with chunks 40 to 32.
+	2019-03-01T09:37:07.507333+08:00 0 [Note] InnoDB: buffer pool 0 : 8 chunks (65528 blocks) were freed.
+	2019-03-01T09:37:07.507423+08:00 0 [Note] InnoDB: buffer pool 1 : resizing with chunks 40 to 32.
+	2019-03-01T09:37:07.526689+08:00 0 [Note] InnoDB: buffer pool 1 : 8 chunks (65528 blocks) were freed.
+	2019-03-01T09:37:07.526773+08:00 0 [Note] InnoDB: Completed to resize buffer pool from 10737418240 to 8589934592.
+	2019-03-01T09:37:07.526785+08:00 0 [Note] InnoDB: Re-enabled adaptive hash index.
+	2019-03-01T09:37:07.526794+08:00 0 [Note] InnoDB: Completed resizing buffer pool at 190301 9:37:07.
 
+	阻塞所有的DML和查询请求 5-6 秒。
+	
+	
 小结:
 	resize阶段buffer pool会不可用，此阶段会锁所有buffer pool, 但此阶段都是内存操作，时间比较短。
 	收缩内存阶段耗时可能会很长，也有一定影响，但是每次都是以instance为单位进行锁定的。 

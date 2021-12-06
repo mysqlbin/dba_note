@@ -56,12 +56,12 @@ mysql> show processlist;
  
 
   
-
 思考：
- 1. 如何打印 kill之后的日志  
-    答： 这两个参数--print --kill-query 一起用就会打印日志了。
- 
 	
+	1. 如何打印 kill之后的日志  
+		答： 这两个参数--print --kill-query 一起用就会打印日志了。
+	2. 如何发送邮件
+
  
 	
  
