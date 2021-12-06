@@ -1,18 +1,24 @@
 
-
+0. InnoDB一条事务日志要经历的4个阶段
+	创建日志阶段，记为LSN1
+	日志刷盘阶段，记为LSN2		
+	脏页刷盘阶段，记为LSN3 
+	检查点checkpoint阶段，记为LSN4
+	
 1. 前置条件
 	
 	双1模式
 
 2. 崩溃恢复的场景
 
-	有 1-10 个事务已经写入 redo log buffer    			-- 创建日志阶段，记为LSN1
+	有 1-10 个事务已经写入 redo log buffer    			-- LSN1
 										     
-	目前已经 flush（刷新） 1-9 个 事务的redo日志到磁盘	-- 日志刷盘阶段，记为LSN2									 
-	目前已经 flush（刷新） 1-8 个 事务的脏页到磁盘 		-- 脏页刷盘阶段，记为LSN3 
+	目前已经 flush（刷新） 1-9 个 事务的redo日志到磁盘	-- LSN2							 
+	目前已经 flush（刷新） 1-8 个 事务的脏页到磁盘 		-- LSN3
 	
-	此时 checkpoint 到 1-7 事务		 					-- 检查点checkpoint阶段，记为LSN4
+	此时 checkpoint 到 1-7 事务		 					-- LSN4
 	
+	LSN2 - LSN3 = 脏页数量
 	
 	如果这个时候发生 crash recovery
 
@@ -43,7 +49,7 @@
 		可以看到，只需要判断 第9和第10 这2个事务需要回滚 还是 刷盘， 在崩溃恢复的场景下大大缩短了恢复时间。
 		
 4. 小结
-	1个案例，就把崩溃恢复涉及到的知识点(redo log、checkpoint、脏页、2阶段提交)串联起来了。
+	1个案例，就把崩溃恢复涉及到的知识点(redo log、checkpoint、脏页、两阶段提交)串联起来了。
 
 
 5. 相关参考
@@ -59,6 +65,19 @@
 	
 		答：真正 脏页刷新到磁盘 的操作是 flush，flush 操作会记录 checkpoint 
 	
-			checkpoint 只是1个检查点，作用是减少崩溃恢复所需要的时间。如果 redo 写满或者内存没有可用空闲空间(或者说脏页占比达到75%)，会强制 flush，然后记录 checkpoint.
+			checkpoint 只是1个检查点标记，作用是减少崩溃恢复所需要的时间。如果 redo 写满或者内存没有可用空闲空间(或者说脏页占比达到75%)，会强制 flush，然后记录 checkpoint.
 				
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 	
+Checkpoint 是一个lsn，这个lsn之前的Redo空间是Free部分，可以被覆盖了。recovery 时从这个lsn开始重做redo.
+
+Lastest lsn 是所有脏页的最小lsn。这个lsn之前产生的脏页都已经持久化。
+
+Current lsn是当前产生的最大lsn.
+
+Modified Age是指所有脏页的Redo Log占用的空间，即Lastest lsn和Current lsn之间的部分。它是判断是否要使用同步刷脏的重要指标。
+
+另外还有一个Checkpoint Age是Checkpoint到Current lsn的空间，即redo的使用空间。
+Checkpoint Age和Modified Age差别不大。
+状态信息中显示给用户的是Checkpoint Age.
