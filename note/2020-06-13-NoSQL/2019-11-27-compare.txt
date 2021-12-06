@@ -1,9 +1,0 @@
-
-Redis -> backlog  基于复制偏移量
-MongoDB -> oplog  基于时间戳
-MySQL -> binlog   基于位点或者GTID
-
-
-MySQL 关系型数据库 默认不支持分片
-
-

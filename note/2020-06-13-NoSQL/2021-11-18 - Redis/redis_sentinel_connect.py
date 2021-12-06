@@ -27,7 +27,7 @@ print(w_ret)
 # 输出：True
 
 
-# # 获取从服务器进行读取（默认是round-roubin）
+# # 获取从服务器进行读取（默认是round-roubin 负载均衡）
 slave = sentinel.slave_for('mymaster', socket_timeout=0.5, password='123456', db=1)
 r_ret = slave.get('foo')
 print(r_ret)
@@ -50,7 +50,5 @@ b'bar'
 [('192.168.0.111', 6379), ('192.168.0.112', 6379)]
 True
 b'bar'
-
-
 
 """

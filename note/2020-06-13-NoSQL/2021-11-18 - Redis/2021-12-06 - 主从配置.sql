@@ -134,7 +134,7 @@ Redis主从环境
 		
 	在从实例上, 尝试创建一个新的键
 		192.168.0.112:6379> set "new_key2" "value2"
-		(error) READONLY You can't write against a read only slave.
+		(error) READONLY You can t write against a read only slave.
 		
 	关闭从实例
 		192.168.0.112:6379> shutdown save
@@ -250,6 +250,7 @@ Redis主从环境
 
 				
 思考
+
 	1. 是否可以在线做主从?
 		答: 可以.
 

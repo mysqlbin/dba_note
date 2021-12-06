@@ -21,14 +21,17 @@
 8. 监控	
 9. 管理哨兵
 10. 客户端程序
+11. 小结
+12. 哨兵系统的搭建过程有几点需要注意
 	
-	
+
 1. 哨兵是什么
 	哨兵是Redis 2.8版本发布的一个功能, 使用Sentinel可以实现高可用的Redis集群服务
+	类似于中间件, 自身也需要3个节点来保证高可用.
 	
 2. 哨兵的作用
 	实时监控Redis集群(主从架构)中的所有服务器, 当Redis主服务器宕机后, 会自动把从服务器切换到主服务器, 从而实现自动容灾的效果
-	当客户端试图连接失效的主服务器时，集群也会向客户端返回新主服务器的地址，使得集群可以使用新主 服务器代替失效服务器。
+	当客户端试图连接失效的主服务器时，集群也会向客户端返回新主服务器的地址，使得集群可以使用新主服务器代替失效服务器。
 	
 3. 配置哨兵
 
@@ -224,6 +227,7 @@
 			
 		
 		3.6.2  模拟主实例下线
+			
 			现在的主实例是 192.168.0.111
 			现在关闭这台机器上的redis, 看看哨兵会做什么运作：
 			
@@ -372,6 +376,7 @@
 			redis01     192.168.0.111  sentinel-01  4.0.9    26379      sentinel failover mymaster   
 			redis02     192.168.0.112  sentinel-02  4.0.9    26379      哨兵下线
 			redis03     192.168.0.113  sentinel-03  4.0.9    26379
+			
 		[root@redis02 ~]# ps aux|grep redis
 		root       708  0.4  0.4 145304  8144 ?        Sl   Nov14   6:47 redis-server 192.168.0.112:26379 [sentinel]
 		root      1297  0.0  0.2  16184  5284 pts/2    S+   Nov15   0:00 redis-cli -h 192.168.0.112 -p 26379
@@ -503,6 +508,7 @@
 	https://mp.weixin.qq.com/s/r9BGrm9IqA6T0FDe1j7D2A   Redis Sentinel原理与实现 (上)
 	https://www.php.cn/php-weizijiaocheng-415595.html   Redis哨兵机制的原理介绍（图文）
 	https://cloud.tencent.com/developer/article/1401199 Redis Sentinel 架构搭建、日志分析以及运维注意事项
+	https://mp.weixin.qq.com/s/hPaqH4UjLwLy6YcACkBlIw	实现故障恢复自动化：详解Redis哨兵技术
 	
 	
 8. 监控
@@ -543,6 +549,7 @@
 
 		
 9. 管理哨兵
+	
 	1. 连接到其中一个哨兵
 	2. 通过 sentinel get-master-addr-by-name mymaster 命令获取当前主实例的信息
 		192.168.0.112:26379> sentinel get-master-addr-by-name mymaster
@@ -673,16 +680,45 @@
 		   38) "100"
 		   39) "slave-repl-offset"
 		   40) "14369115"
-			
+	
+	
 10. 客户端程序
 	
 	客户端程序如何感知当前主redis的ip地址和端口呢？
+	
 		redis-sentinel提供了接口，请求任何一个sentinel，发送SENTINEL get-master-addr-by-name <master name>就能得到当前主redis的ip和port。
 		也可以参考 redis_sentinel_connect.py 脚本实现
-	客户端每次连接redis前，先向sentinel发送请求，获得主redis的ip和port，然后用返回的ip和port连接redis。
+		
+		客户端每次连接redis前，先向sentinel发送请求，获得主redis的ip和port，然后用返回的ip和port连接redis。
 
-	这种方法的缺点是显而易见的，每次操作redis至少需要发送两次连接请求，第一次请求sentinel，第二次请求redis。
-	(类似ProxySQL中间件)
+		这种方法的缺点是显而易见的，每次操作redis至少需要发送两次连接请求，第一次请求sentinel，第二次请求redis。
+		(类似ProxySQL中间件)
+		
+		
 	
+11. 小结
+
+	1. 基于哨兵组件+Redis主从复制实现高可用, 配置简单, 同时搭建和维护相对较友好.
 	
+	2. 支持应用程序连接到多个哨兵实例中, 由哨兵向Redis发送读写命令的请求.
+		跟MongoDB一样, 支持链接多数据库多节点配置，自身有故障自动检测和切换功能
 	
+	3. 
+		在主从复制的基础上，哨兵引入了主节点的自动故障转移，进一步提高了Redis的高可用性；
+		但是哨兵的缺陷同样很明显：哨兵无法对从节点进行自动故障转移，在读写分离场景下，从节点故障会导致读服务不可用，需要我们对从节点做额外的监控、切换操作。
+
+
+
+12. 哨兵系统的搭建过程有几点需要注意
+
+
+	1、哨兵系统中的主从节点，与普通的主从节点并没有什么区别，故障发现和转移是由哨兵来控制和完成的。
+
+	2、哨兵节点本质上是Redis节点。
+
+	3、每个哨兵节点，只需要配置监控主节点，便可以自动发现其他的哨兵节点和从节点。
+
+	4、在哨兵节点启动和故障转移阶段，各个节点的配置文件会被重写（Config Rewrite）。
+		-- 理解了.
+		
+	5、本章的例子中，一个哨兵只监控了一个主节点；实际上，一个哨兵可以监控多个主节点，通过配置多条sentinel monitor即可实现。

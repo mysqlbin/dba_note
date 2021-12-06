@@ -41,7 +41,14 @@ Redis：
 小结：
 	
 	redis主从复制，不需要类似binlog或者oplog来存储逻辑日志然后再发送给从库。
-	
+
+	Redis -> backlog  基于复制偏移量
+	MongoDB -> oplog  基于时间戳
+	MySQL -> binlog   基于位点或者GTID
+
+
+
+
 思考：
 	oplog里面的日志，记录的是命令吗
 
