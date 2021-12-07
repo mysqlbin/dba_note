@@ -63,6 +63,24 @@
 		
 生产环境演示
 
+	mysql> show global variables like '%pool_instance%';
+	+------------------------------+-------+
+	| Variable_name                | Value |
+	+------------------------------+-------+
+	| innodb_buffer_pool_instances | 2     |
+	+------------------------------+-------+
+	1 row in set (0.00 sec)
+	
+	
+	mysql> show global variables like '%chunk%';
+	+-------------------------------+-----------+
+	| Variable_name                 | Value     |
+	+-------------------------------+-----------+
+	| innodb_buffer_pool_chunk_size | 134217728 |
+	+-------------------------------+-----------+
+	1 row in set (0.00 sec)
+
+
 	在线减少 InnoDB buffer pool size： 从10G缩减到8G
 	mysql > SET GLOBAL innodb_buffer_pool_size = 8589934592;     #耗时: 0.091s		
 
@@ -92,6 +110,19 @@
 
 	阻塞所有的DML和查询请求 5-6 秒。
 	
+		
+	2016-07-08T18:20:15.278753+08:00 3 [Note] InnoDB: Requested to resize buffer pool. (new size: 1073741824 bytes) #调整的BP大小。
+	2016-07-08T18:20:15.278786+08:00 0 [Note] InnoDB: Resizing buffer pool from 536870912 to 1073741824 (unit=134217728).#从多大到多大，单位多少
+	2016-07-08T18:20:15.278845+08:00 0 [Note] InnoDB: Disabling adaptive hash index. #禁用AHI，清理所有的索引缓存
+	2016-07-08T18:20:15.280839+08:00 0 [Note] InnoDB: disabled adaptive hash index.  
+	2016-07-08T18:20:15.280864+08:00 0 [Note] InnoDB: Withdrawing blocks to be shrunken.#回收空闲的block
+	2016-07-08T18:20:15.280876+08:00 0 [Note] InnoDB: Latching whole of buffer pool. #锁住整个BP
+	2016-07-08T18:20:15.280896+08:00 0 [Note] InnoDB: buffer pool 0 : resizing with chunks 4 to 8. #大小从4个chunks变成8个chunks
+	2016-07-08T18:20:15.295961+08:00 0 [Note] InnoDB: buffer pool 0 : 4 chunks (32764 blocks) were added.
+	2016-07-08T18:20:15.296015+08:00 0 [Note] InnoDB: Completed to resize buffer pool from 536870912 to 1073741824. #设置新值完成
+	2016-07-08T18:20:15.296031+08:00 0 [Note] InnoDB: Re-enabled adaptive hash index. #开启AHI
+	2016-07-08T18:20:15.296048+08:00 0 [Note] InnoDB: Completed resizing buffer pool at 160708 18:20:15. #调整完成
+
 	
 小结:
 	resize阶段buffer pool会不可用，此阶段会锁所有buffer pool, 但此阶段都是内存操作，时间比较短。
