@@ -3,8 +3,9 @@
 Buffer Pool 提供了专门的一个线程buf_resize_thread来完成 resize 过程, 具体的操作函数是 buf_pool_resize()，resize 流程如下:
 
 
-在线收缩BP缓冲池的流程
+在线收缩BP缓冲池的流程和应用场景
 
+在线收缩BP缓冲池的流程
 	1. 假如开启了 AHI, 需要关闭 AHI.
 
 	2. 假如是缩小 Buffer Pool 的大小, 需要设置每个 Buffer Pool Instance 的 withdraw_target , 即设置回收的 Page 数目.
@@ -45,6 +46,9 @@ Buffer Pool 提供了专门的一个线程buf_resize_thread来完成 resize 过�
 应用场景:
 	收缩BP缓冲池空间大小的场景: 由于设置得太大, 数据库在运行一段时间后, 加上其它线程占用的内存, 导致物理内存剩余空间比较少, 容易引发OOM, 不需要重启数据库, 可以选择在业务低峰期进行回收内存, 避免OOM
 	
+
+在线加大BP缓冲池的流程
+
 	
 
 -- 这个函数被注册为 MySQL 的回调。
