@@ -182,7 +182,7 @@ Options and values after processing arguments:
   --ignore-self           TRUE
   --ignore-state          Locked
   --ignore-user           (No value)
-  --interval              30
+  --interval              30             --  pt-kill 默认检查间隔为30秒
   --kill                  FALSE
   --kill-busy-commands    Query
   --kill-query            FALSE
