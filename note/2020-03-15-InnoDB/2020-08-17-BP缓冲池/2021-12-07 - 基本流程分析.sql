@@ -13,7 +13,7 @@
 	设置变量 innodb_buffer_pool_size 时，触发函数 innodb_buffer_pool_size_update，在必要的检查后（例如避免重复发送请求，或者resize的太小），发送信号量 srv_buf_resize_event, 然后立刻返回
 	因此设置变量成功，不等于 bp 的size已经调整好了，只是发出了一个 resize 请求而已.
 
-	Buffer Pool 提供了专门的一个线程 buf_resize_thread 来完成 resize 过程, 具体的操作函数是 buf_pool_resize()
+	Buffer Pool 提供了专门的一个后台线程 buf_resize_thread 来完成 resize 过程, 具体的操作函数是 buf_pool_resize()
 
 
 2. 在线收缩BP缓冲池的流程和应用场景
@@ -128,6 +128,7 @@
 		
 	
 7. 从1个收缩案例看每个instance需要回收多少个chunk
+	
 	由 10GB -> 8GB 
 	2个 instances
 	1个chunk=128MB
