@@ -79,7 +79,7 @@ mysql> select version();
 	1 row in set (0.00 sec)
 	1048464 KB = 1GB
 
-	-- 这里开始加BP缓冲锁
+	-- 这里开始加BP缓冲池 instance 锁
 	
 	2020-06-19T09:44:08.604809+08:00 0 [Note] InnoDB: buffer pool 0 : withdrawing blocks. (65528/65529)
 	

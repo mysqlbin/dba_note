@@ -20,3 +20,50 @@
 key是什么，value是什么？
 	key: 查询条件的值
 	value：值对应的索引页
+	
+	
+innodb_adaptive_hash_index=ON	
+
+	执行30次查询: select * from sbtest2 where id=2;
+	
+	-------------------------------------
+	INSERT BUFFER AND ADAPTIVE HASH INDEX
+	-------------------------------------
+	Ibuf: size 1, free list len 2157, seg size 2159, 0 merges
+	merged operations:
+	 insert 0, delete mark 0, delete 0
+	discarded operations:
+	 insert 0, delete mark 0, delete 0
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 1 buffer(s)
+	0.00 hash searches/s, 0.00 non-hash searches/s
+		
+	
+	set global innodb_adaptive_hash_index=OFF
+	
+	-------------------------------------
+	INSERT BUFFER AND ADAPTIVE HASH INDEX
+	-------------------------------------
+	Ibuf: size 1, free list len 2157, seg size 2159, 0 merges
+	merged operations:
+	 insert 0, delete mark 0, delete 0
+	discarded operations:
+	 insert 0, delete mark 0, delete 0
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+	Hash table size 1328143, node heap has 0 buffer(s)
+
+	关闭AHI, 会释放AHI里面Hash table数据.
+	
+	
