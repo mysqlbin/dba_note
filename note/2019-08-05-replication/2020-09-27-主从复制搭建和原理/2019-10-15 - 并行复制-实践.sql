@@ -1,5 +1,6 @@
 
 1. MySQL 版本
+
 2. 基于组提交的并行复制
   主库配置
   从库配置	
@@ -91,7 +92,10 @@
 	#191015 18:49:23 server id 17  end_log_pos 2583 CRC32 0x0e105ea3 	Anonymous_GTID	last_committed=7	sequence_number=8	rbr_only=yes
 	#191015 18:49:24 server id 17  end_log_pos 2849 CRC32 0xb49bfe90 	Anonymous_GTID	last_committed=8	sequence_number=9	rbr_only=yes
 	#191015 18:49:24 server id 17  end_log_pos 3213 CRC32 0x93a6095f 	Anonymous_GTID	last_committed=9	sequence_number=10	rbr_only=yes
-
+	
+	
+	基于 commit_order 的并行复制如果数据库压力不大的情况下可能出现每个队列都只有一个事务的情况(主库单线程)，这种情况就不能在从库并行回放了
+	
 	shell> mysqlbinlog --no-defaults -vvv --base64-output='decode-rows' mysql-bin.000355
 
 	# at 1720
@@ -382,9 +386,9 @@
 	# at 2389
 	#191015 18:31:13 server id 17  end_log_pos 2420 CRC32 0x710c59c0 	Xid = 39933693
 	COMMIT/*!*/;
-
 	
-4. 基于组提交和writeset的并行复制比较：
+	
+4. 基于组提交和writeset的并行复制比较
 
 	组提交：
 	
@@ -393,6 +397,8 @@
 		#191015 18:49:14 server id 17  end_log_pos 1421 CRC32 0xd88afac3 	Anonymous_GTID	last_committed=3	sequence_number=4	rbr_only=yes
 		#191015 18:49:23 server id 17  end_log_pos 1785 CRC32 0xea470ec9 	Anonymous_GTID	last_committed=4	sequence_number=5	rbr_only=yes
 		
+		基于 commit_order 的并行复制如果数据库压力不大的情况下可能出现每个队列都只有一个事务的情况，这种情况就不能在从库并行回放了，但是基于 writeset 的并行复制却可以改变这种情况。
+		
 	writeset:
 		#191015 18:31:11 server id 17  end_log_pos 623 CRC32 0x70872aec 	Anonymous_GTID	last_committed=1	sequence_number=2	rbr_only=yes
 		#191015 18:31:12 server id 17  end_log_pos 1057 CRC32 0xadd1e0cd 	Anonymous_GTID	last_committed=2	sequence_number=3	rbr_only=yes
@@ -400,12 +406,17 @@
 		#191015 18:31:13 server id 17  end_log_pos 1687 CRC32 0x0fec29d1 	Anonymous_GTID	last_committed=1	sequence_number=5	rbr_only=yes
 		#191015 18:31:13 server id 17  end_log_pos 1953 CRC32 0xd3bb0c59 	Anonymous_GTID	last_committed=1	sequence_number=6	rbr_only=yes
 		
-	基于组提交的并行复制的 last_commit 是有序的，而 基于writeset的并行复制的 last_commit并一定是有序的。
+	基于组提交的并行复制的 last_committed 是有序的，而 基于writeset的并行复制的 last_committed 并一定是有序的。
 	
 	各个insert是可以并行执行的，所以它们被分到了同个组(last_committed相同）；last_committed，sequence_number，
 
+	last_committed：
+		记录每组的leader序列号，即每组事务的最小序列号
+	
+	sequence_number：
+		记录每个事务的序列号，唯一值
+		
 	coordinator 就是原来的 sql_thread, 不再直接更新数据了，只负责读取中转日志和分发事务给worker；
     worker 线程 真正更新日志；
-	
-	
+
 	

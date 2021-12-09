@@ -1,9 +1,9 @@
 
 0. InnoDB一条事务日志要经历的4个阶段
-	创建日志阶段，记为LSN1
-	日志刷盘阶段，记为LSN2		
-	脏页刷盘阶段，记为LSN3 
-	检查点checkpoint阶段，记为LSN4
+	创建日志阶段 对应 Log sequence number，记为LSN1
+	日志刷盘阶段 对应 Log flushed up to，记为LSN2		
+	脏页刷盘阶段 对应 Pages flushed up to，记为LSN3 
+	检查点checkpoint阶段 对应 Last checkpoint at ，记为LSN4
 	
 1. 前置条件
 	
@@ -18,7 +18,7 @@
 	
 	此时 checkpoint 到 1-7 事务		 					-- LSN4
 	
-	LSN2 - LSN3 = 脏页数量
+	
 	
 	如果这个时候发生 crash recovery
 
@@ -65,8 +65,12 @@
 	
 		答：真正 脏页刷新到磁盘 的操作是 flush，flush 操作会记录 checkpoint 
 	
-			checkpoint 只是1个检查点标记，作用是减少崩溃恢复所需要的时间。如果 redo 写满或者内存没有可用空闲空间(或者说脏页占比达到75%)，会强制 flush，然后记录 checkpoint.
-				
+			checkpoint 只是1个检查点标记，作用是减少崩溃恢复所需要的时间、推进释放redo log可以被覆盖的空间
+			
+			如果 redo 写满或者内存没有可用空闲空间(或者说脏页占比达到75%)，会强制 flush，然后记录 checkpoint.
+			
+			Pages flushed up to 是脏页已经到刷盘的LSN，checkpoint 之前的脏页都落盘了(注意：checkpoint LSN 不是脏页刷盘的最新LSN)，checkpoint 是用来做 推进释放redo 可以被覆盖的空间，这个步骤需要把对应的脏页进行刷盘。			
+
 ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 	

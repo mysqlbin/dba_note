@@ -14,6 +14,7 @@
 	last commit 是前一个commit队列的最大 seq number
 	
 3. MySQL 5.7-5.7.21版本的并行复制策略
+
 	1. 同时处于 prepare 状态的事务，在备库执行时是可以并行的；
 	2. 处于 prepare 状态的事务，与处于 commit 状态的事务之间，在备库执行时也是可以并行的。
 
@@ -26,11 +27,11 @@
 		
 4. Waiting for semi-sync ACK from slave
 	如果 rpl_semi_sync_master_wait_point 参数设置为  after_commit, 这里将会进行 ACK 确认，可以看到实际的 InnoDB 层提交操作已经完成了， 等待期间
-状态为 Waiting for semi-sync ACK from slave
+
+	状态为 Waiting for semi-sync ACK from slave
 
 
-5. 基于 commit_order 的并行复制如果数据库压力不大的情况下可能出现每个队列都只有一个事务的情况，这种情况就不能在从库
-并行回放了，但是基于 writeset 的并行复制却可以改变这种情况。
+5. 基于 commit_order 的并行复制如果数据库压力不大的情况下可能出现每个队列都只有一个事务的情况，这种情况就不能在从库并行回放了，但是基于 writeset 的并行复制却可以改变这种情况。
 
 
 6. 大事务
