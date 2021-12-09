@@ -20,7 +20,7 @@
 
 
 last_committed：
-	记录每组的leader序列号，即每组事务的最小序列号
+	组提交中，记录每组的leader序列号，即每组事务的最小序列号
 
 sequence_number：
 	记录每个事务的序列号，唯一值
