@@ -16,8 +16,6 @@
 并行复制
 	
 	
-	
-
 	writeset是先根据commit_order分配last_committed和sequence_number，然后在根据writeset hash表进行冲突检测，再确定last_commit的值。
 
 

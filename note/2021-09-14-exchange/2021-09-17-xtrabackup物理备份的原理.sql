@@ -32,6 +32,7 @@
 
 	7. 获取 备份结束时，数据库中的 checkpoint 点和 已经刷新到重做日志文件的LSN ，会写入到 xtrabackup_checkpoints 文件中
 		-- 数据恢复的时候，从 checkpoint 检查点开始应用 redo log 到原数据页中。
+		-- 记录最新的redo。
 		
 	8. 待redo日志拷贝完成，停止复制redo log
 		xtrabackup: Stopping log copying thread.
