@@ -98,4 +98,5 @@
 		
 		
 		
-	
+	For the duraton of instant adding column, MDL will be placed and maintained
+on the table.
