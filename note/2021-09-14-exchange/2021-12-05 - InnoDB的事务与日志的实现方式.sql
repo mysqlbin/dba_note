@@ -1,7 +1,6 @@
 
 
-有多少种日志:
-	undo 和 redo
+首先，事务日志有2种: undo 和 redo
 	Undo：
 		含义：记录的是更新前的值
 		作用：
@@ -16,17 +15,17 @@
 	
 	基本流程如下：
 		
-		先记录undo, 拷贝该记录修改之前的值到Undo Log中，将Undo Log的修改记录写入Redo Log中(undo需要记录redo来持久化)
+		先记录undo, 拷贝该记录修改之前的值到Undo Log中，将Undo Log的修改记录写入Redo Log中(undo需要记录redo来持久化)   -- 这步骤有点长
 	
 		然后记录数据页修改的redo 同时在内存中更新数据页
 		
 		Redo（里面包括 undo 的修改） 一定要比数据页先持久化到磁盘。 
 		
 		1. 当事务需要回滚时
-			因为有 undo，可以把数据页回滚到前镜像的状态，
+			借助 undo 日志，可以把数据回滚到前镜像的状态。
 		
-		2. 崩溃恢复时
-			1. 先判断 redo log的完整性
+		2. 崩溃恢复时，先判断redo日志的完整性 再 判断 binlog的完整性
+			1. 先判断 redo 日志的完整性
 			  redo 有commit标识，直接提交事务，去更新内存数据页
 			  redo 没有commit标识，但是有完整的prepare，需要判断binlog的完整性
 			  
