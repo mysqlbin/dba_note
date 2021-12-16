@@ -32,6 +32,7 @@ Thread 38 (Thread 0x7fe57a86f700 (LWP 67268)):
 互斥锁
     mutex一般指互斥锁
     在编程中，引入了对象互斥锁的概念，来保证共享数据操作的完整性。每个对象都对应于一个可称为" 互斥锁" 的标记，这个标记用来保证在任一时刻，只能有一个线程访问该对象。
+	-- 相当于是串行执行。
     相关参考 https://baike.baidu.com/item/%E4%BA%92%E6%96%A5%E9%94%81/841823?fromtitle=mutex&fromid=6330198&fr=aladdin      
 
 timestamp 转换：
