@@ -11,6 +11,13 @@ chown -R mongodb:mongodb  /home/mongodb/config/*
 
 
 
+
+*/
+
+
+
+
+
 /usr/local/mongodb/bin/mongod --config /etc/config.conf 
 
 
@@ -208,6 +215,7 @@ configserver:PRIMARY> rs.status()
 	},
 	"operationTime" : Timestamp(1622418025, 1)
 }
+
 
 
 
