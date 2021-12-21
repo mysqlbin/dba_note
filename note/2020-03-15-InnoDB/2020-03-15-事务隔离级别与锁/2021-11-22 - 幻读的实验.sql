@@ -99,7 +99,7 @@
 		
 									
 									INSERT INTO `t` (`c`, `d`) VALUES ('3', '6');
-									Query OK, 1 row affected (0.05 sec)
+									(Blocked)
 
 
 	select * from information_schema.innodb_locks\G;
@@ -242,8 +242,12 @@
 	
 	
 5. 小结
+
+	
 	幻读针对 insert，事务内相同的两次查询，后一次看到了前一次没有看到的行记录。
-	解决幻读的方式：使用RR可重复读事务隔离级别。
+	
+	解决幻读的方式：使用RR可重复读事务隔离级别，通过 gap 阻塞 insert。
+	
 	
 	
 	
