@@ -18,12 +18,18 @@
 	  KEY `c` (`c`)
 	) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('1', '1', '1');
-	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('2', '2', '2');
 	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('3', '3', '3');
-	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('4', '4', '4');
 	INSERT INTO `t` (`id`, `c`, `d`) VALUES ('5', '5', '5');
-
-
+	
+	mysql> select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  3 |    3 |    3 |
+	|  5 |    5 |    5 |
+	+----+------+------+
+	3 rows in set (0.01 sec)
 
 
 2. READ-COMMITTED 下的二级索引
@@ -45,9 +51,6 @@
 	1 row in set (0.00 sec)
 
 
-
-
-	
 
 	session A                      session B
 	begin;
@@ -86,8 +89,20 @@
 			
 	
 	
+3.1 不指定自增主键
 
-
+	
+	mysql> select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  3 |    3 |    3 |
+	|  5 |    5 |    5 |
+	+----+------+------+
+	3 rows in set (0.01 sec)
+	
+	
 	session A                      session B
 	begin;
 	select * from t where c=3 for update;
@@ -103,43 +118,44 @@
 									(Blocked)
 
 
+		
 	select * from information_schema.innodb_locks\G;
 	select * from information_schema.innodb_lock_waits\G;
 	SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;									
 								
-									
+										
 	mysql> select * from information_schema.innodb_locks\G;
 	*************************** 1. row ***************************
-		lock_id: 27240731:45577:4:5
-	lock_trx_id: 27240731
+		lock_id: 27244310:45590:4:4
+	lock_trx_id: 27244310
 	  lock_mode: X,GAP
 	  lock_type: RECORD
 	 lock_table: `test_db`.`t`
 	 lock_index: c
-	 lock_space: 45577
+	 lock_space: 45590
 	  lock_page: 4
-	   lock_rec: 5
-	  lock_data: 4, 4
+	   lock_rec: 4
+	  lock_data: 5, 5
 	*************************** 2. row ***************************
-		lock_id: 27240726:45577:4:5
-	lock_trx_id: 27240726
+		lock_id: 27244309:45590:4:4
+	lock_trx_id: 27244309
 	  lock_mode: X,GAP
 	  lock_type: RECORD
 	 lock_table: `test_db`.`t`
 	 lock_index: c
-	 lock_space: 45577
+	 lock_space: 45590
 	  lock_page: 4
-	   lock_rec: 5
-	  lock_data: 4, 4
+	   lock_rec: 4
+	  lock_data: 5, 5
 	2 rows in set, 1 warning (0.00 sec)
 
 
 	mysql> select * from information_schema.innodb_lock_waits\G;
 	*************************** 1. row ***************************
-	requesting_trx_id: 27240731
-	requested_lock_id: 27240731:45577:4:5
-	  blocking_trx_id: 27240726
-	 blocking_lock_id: 27240726:45577:4:5
+	requesting_trx_id: 27244310
+	requested_lock_id: 27244310:45590:4:4
+	  blocking_trx_id: 27244309
+	 blocking_lock_id: 27244309:45590:4:4
 	1 row in set, 1 warning (0.00 sec)
 
 
@@ -150,8 +166,127 @@
 	+--------------+-------------+----------------------------------------------+-------------------+--------------------+
 	| c            | RECORD      | INSERT INTO `t` (`c`, `d`) VALUES ('3', '6') | X,GAP             | X,GAP              |
 	+--------------+-------------+----------------------------------------------+-------------------+--------------------+
-	1 row in set, 3 warnings (0.06 sec)
+	1 row in set, 3 warnings (0.26 sec)
 
+
+	
+	session A 的加锁范围：
+		c: next-key lock: (1,3)
+		primary: record lock: id=3
+		c: gap lock: (3, 5)
+		
+	session B 想要往二级索引c中插入这一行记录：c=3, id=6
+	
+	二级索引c的索引结构
+		mysql> select c,id from test_db. t order by c,id;
+		+------+----+
+		| c    | id |
+		+------+----+
+		|    1 |  1 |
+		|    3 |  3 |
+		-- 会落到这里，所以会被阻塞。同时明白了为什么需要对 二级索引c (3, 5) 的这个范围加间隙锁。
+		|    5 |  5 |
+		+------+----+
+		3 rows in set (0.03 sec)
+
+		
+
+3.2 指定自增主键
+	
+	mysql> select * from t;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  1 |    1 |    1 |
+	|  3 |    3 |    3 |
+	|  5 |    5 |    5 |
+	+----+------+------+
+	3 rows in set (0.01 sec)
+	
+
+	select * from information_schema.innodb_locks\G;
+	select * from information_schema.innodb_lock_waits\G;
+	SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;		
+
+	
+	session A                      session B
+	begin;
+	select * from t where c=3 for update;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  3 |    3 |    3 |
+	+----+------+------+
+	1 row in set (0.00 sec)
+		
+									
+									INSERT INTO `t` (`id`, `c`, `d`) VALUES (2, '3', '2');
+									(Blocked)
+
+
+	mysql> select * from information_schema.innodb_locks\G;
+	*************************** 1. row ***************************
+		lock_id: 27244312:45590:4:3
+	lock_trx_id: 27244312
+	  lock_mode: X,GAP
+	  lock_type: RECORD
+	 lock_table: `test_db`.`t`
+	 lock_index: c
+	 lock_space: 45590
+	  lock_page: 4
+	   lock_rec: 3
+	  lock_data: 3, 3
+	*************************** 2. row ***************************
+		lock_id: 27244309:45590:4:3
+	lock_trx_id: 27244309
+	  lock_mode: X
+	  lock_type: RECORD
+	 lock_table: `test_db`.`t`
+	 lock_index: c
+	 lock_space: 45590
+	  lock_page: 4
+	   lock_rec: 3
+	  lock_data: 3, 3
+	2 rows in set, 1 warning (0.00 sec)
+
+
+
+	mysql> select * from information_schema.innodb_lock_waits\G;
+	*************************** 1. row ***************************
+	requesting_trx_id: 27244312
+	requested_lock_id: 27244312:45590:4:3
+	  blocking_trx_id: 27244309
+	 blocking_lock_id: 27244309:45590:4:3
+	1 row in set, 1 warning (0.00 sec)
+
+
+	mysql> SELECT locked_index,locked_type,waiting_query,waiting_lock_mode,blocking_lock_mode FROM sys.innodb_lock_waits;
+	+--------------+-------------+-------------------------------------------------------+-------------------+--------------------+
+	| locked_index | locked_type | waiting_query                                         | waiting_lock_mode | blocking_lock_mode |
+	+--------------+-------------+-------------------------------------------------------+-------------------+--------------------+
+	| c            | RECORD      | INSERT INTO `t` (`id`, `c`, `d`) VALUES (2, '3', '2') | X,GAP             | X                  |
+	+--------------+-------------+-------------------------------------------------------+-------------------+--------------------+
+	1 row in set, 3 warnings (0.00 sec)
+
+	
+	session A 的加锁范围：
+		c: next-key lock: (1,3)
+		primary: record lock: id=3
+		c: gap lock: (3, 5)
+		
+	session B 想要往二级索引c中插入这一行记录：c=3, id=2
+	
+	二级索引c的索引结构
+		mysql> select c,id from test_db. t order by c,id;
+		+------+----+
+		| c    | id |
+		+------+----+
+		|    1 |  1 |
+		-- 会落到这里，所以会被阻塞。同时明白了为什么需要对 二级索引c (1, 3) 的这个范围加间隙锁。
+		|    3 |  3 |
+		|    5 |  5 |
+		+------+----+
+		3 rows in set (0.03 sec)
 
 
 4. REPEATABLE-READ下的主键索引
@@ -247,26 +382,58 @@
 	
 	幻读针对 insert，事务内相同的两次查询，后一次看到了前一次没有看到的行记录。
 	
-	解决幻读的方式：使用RR可重复读事务隔离级别，通过 gap 阻塞 insert。
+	解决幻读的方式：使用RR可重复读事务隔离级别，通过 gap lock 阻塞 insert。
+	
+	-------------------------------------------------------------------------------------
+	
+	session A 的加锁范围：
+		c: next-key lock: (1,3)
+		primary: record lock: id=3
+		c: gap lock: (3, 5)
+		
+		
+		
+	session B 想要往二级索引c中插入这一行记录：c=3, id=6
+	
+	二级索引c的索引结构
+		mysql> select c,id from test_db. t order by c,id;
+		+------+----+
+		| c    | id |
+		+------+----+
+		|    1 |  1 |
+		|    3 |  3 |
+		-- 会落到这里，所以会被阻塞。同时明白了为什么需要对 二级索引c (3, 5) 的这个范围加间隙锁。
+		|    5 |  5 |
+		+------+----+
+		3 rows in set (0.03 sec)
+	
+	
+	session B 想要往二级索引c中插入这一行记录：c=3, id=2
+	
+	二级索引c的索引结构
+		mysql> select c,id from test_db. t order by c,id;
+		+------+----+
+		| c    | id |
+		+------+----+
+		|    1 |  1 |
+		-- 会落到这里，所以会被阻塞。同时明白了为什么需要对 二级索引c (1, 3) 的这个范围加间隙锁。
+		|    3 |  3 |
+		|    5 |  5 |
+		+------+----+
+		3 rows in set (0.03 sec)
 	
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
+思考：所有的 gap lock 都是为了防止幻读吗
+
+
+
+
+
+
+
+
+
 	

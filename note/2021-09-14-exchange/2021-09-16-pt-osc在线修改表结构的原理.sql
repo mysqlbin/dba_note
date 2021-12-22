@@ -19,15 +19,16 @@
 		 -- 没有口述出来。
 		
 		
-		insert into 新表 select ... from 原表 语句      增量的插入语句
+		-- insert into 新表 select ... from 原表 语句做最后1个chunk的数据迁移      -- 增量的插入语句
 		持有的锁: 新表_t_new: AUTO-INC	
 
-														持有原表t主键索引 id=95448405 的行锁(排他X锁)
+																					持有原表t主键索引 id=95448405 的行锁(排他X锁)
 						
 		在等待的锁: 原表t: primary: record lock: id=95448405
 
-														在等待的锁: 新表_t_new: AUTO-INC
+																					在等待的锁: 新表_t_new: AUTO-INC
 		-- 要看看怎么口述出来。					
+		
 						
 	2. 默认删除旧表的操作，会对数据字典加排他锁，会阻塞DML请求，直到删除表完成，才释放数据字典排他锁。
 		命令添加  --no-drop-old-table 参数，就是不删除旧表。
