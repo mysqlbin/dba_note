@@ -1,9 +1,17 @@
 
 
 1. 扩容
+
 2. 一致性备份
+	
+	https://www.modb.pro/db/44864
+	https://github.com/Percona-Lab/mongodb_consistent_backup
+	
+	
 3. shards的扩容
+
 4. mongos 的高可用
+
 5. config server 发生主从切换，会发生什么?
 	shard的数据可以正常写入。
 	
@@ -14,6 +22,8 @@
 		
 
 
+
+7. chunks
 
 
 

@@ -11,9 +11,25 @@ MongoDB目前3大核心优势：『灵活模式』+ 『高可用性』 + 『可�
 	基于副本集的shard 
 	
 	mongos：
-		mongos充当查询路由器，在客户端应用程序和分片集群之间提供接口。
-		从MongoDB 4.4开始，mongos可以支持对冲读取（hedged reads）以最大程度地减少延迟。
 	
+		mongos充当查询路由器，在客户端应用程序和分片集群之间提供接口。
+		
+		从MongoDB 4.4开始，mongos可以支持对冲读取（hedged reads）以最大程度地减少延迟。
+		
+		Mongos 作为Sharded cluster的访问入口，所有的请求都由mongos来路由、分发、合并，这些动作对客户端driver透明，用户连接mongos就像连接mongod一样使用。
+		
+		Mongos 是Sharded cluster的访问入口，强烈建议所有的管理操作、读写操作都通过mongos来完成，以保证cluster多个组件处于一致的状态。
+
+		Mongos 本身并不持久化数据，Sharded cluster所有的元数据都会存储到Config Server，而用户的数据则会分散存储到各个shard。
+		
+		Mongos 在 config server和 sharding 副本集 之后启动，它会从config server加载元数据，开始提供服务，将用户的请求正确路由到对应的Shard。
+			-- 所以mongos要最后启动，并且所有对分片的操作，都是在mongos中做。
+			http://mysql.taobao.org/monthly/2016/05/08/
+			
+
+		Mongos 作为Sharded cluster的访问入口，所有的请求都由mongos来路由、分发、合并，这些动作对客户端driver透明，用户连接mongos就像连接mongod一样使用。
+
+
 	config服务器：	
 		config servers（配置服务器）存储了分片集群的元数据和配置信息。
 		从MongoDB 3.4版本开始，config servers必须部署为副本集架构 (CSRS)。
@@ -140,17 +156,7 @@ MongoDB目前3大核心优势：『灵活模式』+ 『高可用性』 + 『可�
 
 1.3 组件小结
 	
-	Mongos 是Sharded cluster的访问入口，强烈建议所有的管理操作、读写操作都通过mongos来完成，以保证cluster多个组件处于一致的状态。
-
-	Mongos 本身并不持久化数据，Sharded cluster所有的元数据都会存储到Config Server，而用户的数据则会分散存储到各个shard。
 	
-	Mongos 在 config server和 sharding 副本集 之后启动，它会从config server加载元数据，开始提供服务，将用户的请求正确路由到对应的Shard。
-		-- 所以mongos要最后启动，并且所有对分片的操作，都是在mongos中做。
-		http://mysql.taobao.org/monthly/2016/05/08/
-		
-
-	Mongos 作为Sharded cluster的访问入口，所有的请求都由mongos来路由、分发、合并，这些动作对客户端driver透明，用户连接mongos就像连接mongod一样使用。
-
 	
 2. chunksize
 
