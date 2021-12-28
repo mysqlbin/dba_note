@@ -7,3 +7,4 @@ https://zhuanlan.zhihu.com/p/348828585
 
 https://mp.weixin.qq.com/s/_LK8bdHPw9bZ9W1b3i5UZA   [原理解析] MySQL组提交(group commit)
 
+https://www.jianshu.com/p/5248ca67eac2	MySQL：一个简单insert语句的大概流程
