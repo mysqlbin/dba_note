@@ -84,19 +84,69 @@ https://www.jianshu.com/writer#/notebooks/37013486/notes/50142567
 
 
 
-
-
-
+Prepare 阶段
+Flush 阶段
+Sync 阶段
+Commit 阶段
 
 E:\github\mysql-5.7.26\sql\handler.cc
 ha_commit_trans
+	
+   -- prepare 阶段
+	
 	-> MYSQL_BIN_LOG::prepare
-		-> ha_prepare_low
 		
+		-> ha_prepare_low
+			
+			-> ht->prepare(ht, thd, all) -> binlog_prepare    -- 生成last_commit
+			
+			-> ht->prepare(ht, thd, all) -> innobase_xa_prepare  -- InnoDB存储引擎的prepare接口
+			
+				-> innobase_xa_prepare -> trx_prepare_for_mysql
+				
+					-> trx_prepare_for_mysql -> trx_prepare
+						
+						-> trx_prepare -> trx_prepare_low
+						
+						-> trx_prepare -> trx_flush_log_if_needed
+									
+							-> trx_flush_log_if_needed -> trx_flush_log_if_needed_low
+								
+								-> trx_flush_log_if_needed_low -> log_write_up_to  -- redo log 第一次刷盘？
+	
+	-- commit 阶段？
+	-> MYSQL_BIN_LOG::commit
+		-> MYSQL_BIN_LOG::ordered_commit
+			-> MYSQL_BIN_LOG::process_flush_stage_queue    -- 执行flush阶段
+				-> MYSQL_BIN_LOG::process_flush_stage_queue -> ha_flush_logs
+					-> ha_flush_logs -> flush_handlerton
+						-> flush_handlerton -> innobase_flush_logs 	-- 将 InnoDB 重做日志刷新到文件系统。
+							-> innobase_flush_logs -> log_buffer_flush_to_disk 
+								-> log_buffer_flush_to_disk -> log_write_up_to  -- redo log 第二次刷盘？
+									-> log_write_up_to -> log_group_write_buf   -- innodb 组提交，确保redo落盘
+
+									
+				-> MYSQL_BIN_LOG::process_flush_stage_queue -> MYSQL_BIN_LOG::flush_thread_caches
+					-> MYSQL_BIN_LOG::flush_thread_caches -> binlog_cache_data::flush     -- binlog cache 进行flush到binlog文件
+					
+		
+			    -> MYSQL_BIN_LOG::sync_binlog_file           -- fsync binlog文件进行os缓存落盘
+
+	
+	-- commit 阶段？
+	MYSQL_BIN_LOG::process_commit_stage_queue
+		-> ha_commit_low
+			-> innobase_commit
+				-> innobase_commit_low
+					-> trx_commit_for_mysql
+	
+
+innobase_xa_prepare	是InnoDB存储引擎实现的XA规范的prepare接口：
 
 
+	当处于Prepare阶段时，调用 innobase_xa_prepare 函数会将 TRX_UNDO_STATE 字段的值设置为 TRX_UNDO_PREPARED（整数5），表明当前事务处在Prepare阶段
 
-
+	当处于Prepare阶段时，调用 innobase_xa_prepare 函数会将 TRX_UNDO_XID_EXISTS 设置为TRUE，并将本次内部XA事务的xid（这个xid是MySQL自己生成的）写入XID信息处。
 
 
 
