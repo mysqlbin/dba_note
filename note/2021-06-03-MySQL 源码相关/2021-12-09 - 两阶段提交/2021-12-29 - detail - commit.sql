@@ -1,3 +1,6 @@
+
+-- 提交一系列会话
+
 /**
   Commit a sequence of sessions.
 
@@ -262,6 +265,58 @@ innobase_commit_low(
 	trx->will_lock = 0;
 }
 
+
+
+
+/**********************************************************************//**
+Does the transaction commit for MySQL.
+@return DB_SUCCESS or error number */
+dberr_t
+trx_commit_for_mysql(
+/*=================*/
+	trx_t*	trx)	/*!< in/out: transaction */
+{
+	TrxInInnoDB	trx_in_innodb(trx, true);
+
+	if (trx_in_innodb.is_aborted()
+	    && trx->killed_by != os_thread_get_curr_id()) {
+
+		return(DB_FORCED_ABORT);
+	}
+
+	/* Because we do not do the commit by sending an Innobase
+	sig to the transaction, we must here make sure that trx has been
+	started. */
+
+	switch (trx->state) {
+	case TRX_STATE_NOT_STARTED:
+	case TRX_STATE_FORCED_ROLLBACK:
+
+		ut_d(trx->start_file = __FILE__);
+		ut_d(trx->start_line = __LINE__);
+
+		trx_start_low(trx, true);
+		/* fall through */
+	case TRX_STATE_ACTIVE:
+	case TRX_STATE_PREPARED:
+
+		trx->op_info = "committing";
+
+		if (trx->id != 0) {
+			trx_update_mod_tables_timestamp(trx);
+		}
+
+		trx_commit(trx);
+
+		MONITOR_DEC(MONITOR_TRX_ACTIVE);
+		trx->op_info = "";
+		return(DB_SUCCESS);
+	case TRX_STATE_COMMITTED_IN_MEMORY:
+		break;
+	}
+	ut_error;
+	return(DB_CORRUPTION);
+}
 
 
 

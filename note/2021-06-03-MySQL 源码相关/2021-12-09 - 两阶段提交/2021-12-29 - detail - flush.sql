@@ -292,7 +292,7 @@ TC_LOG::enum_result MYSQL_BIN_LOG::commit(THD *thd, bool all)
 
 
 
-刷新并提交事务
+-- 刷新并提交事务
 
 
 /**
@@ -391,6 +391,8 @@ int MYSQL_BIN_LOG::ordered_commit(THD *thd, bool all, bool skip_commit)
 
   DEBUG_SYNC(thd, "bgc_before_flush_stage");
 
+  -- 将事务刷新到二进制日志
+  -- 
   /*
     Stage #1: flushing transactions to binary log
 
@@ -417,6 +419,9 @@ int MYSQL_BIN_LOG::ordered_commit(THD *thd, bool all, bool skip_commit)
   }
   else
 #endif
+
+
+
   if (change_stage(thd, Stage_manager::FLUSH_STAGE, thd, NULL, &LOCK_log))
   {
     DBUG_PRINT("return", ("Thread ID: %u, commit_error: %d",
@@ -441,6 +446,7 @@ int MYSQL_BIN_LOG::ordered_commit(THD *thd, bool all, bool skip_commit)
     goto commit_stage;
   }
   DEBUG_SYNC(thd, "waiting_in_the_middle_of_flush_stage");
+  
   flush_error= process_flush_stage_queue(&total_bytes, &do_rotate,
                                                  &wait_queue);
 
@@ -549,6 +555,7 @@ int MYSQL_BIN_LOG::ordered_commit(THD *thd, bool all, bool skip_commit)
     all locks are released but we should not enter into
     commit stage if binlog_error_action is ABORT_SERVER.
   */
+  
 commit_stage:
   if (opt_binlog_order_commits &&
       (sync_error == 0 || binlog_error_action != ABORT_SERVER))
@@ -655,6 +662,46 @@ commit_stage:
 }
 
 
+bool
+MYSQL_BIN_LOG::change_stage(THD *thd,
+                            Stage_manager::StageID stage, THD *queue,
+                            mysql_mutex_t *leave_mutex,
+                            mysql_mutex_t *enter_mutex)
+{
+  DBUG_ENTER("MYSQL_BIN_LOG::change_stage");
+  DBUG_PRINT("enter", ("thd: 0x%llx, stage: %s, queue: 0x%llx",
+                       (ulonglong) thd, g_stage_name[stage], (ulonglong) queue));
+					   
+  DBUG_ASSERT(0 <= stage && stage < Stage_manager::STAGE_COUNTER);
+  DBUG_ASSERT(enter_mutex);
+  DBUG_ASSERT(queue);
+  /*
+    enroll_for will release the leave_mutex once the sessions are
+    queued.
+  */
+  if (!stage_manager.enroll_for(stage, queue, leave_mutex))
+  {
+    DBUG_ASSERT(!thd_get_cache_mngr(thd)->dbug_any_finalized());
+    DBUG_RETURN(true);
+  }
+
+  /*
+    We do not lock the enter_mutex if it is LOCK_log when rotating binlog
+    caused by logging incident log event, since it is already locked.
+  */
+  bool need_lock_enter_mutex=
+    !(is_rotating_caused_by_incident && enter_mutex == &LOCK_log);
+
+  if (need_lock_enter_mutex)
+    mysql_mutex_lock(enter_mutex);
+  else
+    mysql_mutex_assert_owner(enter_mutex);
+
+  DBUG_RETURN(false);
+}
+
+
+
 -- 执行flush阶段
 
 /**
@@ -698,9 +745,14 @@ MYSQL_BIN_LOG::process_flush_stage_queue(my_off_t *total_bytes_var,
     engine (for example, InnoDB redo log) in a group right before
     flushing them to binary log.
   */
+  
+  -- flush redo log 
   ha_flush_logs(NULL, true);
+  
   DBUG_EXECUTE_IF("crash_after_flush_engine_log", DBUG_SUICIDE(););
   assign_automatic_gtids_to_flush_group(first_seen);
+  
+  -- 把 binlog cache 中的 binlog flush到binlog文件
   /* Flush thread caches to binary log. */
   for (THD *head= first_seen ; head ; head = head->next_to_commit)
   {
@@ -723,6 +775,17 @@ MYSQL_BIN_LOG::process_flush_stage_queue(my_off_t *total_bytes_var,
 #endif
   DBUG_RETURN(flush_error);
 }
+
+-- 获取整个队列并清空它。
+  /**
+    Fetch the entire queue and empty it.
+
+    @return Pointer to the first session of the queue.
+   */
+  THD *fetch_queue_for(StageID stage) {
+    DBUG_PRINT("debug", ("Fetching queue for stage %d", stage));
+    return m_queue[stage].fetch_and_empty();
+  }
 
 
 

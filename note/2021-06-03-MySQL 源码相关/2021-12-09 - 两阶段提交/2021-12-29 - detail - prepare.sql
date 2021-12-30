@@ -87,7 +87,7 @@ int ha_prepare_low(THD *thd, bool all)
 }
 
 
-
+-- 生成last_commit
 static int binlog_prepare(handlerton *hton, THD *thd, bool all)
 {
   DBUG_ENTER("binlog_prepare");
@@ -128,6 +128,7 @@ innobase_xa_prepare(
 
 	DBUG_ASSERT(hton == innodb_hton_ptr);
 
+	-- 获取 XID 
 	thd_get_xid(thd, (MYSQL_XID*) trx->xid);
 
 	/* Release a possible FIFO ticket and search latch. Since we will
@@ -162,7 +163,8 @@ innobase_xa_prepare(
 		this is an SQL statement end and autocommit is on */
 
 		ut_ad(trx_is_registered_for_2pc(trx));
-
+		
+		-- 
 		dberr_t	err = trx_prepare_for_mysql(trx);
 
 		ut_ad(err == DB_SUCCESS || err == DB_FORCED_ABORT);
@@ -212,6 +214,12 @@ innobase_xa_prepare(
 	return(0);
 }
 
+
+extern "C"
+void thd_get_xid(const MYSQL_THD thd, MYSQL_XID *xid)
+{
+  *xid = *(MYSQL_XID *) thd->get_transaction()->xid_state()->get_xid();
+}
 
 
 
@@ -395,6 +403,63 @@ trx_prepare_low(
 
 
 
+将 undo 页面段头的TRX_UNDO_STATE设置为TRX_UNDO_PREPARED， 表明当前事务处在Prepare阶段
+
+
+/** Set the state of the undo log segment at a XA PREPARE or XA ROLLBACK.
+@param[in,out]	trx		transaction
+@param[in,out]	undo		insert_undo or update_undo log
+@param[in]	rollback	false=XA PREPARE, true=XA ROLLBACK
+@param[in,out]	mtr		mini-transaction
+@return undo log segment header page, x-latched */
+page_t*
+trx_undo_set_state_at_prepare(
+	trx_t*		trx,
+	trx_undo_t*	undo,
+	bool		rollback,
+	mtr_t*		mtr)
+{
+	trx_usegf_t*	seg_hdr;
+	trx_ulogf_t*	undo_header;
+	page_t*		undo_page;
+	ulint		offset;
+
+	ut_ad(trx && undo && mtr);
+
+	ut_a(undo->id < TRX_RSEG_N_SLOTS);
+
+	undo_page = trx_undo_page_get(
+		page_id_t(undo->space, undo->hdr_page_no),
+		undo->page_size, mtr);
+
+	seg_hdr = undo_page + TRX_UNDO_SEG_HDR;
+
+	if (rollback) {
+		ut_ad(undo->state == TRX_UNDO_PREPARED);
+		mlog_write_ulint(seg_hdr + TRX_UNDO_STATE, TRX_UNDO_ACTIVE,
+				 MLOG_2BYTES, mtr);
+		return(undo_page);
+	}
+
+	/*------------------------------*/
+	ut_ad(undo->state == TRX_UNDO_ACTIVE);
+	undo->state = TRX_UNDO_PREPARED;
+	undo->xid   = *trx->xid;
+	/*------------------------------*/
+
+	mlog_write_ulint(seg_hdr + TRX_UNDO_STATE, undo->state,
+			 MLOG_2BYTES, mtr);
+
+	offset = mach_read_from_2(seg_hdr + TRX_UNDO_LAST_LOG);
+	undo_header = undo_page + offset;
+
+	mlog_write_ulint(undo_header + TRX_UNDO_XID_EXISTS,
+			 TRUE, MLOG_1BYTE, mtr);
+
+	trx_undo_write_xid(undo_header, &undo->xid, mtr);
+
+	return(undo_page);
+}
 
 /**********************************************************************//**
 If required, flushes the log to disk based on the value of
