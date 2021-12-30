@@ -50,8 +50,10 @@ binlog提交的三个阶段
 	flush阶段（将redo刷入redo log并刷盘<由参数innodb_flush_logs_at_trx_commit决定>），写入binlog文件<只是写入到os的缓存中>
 	sync阶段（调用fsync，将binlog刷入文件落盘）
 	commit阶段（引擎层完成数据提交，并将binlog信息写入redo log）
-
 	
+	-- 出处是哪里？
+		半同步复制after_sync模式下的一则客户端断开问题分析
+
 
 Flush 阶段
 	
