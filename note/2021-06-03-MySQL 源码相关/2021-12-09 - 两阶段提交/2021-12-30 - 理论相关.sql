@@ -5,7 +5,6 @@ binlog 是Server层的， Redo log是InnoDB存储引擎层的， 是两个互不
 
 
 两阶段提交  prepare commit     
-组提交在prepare的基础上进行  flush  sync commit
 
 ----------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -32,8 +31,18 @@ MySQL 采用了如下的过程实现内部 XA 的两阶段提交：
 		Binlog 写入文件；
 		binlog 刷盘；
 		InnoDB commit；
-
+	
+	
 	http://mysql.taobao.org/monthly/2020/05/07/	
+	
+	Commit阶段：先将事务执行过程中产生的binlog刷新到硬盘，再执行存储引擎的提交工作。
+
+
+
+
+组提交在prepare的基础上进行  flush  sync commit
+
+
 
 
 binlog提交的三个阶段
