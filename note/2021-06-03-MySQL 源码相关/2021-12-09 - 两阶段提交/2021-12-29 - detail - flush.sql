@@ -451,7 +451,11 @@ int MYSQL_BIN_LOG::ordered_commit(THD *thd, bool all, bool skip_commit)
                                                  &wait_queue);
 
   if (flush_error == 0 && total_bytes > 0)
+	
+	----------------------------------------------------------
+	
     flush_error= flush_cache_to_file(&flush_end_pos);
+	
   DBUG_EXECUTE_IF("crash_after_flush_binlog", DBUG_SUICIDE(););
 
   update_binlog_end_pos_after_sync= (get_sync_period() == 1);
@@ -776,7 +780,10 @@ MYSQL_BIN_LOG::process_flush_stage_queue(my_off_t *total_bytes_var,
   DBUG_RETURN(flush_error);
 }
 
+
+
 -- 获取整个队列并清空它。
+-- 获取队列中的事务组
   /**
     Fetch the entire queue and empty it.
 
@@ -786,6 +793,30 @@ MYSQL_BIN_LOG::process_flush_stage_queue(my_off_t *total_bytes_var,
     DBUG_PRINT("debug", ("Fetching queue for stage %d", stage));
     return m_queue[stage].fetch_and_empty();
   }
+
+
+
+
+/**
+  Flush the I/O cache to file.
+
+  Flush the binary log to the binlog file if any byte where written
+  and signal that the binary log file has been updated if the flush
+  succeeds.
+*/
+
+int
+MYSQL_BIN_LOG::flush_cache_to_file(my_off_t *end_pos_var)
+{
+  if (flush_io_cache(&log_file))
+  {
+    THD *thd= current_thd;
+    thd->commit_error= THD::CE_FLUSH_ERROR;
+    return ER_ERROR_ON_WRITE;
+  }
+  *end_pos_var= my_b_tell(&log_file);
+  return 0;
+}
 
 
 

@@ -27,3 +27,5 @@ http://mysql.taobao.org/monthly/2015/04/01/   MySQL · 引擎特性 · InnoDB un
 
 http://mysql.taobao.org/monthly/2018/08/01/  MySQL · 引擎特性 · 主库 binlog 概览
 
+
+http://liuyangming.tech/06-2019/MySQL-binlog.html	MySQL5.7——不得不了解的Binlog

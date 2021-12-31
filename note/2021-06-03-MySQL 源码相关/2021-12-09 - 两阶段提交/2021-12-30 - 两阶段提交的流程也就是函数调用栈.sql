@@ -67,11 +67,34 @@ ha_commit_trans
 								
 									-> log_write_up_to -> log_group_write_buf   -- innodb 组提交，确保redo落盘
 				
-				-- flush binlog，binlog 组提交(binlog 批量刷盘)  					
+				-- flush binlog，binlog 组提交(binlog 批量刷新到操作系统的页缓存中)  					
 				-> MYSQL_BIN_LOG::process_flush_stage_queue -> MYSQL_BIN_LOG::flush_thread_caches
 				
 					-> MYSQL_BIN_LOG::flush_thread_caches -> binlog_cache_data::flush     -- 把 binlog cache 中的 binlog flush到binlog文件(也就是操作系统的page cache中)
-			
+					
+						-- 上面的流程没毛病
+				
+				flush_cache_to_file     -- 将 操作系统的page cache中 的 binlog 写盘
+					binlog 刷盘 不代表 持久化？
+							
+					 DEBUG_SYNC(thd, "waiting_in_the_middle_of_flush_stage");
+					  
+					  flush_error= process_flush_stage_queue(&total_bytes, &do_rotate,
+																	 &wait_queue);
+
+					  if (flush_error == 0 && total_bytes > 0)
+						
+						----------------------------------------------------------
+						
+						flush_error= flush_cache_to_file(&flush_end_pos);
+						
+					  DBUG_EXECUTE_IF("crash_after_flush_binlog", DBUG_SUICIDE(););
+
+					  update_binlog_end_pos_after_sync= (get_sync_period() == 1);
+
+				
+				
+				
 			-- 执行 sync 阶段
 			    -> MYSQL_BIN_LOG::sync_binlog_file           -- fsync binlog文件进行os缓存落盘
 
@@ -86,5 +109,20 @@ ha_commit_trans
 			
 
 
+
+图中的 write，指的就是指把日志写入到文件系统的 page cache，并没有把数据持久化到磁盘，所以速度比较快。图中的 fsync，才是将数据持久化到磁盘的操作。一般情况下，我们认为 fsync 才占磁盘的 IOPS。
+
+
+
+
+在binlog的Group Commit的第一阶段FLUSH，会将IO_CACHE以及临时文件中的数据转存到binlog file中；之后truncate 临时文件，但保留IO_CACHE，如下调用栈：
+
+	MYSQL_BIN_LOG::commit
+		MYSQL_BIN_LOG::ordered_commit
+			MYSQL_BIN_LOG::flush_cache_to_file
+				binlog_cache_data::flush
+					MYSQL_BIN_LOG::write_cache
+					MYSQL_BIN_LOG::do_write_cache
+						cache->copy_to(writer) // Binlog_cache_storage cache -> Binlog_event_writer writer
 
 
