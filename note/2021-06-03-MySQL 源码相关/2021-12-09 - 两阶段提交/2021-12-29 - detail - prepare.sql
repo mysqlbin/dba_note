@@ -694,7 +694,8 @@ loop:
 			::memset(write_buf + area_end, 0, pad_size);
 		}
 	}
-
+	
+	-- 写入日志文件 
 	/* Do the write to the log files */
 	log_group_write_buf(
 		group, write_buf + area_start,
@@ -722,5 +723,130 @@ loop:
 
 	if (flush_to_disk) {
 		log_write_flush_to_disk_low();
+	}
+}
+
+
+-- 将缓冲区写入日志文件组
+/******************************************************//**
+Writes a buffer to a log file group. */
+static
+void
+log_group_write_buf(
+/*================*/
+	log_group_t*	group,		/*!< in: log group */
+	byte*		buf,		/*!< in: buffer */
+	ulint		len,		/*!< in: buffer len; must be divisible
+					by OS_FILE_LOG_BLOCK_SIZE */
+#ifdef UNIV_DEBUG
+	ulint		pad_len,	/*!< in: pad len in the buffer len */
+#endif /* UNIV_DEBUG */
+	lsn_t		start_lsn,	/*!< in: start lsn of the buffer; must
+					be divisible by
+					OS_FILE_LOG_BLOCK_SIZE */
+	ulint		new_data_offset)/*!< in: start offset of new data in
+					buf: this parameter is used to decide
+					if we have to write a new log file
+					header */
+{
+	ulint		write_len;
+	bool		write_header	= new_data_offset == 0;
+	lsn_t		next_offset;
+	ulint		i;
+
+	ut_ad(log_write_mutex_own());
+	ut_ad(!recv_no_log_write);
+	ut_a(len % OS_FILE_LOG_BLOCK_SIZE == 0);
+	ut_a(start_lsn % OS_FILE_LOG_BLOCK_SIZE == 0);
+
+loop:
+	if (len == 0) {
+
+		return;
+	}
+
+	next_offset = log_group_calc_lsn_offset(start_lsn, group);
+
+	if (write_header
+	    && next_offset % group->file_size == LOG_FILE_HDR_SIZE) {
+		/* We start to write a new log file instance in the group */
+
+		ut_a(next_offset / group->file_size <= ULINT_MAX);
+
+		log_group_file_header_flush(group, (ulint)
+					    (next_offset / group->file_size),
+					    start_lsn);
+		srv_stats.os_log_written.add(OS_FILE_LOG_BLOCK_SIZE);
+
+		srv_stats.log_writes.inc();
+	}
+
+	if ((next_offset % group->file_size) + len > group->file_size) {
+
+		/* if the above condition holds, then the below expression
+		is < len which is ulint, so the typecast is ok */
+		write_len = (ulint)
+			(group->file_size - (next_offset % group->file_size));
+	} else {
+		write_len = len;
+	}
+
+	DBUG_PRINT("ib_log",
+		   ("write " LSN_PF " to " LSN_PF
+		    ": group " ULINTPF " len " ULINTPF
+		    " blocks " ULINTPF ".." ULINTPF,
+		    start_lsn, next_offset,
+		    group->id, write_len,
+		    log_block_get_hdr_no(buf),
+		    log_block_get_hdr_no(
+			    buf + write_len
+			    - OS_FILE_LOG_BLOCK_SIZE)));
+
+	ut_ad(pad_len >= len
+	      || log_block_get_hdr_no(buf)
+		 == log_block_convert_lsn_to_no(start_lsn));
+
+	/* Calculate the checksums for each log block and write them to
+	the trailer fields of the log blocks */
+
+	for (i = 0; i < write_len / OS_FILE_LOG_BLOCK_SIZE; i++) {
+		ut_ad(pad_len >= len
+		      || i * OS_FILE_LOG_BLOCK_SIZE >= len - pad_len
+		      || log_block_get_hdr_no(
+			      buf + i * OS_FILE_LOG_BLOCK_SIZE)
+			 == log_block_get_hdr_no(buf) + i);
+		log_block_store_checksum(buf + i * OS_FILE_LOG_BLOCK_SIZE);
+	}
+
+	log_sys->n_log_ios++;
+
+	MONITOR_INC(MONITOR_LOG_IO);
+
+	srv_stats.os_log_pending_writes.inc();
+
+	ut_a(next_offset / UNIV_PAGE_SIZE <= ULINT_MAX);
+
+	const ulint	page_no
+		= (ulint) (next_offset / univ_page_size.physical());
+
+	fil_io(IORequestLogWrite, true,
+	       page_id_t(group->space_id, page_no),
+	       univ_page_size,
+	       (ulint) (next_offset % UNIV_PAGE_SIZE), write_len, buf,
+	       group);
+
+	srv_stats.os_log_pending_writes.dec();
+
+	srv_stats.os_log_written.add(write_len);
+	srv_stats.log_writes.inc();
+
+	if (write_len < len) {
+		start_lsn += write_len;
+		len -= write_len;
+		buf += write_len;
+
+		write_header = true;
+
+		goto loop;
 	}
 }

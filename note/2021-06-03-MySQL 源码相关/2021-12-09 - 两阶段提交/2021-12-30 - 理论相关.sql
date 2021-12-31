@@ -3,12 +3,7 @@ binlog 是Server层的， Redo log是InnoDB存储引擎层的， 是两个互不
 先写redo log 后写 binlog，或者先写 binlog 后写 redo log，都会存在问题。
 
 
-
-两阶段提交  prepare commit     
-
 ----------------------------------------------------------------------------------------------------------------------------------------------
-
-
 
 innobase_xa_prepare	是InnoDB存储引擎实现的XA规范的prepare接口：
 
@@ -38,21 +33,42 @@ MySQL 采用了如下的过程实现内部 XA 的两阶段提交：
 	Commit阶段：先将事务执行过程中产生的binlog刷新到硬盘，再执行存储引擎的提交工作。
 
 
-
-
 组提交在prepare的基础上进行  flush  sync commit
 
+	Prepare 阶段：
+		InnoDB 将回滚段设置为 prepare 状态；
+		将 redolog 写文件并刷盘；
+		
+	Flush 阶段
+		
+		Flush阶段队列的作用是提供了Redo log的组提交
+		将binlog数据写入文件，当然此时只是写入文件系统的缓冲，并不能保证数据库崩溃时binlog不丢失 (图中Write binlog)
+	
+	Sync 阶段
+		Sync阶段队列的作用是支持binlog的组提交
 
-
-
+	Commit 阶段
+		依次将Redo log中已经prepare的事务在引擎层提交(图中InnoDB Commit)，commit 阶段不用刷盘(不需要把binlog进行刷盘)
+		Commit阶段队列的作用是承接Sync阶段的事务，完成最后的引擎提交，使得Sync可以尽早的处理下一组事务，最大化组提交的效率
+		
+		
 binlog提交的三个阶段
 
-	flush阶段（将redo刷入redo log并刷盘<由参数innodb_flush_logs_at_trx_commit决定>），写入binlog文件<只是写入到os的缓存中>
-	sync阶段（调用fsync，将binlog刷入文件落盘）
-	commit阶段（引擎层完成数据提交，并将binlog信息写入redo log）
+	flush阶段：
+		将redo刷入redo log并刷盘<由参数innodb_flush_logs_at_trx_commit决定>），写入binlog文件<只是写入到os的缓存中>
+		
+	sync阶段：
+		调用fsync，将binlog刷入文件落盘）
+		
+	commit阶段：
+		引擎层完成数据提交，并将binlog信息写入redo log）
 	
-	-- 出处是哪里？
-		半同步复制after_sync模式下的一则客户端断开问题分析
+	
+	https://mp.weixin.qq.com/s/J8LRcFpVGaw46I_NXHVd8Q  半同步复制after_sync模式下的一则客户端断开问题分析
+
+		
+	
+
 
 
 Flush 阶段
@@ -98,13 +114,6 @@ Flush 阶段
 		*rotate_var = true;
 	}
 
-
-
-binlog 组提交逻辑的主要函数是 MYSQL_BIN_LOG::ordered_commit ，此时引擎层事务已经 prepare，但是还没有写 redolog，并发情况下多个线程将不断涌入这个函数中。
-
-ordered_commit 函数明确地分为了三个阶段，组提交过程中，每个阶段的进入都要调用 MYSQL_BIN_LOG::change_stage 函数。
-
-	http://mysql.taobao.org/monthly/2020/05/07/
 
 
 

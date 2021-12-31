@@ -37,21 +37,21 @@ ha_commit_trans
 									
 							-> trx_flush_log_if_needed -> trx_flush_log_if_needed_low
 								
-								-> trx_flush_log_if_needed_low -> log_write_up_to  -- 将 redolog 写文件并刷盘；   是 持久 undo 到 redo ？
+								-> trx_flush_log_if_needed_low -> log_write_up_to  -> log_group_write_buf  -- 将 redolog 写文件并刷盘； 
 								
 									如果把 innodb_flush_log_at_trx_commit 设置成 1，那么 redo log 在 prepare 阶段就要持久化一次，因为有一个崩溃恢复逻辑是要依赖于 prepare 的 redo log，再加上 binlog 来恢复的
 									在 prepare 阶段， redo log 要先刷盘一次，在 flush 阶段, 再做 redo log 组提交刷盘。
 							
 	-- commit 阶段
 	
-	-> MYSQL_BIN_LOG::commit
+	-> MYSQL_BIN_LOG::commit   -- 入口函数
 			
 		-> MYSQL_BIN_LOG::ordered_commit
 			
-			-- 执行flush阶段
+			-- 执行 flush 阶段
 			-> MYSQL_BIN_LOG::process_flush_stage_queue   
 				
-				-- leader 线程在这里取出了当前的 flush queue，将 flush queue 重置为空
+				-- leader 线程在这里取出了当前的 flush queue，将 flush queue 重置为空  (首先获取队列中的事务组)
 				-> MYSQL_BIN_LOG::process_flush_stage_queue -> stage_manager.fetch_queue_for
 				
 				-- flush redo log， redo 组提交(redo log 批量刷盘) 
@@ -70,9 +70,9 @@ ha_commit_trans
 				-- flush binlog，binlog 组提交(binlog 批量刷盘)  					
 				-> MYSQL_BIN_LOG::process_flush_stage_queue -> MYSQL_BIN_LOG::flush_thread_caches
 				
-					-> MYSQL_BIN_LOG::flush_thread_caches -> binlog_cache_data::flush     -- 把 binlog cache 中的 binlog flush到binlog文件
-				
-			-- 执行 sync 阶段？	
+					-> MYSQL_BIN_LOG::flush_thread_caches -> binlog_cache_data::flush     -- 把 binlog cache 中的 binlog flush到binlog文件(也就是操作系统的page cache中)
+			
+			-- 执行 sync 阶段
 			    -> MYSQL_BIN_LOG::sync_binlog_file           -- fsync binlog文件进行os缓存落盘
 
 		
@@ -85,5 +85,6 @@ ha_commit_trans
 							-> trx_commit_for_mysql
 			
 
-		
+
+
 
