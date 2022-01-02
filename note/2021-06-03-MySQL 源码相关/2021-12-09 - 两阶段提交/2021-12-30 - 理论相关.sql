@@ -1,5 +1,5 @@
 
-
+0. 组提交发生在哪个阶段
 1. 为什么需要两阶段提交
 2. innobase_xa_prepare 是InnoDB存储引擎实现的XA规范的prepare接口
 3. MySQL 采用了如下的过程实现内部 XA 的两阶段提交
@@ -9,11 +9,16 @@
 7. 源码中提到的MYSQL_BIN_LOG::ordered_commit 的3个阶段
 
 
+0. 组提交发生在哪个阶段
+	1. 同时处于 prepare 状态的事务
+	2. 处于 prepare 状态的事务，与处于 commit 状态的事务之间
+
+
 1. 为什么需要两阶段提交
 	binlog 是Server层的， Redo log是InnoDB存储引擎层的， 是两个互不想干的逻辑，为了让它们保持逻辑上的一致，因此需要两阶段提交，把Redo log的写入操作拆分成 redo log prepare 和 commit 这2个阶段。
 	先写redo log 后写 binlog，或者先写 binlog 后写 redo log，都会存在问题。
-
-
+	
+	
 
 
 2. innobase_xa_prepare 是InnoDB存储引擎实现的XA规范的prepare接口
@@ -43,12 +48,28 @@
 	
 	Commit阶段：先将事务执行过程中产生的binlog刷新到硬盘，再执行存储引擎的提交工作。
 
-
+	两阶段提交：
+		1. 写入 redo log 处于 prepare 阶段
+		2. 写 binlog 
+		3. 提交事务 处于 commit 状态
+		
+	两阶段提交的细化
+		1. redo log prepare: write 
+		2. binlog: write
+		3. redo log prepare: fsync
+		4. binlog: fsync
+		5. redo log commit: write 
+		
+	
 4. 组提交在prepare的基础上进行 flush sync commit
 
+	组提交发生在哪个阶段
+		1. 同时处于 prepare 状态的事务
+		2. 处于 prepare 状态的事务，与处于 commit 状态的事务之间
+	
 	Prepare 阶段：
 		InnoDB 将回滚段设置为 prepare 状态；
-		将 redolog 写文件并刷盘；
+		将 redolog 写文件并刷盘(如果把 innodb_flush_log_at_trx_commit 设置成 1，那么 redo log 在 prepare 阶段就要持久化一次。)；
 		
 	Flush 阶段
 		
@@ -66,13 +87,14 @@
 5. binlog提交的三个阶段
 
 	flush阶段：
-		将redo刷入redo log并刷盘<由参数innodb_flush_logs_at_trx_commit决定>），写入binlog文件<只是写入到os的缓存中>
+		将redo刷入redo log并刷盘<由参数innodb_flush_logs_at_trx_commit决定>）
+		写入binlog文件<只是写入到os的缓存中>
 		
 	sync阶段：
-		调用fsync，将binlog刷入文件落盘）
+		调用fsync，将binlog刷入文件落盘
 		
 	commit阶段：
-		引擎层完成数据提交，并将binlog信息写入redo log）
+		引擎层完成数据提交，并将binlog信息写入redo log
 	
 	
 	https://mp.weixin.qq.com/s/J8LRcFpVGaw46I_NXHVd8Q  半同步复制after_sync模式下的一则客户端断开问题分析

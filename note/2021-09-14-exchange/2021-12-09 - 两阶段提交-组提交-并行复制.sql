@@ -26,3 +26,10 @@ sequence_number：
 	记录每个事务的序列号，唯一值
 	
 	
+两阶段提交的细化
+	1. redo log prepare: write 
+	2. binlog: write
+	3. redo log prepare: fsync
+	4. binlog: fsync
+	5. redo log commit: write 
+	
