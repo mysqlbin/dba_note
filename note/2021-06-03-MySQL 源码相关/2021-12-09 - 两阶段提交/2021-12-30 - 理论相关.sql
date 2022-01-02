@@ -1,11 +1,22 @@
 
-binlog 是Server层的， Redo log是InnoDB存储引擎层的， 是两个互不想干的逻辑，为了让它们保持逻辑上的一致，因此需要两阶段提交，把Redo log的写入操作拆分成 redo log prepare 和 commit 这2个阶段。
-先写redo log 后写 binlog，或者先写 binlog 后写 redo log，都会存在问题。
+
+1. 为什么需要两阶段提交
+2. innobase_xa_prepare 是InnoDB存储引擎实现的XA规范的prepare接口
+3. MySQL 采用了如下的过程实现内部 XA 的两阶段提交
+4. 组提交在prepare的基础上进行 flush sync commit
+5. binlog提交的三个阶段
+6. Flush 阶段
+7. 源码中提到的MYSQL_BIN_LOG::ordered_commit 的3个阶段
 
 
-----------------------------------------------------------------------------------------------------------------------------------------------
+1. 为什么需要两阶段提交
+	binlog 是Server层的， Redo log是InnoDB存储引擎层的， 是两个互不想干的逻辑，为了让它们保持逻辑上的一致，因此需要两阶段提交，把Redo log的写入操作拆分成 redo log prepare 和 commit 这2个阶段。
+	先写redo log 后写 binlog，或者先写 binlog 后写 redo log，都会存在问题。
 
-innobase_xa_prepare	是InnoDB存储引擎实现的XA规范的prepare接口：
+
+
+
+2. innobase_xa_prepare 是InnoDB存储引擎实现的XA规范的prepare接口
 
 
 	当处于Prepare阶段时，调用 innobase_xa_prepare 函数会将 TRX_UNDO_STATE 字段的值设置为 TRX_UNDO_PREPARED（整数5），表明当前事务处在Prepare阶段
@@ -16,7 +27,7 @@ innobase_xa_prepare	是InnoDB存储引擎实现的XA规范的prepare接口：
 
 
 
-MySQL 采用了如下的过程实现内部 XA 的两阶段提交：
+3. MySQL 采用了如下的过程实现内部 XA 的两阶段提交
 
 	Prepare 阶段：
 		InnoDB 将回滚段设置为 prepare 状态；
@@ -33,7 +44,7 @@ MySQL 采用了如下的过程实现内部 XA 的两阶段提交：
 	Commit阶段：先将事务执行过程中产生的binlog刷新到硬盘，再执行存储引擎的提交工作。
 
 
-组提交在prepare的基础上进行  flush  sync commit
+4. 组提交在prepare的基础上进行 flush sync commit
 
 	Prepare 阶段：
 		InnoDB 将回滚段设置为 prepare 状态；
@@ -52,7 +63,7 @@ MySQL 采用了如下的过程实现内部 XA 的两阶段提交：
 		Commit阶段队列的作用是承接Sync阶段的事务，完成最后的引擎提交，使得Sync可以尽早的处理下一组事务，最大化组提交的效率
 		
 		
-binlog提交的三个阶段
+5. binlog提交的三个阶段
 
 	flush阶段：
 		将redo刷入redo log并刷盘<由参数innodb_flush_logs_at_trx_commit决定>），写入binlog文件<只是写入到os的缓存中>
@@ -66,12 +77,9 @@ binlog提交的三个阶段
 	
 	https://mp.weixin.qq.com/s/J8LRcFpVGaw46I_NXHVd8Q  半同步复制after_sync模式下的一则客户端断开问题分析
 
-		
 	
 
-
-
-Flush 阶段
+6. Flush 阶段
 	
 	http://mysql.taobao.org/monthly/2020/05/07/
 	
@@ -117,7 +125,7 @@ Flush 阶段
 
 
 
-MYSQL_BIN_LOG::ordered_commit 的3个阶段
+7. 源码中提到的MYSQL_BIN_LOG::ordered_commit 的3个阶段
 
   -- 将事务刷新到二进制日志 
   /*

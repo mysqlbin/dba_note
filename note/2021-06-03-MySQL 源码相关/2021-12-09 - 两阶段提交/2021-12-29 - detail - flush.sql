@@ -781,9 +781,8 @@ MYSQL_BIN_LOG::process_flush_stage_queue(my_off_t *total_bytes_var,
 }
 
 
+-- 获取队列中的事务组(获取整个队列之后并清空它)
 
--- 获取整个队列并清空它。
--- 获取队列中的事务组
   /**
     Fetch the entire queue and empty it.
 
@@ -797,6 +796,7 @@ MYSQL_BIN_LOG::process_flush_stage_queue(my_off_t *total_bytes_var,
 
 
 
+-- 将 I/O 缓存刷新到文件
 /**
   Flush the I/O cache to file.
 
@@ -953,7 +953,9 @@ MYSQL_BIN_LOG::flush_thread_caches(THD *thd)
 }
 
 
-
+将缓存刷新到二进制日志。
+如果缓存完成，缓存将刷新到二进制日志文件。 如果缓存没有最终确定，什么都不会做。
+   
 /**
   Flush caches to the binary log.
 

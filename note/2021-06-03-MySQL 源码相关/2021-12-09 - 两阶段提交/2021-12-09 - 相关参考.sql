@@ -29,3 +29,7 @@ http://mysql.taobao.org/monthly/2018/08/01/  MySQL · 引擎特性 · 主库 bin
 
 
 http://liuyangming.tech/06-2019/MySQL-binlog.html	MySQL5.7——不得不了解的Binlog
+
+
+http://mysql.taobao.org/monthly/2015/05/10/         MySQL · 答疑解惑 · binlog 位点刷新策略
+
