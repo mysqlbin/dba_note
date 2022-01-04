@@ -357,21 +357,61 @@
 		如果创建表时没有显式的指定字符集和比较规则，则该表默认用数据库的字符集和比较规则
 		
 		如果创建数据库时没有显式的指定字符集和比较规则，则该数据库默认用服务器的字符集和比较规则
-		
-		
-		
+	
+	
+编码和解码使用的字符集不一致的后果
+
+	对于同一个字符串编码和解码使用的字符集不一样，会产生意想不到的结果，作为人类的我们看上去就像是产生了乱码一样。
+	
+
 MySQL中字符集的转换
 
-	character_set_client·    ： 服务器认为请求是按照该系统变量指定的字符集进行编码的
-	character_set_connection ： 服务器在处理请求时，会把请求字节序列从 character_set_client· 转换为 character_set_connection
-	character_set_results	 ： 服务器采用该系统变量指定的字符集对返回客户端的字符串进行编码
+	从发送请求到接收结果过程中发生的字符集转换：
+
+		1. 客户端使用操作系统的字符集编码请求字符串，向服务器发送的是经过编码的一个字节串。
+
+		2. 服务器将客户端发送来的字节串采用 character_set_client 代表的字符集进行解码，将解码后的字符串再按照 character_set_connection 代表的字符集进行编码。
+
+		3. 如果 character_set_connection 代表的字符集和具体操作的列使用的字符集一致，则直接进行相应操作
+			否则的话需要将请求中的字符串 从 character_set_connection 代表的字符集转换为具体操作的列使用的字符集之后再进行操作。
+
+		4. 将从某个列获取到的字节串从该列使用的字符集转换为 character_set_results 代表的字符集后发送到客户端。
+
+		5. 客户端使用操作系统的字符集解析收到的结果集字节串。
+		
+		6. 参考图片：《2022-01-04 - 请求从发送到结果返回过程中字符集的变化.png》
+		
+	在这个过程中各个系统变量的含义如下：
 	
+		character_set_client·    ： 服务器解码请求时使用的字符集
+
+		character_set_connection ： 服务器处理请求时会把请求字符串从character_set_client转为character_set_connection
+
+		character_set_results	 ： 服务器向客户端返回数据时使用的字符集
+		
 	
 	-- 上面的几个变量跟乱码没有什么关系
 	
 	通常都把 character_set_client 、character_set_connection、character_set_results 这三个系统变量设置成和客户端使用的字符集一致的情况，这样减少了很多无谓的字符集转换。
+	
+	如何修改这3个变量：
+	
+		SET NAMES 字符集名;
+		-- 等价于
+		SET character_set_client = 字符集名;
+		SET character_set_connection = 字符集名;
+		SET character_set_results = 字符集名;		
+				
 
 
+	如果想在启动客户端的时候就把character_set_client、character_set_connection、character_set_results这三个系统变量的值设置成一样的，那我们可以在启动客户端的时候指定一个叫default-character-set的启动选项，比如在配置文件里可以这么写：
+
+		[client]
+		default-character-set=字符集名
+		
+		
+
+		
 	
 比较规则的应用
 
@@ -477,6 +517,9 @@ MySQL中字符集的转换
 	小结：
 		对字符串做比较或者对某个字符串列做排序操作时没有得到想象中的结果，需要思考一下是不是比较规则(是否有区分大小写)的问题。
 	
+
+
+
 
 
 小结：
