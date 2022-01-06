@@ -2,12 +2,18 @@
 1. MySQL Server 的长度限制	
 	1.1 Compact、utf8mb4
 	1.2 Compact、utf8
-	1.3 Compact、latin1
+	1.3 Compact、utf8mb4 VS Compact、utf8
+	1.4 Compact、latin1
+	1.5 小结
 	
 2. InnoDB层的长度限制
 	2.1 COMPACT、latin1	
+	2.2 COMPACT、utf8mb4
+	2.3 InnoDB层的长度限制的计算方式
+
 
 3. InnoDB表最多可以建立多少个字段	
+	
 	3.1 验证行格式为Compact在不同的字符集下分别可以建立多个字段
 	3.2 验证行格式为Dynamic在不同的字符集下分别可以建立多个字段
 	3.3 utf8、Compact、TEXT
@@ -80,8 +86,7 @@
 		ERROR 1118 (42000): Row size too large. The maximum row size for the used table type, not counting BLOBs, is 65535. 
 			This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
 			-- 创建表的记录的最大长度限制不包括BLOB等字段。
-
-
+			
 			之所以将BLOB和TEXT排除在外，是因为它的内容超过长度限制后会单独存储在其它页中。但即便如此，存储BLOB和TEXT的指针信息也需要9 ~ 12个字节，具体来说：
 			-- 这里需要验证。
 				TINYTEXT(TINYBLOB): 9 字节
@@ -132,6 +137,7 @@
 		1 row in set (0.00 sec)
 	
 	1.3 Compact、utf8mb4 VS Compact、utf8
+	
 		mysql>select 21841-16381;
 		+-------------+
 		| 21841-16381 |
@@ -193,7 +199,12 @@
 2. InnoDB层的长度限制
 
 2.1 COMPACT、latin1
-	[SQL]CREATE TABLE t4 (
+	
+	字符集为 latin1，所以1个字符=1个字节
+	
+	CHAR(255) 33个
+	
+		CREATE TABLE t4 (
 		   c1 CHAR(255),c2 CHAR(255),c3 CHAR(255),
 		   c4 CHAR(255),c5 CHAR(255),c6 CHAR(255),
 		   c7 CHAR(255),c8 CHAR(255),c9 CHAR(255),
@@ -206,23 +217,25 @@
 		   c28 CHAR(255),c29 CHAR(255),c30 CHAR(255),
 		   c31 CHAR(255),c32 CHAR(255),c33 CHAR(255)
 		   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
-	[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
-	
-	
-	单行定义的长度：SELECT 255*33=8415 字符(字节), 因为这里的字符集为 latin1，所以1个字符=1个字节
-	-- select 33*40=1320;
-	
-	原因：
-		MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
-		列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
-		对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
+		[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
+		-- InnoDB层的报错。
 		
-		CHAR(255) 大于 40，按40个byte来算: select 40*33=1320;  总长度 1320 < 8126, 创建表成功;
+		原因：
+			MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+			列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
+			对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
+			-- 上面的计算公式，不包括 char 定长列。
+			
+			如果用上面的计算公式，这个 t4 表是可以创建成功的。
+			CHAR(255) 大于 40，按40个byte来算: select 40*33=1320;  总长度 1320 < 8126, 创建表成功;
 		
-		-- 这里又不对应不上了;
-		-- CHAR 定长类型不是这么算的。
 		
-	CHAR(255) 31个
+		根本原因：
+			单行定义的长度：SELECT 255*33=8415 字符(字节), 因为这里的字符集为 latin1，所以1个字符=1个字节
+		
+		
+	CHAR(255) 31个 和 32个
+		drop table if exists t4;
 		CREATE TABLE t4 (
 		   c1 CHAR(255),c2 CHAR(255),c3 CHAR(255),
 		   c4 CHAR(255),c5 CHAR(255),c6 CHAR(255),
@@ -238,12 +251,33 @@
 		   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
 		Query OK, 0 rows affected (0.02 sec)
 		
+		----------------------------------------------------------------------------------------------------------
+		
+		drop table if exists t4;
+		CREATE TABLE t4 (
+		   c1 CHAR(255),c2 CHAR(255),c3 CHAR(255),
+		   c4 CHAR(255),c5 CHAR(255),c6 CHAR(255),
+		   c7 CHAR(255),c8 CHAR(255),c9 CHAR(255),
+		   c10 CHAR(255),c11 CHAR(255),c12 CHAR(255),
+		   c13 CHAR(255),c14 CHAR(255),c15 CHAR(255),
+		   c16 CHAR(255),c17 CHAR(255),c18 CHAR(255),
+		   c19 CHAR(255),c20 CHAR(255),c21 CHAR(255),
+		   c22 CHAR(255),c23 CHAR(255),c24 CHAR(255),
+		   c25 CHAR(255),c26 CHAR(255),c27 CHAR(255),
+		   c28 CHAR(255),c29 CHAR(255),c30 CHAR(255),
+		   c31 CHAR(255),c32 CHAR(255)
+		   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
+		ERROR 1118 (42000): Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
+
+		----------------------------------------------------------------------------------------------------------	
 		select 255*31=7905; 总长度 7905 < 8126, 创建表成功;
+		
 		select 255*32=8160; 总长度 8160 < 8126, 创建表失败;
 		
 	----------------------------------------------------------------------------
 	
-	VARCHAR
+	VARCHAR(255) 33个
+	
 		CREATE TABLE t5 (
 		   c1 VARCHAR(255),c2 VARCHAR(255),c3 VARCHAR(255),
 		   c4 VARCHAR(255),c5 VARCHAR(255),c6 VARCHAR(255),
@@ -284,7 +318,7 @@
 		Query OK, 0 rows affected (0.20 sec)
 		
 		-- 这里 select 2000*7=14000, 明显大于 8126， 为什么没有提示 Row size too large (> 8126) 
-		-- 这里还不理解
+		
 		
 		原因：
 			MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
@@ -300,7 +334,10 @@
 			-- 这篇文章写得真好; 
 			
 			
-	-- InnoDB层的长度限制的计算方式：跟字符集有关系，跟定长或者变长类型也有关系
+2.3 InnoDB层的长度限制的计算方式
+	
+	跟字符集有关系，跟定长或者变长类型也有关系
+	
 	
 	
 3. InnoDB表最多可以建立多少个字段	
@@ -359,7 +396,10 @@
 	latin1、Compact
 		385个 varchar(20) 字段
 	
-	-- Dynamic和Compact行记录格式，两者可以建立字段的个数没差别;	
+	-- Dynamic和Compact行记录格式，在 varchar(20) 定长字段中，两者可以建立字段的个数没差别;	
+	-- 参考 varchar(20) 这个文件
+	
+	
 	
 3.3 utf8、Compact、TEXT
 
@@ -397,7 +437,7 @@
 	1 row in set (0.00 sec)
 
 	-- 大字段类型下，实际数据长度大于8098个字节才会行溢出; 
-	
+	-- 没毛病。
 	
 ------------------------------------------------------------------------------------
 	
@@ -426,6 +466,10 @@
 	INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',100000),REPEAT('b',100000),REPEAT('c',100000),REPEAT('d',100000);
 	ERROR 1406 (22001): Data too long for column 'a' at row 1
 	-- Data too long for column 'a' at row 1
+	
+	text 单个字段最多可以存储 65536 byte的数据
+	REPEAT('a',100000) = 100000 byte > 65536  byte了。
+	
 	
 	INSERT INTO table_20201115(a,b,c,d) SELECT REPEAT('a',50000),REPEAT('b',50000),REPEAT('c',50000),REPEAT('d',50000);
 	Query OK, 1 row affected (0.09 sec)
