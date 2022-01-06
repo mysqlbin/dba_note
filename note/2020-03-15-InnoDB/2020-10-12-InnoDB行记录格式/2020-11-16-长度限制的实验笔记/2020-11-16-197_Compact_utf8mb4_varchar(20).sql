@@ -202,7 +202,8 @@ CREATE TABLE `table_20201116_01` (
 [Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
 
 
-utf8mb4字符集下的varchar(20)  相等于 varchar(80)，超过40个字节，那么就按40个字节;
+utf8mb4字符集下的varchar(20)  = 80 字节，超过40个字节，那么就按40个字节;
+
 	197字段的计算
 		mysql> select 197*40;
 		+--------+

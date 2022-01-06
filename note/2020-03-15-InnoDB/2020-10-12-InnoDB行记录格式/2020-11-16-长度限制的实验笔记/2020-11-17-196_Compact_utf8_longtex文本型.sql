@@ -202,6 +202,7 @@ field_197 longtext
 
 
 utf8字符集下的longtext文本型长度，超过40个字节，那么就按40个字节;
+
 	197字段的计算
 		mysql> select 197*40;
 		+--------+
