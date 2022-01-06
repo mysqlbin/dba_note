@@ -96,9 +96,6 @@ sql_mode
 	select (768+20) * 10 = 7880
 	select (768+20) * 11 = 8668
 	
-	select 768 * 10 = 7680
-	select 768 * 11 = 8448
-	
 	只要有行溢出，就需要看看每个字段的长度是否有大于 768字节，如果大于，则行内的记录存储 768+20 个字节
 	有10个字段的长度大于768个字节，那么行内的记录需要存储 select (768+20) * 10 = 7880 个字节 
 	
@@ -156,6 +153,8 @@ sql_mode
 	
 	ERROR 1118 (42000): Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
 	
+	
+	select 499*20 = 9980 > 8126 
 	
 
 20个 VARCHAR(501)
@@ -380,8 +379,8 @@ sql_mode
 	B-tree Node: 1
 	File Segment inode: 1
 
-
-	root@mysqldb 11:41:  [niuniuh5_db]> select 900*10;
+	
+	mysql> select 900*10;
 	+--------+
 	| 900*10 |
 	+--------+
@@ -643,7 +642,8 @@ sql_mode
 	|   9350 |
 	+--------+
 	1 row in set (0.00 sec)
-
+	
+	select (768+20) * 11  = 8668 > 8126 
 
 
 11个 VARCHAR(800)
@@ -681,7 +681,10 @@ sql_mode
 	
 	ERROR 1118 (42000): Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
 	
-
+	select (768+20) * 11  = 8668 > 8126 
+	
+	
+	
 
 小结	
 	

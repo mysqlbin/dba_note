@@ -13,7 +13,6 @@
 
 
 3. InnoDB表最多可以建立多少个字段	
-	
 	3.1 验证行格式为Compact在不同的字符集下分别可以建立多个字段
 	3.2 验证行格式为Dynamic在不同的字符集下分别可以建立多个字段
 	3.3 utf8、Compact、TEXT
@@ -21,13 +20,12 @@
 	3.5 utf8、Compact、longtext
 			
 4. 行溢出
-
 5. 相关参考
 6. 在线修改行记录格式为Compact
 7. 三种报错
-	7.1 错误1 创建表报maximum row size > 65535
-	7.2 错误2 创建表报Row size too large (> 8126)
-	7.3 错误3 表创建成功但是插入报 Row size too large (> 8126)
+	7.1 错误1 创建表报maximum row size > 65535    -- Server层
+	7.2 错误2 创建表报Row size too large (> 8126) -- InnoDB层
+	7.3 错误3 表创建成功但是插入报 Row size too large (> 8126)  -- 数据插入
 
 8. 总结
 	
@@ -218,7 +216,7 @@
 		-- InnoDB层的报错。
 		
 		原因：
-			MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+			在创建表的时候，MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
 			列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
 			对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
 			-- 上面的计算公式，不包括 char 定长列。
@@ -269,7 +267,7 @@
 		----------------------------------------------------------------------------------------------------------	
 		select 255*31=7905; 总长度 7905 < 8126, 创建表成功;
 		
-		select 255*32=8160; 总长度 8160 < 8126, 创建表失败;
+		select 255*32=8160; 总长度 8160 > 8126, 创建表失败;
 		
 	----------------------------------------------------------------------------
 	
@@ -290,7 +288,7 @@
 		   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
 		Query OK, 0 rows affected (0.02 sec)
 		
-		MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+		在创建表的时候，MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
 		列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
 		对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
 		
@@ -318,7 +316,7 @@
 		
 		
 		原因：
-			MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+			在创建表的时候，MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
 			列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
 			对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
 			
@@ -409,6 +407,9 @@
 3.5 utf8、Compact、longtext
 	
 	的确可以创建有且仅含有 196 个 longtext 字段的表。
+
+3.6 dynamic 呢
+
 
 
 4. 行溢出
