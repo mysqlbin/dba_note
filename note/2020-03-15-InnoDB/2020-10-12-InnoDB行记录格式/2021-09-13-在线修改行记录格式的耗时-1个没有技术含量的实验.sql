@@ -1,9 +1,15 @@
 
-
+0. 机器配置
 1. 初始化结构和数据
 2. Compact改为dynamic 
 3. 耗时
 
+
+0. 机器配置
+	4核、16GB内存、100GB的SSD盘
+	innodb_buffer_pool_size=8GB
+	
+	
 1. 初始化结构和数据
 
 	CREATE TABLE `t0` (
