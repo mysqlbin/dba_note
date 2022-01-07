@@ -1,5 +1,6 @@
 
 
+-- 结合源码来理解，可以验证真相。
 
 ib_warn_row_too_big
 dict_index_too_big_for_tree
@@ -48,11 +49,6 @@ in the index record. */
 #define BTR_EXTERN_LOCAL_STORED_MAX_SIZE	\
 	(BTR_EXTERN_FIELD_REF_SIZE * 2)
 	
-
--- 叶子索引页单行记录的最大大小
-/* maximum allowed size of a record on a leaf page */
-	ulint	page_rec_max;
-	
 	
 -- mysql-5.7.26\storage\innobase\dict\dict0dict.cc
 
@@ -72,10 +68,15 @@ dict_index_too_big_for_tree(
 {
 	ulint	comp;
 	ulint	i;
-	/* maximum possible storage size of a record */
+	
+	-- 记录的最大可能存储大小
+	/* maximum possible storage size of a record */ 
 	ulint	rec_max_size;
+	
+	-- 叶子节点索引页单行记录的最大大小
 	/* maximum allowed size of a record on a leaf page */
 	ulint	page_rec_max;
+	
 	/* maximum allowed size of a node pointer record */
 	ulint	page_ptr_max;
 
@@ -115,6 +116,8 @@ dict_index_too_big_for_tree(
 		is no record header. */
 		rec_max_size = 2;
 	} else {
+	
+		-- 允许的最大记录大小是 B 树页面的一半（64k 页面大小为 16k）。
 		/* The maximum allowed record size is half a B-tree
 		page(16k for 64k page size).  No additional sparse
 		page directory entry will be generated for the first
@@ -175,18 +178,19 @@ dict_index_too_big_for_tree(
 		}
 
 		field_max_size = dict_col_get_max_size(col);
+		
+		-- 
 		field_ext_max_size = field_max_size < 256 ? 1 : 2;
 
 		if (field->prefix_len) {
 			if (field->prefix_len < field_max_size) {
 				field_max_size = field->prefix_len;
 			}
+			
+		-- BTR_EXTERN_LOCAL_STORED_MAX_SIZE = (BTR_EXTERN_FIELD_REF_SIZE * 2)
+		-- 如果变长字段的最大值大于40
 		} else if (field_max_size > BTR_EXTERN_LOCAL_STORED_MAX_SIZE
 			   && dict_index_is_clust(new_index)) {
-			
-			
-			-- 如果变长字段的最大值大于40 （溢出页指针的2倍），则这个字段在页内只保留40个字节，且长度变量设置为1，即总共占用41个字节。
-			-- 有源码的加持，理解起来会更加容易，同时可以了解真相。
 			
 			/*
 			#define BTR_EXTERN_FIELD_REF_SIZE	FIELD_REF_SIZE
@@ -202,8 +206,14 @@ dict_index_too_big_for_tree(
 			column were stored externally, the lengths in
 			the clustered index page would be
 			BTR_EXTERN_FIELD_REF_SIZE and 2. */
+			-- 如果变长字段的最大值大于40 （溢出页指针的2倍），则这个字段在页内只保留40个字节，且长度变量(变长字段长度列表)设置为1，即总共占用41个字节。
+			-- 有源码的加持，理解起来会更加容易，同时可以了解真相。
+			-- 字段在页面保留40个字节
 			field_max_size = BTR_EXTERN_LOCAL_STORED_MAX_SIZE;
+			
+			-- 变长字段长度列表为 1 
 			field_ext_max_size = 1;
+			
 		}
 
 		if (comp) {
@@ -213,9 +223,11 @@ dict_index_too_big_for_tree(
 			rec_max_size += field_ext_max_size;
 		}
 add_field_size:
+	
+		-- rec_max_size：行记录的大小
 		rec_max_size += field_max_size;
 		
-		-- 检查叶子索引页的大小限制
+		-- 检查叶子索引页的大小限制，如果行记录的最大大小 大于 叶子节点索引页单行记录的最大大小 
 		/* Check the size limit on leaf pages. */
 		if (rec_max_size >= page_rec_max) {
 			ib::error_or_warn(strict)
