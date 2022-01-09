@@ -447,7 +447,7 @@
 	https://mp.weixin.qq.com/s/w3ij101jzDlbu93i5J7uQg           故障分析 | MySQL TEXT 字段的限制
 	https://mp.weixin.qq.com/s/_aAZ2jTlw6ymCQ092qYkww        	技术分享 | MySQL 字段长度限制的计算方法
 
-	https://mp.weixin.qq.com/s/_Emepy6IUgS6NbQcUC60rg     MySQL的一个表最多可以有多少个字段
+	https://mp.weixin.qq.com/s?__biz=MzkwOTI1MjI0OQ==&mid=2247488387&idx=1&sn=abae55d13f9aada8acf27cb20837fcee&source=41#wechat_redirect   MySQL的一个表最多可以有多少个字段
 		-- 读懂了这篇文章，就可以解决我的疑问; 好文
 		-- https://mp.weixin.qq.com/s/tNA_-_MoYt1fJT0icyKbMg       MVCC原理探究及MySQL源码实现分析   这篇文章也是他的
 		-- 花了这么多时间，就要弄清楚来; 
@@ -583,6 +583,34 @@
 			列字段小于40个字节的都会按实际字节计算，如果大于 20 * 2=40 字节就只会按40字节。
 			对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;	
 			
+				-- BTR_EXTERN_LOCAL_STORED_MAX_SIZE = (BTR_EXTERN_FIELD_REF_SIZE * 2)
+				-- 如果变长字段的最大值大于40
+				} else if (field_max_size > BTR_EXTERN_LOCAL_STORED_MAX_SIZE
+					   && dict_index_is_clust(new_index)) {
+					
+					/*
+					#define BTR_EXTERN_FIELD_REF_SIZE	FIELD_REF_SIZE
+
+					#define FIELD_REF_SIZE 20
+
+					#define BTR_EXTERN_LOCAL_STORED_MAX_SIZE	(BTR_EXTERN_FIELD_REF_SIZE * 2)
+					*/
+			
+					/* In the worst case, we have a locally stored
+					column of BTR_EXTERN_LOCAL_STORED_MAX_SIZE bytes.
+					The length can be stored in one byte.  If the
+					column were stored externally, the lengths in
+					the clustered index page would be
+					BTR_EXTERN_FIELD_REF_SIZE and 2. */
+					-- 如果变长字段的最大值大于40 （溢出页指针的2倍），则这个字段在页内只保留40个字节，且长度变量(变长字段长度列表)设置为1，即总共占用41个字节。
+					-- 有源码的加持，理解起来会更加容易，同时可以了解真相。
+					-- 字段在页面保留40个字节
+					field_max_size = BTR_EXTERN_LOCAL_STORED_MAX_SIZE;
+					
+					-- 变长字段长度列表为 1 
+					field_ext_max_size = 1;
+					
+				}			
 			
 	5. 表结构中根据Innodb的ROW_FORMAT的存储格式确定行内保留的字节数（20 VS 768），最终确定一行数据是否小于8126，如果大于8126，则会导致数据插入报错。
 		-- 实际存储的行记录长度 > 8126，报错。

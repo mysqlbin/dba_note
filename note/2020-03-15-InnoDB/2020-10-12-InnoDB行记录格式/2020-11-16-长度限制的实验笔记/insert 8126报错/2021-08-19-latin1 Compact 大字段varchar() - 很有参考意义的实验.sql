@@ -4,11 +4,13 @@
 20个 VARCHAR(500)
 20个 VARCHAR(501)
 16个 VARCHAR(600)
+
 10个 VARCHAR(990)
 10个 VARCHAR(900)
 10个 VARCHAR(870)
 10个 VARCHAR(860)
 10个 VARCHAR(850)
+
 12个 VARCHAR(800)
 11个 VARCHAR(850)
 11个 VARCHAR(800)
@@ -93,13 +95,23 @@ sql_mode
 	B-tree Node: 1
 	File Segment inode: 1
 
-	select (768+20) * 10 = 7880
-	select (768+20) * 11 = 8668
+	select (768+20) * 10 = 7880 < 8126
+	select (768+20) * 11 = 8668 > 8126 
 	
 	只要有行溢出，就需要看看每个字段的长度是否有大于 768字节，如果大于，则行内的记录存储 768+20 个字节
 	有10个字段的长度大于768个字节，那么行内的记录需要存储 select (768+20) * 10 = 7880 个字节 
 	
+	select (768+20) * 10 + 20 + 5 + 6 + 6 + 7 = 7924 < 8126
+
+	+20    表示 变长列表长度为 20个byte
+	+5 	   表示 占用 额外的头信息 5个byte
+	+6 	   表示 rowid 占用 6个byte
+	+6 	   表示 事务ID 占用 6个byte
+	+7 	   表示 回滚指针 占用 7个byte
 	
+
+		
+	-- 很有意义的1个实验。
 	
 20个 VARCHAR(500)
 
@@ -153,7 +165,7 @@ sql_mode
 	
 	ERROR 1118 (42000): Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
 	
-	
+	CHARSET=latin1  varchar(500)没有存储为溢出页。
 	select 499*20 = 9980 > 8126 
 	
 
