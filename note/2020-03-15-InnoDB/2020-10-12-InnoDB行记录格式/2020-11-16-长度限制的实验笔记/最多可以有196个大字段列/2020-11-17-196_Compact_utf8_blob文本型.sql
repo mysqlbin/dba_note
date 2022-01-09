@@ -197,14 +197,13 @@ field_194 blob,
 field_195 blob,
 field_196 blob,
 field_197 blob
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Dynamic;
-ERROR 1118 (42000): Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;
+[Err] 1118 - Row size too large (> 8126). Changing some columns to blob or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
+
 
     -> field_196 blob
-    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Dynamic;
-Query OK, 0 rows affected, 1 warning (0.20 sec)
-
-
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;
+Query OK, 0 rows affected, 1 warning (0.11 sec)
 
 
 
@@ -212,7 +211,10 @@ Query OK, 0 rows affected, 1 warning (0.20 sec)
 132个字节：
  
 	每个页除了存放我们的记录以外，也需要存储一些额外的信息，乱七八糟的额外信息加起来需要132个字节的空间（现在只要知道这个数字就好了），其他的空间都可以被用来存储记录。
-			
+	1个数据页是16KB = 16384 byte，16384 - 132 = 16252 byte，由于每个数据页最少要存储2条记录，因此行内保留的数据长度不能大于8126，否则会导致数据写入失败。
+	
+	select 16252/2 = 8126
+	
 	mysql> select 8126*2;
 	+--------+
 	| 8126*2 |
@@ -220,7 +222,6 @@ Query OK, 0 rows affected, 1 warning (0.20 sec)
 	|  16252 |
 	+--------+
 	1 row in set (0.00 sec)
-	
 	
 	mysql> select 16384 - 16252;
 	+---------------+
@@ -231,10 +232,6 @@ Query OK, 0 rows affected, 1 warning (0.20 sec)
 	1 row in set (0.00 sec)
 			
 	
-	行内保留的数据长度不能大于8126，否则会导致数据写入失败。
-	
-
-
 utf8字符集下的blob文本型长度，超过40个字节，那么就按40个字节;
 
 	196字段的计算

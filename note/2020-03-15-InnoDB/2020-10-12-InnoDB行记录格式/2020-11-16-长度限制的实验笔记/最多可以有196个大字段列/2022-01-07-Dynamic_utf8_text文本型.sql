@@ -197,13 +197,73 @@ field_194 text,
 field_195 text,
 field_196 text,
 field_197 text
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Compact;
-[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. In current row format, BLOB prefix of 768 bytes is stored inline.
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Dynamic;
+ERROR 1118 (42000): Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.
 
 
-utf8字符集下的text文本型长度，超过40个字节，那么就按40个字节;
+    -> field_196 text
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=Dynamic;
+Query OK, 0 rows affected, 1 warning (0.16 sec)
+
+
+
+132个字节：
+ 
+	每个页除了存放我们的记录以外，也需要存储一些额外的信息，乱七八糟的额外信息加起来需要132个字节的空间（现在只要知道这个数字就好了），其他的空间都可以被用来存储记录。
+	1个数据页是16KB = 16384 byte，16384 - 132 = 16252 byte，由于每个数据页最少要存储2条记录，因此行内保留的数据长度不能大于8126，否则会导致数据写入失败。
 	
-	197字段的计算
+	select 16252/2 = 8126
+	
+	mysql> select 8126*2;
+	+--------+
+	| 8126*2 |
+	+--------+
+	|  16252 |
+	+--------+
+	1 row in set (0.00 sec)
+	
+	mysql> select 16384 - 16252;
+	+---------------+
+	| 16384 - 16252 |
+	+---------------+
+	|           132 |
+	+---------------+
+	1 row in set (0.00 sec)
+			
+	
+utf8字符集下的blob文本型长度，超过40个字节，那么就按40个字节;
+
+	196字段的计算
+		
+		mysql> select 196*40;
+		+--------+
+		| 196*40 |
+		+--------+
+		|   7840 |
+		+--------+
+		1 row in set (0.00 sec)
+		
+		mysql> select (196*40)+196+25+5+6+6+7;
+		+-------------------------+
+		| (196*40)+196+25+5+6+6+7 |
+		+-------------------------+
+		|                    8085 |
+		+-------------------------+
+		1 row in set (0.00 sec)
+
+		+196   表示 占用 变长列表长度为 196个byte
+		+25    表示 196个NULL值占用 196个bit = 5 byte
+		+5 	   表示 占用 额外的头信息 5个byte
+		+6 	   表示 rowid 占用 6个byte
+		+6 	   表示 事务ID 占用 6个byte
+		+7 	   表示 回滚指针 占用 7个byte
+		
+		8084 < 8126 ：创建成功	
+			
+		
+		
+	197字段的计算	
+	
 		mysql> select 197*40;
 		+--------+
 		| 197*40 |
@@ -212,38 +272,31 @@ utf8字符集下的text文本型长度，超过40个字节，那么就按40个�
 		+--------+
 		1 row in set (0.00 sec)
 
-		
-		mysql> select 197*40+197+5+6+6+7;
-		+--------------------+
-		| 197*40+197+5+6+6+7 |
-		+--------------------+
-		|               8101 |
-		+--------------------+
+				
+		mysql> select (197*40)+197+25+5+6+6+7;
+		+-------------------------+
+		| (197*40)+197+25+5+6+6+7 |
+		+-------------------------+
+		|                    8126 |
+		+-------------------------+
 		1 row in set (0.00 sec)
 
-			+197 表示 占用 变长列表长度为 197个byte
-			+5 	 表示 占用 额外的头信息 5个byte
-			+6 	 表示 rowid 占用 6个byte
-			+6 	 表示 事务ID 占用 6个byte
-			+7 	 表示 回滚指针 占用 7个byte
-		8101 > 8126 ：创建成功
+
+		+197   表示 占用 变长列表长度为 197个byte
+		+25    表示  197个bit = 25 byte
+		+5 	   表示 占用 额外的头信息 5个byte
+		+6 	   表示 rowid 占用 6个byte
+		+6 	   表示 事务ID 占用 6个byte
+		+7 	   表示 回滚指针 占用 7个byte
 		
-	198字段的计算		
-		mysql> select 198*40;
-		+--------+
-		| 198*40 |
-		+--------+
-		|   7920 |
-		+--------+
-		1 row in set (0.00 sec)
 		
-		mysql> select 198*40+197+5+6+6+7;
-		+--------------------+
-		| 198*40+197+5+6+6+7 |
-		+--------------------+
-		|               8141 |
-		+--------------------+
-		1 row in set (0.00 sec)
+		8126 = 8126 ：创建失败
 		
-		8141 > 8126 ：创建失败
-	-- 这里可以对应上.
+		-- 这里可以对应上.
+		
+		-- 很棒的1个分析，同时做到不断更新自己的认知。
+		
+		
+		
+		
+		

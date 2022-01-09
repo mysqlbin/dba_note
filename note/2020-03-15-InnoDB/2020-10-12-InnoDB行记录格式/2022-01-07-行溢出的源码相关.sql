@@ -9,7 +9,12 @@ dict_index_add_to_cache_w_vcol
 	-> dict_index_too_big_for_tree
 		-> ib_warn_row_too_big
 
-	
+
+
+
+
+-- Compact行记录格式，行记录长度大于 8126 则会报错，建议使用 dynamic 行记录格式。
+
 /**********************************************************************
 Issue a warning that the row is too big. */
 void
@@ -37,6 +42,40 @@ ib_warn_row_too_big(const dict_table_t*	table)
 }
 
 
+
+/********************************************************************//**
+Determine the file format of a table.
+@return file format version */
+UNIV_INLINE
+ulint
+dict_table_get_format(
+/*==================*/
+	const dict_table_t*	table)	/*!< in: table */
+{
+	ut_ad(table);
+
+	return(dict_tf_get_format(table->flags));
+}
+
+/********************************************************************//**
+Determine the file format from a dict_table_t::flags.
+@return file format version */
+UNIV_INLINE
+ulint
+dict_tf_get_format(
+/*===============*/
+	ulint		flags)	/*!< in: dict_table_t::flags */
+{
+	if (DICT_TF_HAS_ATOMIC_BLOBS(flags)) {
+		return(UNIV_FORMAT_B);
+	}
+
+	return(UNIV_FORMAT_A);
+}
+
+
+
+----------------------------------------------------------------------------------------------------------------
 
 /** The size of a reference to data stored on a different page.
 The reference is stored at the end of the prefix of the field
@@ -130,6 +169,19 @@ dict_index_too_big_for_tree(
 		rec_max_size = comp
 			? REC_N_NEW_EXTRA_BYTES
 			: REC_N_OLD_EXTRA_BYTES;
+			
+		
+		/* 
+		rec_max_size = comp   -- comp 为 true 
+
+        ? REC_N_NEW_EXTRA_BYTES  -- rem0rec.h:52:#define REC_N_NEW_EXTRA_BYTES    5 
+
+        : REC_N_OLD_EXTRA_BYTES; -- rem0rec.h:49:#define REC_N_OLD_EXTRA_BYTES    6 
+		
+		*/ 
+			
+
+
 	}
 
 	if (comp) {
