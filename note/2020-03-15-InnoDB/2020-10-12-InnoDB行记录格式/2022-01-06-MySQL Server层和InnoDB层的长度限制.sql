@@ -571,67 +571,75 @@
 
 	
 8. 总结
+	1. 创建表的限制 
+		1. MySQL Server最多只允许4096个字段
+		
+		2. InnoDB 最多只能有1017个字段
+		
+		3. 字段长度(不包括 text、blob字段)加起来如果超过65535，MySQL server层就会拒绝创建表
 
-	1. MySQL Server最多只允许4096个字段
+		4. 字段长度加起来（根据溢出页指针来计算字段长度，大于40的，溢出，只算40个字节）如果超过8126，InnoDB拒绝创建表
+				在创建表的时候，InnoDB 在计算字段长度的时候并不是按照字段的全部长度来记的。
+				列字段小于40个字节的都会按实际字节计算，如果大于 20 * 2=40 字节就只会按40字节。
+				对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;	
+				
+					-- BTR_EXTERN_LOCAL_STORED_MAX_SIZE = (BTR_EXTERN_FIELD_REF_SIZE * 2)
+					-- 如果变长字段的最大值大于40
+					} else if (field_max_size > BTR_EXTERN_LOCAL_STORED_MAX_SIZE
+						   && dict_index_is_clust(new_index)) {
+						
+						/*
+						#define BTR_EXTERN_FIELD_REF_SIZE	FIELD_REF_SIZE
+
+						#define FIELD_REF_SIZE 20
+
+						#define BTR_EXTERN_LOCAL_STORED_MAX_SIZE	(BTR_EXTERN_FIELD_REF_SIZE * 2)
+						*/
+				
+						/* In the worst case, we have a locally stored
+						column of BTR_EXTERN_LOCAL_STORED_MAX_SIZE bytes.
+						The length can be stored in one byte.  If the
+						column were stored externally, the lengths in
+						the clustered index page would be
+						BTR_EXTERN_FIELD_REF_SIZE and 2. */
+						-- 如果变长字段的最大值大于40 （溢出页指针的2倍），则这个字段在页内只保留40个字节，且长度变量(变长字段长度列表)设置为1，即总共占用41个字节。
+						-- 有源码的加持，理解起来会更加容易，同时可以了解真相。
+						-- 字段在页面保留40个字节
+						field_max_size = BTR_EXTERN_LOCAL_STORED_MAX_SIZE;
+						
+						-- 变长字段长度列表为 1 
+						field_ext_max_size = 1;
+						
+					}			
 	
-	2. InnoDB 最多只能有1000个字段
-	
-	3. 字段长度(不包括 text、blob字段)加起来如果超过65535，MySQL server层就会拒绝创建表
-
-	4. 字段长度加起来（根据溢出页指针来计算字段长度，大于40的，溢出，只算40个字节）如果超过8126，InnoDB拒绝创建表
-			在创建表的时候，InnoDB 在计算字段长度的时候并不是按照字段的全部长度来记的。
-			列字段小于40个字节的都会按实际字节计算，如果大于 20 * 2=40 字节就只会按40字节。
-			对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;	
-			
-				-- BTR_EXTERN_LOCAL_STORED_MAX_SIZE = (BTR_EXTERN_FIELD_REF_SIZE * 2)
-				-- 如果变长字段的最大值大于40
-				} else if (field_max_size > BTR_EXTERN_LOCAL_STORED_MAX_SIZE
-					   && dict_index_is_clust(new_index)) {
-					
-					/*
-					#define BTR_EXTERN_FIELD_REF_SIZE	FIELD_REF_SIZE
-
-					#define FIELD_REF_SIZE 20
-
-					#define BTR_EXTERN_LOCAL_STORED_MAX_SIZE	(BTR_EXTERN_FIELD_REF_SIZE * 2)
-					*/
-			
-					/* In the worst case, we have a locally stored
-					column of BTR_EXTERN_LOCAL_STORED_MAX_SIZE bytes.
-					The length can be stored in one byte.  If the
-					column were stored externally, the lengths in
-					the clustered index page would be
-					BTR_EXTERN_FIELD_REF_SIZE and 2. */
-					-- 如果变长字段的最大值大于40 （溢出页指针的2倍），则这个字段在页内只保留40个字节，且长度变量(变长字段长度列表)设置为1，即总共占用41个字节。
-					-- 有源码的加持，理解起来会更加容易，同时可以了解真相。
-					-- 字段在页面保留40个字节
-					field_max_size = BTR_EXTERN_LOCAL_STORED_MAX_SIZE;
-					
-					-- 变长字段长度列表为 1 
-					field_ext_max_size = 1;
-					
-				}			
-			
-	5. 表结构中根据Innodb的ROW_FORMAT的存储格式确定行内保留的字节数（20 VS 768），最终确定一行数据是否小于8126，如果大于8126，则会导致数据插入报错。
+	2. 数据插入的限制
+		表结构中根据Innodb的ROW_FORMAT的存储格式确定行内保留的字节数（20 VS 768），最终确定一行数据是否小于8126，如果大于8126，则会导致数据插入报错。
 		-- 实际存储的行记录长度 > 8126，报错。
 		-- 不包括溢出到大对象页单独存储的部分，实际存储到行记录中的长度，大于8KB，就会报插入数据错误。
 		
-	6. 行溢出
+	3. 行溢出
 		行记录长度的字节数加起来大于8098个字节才会有行溢出。
 		-- 没毛病。
 	
-	7. 8098 和 8126 
+	4. 8098 和 8126 
 		行记录数的总长度大于8098，则会溢出。 行内保留的记录长度大于8126，则会报错。	
+	
 	
 	------------------------------------------------------------------------------------------------------------------------------	
 
-	1. 先在Server层判断表结构定义的字段长度加起来是否大于 65535 字节，不超过，则执行到InnoDB存储引擎层，
-        接着判断字段长度加起来是否大于 8126 字节，小于则建表成功;
-        
-    2. 数据插入的时候，存储到数据页内的单行记录的实际长度（行内保留的字节数）小于8126字节，则插入成功; 
-        否则，插入失败;
-
-	3. 建表的时候分别在Server层和InnoDB层做长度限制，数据的插入也有限制
-		65535、8126、8126、8098
-
+	下面的总结，看着也没什么问题
 	
+		1. MySQL Server最多只允许4096个字段
+		
+		2. InnoDB 最多只能有1017个字段
+		
+		3. 先在Server层判断表结构定义的字段长度加起来是否大于 65535 字节，不超过，则执行到InnoDB存储引擎层，
+			接着判断字段长度加起来是否大于 8126 字节，小于则建表成功;
+			
+		4. 数据插入的时候，存储到数据页内的单行记录的实际长度（行内保留的字节数）小于8126字节，则插入成功; 
+			否则，插入失败;
+
+		5. 总的来说，就是建表的时候分别在Server层和InnoDB层做长度限制，数据的插入也有限制
+			65535、8126、8126
+
+		
