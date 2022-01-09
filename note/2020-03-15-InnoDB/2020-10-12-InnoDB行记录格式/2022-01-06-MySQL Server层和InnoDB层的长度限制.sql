@@ -288,6 +288,8 @@
 		   ) ENGINE=InnoDB ROW_FORMAT=COMPACT DEFAULT CHARSET latin1;
 		Query OK, 0 rows affected (0.02 sec)
 		
+		select 255 * 33 = 8415 > 8126 
+		
 		在创建表的时候，MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
 		列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
 		对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
@@ -572,13 +574,15 @@
 	
 8. 总结
 	1. 创建表的限制 
+		
 		1. MySQL Server最多只允许4096个字段
 		
 		2. InnoDB 最多只能有1017个字段
 		
 		3. 字段长度(不包括 text、blob字段)加起来如果超过65535，MySQL server层就会拒绝创建表
 
-		4. 字段长度加起来（根据溢出页指针来计算字段长度，大于40的，溢出，只算40个字节）如果超过8126，InnoDB拒绝创建表
+		4. 字段长度加起来（根据溢出页指针来计算字段长度，大于40字节的，溢出，只算40个字节）如果超过8126，InnoDB拒绝创建表
+		
 				在创建表的时候，InnoDB 在计算字段长度的时候并不是按照字段的全部长度来记的。
 				列字段小于40个字节的都会按实际字节计算，如果大于 20 * 2=40 字节就只会按40字节。
 				对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;	
@@ -610,7 +614,34 @@
 						-- 变长字段长度列表为 1 
 						field_ext_max_size = 1;
 						
-					}			
+					}
+					
+				例子：
+					varchar(2000)
+					drop table if exists table_20201115;
+					CREATE TABLE `table_20201115` (
+						`ID` bigint(20) unsigned NOT NULL COMMENT '索引',
+						`a` varchar(2000) DEFAULT NULL COMMENT '...',
+						`b` varchar(2000) DEFAULT NULL COMMENT '...',
+						`c` varchar(2000) DEFAULT NULL COMMENT '...',
+						`d` varchar(2000) DEFAULT NULL COMMENT '...',
+						`e` varchar(2000) DEFAULT NULL COMMENT '...',
+						`f` varchar(2000) DEFAULT NULL COMMENT '...',
+						`g` varchar(2000) DEFAULT NULL COMMENT '...',
+						PRIMARY KEY (`ID`)
+					) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=Compact;
+					Query OK, 0 rows affected (0.20 sec)
+					
+					-- 这里 select 2000*7=14000, 明显大于 8126， 为什么没有提示 Row size too large (> 8126) 
+					
+					
+					原因：
+						在创建表的时候，MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+						列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
+						对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
+						
+						varchar(2000) 大于 40，按40个byte来算: select 40*7=280;  总长度 280 < 8126, InnoDB 创建表成功;
+												
 	
 	2. 数据插入的限制
 		表结构中根据Innodb的ROW_FORMAT的存储格式确定行内保留的字节数（20 VS 768），最终确定一行数据是否小于8126，如果大于8126，则会导致数据插入报错。
