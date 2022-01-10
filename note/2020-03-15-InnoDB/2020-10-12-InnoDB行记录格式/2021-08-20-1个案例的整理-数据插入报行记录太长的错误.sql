@@ -138,7 +138,7 @@
 			
 			假设有行溢出，实际存储的数据长度超过768字节的字段都会用溢出页作为数据存储的方式
 			
-			本案例有10个字段有大于768字节，那么compact格式在行内需要存储 (768+20) * 10 的字节数据，dynamic格式在行内只需要存储 20*10 的字节数据。
+			本案例有10个字段有大于768字节，那么compact格式在行内需要存储 (768+20) * 10 = 7880字节数据，dynamic格式在行内只需要存储 20*10 = 200字节数据。
 			
 			因此，把行记录格式改为 dynamic 可以彻底解决这个问题。
 			
@@ -216,7 +216,7 @@
 	-- 可以讲讲这部分的源码
 	
 5. dynamic多个字段溢出
-
+	
 	drop table  if exists table_20211103;
 	CREATE TABLE `table_20211103` (
 	  `ID` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '索引',
@@ -236,7 +236,9 @@
 	  `a10` blob COMMENT '...',
 	  PRIMARY KEY (`ID`)
 	) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=dynamic;
-
+	
+	
+	
 	INSERT INTO `table_20211103` 
 	(`a`, `b`, `c`, `d`, `a1`, `a2`, `a3`, `a4`, `a5`, `a6`, `a7`, `a8`, `a9`, `a10`) 
 	VALUES (
@@ -276,3 +278,12 @@
 	page offset 00000000, page type <Freshly Allocated Page>
 	Total number of page: 16:
 	Freshly Allocated Page: 16
+	
+	
+	select 14*20 = 280 < 8126，因此数据可以插入成功。
+	
+	
+	
+	
+	
+	

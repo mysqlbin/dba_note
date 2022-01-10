@@ -355,7 +355,7 @@
 	[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB or using ROW_FORMAT=DYNAMIC or ROW_FORMAT=COMPRESSED may help. 
 	In current row format, BLOB prefix of 768 bytes is stored inline.
 	
-	单行记录的空间存不下15000个字节的数据，因为报错：Row size too large (> 8126)
+	varchar(100)没有存储为溢出页，单行记录的空间存不下15000个字节的数据，因此报错：Row size too large (> 8126)
 
 
 4. 行溢出
