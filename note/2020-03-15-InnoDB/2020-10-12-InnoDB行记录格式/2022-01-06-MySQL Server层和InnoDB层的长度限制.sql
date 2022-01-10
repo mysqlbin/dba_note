@@ -216,7 +216,7 @@
 		-- InnoDB层的报错。
 		
 		原因：
-			在创建表的时候，MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+			在创建表的时候，InnoDB 在计算字段长度的时候并不是按照字段的全部长度来记的。
 			列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
 			对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
 			-- 上面的计算公式，不包括 char 定长列。
@@ -290,7 +290,7 @@
 		
 		select 255 * 33 = 8415 > 8126 
 		
-		在创建表的时候，MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+		在创建表的时候，InnoDB 在计算字段长度的时候并不是按照字段的全部长度来记的。
 		列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
 		对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
 		
@@ -318,7 +318,7 @@
 		
 		
 		原因：
-			在创建表的时候，MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+			在创建表的时候，InnoDB 在计算字段长度的时候并不是按照字段的全部长度来记的。
 			列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
 			对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
 			
@@ -636,7 +636,7 @@
 					
 					
 					原因：
-						在创建表的时候，MySQL在计算字段长度的时候并不是按照字段的全部长度来记的。
+						在创建表的时候，InnoDB 在计算字段长度的时候并不是按照字段的全部长度来记的。
 						列字段小于40个字节的都会按实际字节计算，如果大于20 * 2=40 字节就只会按40字节。
 						对应到MySQL代码中 storage/innobase/dict/dict0dict.cc 的 dict_index_too_big_for_tree() 中;
 						

@@ -23,7 +23,7 @@ DECLARE i INT;
 END;
 
 
-	call insertbatch_20201116();
+call insertbatch_20201116();
 
 
 	

@@ -196,19 +196,27 @@ field_193 VARCHAR(25) NOT NULL DEFAULT 'a',
 field_194 VARCHAR(25) NOT NULL DEFAULT 'a',
 field_195 VARCHAR(25) NOT NULL DEFAULT 'a',
 field_196 VARCHAR(25) NOT NULL DEFAULT 'a',
-field_197 VARCHAR(25) NOT NULL DEFAULT 'a'
+field_197 VARCHAR(25) NOT NULL DEFAULT 'a',
+field_198 VARCHAR(25) NOT NULL DEFAULT 'a'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+[Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.
 
 
 
+    -> field_196 VARCHAR(20) NOT NULL,
+    -> field_197 VARCHAR(20) NOT NULL
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 ROW_FORMAT=DYNAMIC;
+Query OK, 0 rows affected, 1 warning (0.13 sec)
+
+	-- add field 
+	alter table table_20211104_01 add column field_198 VARCHAR(25) NOT NULL DEFAULT 'a';
+	[Err] 1118 - Row size too large. The maximum row size for the used table type, not counting BLOBs, is 8126. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
 
 
 
-
-
-utf8字符集下的VARCHAR(25)，因为是变长类型，所以要计算最大值，相等于 varchar(60)，超过40个字节，那么就按40个字节;
+utf8mb4 字符集下的VARCHAR(25)，因为是变长类型，所以要计算最大值，相等于 varchar(100)，长度超过40个字节，那么就按40个字节做计算;
 	
-	197字段的计算
+	197个字段的计算
 		mysql> select 197*40;
 		+--------+
 		| 197*40 |
@@ -216,7 +224,6 @@ utf8字符集下的VARCHAR(25)，因为是变长类型，所以要计算最大�
 		|   7880 |
 		+--------+
 		1 row in set (0.00 sec)
-
 		
 		mysql> select 197*40+197+5+6+6+7;
 		+--------------------+
@@ -243,7 +250,9 @@ utf8字符集下的VARCHAR(25)，因为是变长类型，所以要计算最大�
 			
 		8101 > 8126 ：创建成功
 		
-	198字段的计算		
+		
+	198个字段的计算	
+	
 		mysql> select 198*40;
 		+--------+
 		| 198*40 |
@@ -252,13 +261,14 @@ utf8字符集下的VARCHAR(25)，因为是变长类型，所以要计算最大�
 		+--------+
 		1 row in set (0.00 sec)
 		
-		mysql> select 198*40+197+5+6+6+7;
+		mysql> select 198*40+198+5+6+6+7;
 		+--------------------+
-		| 198*40+197+5+6+6+7 |
+		| 198*40+198+5+6+6+7 |
 		+--------------------+
-		|               8141 |
+		|               8142 |
 		+--------------------+
 		1 row in set (0.00 sec)
+
+		8142 > 8126 ：创建失败
 		
-		8141 > 8126 ：创建失败
-	-- 这里可以对应上.
+		-- 这里可以对应上.

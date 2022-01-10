@@ -202,6 +202,17 @@ field_198 VARCHAR(20) NOT NULL
 [Err] 1118 - Row size too large (> 8126). Changing some columns to TEXT or BLOB may help. In current row format, BLOB prefix of 0 bytes is stored inline.
 
 
+
+    -> field_196 VARCHAR(20) NOT NULL,
+    -> field_197 VARCHAR(20) NOT NULL
+    -> ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC;
+Query OK, 0 rows affected, 1 warning (0.13 sec)
+
+	-- add field 
+	alter table table_20201116_04 add column field_198 varchar(20) not null;
+	[Err] 1118 - Row size too large. The maximum row size for the used table type, not counting BLOBs, is 8126. This includes storage overhead, check the manual. You have to change some columns to TEXT or BLOBs
+
+
 utf8字符集下的varchar(20)，因为是变长类型，所以要计算最大值，相等于 varchar(60)，超过40个字节，那么就按40个字节;
 	
 	197字段的计算
@@ -227,19 +238,12 @@ utf8字符集下的varchar(20)，因为是变长类型，所以要计算最大�
 			+6 	 表示 rowid 占用 6个byte
 			+6 	 表示 事务ID 占用 6个byte
 			+7 	 表示 回滚指针 占用 7个byte
-							
-			mysql> select 5+6+6+7;
-			+---------+
-			| 5+6+6+7 |
-			+---------+
-			|      24 |
-			+---------+
-			1 row in set (0.06 sec)
-
 			
 		8101 > 8126 ：创建成功
 		
-	198字段的计算		
+		
+	198字段的计算	
+		
 		mysql> select 198*40;
 		+--------+
 		| 198*40 |
@@ -248,13 +252,15 @@ utf8字符集下的varchar(20)，因为是变长类型，所以要计算最大�
 		+--------+
 		1 row in set (0.00 sec)
 		
-		mysql> select 198*40+197+5+6+6+7;
+		mysql> select 198*40+198+5+6+6+7;
 		+--------------------+
-		| 198*40+197+5+6+6+7 |
+		| 198*40+198+5+6+6+7 |
 		+--------------------+
-		|               8141 |
+		|               8142 |
 		+--------------------+
 		1 row in set (0.00 sec)
+
 		
-		8141 > 8126 ：创建失败
+		8142 > 8126 ：创建失败
+		
 	-- 这里可以对应上.
