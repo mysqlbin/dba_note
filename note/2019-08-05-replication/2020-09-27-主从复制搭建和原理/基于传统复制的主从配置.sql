@@ -29,7 +29,7 @@ max_binlog_size=512M
 expire_logs_days=10
 -----------------------------------------------------------------------------------
 然后在Slave上执行CHANGE MASTER TO即可。比如：
-CHANGE MASTER TO MASTER_HOST='node1',MASTER_USER='repl',MASTER_PASSWORD='repl',MASTER_LOG_FILE='',MASTER_LOG_POS=INT;
+CHANGE MASTER TO MASTER_HOST='',MASTER_USER='',MASTER_PASSWORD='',MASTER_LOG_FILE='',MASTER_LOG_POS=位点;
 
 其中 MASTER_LOG_FILE='',MASTER_LOG_POS='' 的获取方式:
 1). 在线建立主从配置，MASTER_LOG_FILE和MASTER_LOG_POS是在 mysqldump 出来的文件里面获取的，例如在mysqldump出来的文件有下面这段命令：
