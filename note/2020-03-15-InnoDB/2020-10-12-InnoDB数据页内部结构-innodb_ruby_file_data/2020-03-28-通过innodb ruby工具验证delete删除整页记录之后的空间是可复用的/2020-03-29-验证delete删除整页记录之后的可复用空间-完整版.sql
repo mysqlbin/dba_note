@@ -4,6 +4,7 @@
 1. 背景
 	生产环境上通过pt-archiver工具归档了日志表的部分数据之后，发现新插入该表的数据不占用数据文件(.ibd)的大小
 	本文主要是验证通过innodb ruby工具验证delete删除整页记录之后的空间是可复用的
+	
 2. 实验步骤
 	2.1 制造数据
 	2.2 通过 space-indexes 查看索引信息
@@ -43,7 +44,7 @@
 
 2.2 通过 space-indexes 查看索引信息
 
-	[root@env27 data]# innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
+	shell> innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
 	id          name                            root        fseg        used        allocated   fill_factor 
 	270         PRIMARY                         3           internal    1           1           100.00%     
 	270         PRIMARY                         3           leaf        19          19          100.00%     
@@ -53,18 +54,22 @@
 	
 	
 	name：表示索引名称
-	fseg：为leaf表示属于叶子页的segment
+	
+	fseg：
+		leaf表示属于叶子节点的segment
+		internal表示属于内节点的segment
+		
 	used: 表示索引树使用了多少个page
 	
 	
 	重建表空间，使用索引更加紧凑	
-		alter table t_20200329 engine=InnoDB;
-		root@localhost [zst]>alter table t_20200329 engine=InnoDB;
+		mysql> alter table t_20200329 engine=InnoDB;
 		Query OK, 0 rows affected (0.75 sec)
 		Records: 0  Duplicates: 0  Warnings: 0
 	
-	再次通过  space-indexes 查看索引信息 
-	[root@env27 data]# innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
+	再次通过  space-indexes 查看索引信息
+	
+	shell> innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
 	id          name                            root        fseg        used        allocated   fill_factor 
 	272         PRIMARY                         3           internal    1           1           100.00%     
 	272         PRIMARY                         3           leaf        18          18          100.00%     
@@ -73,7 +78,7 @@
 	
 	
 2.3 通过 index-recurse 查看主键的递归索引
-	[root@env27 data]#innodb_space -s ibdata1 -T zst/t_20200329 -I PRIMARY index-recurse  > 1.sql
+	shell> innodb_space -s ibdata1 -T zst/t_20200329 -I PRIMARY index-recurse  > 1.sql
 	
 	ROOT NODE #3: 18 records, 234 bytes
 	  NODE POINTER RECORD ≥ (id=1) → #5
@@ -88,8 +93,9 @@
 	可以看到，page no = 5 的数据页有553行记录
 	
 2.4 查看表对应的 information_schema.TABLE、mysql.innodb_table_stats、mysql.innodb_index_stats 和 .ibd 文件的大小
+
 	information_schema.TABLES
-		root@localhost [zst]>select table_schema,table_name,DATA_FREE,CREATE_TIME, UPDATE_TIME from  information_schema.TABLES where table_schema='zst' and table_name='t_20200329';
+		mysql> select table_schema,table_name,DATA_FREE,CREATE_TIME, UPDATE_TIME from  information_schema.TABLES where table_schema='zst' and table_name='t_20200329';
 		+--------------+------------+-----------+---------------------+-------------+
 		| table_schema | table_name | DATA_FREE | CREATE_TIME         | UPDATE_TIME |
 		+--------------+------------+-----------+---------------------+-------------+
@@ -128,7 +134,7 @@
 
 2.5 删除一个数据页(page no = 5)的所有记录
 			
-	root@localhost [zst]>delete from zst.t_20200329 where id <=553;
+	root@localhost [zst]> delete from zst.t_20200329 where id <=553;
 	Query OK, 553 rows affected (0.00 sec)
 	
 	查看 .ibd 文件物理数据大小	
@@ -177,7 +183,7 @@
 	
 2.6 插入10行记录
 
-	本案例需要插入1行记录才能填满最后一个数据页， 这里插入10行记录，意味着有9行记录需要申请新的数据页。
+	本案例需要插入1行记录才能填满最后一个数据页，这里插入10行记录，意味着有9行记录需要申请新的数据页。
 	
 	root@localhost [zst]>INSERT INTO zst.t_20200329(name)VALUES('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb');
 	Query OK, 10 rows affected (0.00 sec)
@@ -245,10 +251,12 @@
 
 
 3. 小结
+	
 	1. 从实验中可以看到，删除一个页的所有记录，会把该页移除，但是该页是可以复用的
-	2. 当插入的记录需要申请新的数据页的时候，会插入到可复用的数据页中，同时对应的 .ibd 数据文件并不会增大。
+	
+	2. 当插入的记录需要申请新的数据页的时候，会插入到可复用的数据页(页号会变)中，同时对应的 .ibd 数据文件并不会增大。
 		
-	最好一个数据页有多少行记录，需要插入多少行才能填满
+	3. 这个实验需要知道在数据写入完成之后，1个数据页有多少行记录，需要插入多少行才能填满
 	
 	LEAF NODE #23: 553 records, 14931 bytes 
 	需要插入1行记录才能填满最好一个数据页， 这里插入10行记录，意味着有9行记录需要申请新的数据页。
