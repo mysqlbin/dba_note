@@ -104,7 +104,7 @@
 		1 row in set (0.00 sec)
 	
 	mysql.innodb_table_stats
-		root@localhost [zst]>select * from mysql.innodb_table_stats  where table_name = 't_20200329';
+		mysql> select * from mysql.innodb_table_stats  where table_name = 't_20200329';
 		+---------------+------------+---------------------+--------+----------------------+--------------------------+
 		| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
 		+---------------+------------+---------------------+--------+----------------------+--------------------------+
@@ -113,7 +113,7 @@
 		1 row in set (0.00 sec)
 		
 	mysql.innodb_index_stats
-		root@localhost [zst]>select * from mysql.innodb_index_stats  where table_name = 't_20200329';
+		mysql> select * from mysql.innodb_index_stats  where table_name = 't_20200329';
 		+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
 		| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
 		+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
@@ -128,13 +128,13 @@
 		7 rows in set (0.00 sec)
 		
 	.ibd 文件的大小
-		[root@env27 data]# ll zst/t_20200329.ibd
+		shell> ll zst/t_20200329.ibd
 		-rw-r----- 1 mysql mysql 557056 Mar 29 15:57 zst/t_20200329.ibd
 
 
 2.5 删除一个数据页(page no = 5)的所有记录
 			
-	root@localhost [zst]> delete from zst.t_20200329 where id <=553;
+	mysql> delete from zst.t_20200329 where id <=553;
 	Query OK, 553 rows affected (0.00 sec)
 	
 	查看 .ibd 文件物理数据大小	
@@ -143,56 +143,71 @@
 		
 	可以看到，删除一个数据页(page no = 5)的所有记录，磁盘文件的大小并不会缩小。
 	
-	root@localhost [zst]>select table_schema,table_name,DATA_FREE,CREATE_TIME, UPDATE_TIME from  information_schema.TABLES where table_schema='zst' and table_name='t_20200329';
-	+--------------+------------+-----------+---------------------+---------------------+
-	| table_schema | table_name | DATA_FREE | CREATE_TIME         | UPDATE_TIME         |
-	+--------------+------------+-----------+---------------------+---------------------+
-	| zst          | t_20200329 |         0 | 2020-03-29 15:57:39 | 2020-03-29 16:03:36 |
-	+--------------+------------+-----------+---------------------+---------------------+
-	1 row in set (0.00 sec)
-
-	root@localhost [zst]>select * from mysql.innodb_table_stats  where table_name = 't_20200329';
-	+---------------+------------+---------------------+--------+----------------------+--------------------------+
-	| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
-	+---------------+------------+---------------------+--------+----------------------+--------------------------+
-	| zst           | t_20200329 | 2020-03-29 15:57:39 |   9953 |                   19 |                       10 |
-	+---------------+------------+---------------------+--------+----------------------+--------------------------+
-	1 row in set (0.00 sec)
-
-	root@localhost [zst]>select * from mysql.innodb_index_stats  where table_name = 't_20200329';
-	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
-	| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
-	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
-	| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | n_diff_pfx01 |       9953 |          18 | id                                |
-	| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | n_leaf_pages |         18 |        NULL | Number of leaf pages in the index |
-	| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | size         |         19 |        NULL | Number of pages in the index      |
-	| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_diff_pfx01 |          1 |           9 | name                              |
-	| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_diff_pfx02 |       9953 |           9 | name,id                           |
-	| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_leaf_pages |          9 |        NULL | Number of leaf pages in the index |
-	| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | size         |         10 |        NULL | Number of pages in the index      |
-	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
-	7 rows in set (0.00 sec)
-
-	[root@env27 data]# innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
-	id          name                            root        fseg        used        allocated   fill_factor 
-	272         PRIMARY                         3           internal    1           1           100.00%     
-	272         PRIMARY                         3           leaf        17          17          100.00%     
-	273         idx_name                        4           internal    1           1           100.00%     
-	273         idx_name                        4           leaf        9           9           100.00% 
-				
+	information_schema.TABLES
 	
+		mysql> select table_schema,table_name,DATA_FREE,CREATE_TIME, UPDATE_TIME from  information_schema.TABLES where table_schema='zst' and table_name='t_20200329';
+		+--------------+------------+-----------+---------------------+---------------------+
+		| table_schema | table_name | DATA_FREE | CREATE_TIME         | UPDATE_TIME         |
+		+--------------+------------+-----------+---------------------+---------------------+
+		| zst          | t_20200329 |         0 | 2020-03-29 15:57:39 | 2020-03-29 16:03:36 |
+		+--------------+------------+-----------+---------------------+---------------------+
+		1 row in set (0.00 sec)
+
+		mysql >select * from mysql.innodb_table_stats  where table_name = 't_20200329';
+		+---------------+------------+---------------------+--------+----------------------+--------------------------+
+		| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
+		+---------------+------------+---------------------+--------+----------------------+--------------------------+
+		| zst           | t_20200329 | 2020-03-29 15:57:39 |   9953 |                   19 |                       10 |
+		+---------------+------------+---------------------+--------+----------------------+--------------------------+
+		1 row in set (0.00 sec)
+
+		mysql >select * from mysql.innodb_index_stats  where table_name = 't_20200329';
+		+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+		| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
+		+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+		| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | n_diff_pfx01 |       9953 |          18 | id                                |
+		| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | n_leaf_pages |         18 |        NULL | Number of leaf pages in the index |
+		| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | size         |         19 |        NULL | Number of pages in the index      |
+		| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_diff_pfx01 |          1 |           9 | name                              |
+		| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_diff_pfx02 |       9953 |           9 | name,id                           |
+		| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_leaf_pages |          9 |        NULL | Number of leaf pages in the index |
+		| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | size         |         10 |        NULL | Number of pages in the index      |
+		+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+		7 rows in set (0.00 sec)
+
+		shell> innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
+		id          name                            root        fseg        used        allocated   fill_factor 
+		272         PRIMARY                         3           internal    1           1           100.00%     
+		272         PRIMARY                         3           leaf        17          17          100.00%     
+		273         idx_name                        4           internal    1           1           100.00%     
+		273         idx_name                        4           leaf        9           9           100.00% 
+					
+	
+	删除前和删除后对比主键索引的叶子节点数量
+		删除前
+			shell> innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
+			id          name                            root        fseg        used        allocated   fill_factor
+			272         PRIMARY                         3           leaf        18          18          100.00%     
+		删除后
+			shell> innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
+			id          name                            root        fseg        used        allocated   fill_factor   
+			272         PRIMARY                         3           leaf        17          17          100.00%    
+			
+		-- 18 VS 17：说明数据页已经被移除。
+		
+		
 2.6 插入10行记录
 
 	本案例需要插入1行记录才能填满最后一个数据页，这里插入10行记录，意味着有9行记录需要申请新的数据页。
 	
-	root@localhost [zst]>INSERT INTO zst.t_20200329(name)VALUES('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb');
+	mysql> INSERT INTO zst.t_20200329(name)VALUES('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb'), ('lujb');
 	Query OK, 10 rows affected (0.00 sec)
 	Records: 10  Duplicates: 0  Warnings: 0
 
 	
-	[root@env27 data]# innodb_space -s ibdata1 -T zst/t_20200329 -I PRIMARY index-recurse  > 2.sql
+	shell> innodb_space -s ibdata1 -T zst/t_20200329 -I PRIMARY index-recurse  > 2.sql
 
-	[root@env27 data]# tail -12 2.sql 
+	shell> tail -12 2.sql 
 		RECORD: (id=9954) → (name="lujb")
 	  NODE POINTER RECORD ≥ (id=9955) → #25
 	  LEAF NODE #25: 9 records, 243 bytes
@@ -206,46 +221,70 @@
 		RECORD: (id=9962) → (name="lujb")
 		RECORD: (id=9963) → (name="lujb")
 		
-	[root@env27 data]# innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
+	shell> innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
 	id          name                            root        fseg        used        allocated   fill_factor 
 	272         PRIMARY                         3           internal    1           1           100.00%     
 	272         PRIMARY                         3           leaf        18          18          100.00%     
 	273         idx_name                        4           internal    1           1           100.00%     
 	273         idx_name                        4           leaf        9           9           100.00%  
-
-	[root@env27 data]# ll zst/t_20200329.ibd
+	
+	一些对比
+		删除前
+			shell> innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
+			id          name                            root        fseg        used        allocated   fill_factor
+			272         PRIMARY                         3           leaf        18          18          100.00%     
+		删除后
+			shell> innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
+			id          name                            root        fseg        used        allocated   fill_factor   
+			272         PRIMARY                         3           leaf        17          17          100.00%    
+			
+		-- 18 VS 17：说明数据页已经被移除。
+		
+		新增记录后
+			shell> innodb_space -s ibdata1 -T zst/t_20200329 space-indexes
+			id          name                            root        fseg        used        allocated   fill_factor 
+			272         PRIMARY                         3           leaf        18          18          100.00%  
+			
+		-- used = 18 和 LEAF NODE #25: 9 records说明新分配了1个数据页，用来存储 9 行记录。
+		
+		
+	shell> ll zst/t_20200329.ibd
 	-rw-r----- 1 mysql mysql 557056 Mar 29 16:05 zst/t_20200329.ibd
 	   
-
-	root@localhost [zst]>select table_schema,table_name,DATA_FREE,CREATE_TIME, UPDATE_TIME from  information_schema.TABLES where table_schema='zst' and table_name='t_20200329';
-	+--------------+------------+-----------+---------------------+---------------------+
-	| table_schema | table_name | DATA_FREE | CREATE_TIME         | UPDATE_TIME         |
-	+--------------+------------+-----------+---------------------+---------------------+
-	| zst          | t_20200329 |         0 | 2020-03-29 15:57:39 | 2020-03-29 16:05:27 |
-	+--------------+------------+-----------+---------------------+---------------------+
-	1 row in set (0.00 sec)
-
-	root@localhost [zst]>select * from mysql.innodb_table_stats  where table_name = 't_20200329';
-	+---------------+------------+---------------------+--------+----------------------+--------------------------+
-	| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
-	+---------------+------------+---------------------+--------+----------------------+--------------------------+
-	| zst           | t_20200329 | 2020-03-29 15:57:39 |   9953 |                   19 |                       10 |
-	+---------------+------------+---------------------+--------+----------------------+--------------------------+
-	1 row in set (0.00 sec)
-
-	root@localhost [zst]>select * from mysql.innodb_index_stats  where table_name = 't_20200329';
-	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
-	| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
-	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
-	| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | n_diff_pfx01 |       9953 |          18 | id                                |
-	| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | n_leaf_pages |         18 |        NULL | Number of leaf pages in the index |
-	| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | size         |         19 |        NULL | Number of pages in the index      |
-	| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_diff_pfx01 |          1 |           9 | name                              |
-	| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_diff_pfx02 |       9953 |           9 | name,id                           |
-	| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_leaf_pages |          9 |        NULL | Number of leaf pages in the index |
-	| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | size         |         10 |        NULL | Number of pages in the index      |
-	+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
-	7 rows in set (0.00 sec)
+	-- 申请了 page no = 25 这个数据页，用来存储 id=9955 到 id=9963 这9行记录，但是磁盘空间不会增加，因为 page no = 5 这个数据页的空间是可复用的。
+	
+	information_schema.TABLES
+		mysql> select table_schema,table_name,DATA_FREE,CREATE_TIME, UPDATE_TIME from  information_schema.TABLES where table_schema='zst' and table_name='t_20200329';
+		+--------------+------------+-----------+---------------------+---------------------+
+		| table_schema | table_name | DATA_FREE | CREATE_TIME         | UPDATE_TIME         |
+		+--------------+------------+-----------+---------------------+---------------------+
+		| zst          | t_20200329 |         0 | 2020-03-29 15:57:39 | 2020-03-29 16:05:27 |
+		+--------------+------------+-----------+---------------------+---------------------+
+		1 row in set (0.00 sec)
+		
+	mysql.innodb_table_stats
+		mysql> select * from mysql.innodb_table_stats  where table_name = 't_20200329';
+		+---------------+------------+---------------------+--------+----------------------+--------------------------+
+		| database_name | table_name | last_update         | n_rows | clustered_index_size | sum_of_other_index_sizes |
+		+---------------+------------+---------------------+--------+----------------------+--------------------------+
+		| zst           | t_20200329 | 2020-03-29 15:57:39 |   9953 |                   19 |                       10 |
+		+---------------+------------+---------------------+--------+----------------------+--------------------------+
+		1 row in set (0.00 sec)
+		
+	mysql.innodb_index_stats
+		mysql> select * from mysql.innodb_index_stats  where table_name = 't_20200329';
+		+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+		| database_name | table_name | index_name | last_update         | stat_name    | stat_value | sample_size | stat_description                  |
+		+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+		| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | n_diff_pfx01 |       9953 |          18 | id                                |
+		| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | n_leaf_pages |         18 |        NULL | Number of leaf pages in the index |
+		| zst           | t_20200329 | PRIMARY    | 2020-03-29 15:57:39 | size         |         19 |        NULL | Number of pages in the index      |
+		| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_diff_pfx01 |          1 |           9 | name                              |
+		| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_diff_pfx02 |       9953 |           9 | name,id                           |
+		| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | n_leaf_pages |          9 |        NULL | Number of leaf pages in the index |
+		| zst           | t_20200329 | idx_name   | 2020-03-29 15:57:39 | size         |         10 |        NULL | Number of pages in the index      |
+		+---------------+------------+------------+---------------------+--------------+------------+-------------+-----------------------------------+
+		7 rows in set (0.00 sec)
 
 
 
