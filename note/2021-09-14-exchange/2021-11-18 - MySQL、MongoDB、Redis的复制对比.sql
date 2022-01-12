@@ -96,17 +96,18 @@ MySQL 主从原理、延迟的原因、如何避免主从延迟
 		
 	如何判断主从是否有延迟
 		
-		首先，要确保IO线程和SQL线程的状态值为YES
+		1. 首先，要确保IO线程和SQL线程的状态值为YES
 		
-		1. 查看 seconds_behind_master 的值是否大小0
-		
-		2. 对比binlog位点
-			master_log_file、read_master_log_pos IO线程 = relay_master_log_file、exec_master_log_pos SQL线程
+		2. 查看主从是否有延迟的3种方式
+			1. 查看 seconds_behind_master 的值是否大小0
 			
-		3. 对比GTID
-			从库已经接收到的GTID = 从库已经执行的GTID
-			
-			
+			2. 对比binlog位点
+				IO线程：master_log_file、read_master_log_pos = SQL线程：relay_master_log_file、exec_master_log_pos 
+				
+			3. 对比GTID
+				从库已经接收到的GTID = 从库已经执行的GTID
+				
+				
 	
 		
 			
