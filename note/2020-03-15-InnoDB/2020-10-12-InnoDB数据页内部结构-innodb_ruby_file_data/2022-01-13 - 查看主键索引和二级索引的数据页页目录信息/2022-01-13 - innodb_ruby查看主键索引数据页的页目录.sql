@@ -43,6 +43,10 @@
 	321989      idx_num                         4           internal    3           1           1           100.00%     
 	321989      idx_num                         4           leaf        4           0           0           0.00%       
 
+	root字段:
+		索引中根节点的 page number ；
+		聚集索引的根节点是第3个page，page no = 3
+		辅助索引的根节点是第4个page，page no = 4
 
 3. 通过 space-index-pages-summary 得到整个索引树的概要信息
 
