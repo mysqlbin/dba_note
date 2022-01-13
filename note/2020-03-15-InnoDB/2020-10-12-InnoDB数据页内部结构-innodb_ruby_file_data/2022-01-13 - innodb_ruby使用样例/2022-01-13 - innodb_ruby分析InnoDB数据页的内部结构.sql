@@ -148,7 +148,6 @@ shell> innodb_space -s ibdata1 -T test_db/t -I PRIMARY -l 0  index-level-summary
 	shell>  innodb_space -s ibdata1 -T test_db/t -p 5 page-directory-summary
 	Error: Page must be an index page; see --help for usage information
 
-[root@localhost data]# 
 	
 
 8. hexdump 分析ibd表空间文件
