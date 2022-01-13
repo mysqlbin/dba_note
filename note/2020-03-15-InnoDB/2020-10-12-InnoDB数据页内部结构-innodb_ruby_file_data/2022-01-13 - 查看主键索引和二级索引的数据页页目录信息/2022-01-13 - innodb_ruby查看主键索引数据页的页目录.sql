@@ -12,12 +12,12 @@
 1. 初始化表结构和数据
 	drop table if exists page_info2;
 	CREATE TABLE `page_info2` (
-			  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-			  `num` int(11) NOT NULL,
-			  PRIMARY KEY (`id`),
-			  KEY `idx_num` (`num`)
-			) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
-			-- 创建存储过程
+	  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+	  `num` int(11) NOT NULL,
+	  PRIMARY KEY (`id`),
+	  KEY `idx_num` (`num`)
+	) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
+	-- 创建存储过程
 	DROP PROCEDURE IF EXISTS insertbatch;
 	CREATE PROCEDURE insertbatch()
 	BEGIN
