@@ -102,9 +102,6 @@
 	通过结果可知，page为0,1,2类型名称分别是： FSP_HDR , IBUF_BITMAP, INODE 。从page=3开始才是存放行数据和指针的页。  *******
 	(InnoDB_Structures 里面的介绍都是从 page=3开始)
 
-
-
-
 5. index-recurse 
 
 	递归索引

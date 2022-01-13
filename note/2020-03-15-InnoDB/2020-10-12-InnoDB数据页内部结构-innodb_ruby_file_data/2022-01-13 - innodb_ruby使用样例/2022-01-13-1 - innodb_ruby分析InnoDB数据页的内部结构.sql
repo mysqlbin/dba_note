@@ -1,6 +1,5 @@
 
-shell> innodb_space -s ibdata1 -T test_db/t -I PRIMARY -l 0  index-level-summary | wc -l
-2
+
 
 
 
@@ -154,10 +153,12 @@ shell> innodb_space -s ibdata1 -T test_db/t -I PRIMARY -l 0  index-level-summary
 
 	shell> hexdump -C -v t.ibd > 2022-01-13 - hexdump分析数据页结构.sql
 	
-	
-	
+9. index-level-summary	
+	得到指定level的所有page信息：
+	shell> innodb_space -s ibdata1 -T test_db/t -I PRIMARY -l 0  index-level-summary | wc -l
+	2	
 
-9. 相关参考
+10. 相关参考
 
 	InnoDB 存储引擎 第2版
 	https://dev.mysql.com/doc/internals/en/innodb-page-overview.html    
