@@ -1,43 +1,8 @@
 
 
-.ibd数据文件的数据页类型
-
-	shell> innodb_space -f /data/mysql/mysql3306/data/test_db/page_info.ibd space-page-type-regions
-	start       end         count       type                
-	0           0           1           FSP_HDR             
-	1           1           1           IBUF_BITMAP         
-	2           2           1           INODE   
-
-
-
-	FSP_HDR PAGE
-
-		数据文件的第一个Page类型为FIL_PAGE_TYPE_FSP_HDR
-		
-		这个类型的页面是用来登记整个表空间的一些整体属性以及本组所有的区，也就是extent 0 ~ extent 255这256个区的属性
-		
-		整个表空间只有一个 FSP_HDR 类型的页面。
 		
 		
-	IBUF_BITMAP PAGE
-
-		第2个page类型为FIL_PAGE_IBUF_BITMAP
-		主要用于跟踪随后的每个page的change buffer信息，使用4个bit来描述每个page的change buffer信息。
-		
-		
-	INODE PAGE
-		
-		数据文件的第3个page的类型为FIL_PAGE_INODE，用于管理数据文件中的segement，每个索引占用2个segment，分别用于管理叶子节点和非叶子节点。
-		每个inode页可以存储FSP_SEG_INODES_PER_PAGE（默认为85）个记录。
-
-
-	相关参考
-
-		https://blog.csdn.net/mysql_lover/article/details/54612876   MySQL · 引擎特性 · InnoDB 文件系统之文件物理结构
-		
-		
-		
-File Header.FIL_PAGE_TYPE 表示数据页的类型：
+File Header.FIL_PAGE_TYPE 表示数据页的类型
 
 	类型名称					十六进制		描述
 	FIL_PAGE_TYPE_ALLOCATED		0x0000			最新分配，还没使用
@@ -56,10 +21,6 @@ File Header.FIL_PAGE_TYPE 表示数据页的类型：
 	
 	
 
-https://www.leviathan.vip/2019/04/18/InnoDB%E7%9A%84%E6%96%87%E4%BB%B6%E7%BB%84%E7%BB%87%E7%BB%93%E6%9E%84/
-
-
-
 区(extent)的概念
 
 	
@@ -70,13 +31,48 @@ https://www.leviathan.vip/2019/04/18/InnoDB%E7%9A%84%E6%96%87%E4%BB%B6%E7%BB%84%
 			这个类型的页面是用来登记整个表空间的一些整体属性以及本组所有的区
 			整个表空间只有一个 FSP_HDR 类型的页面。
 
-		2. IBUF_BITMAP类型：
+		2. IBUF_BITMAP 类型：
 			这个类型的页面是存储本组所有的区的所有页面关于INSERT BUFFER的信息。
 
-		3. INODE类型：
+		3. INODE 类型：
 			这个类型的页面存储了许多称为INODE的数据结构
 
 
+		示例
+			.ibd数据文件的数据页类型
+
+			shell> innodb_space -f /data/mysql/mysql3306/data/test_db/page_info.ibd space-page-type-regions
+			start       end         count       type                
+			0           0           1           FSP_HDR             
+			1           1           1           IBUF_BITMAP         
+			2           2           1           INODE   
+
+
+
+			FSP_HDR PAGE
+
+				数据文件的第一个Page类型为FIL_PAGE_TYPE_FSP_HDR
+				
+				这个类型的页面是用来登记整个表空间的一些整体属性以及本组所有的区，也就是extent 0 ~ extent 255这256个区的属性
+				
+				
+			IBUF_BITMAP PAGE
+
+				第2个page类型为FIL_PAGE_IBUF_BITMAP
+				主要用于跟踪随后的每个page的change buffer信息，使用4个bit来描述每个page的change buffer信息。
+				
+				
+			INODE PAGE
+				
+				数据文件的第3个page的类型为FIL_PAGE_INODE，用于管理数据文件中的segement，每个索引占用2个segment，分别用于管理叶子节点和非叶子节点。
+				每个inode页可以存储FSP_SEG_INODES_PER_PAGE（默认为85）个记录。
+
+
+			相关参考
+
+				https://blog.csdn.net/mysql_lover/article/details/54612876   MySQL · 引擎特性 · InnoDB 文件系统之文件物理结构
+				
+				
 
 	其余各组最开始的2个页面的类型是固定的：
 	
@@ -146,21 +142,112 @@ https://www.leviathan.vip/2019/04/18/InnoDB%E7%9A%84%E6%96%87%E4%BB%B6%E7%BB%84%
 		FREE_FRAG	有剩余空间的碎片区
 		FULL_FRAG	没有剩余空间的碎片区
 		FSEG		附属于某个段的区	
-		
-	处于 FREE、FREE_FRAG 以及 FULL_FRAG 这三种状态的区都是独立的，算是直属于表空间
-	而处于 FSEG 状态的区是附属于某个段的	
+		 
+	处于 FREE、FREE_FRAG 以及 FULL_FRAG 这三种状态的区都是独立的，算是直属于表空间   -- 重点
+	
+	而处于 FSEG 状态的区是附属于某个段的			
 	
 
 
 XDES Entry结构
 
-	每一个区都对应着一个XDES Entry结构，这个结构记录了对应的区的一些属性。
+	每一个区都对应着一个 XDES Entry 结构，这个结构记录了对应的区的一些属性。  -- 重点概念。
 	
-	
+	XDES Entry是一个40个字节的结构，大致分为4个部分，各个部分的释义如下：
 
+		1. Segment ID(8字节)
 
-	
-	
-	
-
+			每一个段都有一个唯一的编号，用ID表示，此处的Segment ID字段表示就是该区所在的段。
+		
+		2. List Node(12字节)
 			
+			这个部分可以将若干个XDES Entry结构串联成一个链表
+			参考图片：《XDES Entry 结构示意图.png》
+			
+			Pre Node Page Number 和 Pre Node Offset   的组合就是指向前一个 XDES Entry 的指针
+
+			Next Node Page Number 和 Next Node Offset 的组合就是指向后一个 XDES Entry 的指针。
+			
+		3. State(4字节)
+			这个字段表明区的状态: FREE、FREE_FRAG、FULL_FRAG、FSEG
+		
+		4. Page State Bitmap(16字节)
+			-- 未做记录。
+			
+			
+		
+XDES Entry链表
+
+	InnoDB 为每个段中的区对应的XDES Entry结构建立了三个链表：
+
+		1. FREE链表：
+				同一个段中，所有页面都是空闲的区对应的XDES Entry结构会被加入到这个链表。
+				-- 注意和直属于表空间的FREE链表区别开了，此处的FREE链表是附属于某个段的。
+				-- 还没有数据写入的extent
+				
+		2. NOT_FULL链表：
+				同一个段中，仍有空闲空间的区对应的XDES Entry结构会被加入到这个链表。
+				-- 数据没有填满的extent
+				
+		3. FULL链表：
+				同一个段中，已经没有空闲空间的区对应的XDES Entry结构会被加入到这个链表。
+				-- 数据已经把extent填满了。
+				
+	每一个索引都对应两个段，每个段都会维护上述的3个链表.
+
+	所以段在数据量比较大时插入数据的话，会先获取 NOT_FULL链表 的头节点，直接把数据插入这个头节点对应的区中即可，如果该区的空间已经被用完，就把该节点移到 FULL链表 中。
+	
+	
+	-- 区(extent)的4种状态 和 XDES Entry结构的3个链表的关系？
+	
+	
+	
+链表基节点(list base node)
+
+	List Base Node的结构，翻译成中文就是链表的基节点
+
+	每个链表(FREE链表、NOT_FULL链表、FULL链表)都对应这么一个List Base Node结构，其中：
+
+		List Length：表明该链表一共有多少节点
+
+		First Node Page Number和First Node Offset：表明该链表的头节点在表空间中的位置。
+
+		Last Node Page Number和Last Node Offset：表明该链表的尾节点在表空间中的位置。
+
+	一般我们把某个链表对应的List Base Node结构放置在表空间中固定的位置，这样想找定位某个链表就变得so easy啦。
+			
+
+
+链表小结
+
+	表空间是由若干个区组成的，每个区都对应一个XDES Entry的结构，直属于表空间的区对应的XDES Entry结构可以分成 FREE、FREE_FRAG 和 FULL_FRAG 这3个链表；
+	
+	每个段可以附属若干个区，每个段中的区对应的XDES Entry结构可以分成FREE、NOT_FULL和FULL这3个链表。
+	
+	每个链表都对应一个List Base Node的结构，这个结构里记录了链表的头、尾节点的位置以及该链表中包含的节点数。
+
+
+
+看了第2遍就做笔记了，也可以，但是还要继续看。
+
+
+	
+	
+其它相关参考：
+			
+	http://mysql.taobao.org/monthly/2019/10/01/
+
+	https://www.leviathan.vip/2019/04/18/InnoDB%E7%9A%84%E6%96%87%E4%BB%B6%E7%BB%84%E7%BB%87%E7%BB%93%E6%9E%84/		
+
+
+
+
+
+
+
+
+
+
+
+
+	
