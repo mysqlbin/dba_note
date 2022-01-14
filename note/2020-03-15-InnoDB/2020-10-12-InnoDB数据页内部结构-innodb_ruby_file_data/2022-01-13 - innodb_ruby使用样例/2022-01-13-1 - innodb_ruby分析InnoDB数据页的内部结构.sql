@@ -61,7 +61,7 @@
 	
 4. space-page-type-regions 
 
-	[root@mgr9 data]# innodb_space -f /data/mysql/mysql3306/data/test_db/t.ibd space-page-type-regions
+	shell> innodb_space -f /data/mysql/mysql3306/data/test_db/t.ibd space-page-type-regions
 	start       end         count       type                
 	0           0           1           FSP_HDR             
 	1           1           1           IBUF_BITMAP         
@@ -70,7 +70,7 @@
 	4           4           1           FREE (INDEX)        
 	5           5           1           FREE (ALLOCATED) 
 
-	通过结果可知，page为0,1,2类型名称分别是： FSP_HDR , IBUF_BITMAP, INODE 。从page=3开始才是存放行数据和指针的页。  *******
+	通过结果可知，page为0,1,2类型名称分别是： FSP_HDR , IBUF_BITMAP, INODE 。从page=3开始才是存放行数据和指针的页。
 	
 	InnoDB_Structures 里面的介绍都是从 page no=3 开始
 	
