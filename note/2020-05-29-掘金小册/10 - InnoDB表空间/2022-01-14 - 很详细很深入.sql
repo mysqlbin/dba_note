@@ -77,13 +77,13 @@ File Header.FIL_PAGE_TYPE 表示数据页的类型
 
 	其余各组最开始的2个页面的类型是固定的：
 	
-		XDES类型(extent descriptor)：
+		XDES 类型(extent descriptor)：
 			全称是extent descriptor(区描述符)，用来登记本组256个区的属性
 			对于在extent 256区中的该类型页面存储的就是extent 256 ~ extent 511这些区的属性
 			对于在extent 512区中的该类型页面存储的就是extent 512 ~ extent 767这些区的属性
-			FSP_HDR类型的页面其实和XDES类型的页面的作用类似，只不过FSP_HDR类型的页面还会额外存储一些表空间的属性。
+			FSP_HDR类型的页面其实和XDES类型的页面的作用类似，只不过FSP_HDR类型的页面还会额外存储一些表空间的属性(File Space Header部分)。
 
-		IBUF_BITMAP类型：
+		IBUF_BITMAP 类型：
 			这个类型的页面是存储本组所有的区的所有页面关于INSERT BUFFER的信息。
 
 
@@ -153,7 +153,7 @@ File Header.FIL_PAGE_TYPE 表示数据页的类型
 		 
 	处于 FREE、FREE_FRAG 以及 FULL_FRAG 这三种状态的区都是独立的，算是直属于表空间   -- 重点
 	
-	而处于 FSEG 状态的区是附属于某个段的			
+	而处于 FSEG 状态的区是附属于某个段的，就是只能属于某个段的		
 	
 	------------------------------------------------------------------------------------------------
 	如果把表空间比作是一个集团军，段就相当于师，区就相当于团。
@@ -169,7 +169,7 @@ XDES Entry结构
 	为了方便管理这些区，设计InnoDB的大叔设计了一个称为XDES Entry的结构(全称就是Extent Descriptor Entry)
 	
 	每一个区都对应着一个 XDES Entry 结构，这个结构记录了对应的区的一些属性。  -- 重点概念。
-	l
+	
 	XDES Entry是一个40个字节的结构，大致分为4个部分，各个部分的释义如下：
 
 		1. Segment ID(8字节)
@@ -192,7 +192,7 @@ XDES Entry结构
 				-- 用来构建链表结构
 				
 		3. State(4字节)
-			这个字段表明区的状态: FREE、FREE_FRAG、FULL_FRAG、FSEG
+			这个字段表明区的类型: FREE、FREE_FRAG、FULL_FRAG、FSEG
 			
 			区(extent)的4种状态：
 				
@@ -216,7 +216,7 @@ XDES Entry链表
 		FREE_FRAG	有剩余空间的碎片区
 		FULL_FRAG	没有剩余空间的碎片区
 		FSEG		附属于某个段的区	
-
+	
 	向某个段中插入数据的过程：
 		
 		/*
@@ -235,10 +235,10 @@ XDES Entry链表
 			当段中数据较少的时候，首先会查看表空间中是否有状态为 FREE_FRAG 的区 ，也就是找还有空闲空间的碎片区，如果找到了，那么从该区中取一些零散的页把数据插进去；
 			否则到表空间下申请一个状态为FREE的区，也就是空闲的区，把该区的状态变为 FREE_FRAG ，然后从该新申请的区中取一些零散的页把数据插进去。
 
-
+			/* 如何知道碎片区的状态？*/
 			可以通过List Node中的指针，做这么三件事：
 			
-				-- 各区处于相同的状态，会构建1个链表
+				-- 各碎片区如果处于相同的状态，会构建1个链表
 				
 				把状态为 FREE 的区对应的XDES Entry结构通过List Node来连接成一个链表，这个链表我们就称之为 FREE链表。
 
@@ -255,27 +255,32 @@ XDES Entry链表
 			
 			同理，如果 FREE_FRAG 链表中一个节点都没有，那么就直接从 FREE 链表 中取一个节点移动到 FREE_FRAG 链表的状态，
 			并修改该节点的STATE字段值为 FREE_FRAG(state = FREE_FRAG) ，然后从这个节点对应的区中获取零散的页就好了。
-			
-			--
+			-- 理解了。
 			
 		2. 当段中数据已经占满了32个零散的页后，就直接申请完整的区来插入数据了。
 		
 	
-	InnoDB 为每个段中的区对应的XDES Entry结构建立了三个链表：
+	-- 上面区的状态区分的是零散区，不是属于某一个固定的段；下面区的状态区分的是已经分配给某一个段的区，在段内进行状态区分；
+	
+	/* 如何知道段属区的状态 */
+	
+	因为一个段中可以有好多个区，有的区是完全空闲的，有的区还有一些页面可以用，有的区已经没有空闲页 面可以用了，所以我们有必要继续细分
+	InnoDB 为每个段中的区()对应的 XDES Entry结构 建立了三个链表：
 
 		1. FREE链表：
-				同一个段中，所有页面都是空闲的区对应的XDES Entry结构会被加入到这个链表。
+				同一个段中，所有页面都是空闲的区对应的 XDES Entry结构 会被加入到这个链表。
 				-- 注意和直属于表空间的FREE链表区别开了，此处的FREE链表是附属于某个段的。
 				-- 还没有数据写入的extent
 				
 		2. NOT_FULL链表：
-				同一个段中，仍有空闲空间的区对应的XDES Entry结构会被加入到这个链表。
+				同一个段中，仍有空闲空间的区对应的 XDES Entry结构 会被加入到这个链表。
 				-- 数据没有填满的extent
 				
 		3. FULL链表：
-				同一个段中，已经没有空闲空间的区对应的XDES Entry结构会被加入到这个链表。
+				同一个段中，已经没有空闲空间的区对应的 XDES Entry结构 会被加入到这个链表。
 				-- 数据已经把extent填满了。
-				
+	
+	
 	每一个索引都对应两个段，每个段都会维护上述的3个链表.
 
 	所以段在数据量比较大时插入数据的话，会先获取 NOT_FULL链表 的头节点，直接把数据插入这个头节点对应的区中即可，如果该区的空间已经被用完，就把该节点移到 FULL链表 中。
@@ -293,43 +298,60 @@ XDES Entry链表
 	
 	这个结构中包含了链表的头节点和尾节点的指针以及这个链表中包含了多少节点的信息
 	
-	每个链表(FREE链表、NOT_FULL链表、FULL链表)都对应这么一个List Base Node结构，其中：
+	作用：	
+		快速找到链表。
+	
+	每个链表(FREE链表、NOT_FULL链表、FULL链表，/* 包含碎片区的链表不？*/)都对应这么一个List Base Node结构，其中：
 
 		List Length：表明该链表一共有多少节点  -- 节点 这是不理解
 
-		First Node Page Number和First Node Offset：表明该链表的头节点在表空间中的位置。
+		First Node Page Number和First Node Offset：表明该链表的头节点在表空间中的位置(指向XDES Entry链表头节点的指针)。
 
-		Last Node Page Number和Last Node Offset：表明该链表的尾节点在表空间中的位置。
+		Last Node Page Number和Last Node Offset：表明该链表的尾节点在表空间中的位置(指向XDES Entry链表尾节点的指针)。
 
 	一般我们把某个链表对应的 List Base Node 结构放置在表空间中固定的位置，这样想找定位某个链表就变得so easy啦。
-			
+	-- 理解了。
 
 
 链表小结
-
-	表空间是由若干个区组成的，每个区都对应一个XDES Entry的结构，直属于表空间的区对应的XDES Entry结构可以分成 FREE、FREE_FRAG 和 FULL_FRAG 这3个链表；
+	
+	1. XDES Entry结构
+		每一个区都对应着一个 XDES Entry 结构，这个结构记录了对应的区的一些属性。
+	
+	2. 表空间是由若干个区组成的，每个区都对应一个XDES Entry的结构，直属于表空间的区(碎片区)对应的XDES Entry结构可以分成 FREE、FREE_FRAG 和 FULL_FRAG 这3个链表；
+		-- 碎片区
 		这3个链表对应的状态：
 			链表名称          状态
 			FREE链表		  空闲的区	
 			FREE_FRAG链表	  有剩余空间的碎片区
 			FULL_FRAG链表     没有剩余空间的碎片区
 	
-	每个段可以附属若干个区，每个段中的区对应的XDES Entry结构可以分成 FREE、NOT_FULL 和FULL这3个链表：
+		-- 总结：相同状态的区会组成1个链表。
+		
+	3. 每个段可以附属若干个区，每个段中的区对应的XDES Entry结构可以分成 FREE、NOT_FULL 和FULL这3个链表：
+		-- 段内的区
 	
-		每个链表都对应一个List Base Node的结构，这个结构里记录了链表的头、尾节点的位置以及该链表中包含的节点数。
+	4. 链表的基节点：每个链表都对应一个List Base Node的结构，这个结构里记录了链表的头、尾节点的位置以及该链表中包含的节点数。
+		
+		-- 这里还不理解。
+	
+	5. 上面区的状态区分的是零散区，不是属于某一个固定的段；下面区的状态区分的是已经分配给某一个段的区，在段内进行状态区分；
 
+
+	
 
 段的结构
+
 	每个区都有对应的 XDES Entry 来记录这个区中的属性
 	每个段都定义了一个 INODE Entry 结构来记录一下段中的属性
 	《INODE Entry 结构示意图.png》
-	各个部分的含义如下：
+	INODE Entry结构各个部分的含义如下：
 	
 		Segment ID：
 			就是指这个INODE Entry结构对应的段的编号（ID）。
 			
 		NOT_FULL_N_USED：
-			这个字段指的是在NOT_FULL链表中已经使用了多少个页面。
+			这个字段指的是在 NOT_FULL链表 中已经使用了多少个页面。
 		
 		3个List Base Node：
 			分别为段的 FREE链表、NOT_FULL链表、FULL链表 定义了List Base Node
@@ -344,6 +366,197 @@ XDES Entry链表
 			每个Fragment Array Entry结构都对应着一个零散的页面，这个结构一共4个字节，表示一个零散页面的页号。
 
 		
+
+各类型页面的详细情况
+
+	FSP_HDR类型
+	
+		第一组的第一个页面，也是表空间的第一个页面，页号为0，它存储了表空间的一些整体属性以及第一组内256个区的对应XDES Entry结构。
+		
+		一个完整的FSP_HDR类型的页面大致由5个部分组成，各个部分的具体释义如下表：
+					
+			名称				中文名			占用空间大小	简单描述
+			File Header			文件头部		38字节			页的一些通用信息
+			File Space Header	表空间头部		112字节			表空间的一些整体属性信息
+			XDES Entry			区描述信息		10240字节		存储本组256个区对应的属性信息
+			Empty Space			尚未使用空间	5986字节		用于页结构的填充，没啥实际意义
+			File Trailer		文件尾部		8字节			校验页是否完整
+		
+			
+			XDES Entry占用空间大小=10240字节
+				1组有256个区
+				1个区对应一个XDES Entry， 一个XDES Entry结构的大小是40字节
+				select 256*40 = 10240 bytes 
+		
+			File Space Header 部分
+
+				下面是各个属性的简单描述：
+					名称									占用空间大小	描述
+					Space ID								4字节			表空间的ID
+					Not Used								4字节			这4个字节未被使用，可以忽略
+					Size									4字节			当前表空间占有的页面数
+					FREE Limit								4字节			尚未被初始化的最小页号，大于或等于这个页号的区对应的XDES Entry结构都没有被加入FREE链表
+					Space Flags								4字节			表空间的一些占用存储空间比较小的属性
+					FRAG_N_USED								4字节			FREE_FRAG链表中已使用的页面数量
+					List Base Node for FREE List			16字节			FREE链表的基节点
+					List Base Node for FREE_FRAG List		16字节			FREE_FRAG链表的基节点
+					List Base Node for FULL_FRAG List		16字节			FULL_FRAG链表的基节点
+					Next Unused Segment ID					8字节			当前表空间中下一个未使用的 Segment ID
+					List Base Node for SEG_INODES_FULL List	16字节			SEG_INODES_FULL链表的基节点
+					List Base Node for SEG_INODES_FREE List	16字节			SEG_INODES_FREE链表的基节点
+					
+				
+				List Base Node for FREE List、List Base Node for FREE_FRAG List、List Base Node for FULL_FRAG List
+					分别是直属于表空间的FREE链表的基节点、FREE_FRAG链表的基节点、FULL_FRAG链表的基节点，这三个链表的基节点在表空间的位置是固定的，就是在表空间的第一个页面（也就是FSP_HDR类型的页面）的File Space Header部分。
+					所以之后定位这几个链表就很简单啦。	
+				
+				FRAG_N_USED
+					这个字段表明在 FREE_FRAG链表 中已经使用的页面数量。	
+				
+				FREE Limit
+					为表空间定义了FREE Limit这个字段，在该字段表示页号之前的区都被初始化了，之后的区尚未被初始化
+				
+				Next Unused Segment ID
+					该字段表明当前表空间中最大的段ID的下一个ID，这样在创建新段的时候赋予新段一个唯一的ID值就so easy啦，直接使用这个字段的值就好了。
+				
+				Space Flags
+
+					表空间对于一些布尔类型的属性，或者只需要寥寥几个比特位搞定的属性都放在了这个Space Flags中存储，虽然它只有4个字节，32个比特位大小，却存储了好多表空间的属性，详细情况如下表：					
+
+
+
+					标志名称		占用空间（单位：bit）	描述
+					POST_ANTELOPE	1						表示文件格式是否大于ANTELOPE
+					
+					ZIP_SSIZE		4						表示压缩页面的大小
+					
+					ATOMIC_BLOBS	1						表示是否自动把值非常长的字段放到BLOB页里
+					
+					PAGE_SIZE		4						页面大小
+						
+					DATA_DIR		1						表示表空间是否是从默认的数据目录中获取的
+					
+					SHARED			1						是否为共享表空间
+					
+					TEMPORARY		1						是否为临时表空间
+					
+					ENCRYPTION		1						表空间是否加密
+					
+					UNUSED			18						没有使用到的比特位
+					
+		
+		
+				List Base Node for SEG_INODES_FULL List和List Base Node for SEG_INODES_FREE List
+				
+					每个段对应的INODE Entry结构会集中存放到一个类型为INODE的页中，如果表空间中的段特别多，则会有多个INODE Entry结构，可能一个页放不下，这些INODE类型的页会组成两种列表：
+
+						SEG_INODES_FULL链表，该链表中的INODE类型的页面都已经被INODE Entry结构填充满了，没空闲空间存放额外的INODE Entry了。
+
+						SEG_INODES_FREE链表，该链表中的INODE类型的页面仍有空闲空间来存放INODE Entry结构				
+
+
+		
+	XDES类型
+	
+		与FSP_HDR类型的页面对比，除了少了 File Space Header 部分之外，也就是除了少了记录表空间整体属性的部分之外，其余的部分是一样一样的。
+		
+		每一个XDES Entry对应表空间中的一个区，在区数量非常多的时，一个单独的页可能就不够存放足够多的XDES Entry结构，所以把表空间的区分为了若干个组，
+		每组开头一个页面记录着本组内的所有区对应的XDES Entry,由于第一组的第一个页面有些特殊，因为它也是整个表空间的第一个页面，
+		所以除了记录本组中的所有区对应的XDES Entry意以外，还记录着表空间的一些整体属性，这个页面类型就是FSP_HDR类型，整个表空间里只有这一个类型的页面，
+		除此之外，之后每个分组的第一个页面只需记录本组内所有的区对应的XDES Entry结构即可，称为XDES类型。
+
+	
+	INODE类型
+
+		一个INODE类型的页面是由这几部分构成的：
+			
+			名称							中文名			占用空间大小	简单描述
+			File Header						文件头部		38字节			页的一些通用信息
+			List Node for INODE Page List	通用链表节点 	12字节 			存储上一个INODE页面和下一个INODE页面的指针
+			INODE Entry						段描述信息 		16320字节		存储段描述信息
+			Empty Space						尚未使用空间 	6字节 			用于页结构的填充，没啥实际意义
+			File Trailer					文件尾部 		8字节			校验页是否完整
+		
+			1. INODE Entry部分：
+			
+				前边已经详细介绍过这个结构的组成了，主要包括对应的段内零散页面的地址以及附属于该段的FREE、NOT_FULL和FULL链表的基节点。
+				每个INODE Entry结构占用192字节，一个页面里可以存储85个这样的结构。
+					select 192 * 85 = 16320
+
+				/*				
+				每个区都有对应的 XDES Entry 来记录这个区中的属性
+				每个段都定义了一个 INODE Entry 结构来记录一下段中的属性
+				《INODE Entry 结构示意图.png》
+				INODE Entry结构各个部分的含义如下：
+				
+					Segment ID：
+						就是指这个INODE Entry结构对应的段的编号（ID）。
+						
+					NOT_FULL_N_USED：
+						这个字段指的是在 NOT_FULL链表 中已经使用了多少个页面。
+					
+					3个List Base Node：
+						分别为段的 FREE链表、NOT_FULL链表、FULL链表 定义了List Base Node
+						找某个段的某个链表的头节点和尾节点的时候，就可以直接到这个部分找到对应链表的List Base Node
+					
+					Magic Number：
+						这个值是用来标记这个INODE Entry是否已经被初始化了（初始化的意思就是把各个字段的值都填进去了）。
+						如果这个数字是值的97937874，表明该INODE Entry已经初始化，否则没有被初始化。
+					
+					Fragment Array Entry：
+						在前边强调过无数次段是一些零散页面和一些完整的区的集合，
+						每个Fragment Array Entry结构都对应着一个零散的页面，这个结构一共4个字节，表示一个零散页面的页号。
+				*/
+				
+			
+			2. List Node for INODE Page							
+				-- INODE页的链表节点
+				因为一个表空间中可能存在超过85个段，所以可能一个INODE类型的页面不足以存储所有的段对应的INODE Entry结构，所以就需要额外的INODE类型的页面来存储这些结构。
+				还是为了方便管理这些INODE类型的页面，InnoDB将这些INODE类型的页面串联成两个不同的链表：
+				
+					SEG_INODES_FULL链表：该链表中的INODE类型的页面中已经没有空闲空间来存储额外的INODE Entry结构了。
+					SEG_INODES_FREE链表：该链表中的INODE类型的页面中还有空闲空间来存储额外的INODE Entry结构了。
+				
+	
+				以后每当我们新创建一个段（创建索引时就会创建段）时，都会创建一个INODE Entry结构与之对应，存储INODE Entry的大致过程就是这样的：
+					
+					先看看 SEG_INODES_FREE链表 是否为空，如果不为空，直接从该链表中获取一个节点，也就相当于获取到一个仍有空闲空间的INODE类型的页面，然后把该INODE Entry结构放到该页面中。
+					当该页面中无剩余空间时，就把该页放到 SEG_INODES_FULL链表 中。
+					如果 SEG_INODES_FREE链表 为空，则需要从表空间的 FREE_FRAG链表 中申请一个页面，修改该页面的类型为INODE，把该页面放到 SEG_INODES_FREE链表 中，与此同时把该 INODE Entry结构 放入该页面。
+
+						-- FREE_FRAG链表	  有剩余空间的碎片区
+					
+					
+			
+一个扩展区大小 = 1 MB
+
+一页大小 = 16 KB
+
+一个区内的总页数 = 64 个页
+
+一个 XDES 页中的 XDES 条目总数 = 256
+
+可以在一个 XDES 页面中涵盖总范围 = 256 
+
+总页面数可以包含一个 XDES 页面 = 16384 bytes
+	select 64*256 = 16384
+	
+-------------------------------------------------------
+从第2组开始，各组最开始的2个页面的类型是固定的
+
+
+select 16384-10240 = 6144 bytes
+
+
+
+
+
+	
+
+	
+	
+如果把表空间比作是国家，段就相当于省，区就相当于市。一般的市都是属于某个省，就像FSEG状态的区全部属于某个段。而FREE、FREE_FRAG、FULL_FRAG这三种状态的区却直接隶属于表空间，就像北京市、天津市、上海市是直接属于国家管理一样。
+
 			
 
 看了第2遍就做笔记了，也可以，但是还要继续看。
@@ -357,7 +570,9 @@ XDES Entry链表
 	
 	
 其它相关参考：
-			
+	
+	https://blog.csdn.net/mashaokang1314/article/details/109750095
+	
 	http://mysql.taobao.org/monthly/2019/10/01/
 
 	https://www.leviathan.vip/2019/04/18/InnoDB%E7%9A%84%E6%96%87%E4%BB%B6%E7%BB%84%E7%BB%87%E7%BB%93%E6%9E%84/		
