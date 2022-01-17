@@ -407,7 +407,8 @@ XDES Entry链表
 					
 				
 				List Base Node for FREE List、List Base Node for FREE_FRAG List、List Base Node for FULL_FRAG List
-					分别是直属于表空间的FREE链表的基节点、FREE_FRAG链表的基节点、FULL_FRAG链表的基节点，这三个链表的基节点在表空间的位置是固定的，就是在表空间的第一个页面（也就是FSP_HDR类型的页面）的File Space Header部分。
+					分别是直属于表空间的FREE链表的基节点、FREE_FRAG链表的基节点、FULL_FRAG链表的基节点，
+					这三个链表的基节点在表空间的位置是固定的，就是在表空间的第一个页面（也就是FSP_HDR类型的页面）的File Space Header部分。
 					所以之后定位这几个链表就很简单啦。	
 				
 				FRAG_N_USED
@@ -511,18 +512,25 @@ XDES Entry链表
 			
 			2. List Node for INODE Page							
 				-- INODE页的链表节点
-				因为一个表空间中可能存在超过85个段，所以可能一个INODE类型的页面不足以存储所有的段对应的INODE Entry结构，所以就需要额外的INODE类型的页面来存储这些结构。
+				因为一个表空间中可能存在超过85个段，所以可能一个INODE类型的页面不足以存储所有的段对应的INODE Entry结构，
+				所以就需要额外的INODE类型的页面来存储这些结构。
 				还是为了方便管理这些INODE类型的页面，InnoDB将这些INODE类型的页面串联成两个不同的链表：
 				
 					SEG_INODES_FULL链表：该链表中的INODE类型的页面中已经没有空闲空间来存储额外的INODE Entry结构了。
 					SEG_INODES_FREE链表：该链表中的INODE类型的页面中还有空闲空间来存储额外的INODE Entry结构了。
 				
 	
-				以后每当我们新创建一个段（创建索引时就会创建段）时，都会创建一个INODE Entry结构与之对应，存储INODE Entry的大致过程就是这样的：
+				以后每当我们新创建一个段（创建索引时就会创建段）时，都会创建一个INODE Entry结构与之对应，
+				存储INODE Entry的大致过程就是这样的：
 					
-					先看看 SEG_INODES_FREE链表 是否为空，如果不为空，直接从该链表中获取一个节点，也就相当于获取到一个仍有空闲空间的INODE类型的页面，然后把该INODE Entry结构放到该页面中。
-					当该页面中无剩余空间时，就把该页放到 SEG_INODES_FULL链表 中。
-					如果 SEG_INODES_FREE链表 为空，则需要从表空间的 FREE_FRAG链表 中申请一个页面，修改该页面的类型为INODE，把该页面放到 SEG_INODES_FREE链表 中，与此同时把该 INODE Entry结构 放入该页面。
+					SEG_INODES_FREE链表不空：
+						先看看 SEG_INODES_FREE链表 是否为空，如果不为空，直接从该链表中获取一个节点，也就相当于获取到一个仍有空闲空间的INODE类型的页面，
+						然后把该INODE Entry结构放到该页面中。
+						当该页面中无剩余空间时，就把该页放到 SEG_INODES_FULL链表 中。
+						
+					SEG_INODES_FREE链表为空：	
+						如果 SEG_INODES_FREE链表 为空，则需要从表空间的 FREE_FRAG链表 中申请一个页面，修改该页面的类型为INODE，
+						把该页面放到 SEG_INODES_FREE链表 中，与此同时把该 INODE Entry结构 放入该页面。
 
 						-- FREE_FRAG链表	  有剩余空间的碎片区
 					
