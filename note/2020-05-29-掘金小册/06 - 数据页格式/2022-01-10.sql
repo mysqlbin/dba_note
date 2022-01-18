@@ -245,6 +245,7 @@
 		PAGE_MAX_TRX_ID			8字节				修改当前页的最大事务ID，该值仅在二级索引中定义
 		PAGE_LEVEL				2字节				当前页在B+树中所处的层级
 		PAGE_INDEX_ID			8字节				索引ID，表示当前页属于哪个索引
+			
 		PAGE_BTR_SEG_LEAF		10字节				B+树叶子段的头部信息，仅在B+树的Root页定义
 		PAGE_BTR_SEG_TOP		10字节				B+树非叶子段的头部信息，仅在B+树的Root页定义
 
