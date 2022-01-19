@@ -38,7 +38,50 @@
 			
 	我们存放记录的数据页的类型其实是 FIL_PAGE_INDEX ，也就是所谓的索引页。
 	
-	
+	E:\github\mysql-5.7.26\storage\innobase\buf\buf0buf.cc
+	#endif /* !UNIV_HOTBACKUP */
+			break;
+		case FIL_PAGE_INODE:
+			fputs("InnoDB: Page may be an 'inode' page\n", stderr);
+			break;
+		case FIL_PAGE_IBUF_FREE_LIST:
+			fputs("InnoDB: Page may be an insert buffer free list page\n",
+				  stderr);
+			break;
+		case FIL_PAGE_TYPE_ALLOCATED:
+			fputs("InnoDB: Page may be a freshly allocated page\n",
+				  stderr);
+			break;
+		case FIL_PAGE_IBUF_BITMAP:
+			fputs("InnoDB: Page may be an insert buffer bitmap page\n",
+				  stderr);
+			break;
+		case FIL_PAGE_TYPE_SYS:
+			fputs("InnoDB: Page may be a system page\n",
+				  stderr);
+			break;
+		case FIL_PAGE_TYPE_TRX_SYS:
+			fputs("InnoDB: Page may be a transaction system page\n",
+				  stderr);
+			break;
+		case FIL_PAGE_TYPE_FSP_HDR:
+			fputs("InnoDB: Page may be a file space header page\n",
+				  stderr);
+			break;
+		case FIL_PAGE_TYPE_XDES:
+			fputs("InnoDB: Page may be an extent descriptor page\n",
+				  stderr);
+			break;
+		case FIL_PAGE_TYPE_BLOB:
+			fputs("InnoDB: Page may be a BLOB page\n",
+				  stderr);
+			break;
+		case FIL_PAGE_TYPE_ZBLOB:
+		case FIL_PAGE_TYPE_ZBLOB2:
+			fputs("InnoDB: Page may be a compressed BLOB page\n",
+				  stderr);
+			break;
+		}	
 
 2. 区(extent)的概念
 
