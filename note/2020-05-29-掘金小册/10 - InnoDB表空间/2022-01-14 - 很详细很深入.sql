@@ -1,20 +1,38 @@
 
-把1个表空间完整的结构都写出来了，这就是宇宙最全的文章/教程，服了。
 
+1. File Header.FIL_PAGE_TYPE 表示数据页的类型，常见的数据页类型如下
+2. 区(extent)的概念
+3. 段(segment)的概念
+4. 碎片(fragment)区
+5. 区(extent)的4种分类和对应状态
+6. XDES Entry结构
+7. XDES Entry链表
+	7.1 向某个段中插入数据的过程
+	7.2 如何知道段属区的状态
+8. 链表基节点(list base node)
+9. 链表小结
+10. 段的结构
+11. 各类型页面的详细情况
+	1. FSP_HDR类型
+	2. XDES类型
+	3. INODE类型
+12. Segment Header 结构的运用
+13. 个人的小结
+
+	
 		
-		
-File Header.FIL_PAGE_TYPE 表示数据页的类型
+1. File Header.FIL_PAGE_TYPE 表示数据页的类型，常见的数据页类型如下
 
 	类型名称					十六进制		描述
 	FIL_PAGE_TYPE_ALLOCATED		0x0000			最新分配，还没使用   
 	FIL_PAGE_UNDO_LOG			0x0002			Undo日志页
-	FIL_PAGE_INODE				0x0003			段信息节点
-	FIL_PAGE_IBUF_FREE_LIST		0x0004			Insert Buffer空闲列表
+	FIL_PAGE_INODE				0x0003			段信息节点						 -- INODE类型： 存储上一个INODE页面、下一个INODE页面的指针 和 INODE Entry结构。
+	FIL_PAGE_IBUF_FREE_LIST		0x0004			Insert Buffer空闲列表 
 	FIL_PAGE_IBUF_BITMAP		0x0005			Insert Buffer位图
 	FIL_PAGE_TYPE_SYS			0x0006			系统页
 	FIL_PAGE_TYPE_TRX_SYS		0x0007			事务系统数据
-	FIL_PAGE_TYPE_FSP_HDR		0x0008			表空间头部信息                   -- 每个表空间的第1个数据页，
-	FIL_PAGE_TYPE_XDES			0x0009			扩展描述页                       -- 每个区都对应一个XDES Entry结构。
+	FIL_PAGE_TYPE_FSP_HDR		0x0008			表空间头部信息                   -- FSP_HDR类型：每个表空间的第1个数据页，用来记录整个表空间的一些整体属性以及本组所在的区
+	FIL_PAGE_TYPE_XDES			0x0009			扩展描述页                       -- XDES类型：   每个区都对应一个XDES Entry结构。
 	FIL_PAGE_TYPE_BLOB			0x000A			溢出页
 	FIL_PAGE_INDEX				0x45BF			索引页，也就是我们所说的数据页   -- 由7部分组成。
 			
@@ -22,7 +40,7 @@ File Header.FIL_PAGE_TYPE 表示数据页的类型
 	
 	
 
-区(extent)的概念
+2. 区(extent)的概念
 
 	
 	表空间被划分为许多连续的区，每个区默认由64个页组成(也就是说一个区默认占用1MB空间大小)，每256个区划分为一组，每个组的最开始的几个页面类型是固定的就好了
@@ -91,9 +109,8 @@ File Header.FIL_PAGE_TYPE 表示数据页的类型
 	以完整的区为单位来分配存储空间，而不是当数据页用完之后，再分配一个新的数据页，总的来说，不是以数据页为单位进行分配空间的。
 
 
-表空间 > B+树 > 段(叶子索引段、非叶子索引段) > 区 > 页 > 行
 
-段(segment)的概念：
+3. 段(segment)的概念
 
 	Segment分为三种：
 		Leaf node segment：        B+Tree的叶子节点段
@@ -106,7 +123,7 @@ File Header.FIL_PAGE_TYPE 表示数据页的类型
 	
 	一个索引会生成2个段：一个叶子节点段，一个非叶子节点段。
 
-碎片(fragment)区
+4. 碎片(fragment)区
 
 	概念
 
@@ -128,7 +145,7 @@ File Header.FIL_PAGE_TYPE 表示数据页的类型
 	
 		
 	
-区(extent)的4种分类和对应状态：
+5. 区(extent)的4种分类和对应状态
 
 	区(extent)的4种分类：
 		
@@ -162,9 +179,13 @@ File Header.FIL_PAGE_TYPE 表示数据页的类型
 		
 		而处于`FREE`、`FREE_FRAG`以及`FULL_FRAG`这三种状态的区却直接隶属于表空间，就像独立团直接听命于军部一样。
 	
+	--------------------
+	
+	如果把表空间比作是国家，段就相当于省，区就相当于市。
+		一般的市都是属于某个省，就像FSEG状态的区全部属于某个段。而FREE、FREE_FRAG、FULL_FRAG这三种状态的区却直接隶属于表空间，就像北京市、天津市、上海市是直接属于国家管理一样。
 
 
-XDES Entry结构
+6. XDES Entry结构
 	
 	为了方便管理这些区，设计InnoDB的大叔设计了一个称为XDES Entry的结构(全称就是Extent Descriptor Entry)
 	
@@ -207,7 +228,7 @@ XDES Entry结构
 			
 			
 		
-XDES Entry链表
+7. XDES Entry链表
 
 	区(extent)的4种状态：--重点，这里做了一下引用。
 		
@@ -217,7 +238,7 @@ XDES Entry链表
 		FULL_FRAG	没有剩余空间的碎片区
 		FSEG		附属于某个段的区	
 	
-	向某个段中插入数据的过程：
+	7.1 向某个段中插入数据的过程
 		
 		/*
 		
@@ -231,7 +252,8 @@ XDES Entry链表
 			
 		*/	
 					
-		1. 从段中的碎片区依次取32个页面
+		1. 从碎片区依次取32个页面
+		
 			当段中数据较少的时候，首先会查看表空间中是否有状态为 FREE_FRAG 的区 ，也就是找还有空闲空间的碎片区，如果找到了，那么从该区中取一些零散的页把数据插进去；
 			否则到表空间下申请一个状态为FREE的区，也就是空闲的区，把该区的状态变为 FREE_FRAG ，然后从该新申请的区中取一些零散的页把数据插进去。
 
@@ -246,7 +268,7 @@ XDES Entry链表
 
 				把状态为 FULL_FRAG 的区对应的XDES Entry结构通过List Node来连接成一个链表，这个链表我们就称之为 FULL_FRAG链表。
 				
-				-- 方便知道哪些区有可用的页面、哪些区没有可用的页面、哪些区是空闲的
+				-- 方便知道哪些区有可用的页面、哪些区没有可用的页面、哪些区是完全空闲的
 				
 			这样每当我们想找一个 FREE_FRAG 状态的区时，就直接把 FREE_FRAG 链表的头节点拿出来，从这个节点中取一些零散的页来插入数据，
 				-- 上面的还不理解。多看2遍，并结合上下文，又理解了。
@@ -262,35 +284,38 @@ XDES Entry链表
 	
 	-- 上面区的状态区分的是零散区，不是属于某一个固定的段；下面区的状态区分的是已经分配给某一个段的区，在段内进行状态区分；
 	
-	/* 如何知道段属区的状态 */
-	
-	因为一个段中可以有好多个区，有的区是完全空闲的，有的区还有一些页面可以用，有的区已经没有空闲页 面可以用了，所以我们有必要继续细分
-	InnoDB 为每个段中的区()对应的 XDES Entry结构 建立了三个链表：
+	7.2 如何知道段属区的状态
+		
+		因为一个段中可以有好多个区，有的区是完全空闲的，有的区还有一些页面可以用，有的区已经没有空闲页 面可以用了，所以我们有必要继续细分
+		-- 方便知道哪些区有可用的页面、哪些区没有可用的页面、哪些区是完全空闲的
+		
+		InnoDB 为每个段中的区对应的 XDES Entry结构 建立了三个链表：
 
-		1. FREE链表：
-				同一个段中，所有页面都是空闲的区对应的 XDES Entry结构 会被加入到这个链表。
-				-- 注意和直属于表空间的FREE链表区别开了，此处的FREE链表是附属于某个段的。
-				-- 还没有数据写入的extent
-				
-		2. NOT_FULL链表：
-				同一个段中，仍有空闲空间的区对应的 XDES Entry结构 会被加入到这个链表。
-				-- 数据没有填满的extent
-				
-		3. FULL链表：
-				同一个段中，已经没有空闲空间的区对应的 XDES Entry结构 会被加入到这个链表。
-				-- 数据已经把extent填满了。
-	
-	
-	每一个索引都对应两个段，每个段都会维护上述的3个链表.
+			1. FREE链表：
+					同一个段中，所有页面都是空闲的区对应的 XDES Entry结构 会被加入到这个链表。
+					-- 注意和直属于表空间的FREE链表区别开了，此处的FREE链表是附属于某个段的。
+					-- 还没有数据写入的extent
+					
+			2. NOT_FULL链表：
+					同一个段中，仍有空闲空间的区对应的 XDES Entry结构 会被加入到这个链表。
+					-- 数据没有填满的extent
+					
+			3. FULL链表：
+					同一个段中，已经没有空闲空间的区对应的 XDES Entry结构 会被加入到这个链表。
+					-- 数据已经把extent填满了。
+			
+			总结：相同状态的区会组成1个链表。
+		
+		每一个索引都对应两个段，每个段都会维护上述的3个链表.
 
-	所以段在数据量比较大时插入数据的话，会先获取 NOT_FULL链表 的头节点，直接把数据插入这个头节点对应的区中即可，如果该区的空间已经被用完，就把该节点移到 FULL链表 中。
-	
+		所以段在数据量比较大时插入数据的话，会先获取 NOT_FULL链表 的头节点(/* 重点 */)，直接把数据插入这个头节点对应的区( /* 重点 */)中即可，如果该区的空间已经被用完，就把该节点移到 FULL链表 中。
+		
 	
 	-- 区(extent)的4种状态 和 XDES Entry结构的3个链表的关系？
 	
 	
 	
-链表基节点(list base node)
+8. 链表基节点(list base node)
 
 	List Base Node的结构，翻译成中文就是链表的基节点
 	
@@ -313,7 +338,7 @@ XDES Entry链表
 	-- 理解了。
 
 
-链表小结
+9. 链表小结
 	
 	1. XDES Entry结构
 		每一个区都对应着一个 XDES Entry 结构，这个结构记录了对应的区的一些属性。
@@ -335,16 +360,20 @@ XDES Entry链表
 		
 		-- 理解了。
 	
-	5. 上面区的状态区分的是零散区，不是属于某一个固定的段；下面区的状态区分的是已经分配给某一个段的区，在段内进行状态区分；
+	5. 碎片区的状态和段中的区的状态：
+	
+		FREE、FREE_FRAG、FULL_FRAG, 这些状态区分的是零散区，不是属于某一个固定的段；
+		FREE、NOT_FULL、FULL, 这些状态区分的是已经分配给某一个段的区，在段内进行状态区分。
 
 
 	
 
-段的结构
+10. 段的结构
 
 	每个区都有对应的 XDES Entry 来记录这个区中的属性
 	每个段都定义了一个 INODE Entry 结构来记录一下段中的属性
 	《INODE Entry 结构示意图.png》
+	
 	INODE Entry结构各个部分的含义如下：
 	
 		Segment ID：
@@ -370,7 +399,7 @@ XDES Entry链表
 
 		
 
-各类型页面的详细情况
+11. 各类型页面的详细情况
 
 	1. FSP_HDR类型
 	
@@ -493,7 +522,7 @@ XDES Entry链表
 		
 		存储的内容：
 		
-			存储上一个INODE页面和下一个INODE页面的指针、INODE Entry结构。
+			存储上一个INODE页面、下一个INODE页面的指针 和 INODE Entry结构。
 			
 			1个数据页可能存储不了多个段的INODE Entry结构，所以需要申请新的数据页来存储，需要链表把 INODE类型的数据页关联起来。
 		
@@ -527,7 +556,8 @@ XDES Entry链表
 					3个List Base Node：
 						分别为段的 FREE链表、NOT_FULL链表、FULL链表 定义了List Base Node
 						找某个段的某个链表的头节点和尾节点的时候，就可以直接到这个部分找到对应链表的List Base Node
-					
+						-- 理解了。
+						
 					Magic Number：
 						这个值是用来标记这个INODE Entry是否已经被初始化了（初始化的意思就是把各个字段的值都填进去了）。
 						如果这个数字是值的97937874，表明该INODE Entry已经初始化，否则没有被初始化。
@@ -542,7 +572,7 @@ XDES Entry链表
 				-- INODE页的链表节点
 				因为一个表空间中可能存在超过85个段，所以可能一个INODE类型的页面不足以存储所有的段对应的INODE Entry结构，
 				所以就需要额外的INODE类型的页面来存储这些结构。
-				还是为了方便管理这些INODE类型的页面，InnoDB将这些INODE类型的页面串联成两个不同的链表：
+				还是为了方便管理这些INODE类型的页面，InnoDB将这些INODE类型的页面串联成两个不同的链表：  -- 重点。
 				
 					SEG_INODES_FULL链表：该链表中的INODE类型的页面中已经没有空闲空间来存储额外的INODE Entry结构了。
 					SEG_INODES_FREE链表：该链表中的INODE类型的页面中还有空闲空间来存储额外的INODE Entry结构了。
@@ -564,12 +594,12 @@ XDES Entry链表
 					
 	
 
-	Segment Header 结构的运用
+12. Segment Header 结构的运用
 		
-		查找某个段对应哪个INODE Entry结构，需要找个地方记下来这个对应关系。
-		
-		
-		Page Header部分（为突出重点，省略了好多属性） 
+	查找某个段对应哪个INODE Entry结构，需要找个地方记下来这个对应关系。
+	
+	
+	Page Header部分（为突出重点，省略了好多属性） 
 		名称				占用空间大小	描述
 		...	...	...
 		PAGE_BTR_SEG_LEAF	10字节			B+树叶子段的头部信息，仅在B+树的根页定义
@@ -577,27 +607,27 @@ XDES Entry链表
 
 		PAGE_BTR_SEG_LEAF 和 PAGE_BTR_SEG_TOP 都占用10个字节，它们其实对应一个叫Segment Header的结构
 		
-		Segment Header结构的各个部分的具体释义如下：
+	Segment Header 结构的各个部分的具体释义如下：
 
-			名称							占用字节数		描述
-			Space ID of the INODE Entry		4				INODE Entry结构所在的表空间ID
-			Page Number of the INODE Entry	4				INODE Entry结构所在的页面页号
-			Byte Offset of the INODE Ent	2				INODE Entry结构在该页面中的偏移量	
-					
-		PAGE_BTR_SEG_LEAF 记录着叶子节点段对应的INODE Entry结构的地址是哪个表空间的哪个页面的哪个偏移量
-		PAGE_BTR_SEG_TOP  记录着非叶子节点段对应的INODE Entry结构的地址是哪个表空间的哪个页面的哪个偏移量
-			
-		这样子索引和其对应的段的关系就建立起来了。
+		名称							占用字节数		描述
+		Space ID of the INODE Entry		4				INODE Entry结构所在的表空间ID
+		Page Number of the INODE Entry	4				INODE Entry结构所在的页面页号
+		Byte Offset of the INODE Ent	2				INODE Entry结构在该页面中的偏移量	
+				
+	PAGE_BTR_SEG_LEAF 记录着叶子节点段对应的INODE Entry结构的地址是哪个表空间的哪个页面的哪个偏移量
+	PAGE_BTR_SEG_TOP  记录着非叶子节点段对应的INODE Entry结构的地址是哪个表空间的哪个页面的哪个偏移量
 		
-		不过需要注意的一点是，因为一个索引只对应两个段，所以只需要在索引的根页面中记录这两个结构即可。
+	这样子索引和其对应的段的关系就建立起来了。
+	
+	不过需要注意的一点是，因为一个索引只对应两个段，所以只需要在索引的根页面中记录这两个结构即可。
 
 		
 		
-小结：
+13. 个人的小结
 	
-	搞懂 HDR数据页类型、XDES数据页类型、INODE数据页类型。
+	搞懂 HDR数据页类型、XDES数据页类型、INODE数据页类型 里面的内部结构。
 	
-	把相关的点串联起来看。
+		也就是把相关的点串联起来看，脑子里面要有这个轮廓。 -- 进行中。
 	
 	由于本章中将会涉及比较多的概念，虽然这些概念都不难，但是却相互依赖，所以在看的时候：不要跳着看！
 	
@@ -606,8 +636,12 @@ XDES Entry链表
 	早上起来是状态最好的时候，还有睡前半个小时至1个半小时。
 	
 	
+	把1个表空间完整的结构都写出来了，这就是宇宙最全的文章/教程，服了。
+
+	表空间 > B+树 > 段(叶子索引段、非叶子索引段) > 区 > 页 > 行
+
 	
-	
+	DML对应的undo修改，也可以画图作对比 
 		
 -------------------------------------------------------
 				
@@ -638,7 +672,6 @@ select 16384-10240 = 6144 bytes
 
 	
 	
-如果把表空间比作是国家，段就相当于省，区就相当于市。一般的市都是属于某个省，就像FSEG状态的区全部属于某个段。而FREE、FREE_FRAG、FULL_FRAG这三种状态的区却直接隶属于表空间，就像北京市、天津市、上海市是直接属于国家管理一样。
 
 			
 
