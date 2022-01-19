@@ -6,17 +6,17 @@
 File Header.FIL_PAGE_TYPE 表示数据页的类型
 
 	类型名称					十六进制		描述
-	FIL_PAGE_TYPE_ALLOCATED		0x0000			最新分配，还没使用
+	FIL_PAGE_TYPE_ALLOCATED		0x0000			最新分配，还没使用   
 	FIL_PAGE_UNDO_LOG			0x0002			Undo日志页
 	FIL_PAGE_INODE				0x0003			段信息节点
 	FIL_PAGE_IBUF_FREE_LIST		0x0004			Insert Buffer空闲列表
 	FIL_PAGE_IBUF_BITMAP		0x0005			Insert Buffer位图
 	FIL_PAGE_TYPE_SYS			0x0006			系统页
 	FIL_PAGE_TYPE_TRX_SYS		0x0007			事务系统数据
-	FIL_PAGE_TYPE_FSP_HDR		0x0008			表空间头部信息
-	FIL_PAGE_TYPE_XDES			0x0009			扩展描述页
+	FIL_PAGE_TYPE_FSP_HDR		0x0008			表空间头部信息                   -- 每个表空间的第1个数据页，
+	FIL_PAGE_TYPE_XDES			0x0009			扩展描述页                       -- 每个区都对应一个XDES Entry结构。
 	FIL_PAGE_TYPE_BLOB			0x000A			溢出页
-	FIL_PAGE_INDEX				0x45BF			索引页，也就是我们所说的数据页
+	FIL_PAGE_INDEX				0x45BF			索引页，也就是我们所说的数据页   -- 由7部分组成。
 			
 	我们存放记录的数据页的类型其实是 FIL_PAGE_INDEX ，也就是所谓的索引页。
 	
@@ -593,8 +593,23 @@ XDES Entry链表
 
 		
 		
+小结：
+	
+	搞懂 HDR数据页类型、XDES数据页类型、INODE数据页类型。
+	
+	把相关的点串联起来看。
+	
+	由于本章中将会涉及比较多的概念，虽然这些概念都不难，但是却相互依赖，所以在看的时候：不要跳着看！
+	
+	技术人，在1个人在很安静的环境下，思路会更加清晰。
+	
+	早上起来是状态最好的时候，还有睡前半个小时至1个半小时。
+	
+	
+	
+	
 		
-		
+-------------------------------------------------------
 				
 一个扩展区大小 = 1 MB
 
