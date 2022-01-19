@@ -179,7 +179,7 @@
 			
 3. Data Dictionary Header页面
 
-	拿出一个固定的页面来记录这4个系统表的聚簇索引和二级索引对应的B+树位置，这个页面就是页号为7的页面，类型为 SYS (FIL_PAGE_TYPE_SYS 即 系统页)，记录了 Data Dictionary Header ，也就是数据字典的头部信息。
+	拿出一个固定的页面来记录这4个系统表的聚簇索引和二级索引对应的B+树位置( /* 重点 */ )，这个页面就是页号为7的页面，类型为 SYS (FIL_PAGE_TYPE_SYS 即 系统页)，记录了 Data Dictionary Header ，也就是数据字典的头部信息。
 	
 	-- 系统页有哪些？
 		
