@@ -169,8 +169,8 @@
 		Page Number of the INODE Entry	4				INODE Entry结构所在的页面页号
 		Byte Offset of the INODE Ent	2				INODE Entry结构在该页面中的偏移量	
 				
-	PAGE_BTR_SEG_LEAF 记录着叶子节点段对应的INODE Entry结构的地址是哪个表空间的哪个页面的哪个偏移量
-	PAGE_BTR_SEG_TOP  记录着非叶子节点段对应的INODE Entry结构的地址是哪个表空间的哪个页面的哪个偏移量
+	PAGE_BTR_SEG_LEAF 记录着叶子节点段对应的INODE Entry结构的地址是哪个表空间的哪个页面的哪个偏移量   -- 重点
+	PAGE_BTR_SEG_TOP  记录着非叶子节点段对应的INODE Entry结构的地址是哪个表空间的哪个页面的哪个偏移量 -- 重点
 		
 	通过 Segment Header 结构，索引和其对应的段的关系就建立起来了。
 	
