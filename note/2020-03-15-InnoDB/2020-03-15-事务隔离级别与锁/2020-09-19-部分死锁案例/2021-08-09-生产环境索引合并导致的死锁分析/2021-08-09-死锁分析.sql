@@ -172,9 +172,6 @@ CREATE TABLE `table_league_club_member` (
 	4 rows in set (0.00 sec)
 
 
-
-
-
 6. 死锁过程分析
 	
 	session A          		session B	
@@ -318,7 +315,7 @@ CREATE TABLE `table_league_club_member` (
 		1. 建立联合索引, 删除单列普通索引idx_nClubID
 			alter table table_league_club_member add index idx_nClubID_nPlayerID(nClubID, nPlayerID), drop index idx_nClubID;
 		2. 进一步优化更新语句，用主键ID做为where条件进行语句更新
-			因为在更新前先查询出相关数据做一些额外判断，这时候顺带也把主键ID取出来。
+			因为在更新前先查询出相关数据做一些额外判断，这时候顺带也把主键ID取出来，然后用主键ID做为where条件进行语句更新
 		
 		3. 优化后的存储过程
 			CREATE  PROCEDURE `pr_league_write_lecard`(
