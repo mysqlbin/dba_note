@@ -146,6 +146,7 @@
 
 	
 	2.3 inner join inner join 
+		
 		root@mysqldb 11:36:  [test_db]> desc select * from t_a a inner join t_b b on a.aID=b.bID inner join t_c c on a.aID=c.cID;
 		+----+-------------+-------+------------+--------+---------------+---------+---------+---------------+------+----------+-------+
 		| id | select_type | table | partitions | type   | possible_keys | key     | key_len | ref           | rows | filtered | Extra |
