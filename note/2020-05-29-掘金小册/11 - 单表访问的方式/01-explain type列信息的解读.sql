@@ -6,7 +6,11 @@
 	1.4 ref
 	1.5 fulltext	
 	1.6 ref_or_null
-	1.7 index_merge
+	1.7 index_merge 的3种方式
+		1. Using intersect	
+		2. Using union	
+		3. Using sort_union
+
 	1.8 unique_subquery
 	1.9 index_subquery
 	1.10 range
@@ -107,7 +111,7 @@
 
 	从执行计划的结果中可以看出，MySQL打算将s1作为驱动表，s2作为被驱动表，重点关注s2的访问方法是eq_ref，表明在访问s2表的时候可以通过主键的等值匹配来进行访问。
 	
-	root@localhost [db1]>EXPLAIN SELECT * FROM t1 INNER JOIN t2 ON t1.id = t2.id;
+	mysql> EXPLAIN SELECT * FROM t1 INNER JOIN t2 ON t1.id = t2.id;
 	+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+----------------------------------------------------+
 	| id | select_type | table | partitions | type | possible_keys | key  | key_len | ref  | rows | filtered | Extra                                              |
 	+----+-------------+-------+------------+------+---------------+------+---------+------+------+----------+----------------------------------------------------+
@@ -251,7 +255,7 @@
 
 
 
-1.7 index_merge
+1.7 index_merge 的3种方式
 	
 	index_merge的概念：
 	
@@ -310,12 +314,13 @@
 
 					第一个查询是因为对key1进行了范围匹配
 					第二个查询是因为联合索引 idx_key_part 中的 key_part2 和 key_part3 列并没有出现在搜索条件中，所以这两个查询不能进行 Using intersect 索引合并。
-						-- 二级联合索引，所以的列都要进行等值匹配
-		
+						-- 二级联合索引，所有的列都要进行等值匹配，这样才能保证 二级索引列+主键 是有序的。
+						
 
 
 			2. 情况2：主键列可以是范围匹配
-				-- 这里还不理解。
+				-- 这里还不理解。  
+				-- 后来又理解了。
 				比方说下边这个查询可能用到主键和idx_key1进行Intersection索引合并的操作：
 
 				SELECT * FROM single_table WHERE id > 100 AND key1 = 'a';			
@@ -363,7 +368,8 @@
 		
 		主键列可以是范围匹配：
 		
-			都带有主键值的，所以可以在从idx_key1中获取到的主键值上直接运用条件id > 100过滤就行了，这样多简单。
+			都带有主键值的，所以可以在从idx_key1中获取到的主键值上直接运用条件id > 100过滤就行了，通过过滤后得到的主键值再做回表操作，这样多简单，效率也高。
+						
 			所以涉及主键的搜索条件只不过是为了从别的二级索引得到的结果集中过滤记录罢了，是不是等值匹配不重要。		
 			
 			-- 理解了。
@@ -386,7 +392,7 @@
 		-- Using intersect 理解了。
 
 
-	Using union
+	2. Using union
 
 		drop table if exists single_table;
 		CREATE TABLE single_table (
@@ -408,8 +414,6 @@
 		
 		Intersection是交集的意思，这适用于使用不同索引的搜索条件之间使用AND连接起来的情况；
 		Union是并集的意思，适用于使用不同索引的搜索条件之间使用OR连接起来的情况。
-		
-		并集。
 		
 		MySQL在某些特定的情况下才可能会使用到Union索引合并：
 
@@ -438,77 +442,93 @@
 
 				优化器可能采用这样的方式来执行这个查询：
 
-					先按照搜索条件key1 = 'a' AND key3 = 'b'从索引idx_key1和idx_key3中使用Intersection索引合并的方式得到一个主键集合。
+					1. 先按照搜索条件 (key1 = 'a' AND key3 = 'b') 从索引idx_key1和idx_key3中使用Intersection索引合并的方式得到一个主键集合。
 
-					再按照搜索条件key_part1 = 'a' AND key_part2 = 'b' AND key_part3 = 'c'从联合索引idx_key_part中得到另一个主键集合。
+					2. 再按照搜索条件 (key_part1 = 'a' AND key_part2 = 'b' AND key_part3 = 'c') 从联合索引idx_key_part中得到另一个主键集合。
 
-					采用Union索引合并的方式把上述两个主键集合取并集，然后进行回表操作，将结果返回给用户
+					3. 采用Union索引合并的方式把上述两个主键集合取并集，然后进行回表操作，将结果返回给用户
 
+			
+			CREATE TABLE `t_index_merge` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT,
+			  `key1` varchar(100) DEFAULT NULL,
+			  `key2` int(11) DEFAULT NULL,
+			  `key3` varchar(100) DEFAULT NULL,
+			  `common_field` varchar(100) DEFAULT NULL,
+			  PRIMARY KEY (`id`),
+			  KEY `idx_key1` (`key1`),
+			  KEY `idx_key3` (`key3`)
+			) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
+			INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('1', '1', '1', '1', '1');
+			INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('2', '2', '1', '2', '1');
+			INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('3', '3', '3', '3', '3');
+			INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('4', '4', '4', '4', '4');
+			INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('5', '5', '5', '5', '5');
+			INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('6', '5', '5', '5', '5');
+			INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('7', '5', '5', '5', '5');
+			INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('8', '5', '5', '5', '5');
+			INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('9', '5', '5', '5', '5');
+			INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('10', '5', '5', '5', '5');
 
-		CREATE TABLE `t_index_merge` (
-		  `id` int(11) NOT NULL AUTO_INCREMENT,
-		  `key1` varchar(100) DEFAULT NULL,
-		  `key2` int(11) DEFAULT NULL,
-		  `key3` varchar(100) DEFAULT NULL,
-		  `common_field` varchar(100) DEFAULT NULL,
-		  PRIMARY KEY (`id`),
-		  KEY `idx_key1` (`key1`),
-		  KEY `idx_key3` (`key3`)
-		) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
-
-		INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('1', '1', '1', '1', '1');
-		INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('2', '2', '1', '2', '1');
-		INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('3', '3', '3', '3', '3');
-		INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('4', '4', '4', '4', '4');
-		INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('5', '5', '5', '5', '5');
-		INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('6', '5', '5', '5', '5');
-		INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('7', '5', '5', '5', '5');
-		INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('8', '5', '5', '5', '5');
-		INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('9', '5', '5', '5', '5');
-		INSERT INTO `db1`.`t_index_merge` (`id`, `key1`, `key2`, `key3`, `common_field`) VALUES ('10', '5', '5', '5', '5');
-
-		mysql> desc SELECT * FROM t_index_merge WHERE key1 = '1' OR key3 = '1';
-		+----+-------------+---------------+------------+-------------+-------------------+-------------------+---------+------+------+----------+---------------------------------------------+
-		| id | select_type | table         | partitions | type        | possible_keys     | key               | key_len | ref  | rows | filtered | Extra                                       |
-		+----+-------------+---------------+------------+-------------+-------------------+-------------------+---------+------+------+----------+---------------------------------------------+
-		|  1 | SIMPLE      | t_index_merge | NULL       | index_merge | idx_key1,idx_key3 | idx_key1,idx_key3 | 403,403 | NULL |    2 |   100.00 | Using union(idx_key1,idx_key3); Using where |
-		+----+-------------+---------------+------------+-------------+-------------------+-------------------+---------+------+------+----------+---------------------------------------------+
-		1 row in set, 1 warning (0.00 sec)
-		
-		show warnings;
-			SELECT
-			`db1`.`t_index_merge`.`id` AS `id`,
-			`db1`.`t_index_merge`.`key1` AS `key1`,
-			`db1`.`t_index_merge`.`key2` AS `key2`,
-			`db1`.`t_index_merge`.`key3` AS `key3`,
-			`db1`.`t_index_merge`.`common_field` AS `common_field`
-			FROM
-				`db1`.`t_index_merge`
-			WHERE
-				(
+			mysql> desc SELECT * FROM t_index_merge WHERE key1 = '1' OR key3 = '1';
+			+----+-------------+---------------+------------+-------------+-------------------+-------------------+---------+------+------+----------+---------------------------------------------+
+			| id | select_type | table         | partitions | type        | possible_keys     | key               | key_len | ref  | rows | filtered | Extra                                       |
+			+----+-------------+---------------+------------+-------------+-------------------+-------------------+---------+------+------+----------+---------------------------------------------+
+			|  1 | SIMPLE      | t_index_merge | NULL       | index_merge | idx_key1,idx_key3 | idx_key1,idx_key3 | 403,403 | NULL |    2 |   100.00 | Using union(idx_key1,idx_key3); Using where |
+			+----+-------------+---------------+------------+-------------+-------------------+-------------------+---------+------+------+----------+---------------------------------------------+
+			1 row in set, 1 warning (0.00 sec)
+			
+			show warnings;
+				SELECT
+				`db1`.`t_index_merge`.`id` AS `id`,
+				`db1`.`t_index_merge`.`key1` AS `key1`,
+				`db1`.`t_index_merge`.`key2` AS `key2`,
+				`db1`.`t_index_merge`.`key3` AS `key3`,
+				`db1`.`t_index_merge`.`common_field` AS `common_field`
+				FROM
+					`db1`.`t_index_merge`
+				WHERE
 					(
-						`db1`.`t_index_merge`.`key1` = '1'
+						(
+							`db1`.`t_index_merge`.`key1` = '1'
+						)
+						OR (
+							`db1`.`t_index_merge`.`key3` = '1'
+						)
 					)
-					OR (
-						`db1`.`t_index_merge`.`key3` = '1'
-					)
-				)
 	
 	
-	Using sort_union
-	
-		并集。
+	3. Using sort_union
 		
-	
+		
+		sort_union：
+			先按照二级索引记录的主键值进行排序，之后按照Union索引合并方式执行的方式称之为Sort-Union索引合并
+			这种Sort-Union索引合并比单纯的Union索引合并多了一步对二级索引记录的主键值排序的过程。
+			
+			
+		SELECT * FROM single_table WHERE key1 < 'a' OR key3 > 'z'
+		
+		这个查询无法使用到Union索引合并，原因：	
+			根据key1 < 'a'从idx_key1索引中获取的二级索引记录的主键值不是排好序的，根据key3 > 'z'从idx_key3索引中获取的二级索引记录的主键值也不是排好序的，
+			但是key1 < 'a'和key3 > 'z'这两个条件又特别让我们动心，所以我们可以这样：
+		
+			先根据key1 < 'a'条件从idx_key1二级索引中获取记录，并按照记录的主键值进行排序
+
+			再根据key3 > 'z'条件从idx_key3二级索引中获取记录，并按照记录的主键值进行排序
+
+			因为上述的两个二级索引主键值都是排好序的，剩下的操作和Union索引合并方式就一样了。	
+				
 	
 	
 1.8 unique_subquery
 	
-	unique subquery : 唯一索引子查询
-	类似于两表连接中被驱动表的 eq_ref 访问方法
-	unique_subquery是针对在一些包含IN子查询的查询语句中，如果查询优化器决定将IN子查询转换为EXISTS子查询，而且子查询可以使用到主键进行等值匹配的话，那么该子查询执行计划的type列的值就是unique_subquery，比如下边的这个查询语句：
-		root@localhost [db1]> EXPLAIN SELECT * FROM t1 WHERE key1 IN (SELECT id FROM t2 WHERE t1.key2 = t2.key2) OR key3 = '3';
+	unique subquery : 
+		唯一索引子查询
+		类似于两表连接中被驱动表的 eq_ref 访问方法
+		unique_subquery 是针对在一些包含IN子查询的查询语句中，如果查询优化器决定将IN子查询转换为 EXISTS 子查询，而且子查询可以使用到主键进行等值匹配的话，那么该子查询执行计划的type列的值就是 unique_subquery ，比如下边的这个查询语句：
+		
+		mysql> EXPLAIN SELECT * FROM t1 WHERE key1 IN (SELECT id FROM t2 WHERE t1.key2 = t2.key2) OR key3 = '3';
 		+----+--------------------+-------+------------+-----------------+---------------+---------+---------+------+------+----------+-------------+
 		| id | select_type        | table | partitions | type            | possible_keys | key     | key_len | ref  | rows | filtered | Extra       |
 		+----+--------------------+-------+------------+-----------------+---------------+---------+---------+------+------+----------+-------------+
@@ -549,7 +569,9 @@
 					OR (`db1`.`t1`.`key3` = '3')
 				)
 
+	
 1.9 index_subquery
+
 	index_subquery ： 普通索引子查询
 	index_subquery与unique_subquery类似，只不过访问子查询中的表时使用的是普通的索引，比如这样：
 	
@@ -596,9 +618,11 @@
 	1 row in set, 1 warning (0.00 sec)
 
 1.11 index
-	执行 full index scan(全索引扫描)， 并且可以通过索引完成结果扫描，直接从索引中取得想要的结果数据， 也就是可以避免回表， 比 ALL略好
+
+	执行 full index scan(全索引扫描)，并且可以通过索引完成结果扫描，直接从索引中取得想要的结果数据， 也就是可以避免回表， 比 ALL略好
 	
 	当我们可以使用索引覆盖，但需要扫描全部的索引记录时，该表的访问方法就是index，比如这样：
+	
 		KEY idx_key_part(key_part1, key_part2, key_part3)
 		
 		mysql> EXPLAIN SELECT key_part2 FROM s1 WHERE key_part3 = 'a';
@@ -611,7 +635,8 @@
 	
 	type=index and Extra=index 表示基于覆盖索引的全索引扫描.
 	
-	上述查询中的搜索列表中只有key_part2一个列，而且搜索条件中也只有key_part3一个列，这两个列又恰好包含在idx_key_part这个索引中，可是搜索条件key_part3不能直接使用该索引进行ref或者range方式的访问，只能扫描整个idx_key_part索引的记录，所以查询计划的type列的值就是index。
+	上述查询中的搜索列表中只有key_part2一个列，而且搜索条件中也只有key_part3一个列，这两个列又恰好包含在idx_key_part这个索引中，
+	可是搜索条件key_part3不能直接使用该索引进行ref或者range方式的访问，只能扫描整个idx_key_part索引的记录，所以查询计划的type列的值就是index。
 	
 	
 1.12 all 
@@ -620,6 +645,7 @@
 2. 小结
 	
 	一般来说，这些访问方法按照我们介绍它们的顺序性能依次变差。
+	
 	其中除了All这个访问方法外，其余的访问方法都能用到索引，除了index_merge访问方法外，其余的访问方法都最多只能用到一个索引。
 
 	对于使用InnoDB存储引擎的表来说，二级索引的记录只包含索引列和主键列的值，而聚簇索引中包含用户定义的全部列以及一些隐藏列，所以扫描二级索引的代价一般比直接全表扫描，也就是扫描聚簇索引的代价更低一些。
