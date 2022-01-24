@@ -89,6 +89,7 @@
 		5 rows in set (0.00 sec)
 
 2. 三表join
+
 	2.1 表的DLL和数据初始化
 	2.2 left join inner join 
 	2.3 inner join inner join 
@@ -214,7 +215,15 @@
 
 	
 3. 小结
-	可以看到, join 跟 inner join 得到的结果集是一样的.
+
+	可以看到, join 跟 inner join 得到的结果集是一样的，也就是说在MySQL中，下边这几种内连接的写法都是等价的：
+
+		SELECT * FROM t1 JOIN t2;
+
+		SELECT * FROM t1 INNER JOIN t2;
+
+		SELECT * FROM t1 CROSS JOIN t2;
+		
 	事情要一样一样地做好来, 学习技术也是.
 	
 	

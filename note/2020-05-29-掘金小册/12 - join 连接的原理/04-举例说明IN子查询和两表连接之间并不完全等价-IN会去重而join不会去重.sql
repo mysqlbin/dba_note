@@ -90,7 +90,7 @@
 	+----+------+------+------+--------------+
 	2 rows in set (0.00 sec)
 
-
+	
 	mysql> SELECT * FROM t1  WHERE key1 IN (SELECT common_field FROM t2 WHERE key3 = '1');
 	+----+------+------+------+--------------+
 	| id | key1 | key2 | key3 | common_field |
