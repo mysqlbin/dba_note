@@ -237,3 +237,10 @@ mysql> desc select * from t1 straight_join t2  ON t1.a=t2.a where t1.c=10 and t2
 2 rows in set, 1 warning (0.00 sec)
 
 	
+NLJ 算法，被驱动表的where 条件有索引也不用到。
+BNL 算法，被驱动表的where 条件有索引，是可以使用到的：
+	驱动表的符合where条件的数据先放入到join buffer，再扫描被驱动表的数据，然后到 join buffer 中匹配数据。
+	
+	
+	
+	
