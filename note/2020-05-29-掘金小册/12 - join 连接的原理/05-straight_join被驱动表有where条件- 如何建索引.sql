@@ -167,13 +167,18 @@
 		被驱动表如果有where条件列，最好可以根据被驱动表的连接列和where条件列建立组合索引。
 	
 	BNL算法
-		
 		被驱动表的where 条件有索引，是可以使用到的
 		驱动表的符合where条件的数据先放入到join buffer，再根据where条件扫描被驱动表的数据，然后到 join buffer 中匹配数据。
+		
+		参考笔记：《06-hash join和BNL算法的被驱动表有where条件-如何建索引.sql》
 		
 	HASH JOIN算法
 		被驱动表的where 条件有索引，是可以使用到的
 		驱动表的符合where条件的数据先放入到join buffer的hash table中，再根据where条件扫描被驱动表的数据，然后到 hash table 中匹配数据。
-		
-		
+		参考笔记：《06-hash join和BNL算法的被驱动表有where条件-如何建索引.sql》
+	
+	了解原理+一定的实践，遇到问题就可以快速定位并提出优化方案了。
+	
+	
+	
 		

@@ -280,34 +280,34 @@ alter table t2 drop index b;
 
 		create  database sbtest_02 DEFAULT CHARSET utf8mb4 -- UTF-8 Unicode COLLATE utf8mb4_general_ci;
 
-use sbtest_02;
-drop table t1;
-drop table t2;
-drop procedure idata;
-create table t1(id int primary key, a int, b int, index(b));
-create table t2 like t1;
-delimiter ;;
-create procedure idata()
-begin
-  declare i int;
-  set i=1;
-  start transaction;
-  while(i<=100000)do
-	insert into t1 values(i, 10001-i, i);
-	set i=i+1;
-  end while;
-  commit;
-  set i=1;
-  start transaction;
-  while(i<=2000000)do
-	insert into t2 values(i, i, i);
-	set i=i+1;
-  end while;
-  commit;
-  
-end;;
-delimiter ;
-call idata();
+		use sbtest_02;
+		drop table t1;
+		drop table t2;
+		drop procedure idata;
+		create table t1(id int primary key, a int, b int, index(b));
+		create table t2 like t1;
+		delimiter ;;
+		create procedure idata()
+		begin
+		  declare i int;
+		  set i=1;
+		  start transaction;
+		  while(i<=100000)do
+			insert into t1 values(i, 10001-i, i);
+			set i=i+1;
+		  end while;
+		  commit;
+		  set i=1;
+		  start transaction;
+		  while(i<=2000000)do
+			insert into t2 values(i, i, i);
+			set i=i+1;
+		  end while;
+		  commit;
+		  
+		end;;
+		delimiter ;
+		call idata();
 
 
 	查看SQL的执行计划
