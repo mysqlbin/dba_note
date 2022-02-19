@@ -12,7 +12,7 @@ config.read(configpath)
 host = 'smtp.163.com'
 port = 465
 sender = '13202095158@163.com'
-pwd = '20190809Go'
+pwd = ''
 receiver = ['13202095158@163.com', '1224056230@qq.com']
 '''
     
