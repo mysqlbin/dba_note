@@ -1,13 +1,55 @@
 
+卸载：
+	1. 删除
+	
+		[root@iZbp1co0b2dkojjkbk7r8cZ data]# cd /usr/local/bin/
+		[root@iZbp1co0b2dkojjkbk7r8cZ bin]# ll
+		total 32852
+		-rwxr-xr-x 1 root root 4365944 Feb 15 14:49 redis-benchmark
+		-rwxr-xr-x 1 root root 8151920 Feb 15 14:49 redis-check-aof
+		-rwxr-xr-x 1 root root 8151920 Feb 15 14:49 redis-check-rdb
+		-rwxr-xr-x 1 root root 4807160 Feb 15 14:49 redis-cli
+		lrwxrwxrwx 1 root root      12 Feb 15 14:49 redis-sentinel -> redis-server
+		-rwxr-xr-x 1 root root 8151920 Feb 15 14:49 redis-server
+
+		rm -f /usr/local/bin/redis*
+
+
+	2. 删除
+	
+		[root@iZbp1co0b2dkojjkbk7r8cZ local]# pwd
+		/usr/local
+		[root@iZbp1co0b2dkojjkbk7r8cZ local]# ll
+		total 652952
+		drwxr-xr-x  7 root  root       4096 Feb 15 03:01 aegis
+		drwxr-xr-x. 2 root  root       4096 Feb 15 14:49 bin
+		drwxr-xr-x. 2 root  root       4096 Apr 11  2018 etc
+		drwxr-xr-x. 2 root  root       4096 Apr 11  2018 games
+		drwxr-xr-x. 2 root  root       4096 Apr 11  2018 include
+		drwxr-xr-x. 2 root  root       4096 Apr 11  2018 lib
+		drwxr-xr-x. 2 root  root       4096 Apr 11  2018 lib64
+		drwxr-xr-x. 2 root  root       4096 Apr 11  2018 libexec
+		drwxr-xr-x  9 mysql mysql      4096 Feb 14 19:17 mysql
+		-rw-r--r--  1 root  root  666559924 Feb 14 18:41 mysql-5.7.36-linux-glibc2.12-x86_64.tar.gz
+		drwxrwxr-x  6 root  root       4096 Oct  4 18:58 redis
+		-rw-r--r--  1 root  root    2000179 Feb 14 22:23 redis-5.0.14.tar.gz
+		drwxr-xr-x. 2 root  root       4096 Apr 11  2018 sbin
+		drwxr-xr-x. 7 root  root       4096 Nov 30 15:18 share
+		drwxr-xr-x. 2 root  root       4096 Apr 11  2018 src
+			
+		rm -rf redis/
+
+	
+	
 
 名称 				版本
 Port 				6379
-Config file 		/data/redis/6379/conf/redis.conf
-Log file 			/data/redis/6379/data/redis_6379.log
-Data dir 			/data/redis/6379/data
+Config file 		/data/redis/6379/conf/redis.conf     -- 已指定
+logfile			    /data/redis/6379/data/redis_6379.log -- 已指定 
+dir 				/data/redis/6379/data				 -- 已指定	
 Executable 			/usr/local/bin/redis-server
 Cli Executable 	    /usr/local/bin/redis-cli
-
+pidfile             /data/redis/6379/6379.pid            -- 已指定
 
 
 1. 下载安装包并上传到  /usr/local 目录下并解压

@@ -36,13 +36,13 @@ chown mysql:mysql /data/mysql/3306/
 3. 数据库相关的目录创建出来
 配置文件：/etc/my.cnf
 /data  是一个单独挂载的一个分区
-datadir /data/mysql/mysql3306/data
+datadir /home/mysql/mysql3306/data
 binlog  /data/mysql/mysql3306/logs
         /data/mysql/mysql3306/tmp
-mkdir /mydata/mysql/3306/{data,logs,tmp} -p
+mkdir /home/mysql/3306/{data,logs,tmp} -p
 
 
-chown -R mysql:mysql mysql3306/
+chown -R mysql:mysql 3306/
 
 
 4. 初始化
@@ -72,7 +72,7 @@ OR
 
 /usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf & (生成.sock文件)
 
-/usr/local/mysql/bin/mysqld --defaults-file=/mydata/mysql/mysql3306/my.cnf &
+/usr/local/mysql/bin/mysqld --defaults-file=/home/mysql/3306/my.cnf &
 
 6：
 添加环境变量：
