@@ -1,0 +1,292 @@
+
+# IP地址
+host = "0.0.0.0"
+
+# 端口
+port = 4000
+
+# TiDB数据库目录
+path = "/tmp/tidb"
+
+# 忽略终端连接断开信号
+ignore_sighup = true
+
+[log]
+# 日志级别: debug, info, warn, error, fatal.
+level = "info"
+
+# 日志格式, one of json, text, console.
+format = "text"
+
+# 禁用时间戳输出
+disable-timestamp = false
+
+# 日志文件
+[log.file]
+# 日志文件名
+filename = ""
+
+# 日志文件的最大上限(MB)
+max-size = 300
+
+# Max日志文件的保存天数，默认值 `0`，即不清理
+max-days = 0
+
+# 要保留的最大旧日志文件数，默认值 `0`，即不清理
+max-backups = 0
+
+# 日志轮询，默认值 `true`，即开启
+log-rotate = true
+
+[inc]
+
+backup_host = "101.37.253.14"
+backup_port = 3306
+backup_user = "sql_online"
+backup_password = "123456abc"
+
+check_identifier = true
+enable_identifer_keyword = false
+enable_nullable = true
+enable_drop_table = false
+enable_set_engine = false
+enable_change_column = true
+enable_set_charset = true
+support_charset = "utf8mb4"
+check_autoincrement_init_value = true
+enable_blob_type = true
+check_timestamp_count = true
+check_table_comment = true
+check_column_comment = true
+merge_alter_table = true
+check_primary_key = true
+max_insert_rows = 1
+# 审核列类型变更
+check_column_type_change = true
+
+# 表名/索引名前缀
+index_prefix = "idx_"
+uniq_index_prefix = "uniq_"
+table_prefix = ""
+
+# explain判断受影响行数时使用的规则, 默认值"first"
+# 可选值: "first", "max"
+#      "first":    使用第一行的explain结果作为受影响行数
+#      "max":      使用explain结果中的最大值作为受影响行数
+explain_rule = "first"
+
+# 安全更新是否开启(mysql自身的功能).
+# -1 表示不做操作,基于远端数据库 [默认值]
+# 0  表示关闭安全更新
+# 1  表示开启安全更新
+sql_safe_updates = -1
+
+# 设置执行SQL时，会话变量
+# -1 表示不做操作，基于远端数据库【默认值】
+# > 0 值表示，会话在执行SQL 时获取锁超时的时间
+lock_wait_timeout = -1
+
+support_engine = "innodb"
+max_char_length = 1
+lang = "en-US"
+
+# 全量日志
+general_log = false
+
+[osc]
+
+# 用来设置在arkit返回结果集中，对于原来OSC在执行过程的标准输出信息是不是要打印到结果集对应的错误信息列中，
+# 如果设置为1，就不打印，如果设置为0，就打印。而如果出现了错误，则都会打印。默认值：OFF
+osc_print_none = false
+
+# 对应参数pt-online-schema-change中的参数--print。默认值：OFF
+osc_print_sql = false
+
+# 全局的OSC开关，默认是打开的，如果想要关闭则设置为OFF，这样就会直接修改。默认值：OFF
+osc_on = true
+
+# 这个参数实际上是一个OSC开关，如果设置为0，则全部ALTER语句都使用OSC方式，
+# 如果设置为非0，则当这个表占用空间大小大于这个值时才使用OSC方式。
+# 单位为M，这个表大小的计算方式是通过语句
+# select (DATA_LENGTH + INDEX_LENGTH)/1024/1024 from information_schema.tables
+# where table_schema = 'dbname' and table_name = 'tablename' 来实现的。默认值：16
+# [0-1048576]
+osc_min_table_size = 16
+
+# 对应参数pt-online-schema-change中的参数alter-foreign-keys-method，具体意义可以参考OSC官方手册。默认值：none
+# [auto | none | rebuild_constraints | drop_swap]
+osc_alter_foreign_keys_method = "none"
+
+# 对应参数pt-online-schema-change中的参数recursion_method，具体意义可以参考OSC官方手册。默认值：processlist
+# [processlist | hosts | none]
+osc_recursion_method = "processlist"
+
+# 对应参数pt-online-schema-change中的参数--max-lag。默认值：3
+osc_max_lag = 3
+
+# 类似--max-lag，检查集群暂停流量控制所花费的平均时间（仅适用于PXC 5.6及以上版本,会自动检测)
+osc_max_flow_ctl = -1
+# 对应参数pt-online-schema-change中的参数 --set-vars lock_wait_timeout=?
+osc_lock_wait_timeout = 60
+
+# 对应参数pt-online-schema-change中的参数--[no]check-alter。默认值：ON
+osc_check_alter = true
+
+# 对应参数pt-online-schema-change中的参数--[no]check-replication-filters。默认值：ON
+osc_check_replication_filters = true
+
+# 对应参数pt-online-schema-change中的参数--[no]drop-old-table。默认值：ON
+osc_drop_old_table = true
+
+# 对应参数pt-online-schema-change中的参数--[no]drop-new-table。默认值：ON
+osc_drop_new_table = true
+
+# 对应参数pt-online-schema-change中的参数--max-load中的thread_running部分。默认值：80
+osc_max_thread_running = 1500
+
+# 对应参数pt-online-schema-change中的参数--max-load中的thread_connected部分。默认值：1000
+osc_max_thread_connected = 4500
+
+# 对应参数pt-online-schema-change中的参数--critical-load中的thread_running部分。默认值：80
+osc_critical_thread_running = 1500
+
+# 对应参数pt-online-schema-change中的参数--critical-load中的thread_connected部分。默认值：1000
+osc_critical_thread_connected = 4500
+
+# 对应参数pt-online-schema-change中的参数--chunk-time。默认值：1
+osc_chunk_time = 1.0
+
+# 对应参数pt-online-schema-change中的参数--chunk-size-limit。默认值：4
+osc_chunk_size_limit = 4
+
+# 对应参数pt-online-schema-change中的参数--chunk-size。默认值：1000
+osc_chunk_size = 1000
+
+# 对应参数pt-online-schema-change中的参数--check-interval，意义是Sleep time between checks for --max-lag。默认值：5
+osc_check_interval = 5
+
+osc_bin_dir = "/usr/local/bin"
+
+
+[ghost]
+
+ghost_on = false
+ghost_allow_on_master = true
+ghost_assume_rbr = true
+ghost_chunk_size = 1000
+ghost_concurrent_rowcount = true
+ghost_cut_over = "atomic"
+ghost_cut_over_lock_timeout_seconds = 3
+ghost_default_retries = 60
+ghost_heartbeat_interval_millis = 500
+ghost_max_lag_millis = 1500
+ghost_approve_renamed_columns = true
+ghost_exponential_backoff_max_interval = 64
+ghost_dml_batch_size = 10
+ghost_ok_to_drop_table = true
+ghost_skip_foreign_key_checks = true
+
+# 0 1 2 分别表示什么，要做成表格的形式
+[inc_level]
+# 自增起始值不是2？
+er_inc_init_err = 2
+er_invalid_ident = 2
+# alter 语句合并
+er_alter_table_once = 2
+# 自增列限制
+er_auto_incr_id_warning = 1
+er_autoinc_unsigned = 1
+# BLOB、TEXT、GEOMETRY或JSON列没有有默认值。
+er_blob_cant_have_default = 1
+# 不支持change
+er_cant_change_column = 1
+er_cant_change_column_position = 1
+#不能设置字符集
+er_cant_set_charset = 1
+#不能设置排序规则
+er_cant_set_collation = 1
+#不能设置引擎
+er_cant_set_engine = 2
+# 不能修改数据类型
+er_change_column_type = 1
+# ddl变更不能超过多少行，这里不理解
+er_change_too_much_rows = 1
+
+er_char_to_varchar_len = 2
+# 不允许单列设置字符集或者排序规则
+er_charset_on_column = 1
+# 字段不能没有注释/备注
+er_column_have_no_comment = 2
+# 时间戳列设置默认值
+er_datetime_default = 1
+# 禁止使用外键
+er_foreign_key = 2
+# 禁止使用数据库关键字
+er_ident_use_keyword = 1
+# 禁止隐式类型转换
+er_implicit_type_conversion = 1
+# 索引前缀设置
+er_index_name_idx_prefix = 1
+# 唯一索引前缀
+er_index_name_uniq_prefix = 1
+# 插入太多行
+er_insert_too_much_rows = 2
+# 设置不支持的数据类型
+er_invalid_data_type = 1
+# join使用on
+er_join_no_on_condition = 1
+#  json 支持
+er_json_type_support = 2
+# 最少有1个列
+er_must_have_columns = 1
+# 必须有索引
+er_columns_must_have_index = 1
+
+er_columns_must_have_index_type_err = 1
+# 必须有where条件 
+er_no_where_condition = 1
+# 禁止设置字段为 null
+er_not_allowed_nullable = 2
+# 禁止随机排序
+er_ordery_by_rand = 1
+# 表不支持建分区
+er_partition_not_allowed = 1
+# 主键不是int
+er_pk_cols_not_int = 1
+# 主键包含过多字段
+er_pk_too_many_parts = 1
+# 禁止select *
+er_select_only_star = 1
+# 自增类型设置为int/bigint
+er_set_data_type_int_bigint = 2
+# 禁止设置表字符集
+er_table_charset_must_null = 2
+# 设置表字符集必须为 utf8 ？
+er_table_charset_must_utf8 = 1
+# 表必须有注释
+er_table_must_have_comment = 2
+# 表必须有主键索引
+er_table_must_have_pk = 1
+# 表名前缀
+er_table_prefix = 1
+# text、blob不能设置为null
+er_text_not_nullable_error = 1
+er_timestamp_default = 1
+er_too_many_key_parts = 1
+# 索引上限
+er_too_many_keys = 1
+er_too_much_auto_datetime_cols = 2
+er_too_much_auto_timestamp_cols = 2
+# 更新行数大于xxx
+er_udpate_too_much_rows = 2
+# 禁用enum类型
+er_use_enum = 1
+# text/blob是否启用
+er_use_text_or_blob = 0
+# #新增字段无默认值
+er_with_default_add_column = 1
+# 指定insert字段
+er_with_insert_field = 1
+er_with_limit_condition = 1
+er_with_orderby_condition = 1
+er_wrong_and_expr = 1
