@@ -3,7 +3,7 @@
 
 MySQL是单进程，多线程的软件；多实例，就是跑N个单进程。
 
-
+....
 当前在/data/mysql/mysql3306下操作
 
 cp /etc/my.cnf my3306.cnf 
