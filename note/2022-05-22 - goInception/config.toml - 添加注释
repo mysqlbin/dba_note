@@ -54,7 +54,9 @@ enable_change_column = true
 enable_set_charset = true
 support_charset = "utf8mb4"
 check_autoincrement_init_value = true
+# 列的类型不能是BLOB/TEXT	
 enable_blob_type = true
+# 不能同时有两个timestamp类型的列
 check_timestamp_count = true
 check_table_comment = true
 check_column_comment = true
