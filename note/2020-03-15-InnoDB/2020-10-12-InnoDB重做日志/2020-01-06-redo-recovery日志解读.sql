@@ -119,6 +119,11 @@ Version: '5.7.21-log'  socket: '/var/lib/mysql/mysql.sock'  port: 3306  MySQL Co
 # undo的回滚操作完成: 回滚的事务ID 为 97012170, 一共需要回滚 50886919 行记录
 2018-11-18T09:15:40.795869Z 0 [Note] InnoDB: Rollback of trx with id 97012170 completed
 2018-11-18T09:15:40.795915Z 0 [Note] InnoDB: Rollback of non-prepared transactions completed
+	
+耗时：
+	
+	回滚 50886919 行记录，耗时：10分钟。
+	2018-11-18T09:05:08 至 2018-11-18T09:15:40
 
 -----------------------------------------------------------------------------------------------
 Crash recovery 完成
@@ -214,3 +219,8 @@ Version: '5.7.21-log'  socket: '/var/lib/mysql/mysql.sock'  port: 3306  MySQL Co
 2018-11-18T20:25:52.520546Z 0 [Note] InnoDB: Rollback of non-prepared transactions completed
 
 
+耗时：
+	
+	回滚 103411492 行记录，耗时：20 分钟。
+	2018-11-18T20:04:20 至 2018-11-18T20:25:52
+	

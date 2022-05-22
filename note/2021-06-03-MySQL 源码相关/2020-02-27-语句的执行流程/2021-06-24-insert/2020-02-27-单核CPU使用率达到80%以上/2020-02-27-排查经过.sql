@@ -119,7 +119,7 @@
 				   trx_started: 2020-02-27 20:47:59
 		 trx_requested_lock_id: NULL
 			  trx_wait_started: NULL
-					trx_weight: 3924058      # 需要回滚的记录数
+					trx_weight: 3924058      
 		   trx_mysql_thread_id: 3018247      # 线程ID
 					 trx_query: call Pro_DividedMoney($intPlayerId,_totalFree,@result)
 		   trx_operation_state: NULL
@@ -128,7 +128,7 @@
 			  trx_lock_structs: 1
 		 trx_lock_memory_bytes: 360
 			   trx_rows_locked: 0
-			 trx_rows_modified: 3924057
+			 trx_rows_modified: 3924057		# 本事务已经修改的行数，需要回滚的记录数
 	   trx_concurrency_tickets: 0
 		   trx_isolation_level: REPEATABLE READ
 			 trx_unique_checks: 1

@@ -1,4 +1,9 @@
 
+监控全表扫描的sql语句
+select * from sys.statements_with_full_table_scans;
+
+
+
 1. 大部分连接来自哪里及发送的SQL情况:
 select host,current_connections,statements from sys.host_summary;
 
