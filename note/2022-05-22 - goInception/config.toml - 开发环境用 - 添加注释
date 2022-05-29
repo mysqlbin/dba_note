@@ -38,6 +38,7 @@ max-backups = 0
 # 日志轮询，默认值 `true`，即开启
 log-rotate = true
 
+# 审核选项
 [inc]
 
 backup_host = "101.37.253.14"
@@ -45,29 +46,42 @@ backup_port = 3306
 backup_user = "sql_online"
 backup_password = "123456abc"
 
+# 对象名允许字符[a-zA-Z0-9_]	
 check_identifier = true
 enable_identifer_keyword = false
+# 每个列都使用not null	
 enable_nullable = true
 enable_drop_table = false
+# 是否允许指定存储引擎,默认为true	
 enable_set_engine = false
+# 是否允许change column操作	
 enable_change_column = true
+# 是否允许指定表和数据库的字符集	
 enable_set_charset = true
 support_charset = "utf8mb4"
+# 当建表时自增列的值指定的不为1，则报错	
 check_autoincrement_init_value = true
 # 列的类型不能是BLOB/TEXT	
 enable_blob_type = true
-# 不能同时有两个timestamp类型的列
+# 不能同时有两个timestamp类型的列(配置是否检查current_timestamp数量)
 check_timestamp_count = true
+# 表要有注释	
 check_table_comment = true
+# 列必须要有注释	
 check_column_comment = true
+# 同一个表的多个ALTER要合并	
 merge_alter_table = true
+# 表要有主键	
 check_primary_key = true
+# 设置insert values允许的最大行数.0为不限制
 max_insert_rows = 1
-# 审核列类型变更
+# 检查字段类型变更
 check_column_type_change = true
 
 # 表名/索引名前缀
+# 普通索引前缀，默认为 idx_, 受审核参数 check_index_prefix 影响。为空时不限制	
 index_prefix = "idx_"
+# Unique索引必须要以uniq_为前缀	
 uniq_index_prefix = "uniq_"
 table_prefix = ""
 
