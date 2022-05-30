@@ -16,3 +16,11 @@ https://blog.csdn.net/qq_42979842/article/details/118189515   goinception审核�
 
 
 https://mp.weixin.qq.com/s/-fGPsqH8D93KZKqH52t0kg  DBA的福音，SQL审核利器-goinception
+
+
+https://hanchuanchuan.github.io/goInception/zh/levels.html	自定义审核级别
+	[inc_level]
+	
+https://hanchuanchuan.github.io/goInception/zh/demo.html#python%E8%B0%83%E7%94%A8  python调用
+
+

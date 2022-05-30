@@ -44,12 +44,19 @@
 	2. goInception 部署在项目代码外面，会有什么问题吗
 	
 		是如何识别的？
-	
+			启动goInception进程后，通过监听 端口=4000 来识别goInception
+			mysql -h127.0.0.1 -P4000
+			
 		是如何集成在archery中的？
 	
 	
 		不会有问题，只在goInception进程存在就可以了。
 		
+		
+		
+
+
+
 
 1.2.5 版本移除的参数
 	
