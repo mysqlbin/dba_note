@@ -3,7 +3,9 @@ https://mp.weixin.qq.com/s/RagHfZVZvq6zycZDqIvZYw  线上一个client连接失�
 
 https://mp.weixin.qq.com/s/vjNxRtTm5z59fv4wDwVacw  关于Aborted connection告警日志的分析
 
+0. Got an error reading communication packets
 
+	读取通信数据包时出错
 
 尝试修改max_allowed_packet参数的大小
 

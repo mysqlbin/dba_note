@@ -134,7 +134,10 @@
 	  PRIMARY KEY (`ID`),
 	  KEY `idx_age` (`age`)
 	) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4
-
+	-- 如果这里是实时写入的呢？
+	-- 做下实验。
+	
+	-- 只在新表建加字段。
 	2021-03-01T10:27:42.793253+08:00	13224 Query	ALTER TABLE `test_db`.`_t1_new` add column filed_02 int(10) not null default 0 comment 'filed_02'
 
 	2021-03-01T10:27:43.318687+08:00	13224 Query	/*!40101 SET @OLD_SQL_MODE := @@SQL_MODE, @@SQL_MODE := '', @OLD_QUOTE := @@SQL_QUOTE_SHOW_CREATE, @@SQL_QUOTE_SHOW_CREATE := 1 */

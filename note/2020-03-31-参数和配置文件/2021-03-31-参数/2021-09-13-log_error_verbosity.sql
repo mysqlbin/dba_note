@@ -7,6 +7,11 @@
 6. 案例
 
 
+0. Got an error reading communication packets
+
+	读取通信数据包时出错
+
+
 1. log_warnings
 	
 	log_warnings 定义是否将告警信息（warning messages）也写入错误日志。此选项默认启用，具体来说：
