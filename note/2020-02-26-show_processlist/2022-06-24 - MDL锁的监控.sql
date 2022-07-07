@@ -23,6 +23,8 @@ SELECT count(*) FROM INFORMATION_SCHEMA.PROCESSLIST where state="Waiting for tab
 			
 
 
+
+
 mysql> SELECT id,time,state,info FROM INFORMATION_SCHEMA.PROCESSLIST where state="Waiting for table metadata lock" order by id asc limit 1;
 +------+------+---------------------------------+----------------------------------------------+
 | id   | time | state                           | info                                         |

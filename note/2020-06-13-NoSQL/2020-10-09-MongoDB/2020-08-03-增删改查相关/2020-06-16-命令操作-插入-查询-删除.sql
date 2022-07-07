@@ -71,8 +71,10 @@
 	db.table_league_user_pic_small.update({nPlayerId:120022},{$unset:{"createTime" : "2021-06-08 14:15:17"}})
 	db.table_league_user_pic_large.update({nPlayerId:120022},{$unset:{"createTime" : "2021-06-08 14:15:17"}})
 
+	Sat Jun 25 19:40:19.276 I COMMAND  [conn2950284] command mongodb_admin_wework_scrm.t_tag command: update { update: "t_tag", ordered: true, $db: "mongodb_admin_wework_scrm", lsid: { id: UUID("1481e185-5bb3-4852-95ca-dbc6eab29041") }, $clusterTime: { clusterTime: Timestamp(1656157219, 4), signature: { hash: BinData(0, BD41E2EEB2B1D9E806CEE7CD7A49B95ACDAA06EE), keyId: 7080245293874151487 } } } nShards:1 nMatched:1 nModified:1 numYields:0 reslen:185 protocol:op_msg 111ms	
 	
 	
+		
 6. 查询
 	db.foo.find()   # 查询返回所有文档
 
