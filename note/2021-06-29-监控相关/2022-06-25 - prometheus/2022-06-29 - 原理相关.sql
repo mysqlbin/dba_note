@@ -45,15 +45,17 @@ archery                          RUNNING   pid 24307, uptime 20:58:08
 
 
 cat mysqld_exporter.实例ID.conf
+--web.listen-address=[IP]:[PORT] 
+IP 怎么获取
 
 
-$  cat mysqld_exporter.实例ID-端口.ini
-
+$  cat mysqld_exporter.实例ID-端口号.ini
+info_schema
 [program:实例ID]  # 这个是进程的名字，自定义
 
 directory = /opt/mysqld_exporter
 
-command = /opt/mysqld_exporter/mysqld_exporter --web.listen-address=[IP]:[PORT]  --collect.info_schema.processlist 
+command = /opt/mysqld_exporter/mysqld_exporter --web.listen-address=[IP]:[PORT]  --collect..processlist 
 -- 读取整个command命令的内容，然后写入到配置文件中
 -- 通过拼接 得到 这条命令：/opt/mysqld_exporter/mysqld_exporter --web.listen-address=[IP]:[PORT]  --collect.info_schema.processlist
 
@@ -65,8 +67,6 @@ autorestart = true
 
 startretries = 3
 
-user = root
-
 redirect_stderr = true
 
 stdout_logfile_maxbytes = 20MB
@@ -75,7 +75,7 @@ stdout_logfile_backups = 20
 
 stdout_logfile = /var/log/supervisor/实例ID.log
 
-environment=DATA_SOURCE_NAME='user:password@(hostname:3306)/'
+environment=DATA_SOURCE_NAME_端口号='user:password@(hostname:3306)/'
 
 
 
