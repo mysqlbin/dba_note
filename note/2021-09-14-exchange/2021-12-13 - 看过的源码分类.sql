@@ -5,8 +5,17 @@
 	drop table、truncate table、drop index、analyze table 请求重新计算索引统计信息、在线修改BP缓冲池、purge binary log  
 	-- 基本的流程 加的什么锁、什么时候释放，对业务有什么影响 
 	
-	drop table 需要加的锁：MDL写锁、buffer pool mutex、flush list mutex、数据字典锁，不需要扫描 lru list的数据
-    truncate table语句：需要扫描该表在 lru list 的数据，因此，持有的 buffer pool mutex、flush list mutex 更长，所以 truncate table语句 比 drop table 的代价高。
+	drop table 需要加的锁：
+		MDL写锁、buffer pool mutex、flush list mutex、数据字典锁，不需要扫描 lru list的数据
+		腾讯云数据库，已经支持异步删除大表的数据，避免IO抖动导致实例Hang住。
+		
+		关注下，使用pt-osc操作大表DDL的影响？
+			通过pt-osc操作大表的DDL，rename表完成后，默认需要删除old，虽然可以避免因为IO抖动导致实例hang住
+			但是drop table操作还是需要加 MDL写锁、buffer pool mutex、flush list mutex、数据字典锁。
+			
+			
+    truncate table语句：
+		需要扫描该表在 lru list 的数据，因此，持有的 buffer pool mutex、flush list mutex 更长，所以 truncate table语句 比 drop table 的代价高。
 		
 	
 2. 原理相关
