@@ -110,7 +110,10 @@ MySQL 主从原理、延迟的原因、如何避免主从延迟
 				
 	如何避免主从延迟：
 		通过DB平台定义检测规则对sql工单进行卡关
-		
+			1. DML:
+				禁用 insert into select 语句
+				update语句
+			2. 
 		
 			
 		
