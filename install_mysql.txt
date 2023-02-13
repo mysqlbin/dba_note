@@ -47,8 +47,8 @@ chown -R mysql:mysql 3306/
 
 4. 初始化
 cd /usr/local/mysql
-/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --initialize      //生成data目录下的文件 ，如果没有生成数据库文件 ，会报“pid”错误
-/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --initialize-insecure //生成data目录下的文件 ，如果没有生成数据库文件 ，会报“pid”错误
+/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --initialize      //需要密码登录，生成data目录下的文件 ，如果没有生成数据库文件 ，会报“pid”错误
+/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --initialize-insecure //不需要密码登录，生成data目录下的文件 ，如果没有生成数据库文件 ，会报“pid”错误
 (mysql -h 192.168.23.3 -uroot -P3308 OR mysql)
 
 

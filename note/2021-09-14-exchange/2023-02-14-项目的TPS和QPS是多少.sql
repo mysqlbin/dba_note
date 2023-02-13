@@ -1,4 +1,10 @@
 
+
+tps：每秒事务数；update+insert+delete的次数；
+
+qps：每秒请求次数；select+update+insert+delete的次数；
+	
+	
 最好的机器配置
 
 	内存大小  CPU	 磁盘类型   			顺序写的IOPS   顺序读的IOPS   混合随机读写的IOPS
@@ -25,3 +31,7 @@ fpmmm 的 mysql queries executed(执行的查询) 指标
 	delete: 10几
 	insert: 200多
 	update: 80 90
+	
+	
+-- 需要更新一波。
+
