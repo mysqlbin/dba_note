@@ -34,6 +34,8 @@ supervisorctl shutdown
 
 /usr/bin/supervisord -c /etc/supervisord.conf
 
+systemctl stop supervisord.conf
+
 
 supervisorctl stop cdb-2czqa3op                  
 supervisorctl stop cdb-2ihqctad                     

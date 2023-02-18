@@ -12,9 +12,16 @@
 	读取通信数据包时出错
 
 
+
+log-error：开启错误日志，并记录到日志文件中；
+log_error_verbosity：从MySQL 5.7.2开始，首选 log_error_verbosity 系统变量，而不是使用 log_warnings 系统变量，这个参数从MySQL 8.0.3开始被移除了，它分别对应：1 错误信息；2  错误信息和告警信息；3：错误信息、告警信息和通知信息；
+log_warnings：5.7.2 之前的版本可以使用，0： 表示不记录告警信息；1： 表示告警信息写入错误日志，大于1， 表示各类告警信息，例如有关网络故障的信息和重新连接信息写入错误日志，注意不同的版本中，默认值不一样。
+
+
 1. log_warnings
 	
-	log_warnings 定义是否将告警信息（warning messages）也写入错误日志。此选项默认启用，具体来说：
+	log_warnings 定义是否将告警信息（warning messages）也写入错误日志。控制是否生成其他警告消息。
+	此选项默认启用，具体来说：
 	
 		log_warnings Value 		含义
 		
