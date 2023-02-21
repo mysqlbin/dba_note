@@ -169,7 +169,7 @@
 
 	
 小结:
-	resize阶段buffer pool会不可用，此阶段会锁所有buffer pool, 但此阶段都是内存操作，时间比较短。
+	resize阶段buffer pool会不可用，此阶段会锁所有buffer pool, 但此阶段都是内存操作，时间比较短。 -- 是的；
 	收缩内存阶段耗时可能会很长，也有一定影响，但是每次都是以instance为单位进行锁定的。 
 	总的来说，buffer pool 动态调整大小对应用的影响并不大。
 	buffer pool 动态调整尽量在业务低锋时进行。

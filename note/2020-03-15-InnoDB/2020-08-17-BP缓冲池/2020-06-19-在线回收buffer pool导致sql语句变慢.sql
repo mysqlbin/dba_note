@@ -139,7 +139,14 @@ mysql> select version();
 	2020-06-19T09:44:13.369532+08:00 0 [Note] InnoDB: Re-enabled adaptive hash index.
 	2020-06-19T09:44:13.369544+08:00 0 [Note] InnoDB: Completed resizing buffer pool at 200619  9:44:13.
 	
-	-- 实际耗时: 9秒
+	-- 总耗时: 9秒
+		计算回收chunk的耗时：7秒；09:44:05 ~ 09:44:12
+			第一个instance 耗时: 3秒；09:44:05 ~ 09:44:08
+			第二个instance 耗时：3秒；09:44:48 ~ 09:44:12
+			
+		resize的耗时：0.5 秒；09:44:12.85 ~ 9:44:13.37； 1.37 - 0.85 = 0.52；
+		
+		
 	
 	
 1个chunk = 128MB 
