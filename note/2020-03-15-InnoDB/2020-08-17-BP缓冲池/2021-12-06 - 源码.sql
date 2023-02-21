@@ -74,7 +74,7 @@ buf_pool_resize()
 	for (ulint i = 0; i < srv_buf_pool_instances; i++) {
 		buf_pool = buf_pool_from_array(i);
 		
-		-- 锁BP缓冲池
+		-- 锁BP缓冲池，每次都是以instance为单位进行锁定
 		buf_pool_mutex_enter(buf_pool);
 
 		ut_ad(buf_pool->curr_size == buf_pool->old_size);
@@ -133,7 +133,7 @@ buf_pool_resize()
 		}
 	}
 	
-	-- 如果是收缩buffer pool，开始回收数据页, 这个步骤需要占用一定的时间, 同时需要BP缓冲池加锁
+	-- 如果是收缩buffer pool，开始回收数据页, 这个步骤需要占用一定的时间, 同时需要对BP缓冲池进行加锁，每次都是以instance为单位进行锁定
 	buf_resize_status("Withdrawing blocks to be shrunken.");
 
 	ib_time_t	withdraw_started = ut_time();

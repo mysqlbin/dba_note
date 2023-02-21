@@ -18,17 +18,21 @@
 
 2. 在线收缩BP缓冲池的流程和应用场景
 
+	-- 画流程图：大纲、子项
+	
 	在线收缩BP缓冲池的流程
 	
 		1. 假如开启了 AHI, 需要关闭 AHI(关闭AHI, 会释放Hash table中的数据).
 
-		2. 假如是缩小 Buffer Pool 的大小, 需要设置每个 Buffer Pool Instance 的 withdraw_target , 即设置回收的 Page 数目.
+		2. 假如是缩小 Buffer Pool 的大小, 计算需收缩的chunk数
 			
+			需要设置每个 Buffer Pool Instance 的 withdraw_target , 即设置回收的 Page 数目.
+			-- buf_pool->withdraw_target = withdraw_target; ——> 需要缩小的block（Page）数
 			在函数 buf_pool_withdraw_blocks() 进行回收 Page 操作:
 			
 				遍历buffer pool instances，以 buffer pool instances 为单位进行加锁
 				
-					首先从buf_pool->free开始回收, 将 Page 从free_list中释放, 插入 withdraw list.
+					首先从buf_pool->free开始回收, 将 Page 从free_list中释放, 插入 withdraw list(待删除链表).
 			
 					假如从free_list中回收的 Page 数目没有达到要求, 则需要继续从 lru_list 中回收. 将脏页刷盘, 然后插入 withdraw_list .
 				
@@ -53,7 +57,7 @@
 
 		5. 重新开启 AHI.
 		
-		6. 结合 源码+错误日志+文章 来整理的流程.
+		6. 结合 源码+错误日志中记录的步骤+文章 来整理的流程.
 		
 		
 

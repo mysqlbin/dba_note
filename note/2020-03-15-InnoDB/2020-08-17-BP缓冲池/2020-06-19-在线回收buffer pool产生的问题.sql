@@ -53,7 +53,7 @@ mysql> select version();
 	
 		注意:
 			设置变量 innodb_buffer_pool_size 时，触发函数 innodb_buffer_pool_size_update，在必要的检查后（例如避免重复发送请求，或者resize的太小），发送信号量 srv_buf_resize_event .然后立刻返回
-			因此设置变量成功，不等于bp 的size已经调整好了，只是发出了 一个resize请求而已.
+			因此设置变量成功，不等于bp 的size已经调整好了，只是发出了一个resize请求而已.
 
 
 	2020-06-19T09:44:04.918915+08:00 0 [Note] InnoDB: Resizing buffer pool from 10737418240 to 8589934592 (unit=134217728).
@@ -140,6 +140,7 @@ mysql> select version();
 	2020-06-19T09:44:13.369544+08:00 0 [Note] InnoDB: Completed resizing buffer pool at 200619  9:44:13.
 	
 	-- 实际耗时: 9秒
+	
 	
 1个chunk = 128MB 
 8个chunks = 1024MB
