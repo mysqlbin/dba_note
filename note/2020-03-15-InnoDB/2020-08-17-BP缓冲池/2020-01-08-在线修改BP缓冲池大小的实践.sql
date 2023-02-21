@@ -154,13 +154,16 @@
 			2021-12-08T10:20:40.970850+08:00 0 [Note] InnoDB: Completed to resize buffer pool from 5368709120 to 9663676416.
 			2021-12-08T10:20:40.970858+08:00 0 [Note] InnoDB: Re-enabled adaptive hash index.
 			2021-12-08T10:20:40.970874+08:00 0 [Note] InnoDB: Completed resizing buffer pool at 211208 10:20:40.
-
+		
+		-- 耗时 0.2秒； 10:20:40.76 ~ 10:20:40.97
 
 	
 4. 小结
+	
+	扩大内存比缩小内存相对容易些；
+	收缩内存阶段耗时可能会很长，也有一定影响，但是每次都是以instance为单位进行锁定的。           
+		-- 明白了； 这里是说在计算要回收的chunk数目阶段，需要把待回收的page放入待回收链表，耗时较长，所以持有锁（以instance为单位）的时间也会相对长一点；
 	resize阶段buffer pool会不可用，此阶段会锁所有buffer pool, 但此阶段都是内存操作，时间比较短。 -- 是的；
-	收缩内存阶段耗时可能会很长，也有一定影响，但是每次都是以instance为单位进行锁定的。 
-	总的来说，buffer pool 动态调整大小对应用的影响并不大。
-	buffer pool 动态调整尽量在业务低锋时进行。
+	总的来说，buffer pool 动态调整大小对应用的影响并不大； buffer pool 动态调整尽量在业务低锋时进行。
 
-
+	
