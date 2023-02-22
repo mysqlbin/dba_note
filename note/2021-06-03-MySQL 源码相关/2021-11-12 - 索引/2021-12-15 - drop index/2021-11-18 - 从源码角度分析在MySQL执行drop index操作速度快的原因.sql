@@ -36,6 +36,9 @@
 	生成表的行数：13亿行记录
 	表的.ibd文件大小：37GB
 	
+	二级索引k_1的大小？
+	
+	
 	drop index 的耗时
 		mysql> alter table sbtest1 drop index k_1;
 		Query OK, 0 rows affected (2.35 sec)
@@ -226,7 +229,7 @@ ha_innobase::commit_inplace_alter_table
 五、总结删除索引的流程
 
 
-	1. 检查索引是否可以删除, 并且标记所有要删除的索引(设置index->to_be_dropped = 1)，不需要对二级索引的记录打删除标记。 
+	1. 检查索引是否可以删除, 并且标记所有要删除的索引(设置index->to_be_dropped = 1)；不需要对二级索引的记录打删除标记。 
 		
 	2. 删除所有需要删除的索引。
 	
@@ -255,3 +258,6 @@ ha_innobase::commit_inplace_alter_table
 		
 
 
+	B+树数据结构，释放一个二级索引树的速度会很快？
+	
+	
