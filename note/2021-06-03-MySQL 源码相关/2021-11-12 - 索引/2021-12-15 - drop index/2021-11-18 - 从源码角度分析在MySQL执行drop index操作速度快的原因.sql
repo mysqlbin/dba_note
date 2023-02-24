@@ -187,10 +187,14 @@ ha_innobase::commit_inplace_alter_table
 		/*													
 		从数据字典 information_schema.INNODB_SYS_FIELDS、information_schema.INNODB_SYS_INDEXES 中删除索引项相关记录，并释放索引树
 		其中释放索引树的过程：
-			1. 先删除非根节点(btr_free_but_not_root), 同时清理非根节点数据页对应的AHI项
-			2. 再删除根节点(btr_free_root), 同时清理根节点数据页对应的AHI项 
-			3. btr_free_but_not_root 中会先释放 leaf segment 再释放 non-leaf segment
+			1. 先删除非根节点(叶子节点、btr_free_but_not_root), 同时清理非根节点数据页对应的AHI项
+			2. 再删除根节点(根节点、btr_free_root), 同时清理根节点数据页对应的AHI项 
+			3. btr_free_but_not_root 中会先释放 leaf segment 再释放 non-leaf segment   --  这里出处是哪里？
+			
 		*/
+		row_merge_drop_indexes_dict 
+			-> que_eval_sql
+				-> dict_drop_index_tree ()
 		-> row_merge_drop_indexes_dict
 			"BEGIN\n"
 			"found := 1;\n"
