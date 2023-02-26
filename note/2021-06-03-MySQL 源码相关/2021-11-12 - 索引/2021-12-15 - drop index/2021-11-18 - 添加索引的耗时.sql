@@ -53,6 +53,8 @@ trx_autocommit_non_locking: 0
 
 
 
+
+
 add index 耗时
 	mysql> alter table sbtest.sbtest1 add index k_1(`k`);
 	Query OK, 0 rows affected (19 min 46.24 sec)
@@ -118,6 +120,16 @@ add index 耗时
 	sda               0.00     0.00  263.00    8.00    48.05     2.00   378.21     4.26   15.41   15.78    3.00   3.21  87.10
 
 
+
+二级索引k_1的大小：18.86GB; 
+
+	MySQL [db_slowlog]>  SELECT     DATA_LENGTH / (1024 * 1024 * 1024) AS 'DATA_SIZE(GB)',     INDEX_LENGTH / (1024 * 1024 * 1024) AS 'INDEX_SIZE(GB)',     TABLE_SCHEMA,     TABLE_NAME FROM information_schema.TABLES WHERE TABLE_NAME = 'sbtest1';
+	+---------------+----------------+--------------+------------+
+	| DATA_SIZE(GB) | INDEX_SIZE(GB) | TABLE_SCHEMA | TABLE_NAME |
+	+---------------+----------------+--------------+------------+
+	|      264.7012 |        18.8662 | db_slowlog   | sbtest1    |
+	+---------------+----------------+--------------+------------+
+	1 row in set (0.00 sec)
 
 drop index 的耗时
 	-- 第一次执行
