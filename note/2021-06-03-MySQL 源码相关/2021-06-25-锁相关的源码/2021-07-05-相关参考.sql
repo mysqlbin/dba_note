@@ -30,3 +30,7 @@
 
 	http://blog.itpub.net/7728585/viewspace-2757311/	MySQL：从一个案例深入剖析InnoDB隐式锁和可见性判断
 
+	
+	https://mp.weixin.qq.com/s/1fFhyCHyrPN28nYxJCa9bw   Innodb行锁（1）：加锁流程  --重庆八怪
+	
+	

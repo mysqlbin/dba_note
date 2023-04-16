@@ -101,6 +101,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	4. 释放flush list mutex；
 	5. 释放buffer pool mutex；
 	
+	-- 这里的加锁流程，可以跟回收BP缓冲池的加锁流程做个对比； 
 	
 	MySQL官方在5.5.23版本中也实现了一个lazy drop的功能，但和Percona的实现方式不一样：
 		在移除flush list时，会有一个条件判断，如果已经处理了超过一定数量的page，会强制释放当前持有的buffer pool mutex和flush list mutex，并且让出CPU，过一会儿再重新拿回锁继续清理flush list；
@@ -114,7 +115,9 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		
 	1. 获取dict_sys->mutex这个数据字典的全局锁
 		-- 函数：ha_innobase::delete_table->row_drop_table_for_mysql->row_mysql_lock_data_dictionary
-		-- 阻塞DML语句，不会阻塞查询语句 
+		-- 阻塞DML、select、prepare等语句；
+		《2022-10-23 - 同时drop 多个大表、总数据量为1TB导致业务的请求被阻塞》
+		《2022-10-31 - 异步drop 1.5TB的大表》
 		
 	2. 启动一个InnoDB DDL事务
 		-- 函数：ha_innobase::delete_table->row_drop_table_for_mysql->trx_start_for_ddl
@@ -167,6 +170,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	11. 释放表的MDL写锁。
 	
 	
+	-- 少了锁bp缓冲池空间的执行流程； 
 	
 	
 3. drop table的风险和避免方法
@@ -183,6 +187,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	2. 可能会引起的风险：
 		
 		MySQL长时间阻塞其他事务执行，大量请求堆积，实例假死。
+		
 			(数据字典全局锁是一把大的全局排他锁，内存缓冲池锁是淘汰1024个脏页后就释放锁，然后反复做这个操作，直到这个表的脏页淘汰完成)
 		
 		磁盘IO被短时间大量占用，数据库性能明显下降(IO)   -- 不存在。
@@ -216,7 +221,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		MDL写锁、数据字典的全局排他锁、BP缓冲池排他锁。
 
 		数据字典的全局排他锁：
-			会阻塞DML语句(处于 opening tables 状态)、不会阻塞查询语句，这个影响很大。
+			会阻塞DML、select、prepare等语句(处于 opening tables 状态)，这个影响很大。
 		
 		BP缓冲池排他锁：      
 			内存缓冲池锁是淘汰1024个脏页后就释放锁，然后反复做这个操作，直到这个表的脏页淘汰完成，这个影响不大。
@@ -251,12 +256,13 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		三、drop表或者删除索引的时候只会将XDES描述符页面(每256个区加载一个XDES页面)加载到bufferpool，在释放extent过程中通过xdes_init方法来重新初始化该XDES描述符内对应区的属性，将其置为干净可用状态，在整个	过程中数据和索引页面不会加载到bufferpool
 		
 		四、
-			drop表期间会持有 row_mysql_lock_data_dictionary 数据字典锁，这个锁是一个全局锁，对于后续操作数据字典的都会阻塞，例如create、show create、DML等操作，不会阻塞查询语句，
+			drop表期间会持有 row_mysql_lock_data_dictionary 数据字典锁，这个锁是一个全局锁，对于后续操作数据字典的都会阻塞，例如create、show create、DML、select、Prepare等操作；
 			被阻塞的SQL状态表现为 Opening tables ，drop表这个SQL的状态为 checking permissions ,这个锁会在删除表时获取直到将.ibd文件删除才会用 row_mysql_unlock_data_dictionary 释放
 			另外truncate table也会走这个持这个锁的流程，将.ibd文件删除才会用 row_mysql_unlock_data_dictionary 释放  
 			-- 验证了，理解了。
 			
 		五、看了truncate流程后，对于允许drop或者truncate的表，优选drop,原因如下:
+		
 			1. truncate table与mysql版本有很大关系，版本不同影响很大,5.6(本人percona-5.6.29) truncate是真正的删除.ibd文件然后重建，5.7(本人percona-5.7.26)是释放所有的索引树然后重用该ibd文件,也就是说5.6可以采用硬连接来消除删除.ibd这段时间，但是5.7不行，因为是重用该.ibd文件，硬连接空间会随着.ibd一同释放
 			2.
 				truncate table不管5.6还是5.7都会立即清理该表在buffer pool的数据页和脏页，而drop table只立即释放脏页面
