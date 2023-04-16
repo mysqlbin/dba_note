@@ -1043,3 +1043,50 @@ E:\github\mysql-5.7.26\sql\sql_table.cc
 			
 	
 	
+
+/*********************************************************************//**
+If a table is not yet in the drop list, adds the table to the list of tables
+which the master thread drops in background. We need this on Unix because in
+ALTER TABLE MySQL may call drop table even if the table has running queries on
+it. Also, if there are running foreign key checks on the table, we drop the
+table lazily.
+@return TRUE if the table was not yet in the drop list, and was added there */
+static
+ibool
+row_add_table_to_background_drop_list(
+/*==================================*/
+	const char*	name)	/*!< in: table name */
+{
+	row_mysql_drop_t*	drop;
+
+	mutex_enter(&row_drop_list_mutex);
+
+	ut_a(row_mysql_drop_list_inited);
+
+	/* Look if the table already is in the drop list */
+	for (drop = UT_LIST_GET_FIRST(row_mysql_drop_list);
+	     drop != NULL;
+	     drop = UT_LIST_GET_NEXT(row_mysql_drop_list, drop)) {
+
+		if (strcmp(drop->table_name, name) == 0) {
+			/* Already in the list */
+
+			mutex_exit(&row_drop_list_mutex);
+
+			return(FALSE);
+		}
+	}
+
+	drop = static_cast<row_mysql_drop_t*>(
+		ut_malloc_nokey(sizeof(row_mysql_drop_t)));
+
+	drop->table_name = mem_strdup(name);
+
+	UT_LIST_ADD_LAST(row_mysql_drop_list, drop);
+
+	MONITOR_INC(MONITOR_BACKGROUND_DROP_TABLE);
+
+	mutex_exit(&row_drop_list_mutex);
+
+	return(TRUE);
+}

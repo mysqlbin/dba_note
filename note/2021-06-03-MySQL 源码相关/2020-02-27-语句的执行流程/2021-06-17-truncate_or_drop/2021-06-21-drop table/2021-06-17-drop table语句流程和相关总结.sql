@@ -124,10 +124,11 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 		
 	3. 设置 table->to_be_dropped = true
 	
-	4. row_add_table_to_background_drop_list
+	4. row_add_table_to_background_drop_list   -- 后面需要看看这个函数的代码
 		-- 这里还不理解
+		-- 现在理解了：lazy drop逻辑; -- 2023-04-16
 		
-	5. 从系统表中清理表信息
+	5. 从系统表（数据字典）中清理表信息
 		
 		拼接了一个巨大的SQL，用来从系统表中清理信息，会释放索引树(主键索引树、二级索引树), 同时清理AHI项。
 		
@@ -186,7 +187,7 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 
 	2. 可能会引起的风险：
 		
-		MySQL长时间阻塞其他事务执行，大量请求堆积，实例假死。
+		MySQL秒级别）阻塞其他事务执行，大量请求堆积，实例假死。
 		
 			(数据字典全局锁是一把大的全局排他锁，内存缓冲池锁是淘汰1024个脏页后就释放锁，然后反复做这个操作，直到这个表的脏页淘汰完成)
 		
@@ -330,7 +331,8 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 	
 	https://cloud.tencent.com/developer/article/1006978?fromSource=gwzcw.2456437.2456437.2456437&cps_key=6952b221f5c1294d376262dfc91bc36b&from=console   -- 也是好文
 	 
-
+	https://blog.csdn.net/qq_42979842/article/details/115016305  MySQL DROP一张表原来竟然要做这么多工作？
+	
 		
 7. 相关思考
 
