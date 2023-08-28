@@ -331,6 +331,18 @@
 		执行 from 子查询得到的结果集组成的表称为派生表。
 		把这种由子查询结果集组成的表称之为派生表
 		
+		CREATE TABLE t1 (
+			id INT NOT NULL AUTO_INCREMENT,
+			key1 VARCHAR(100),
+			key2 INT,
+			key3 VARCHAR(100),
+			common_field VARCHAR(100),
+			PRIMARY KEY (id),
+			KEY idx_key1 (key1),
+			UNIQUE KEY idx_key2 (key2),
+			KEY idx_key3 (key3)
+		) Engine=InnoDB CHARSET=utf8mb4;
+		
 		root@mysqldb 17:11:  [audit_db]> show warnings;
 		+-------+------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 		| Level | Code | Message                                                                                                                                                                                                                                                  |

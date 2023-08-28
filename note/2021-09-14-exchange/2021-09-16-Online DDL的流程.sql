@@ -107,5 +107,6 @@
 	no-rebuild 和 rebuild 加的锁是一样的。
 	
 	
+	如何口述出来呢？
 	
 	

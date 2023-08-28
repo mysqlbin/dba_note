@@ -33,6 +33,7 @@ mysql> desc select playerid from t20191007 where szEndTime >= '2019-09-28 00:00:
     非最左列的天然有序， 是指 当第一列是等值查询的时候，对应的第二列才是天然有序的。 （丁奇的 MySQL 实战45讲 中有提到）
 	
 为什么 group by 会产生 filesort？
+	默认会 group by后的结果进行排序；
     Using temporary、Using filesort 同时出现，是指使用了临时表，并且在临时表上进行排序。
 	
 	
