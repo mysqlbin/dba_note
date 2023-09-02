@@ -1,3 +1,8 @@
+trx_commit_for_mysql
+
+打个断点看看流程
+
+2021-09-16-Online DDL的流程.sql
 
 
 https://www.bookstack.cn/read/aliyun-rds-core/272571
@@ -13,4 +18,6 @@ https://cloud.tencent.com/developer/article/1358162	 MySQL InnoDB创建索引
 
 
 http://liuyangming.tech/06-2019/CreateIndexMySQL.html	   -- 很详细。
+
+
 

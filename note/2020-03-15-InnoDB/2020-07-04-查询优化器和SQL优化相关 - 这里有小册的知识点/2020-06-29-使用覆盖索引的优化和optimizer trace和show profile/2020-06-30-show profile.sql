@@ -3,14 +3,14 @@
 1. show profile的说明 
 
 	show profile是mysql提供可以用来分析当前会话中语句执行的资源消耗情况，可以用于SQL的调优测量。
-	 
+	show profile查看SQL执行生命周期、语句执行的资源消耗情况；分析sql执行慢在哪里：排序耗时长、需要临时表存储数据慢等
 	 
 2. 相关参考
 	https://www.cnblogs.com/xujunkai/p/12496634.html   show profile查看SQL执行生命周期
 	https://dev.mysql.com/doc/refman/5.7/en/show-profile.html
 	https://blog.csdn.net/sj349781478/article/details/78224713  Mysql show profile 详解
-
-
+	https://www.modb.pro/db/555938  mysql profile
+	
 3. 使用 idx_loginIp_szTime索引
 
 	set profiling = 1;
@@ -83,7 +83,7 @@
 
 	converting HEAP to MySIAM             数据过大MyISAM内存装不下，向磁盘上搬运
 	Creating tmp table                   临时表创建
-	Copying to tmp table on disk         复制临时表到磁盘
+	Copying to tmp table on disk         从内存临时表拷贝数据到磁盘临时文件；
 	locked                                锁。阻塞
 
 	

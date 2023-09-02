@@ -70,10 +70,15 @@ https://baike.baidu.com/item/%E6%A0%88%E5%B8%A7/5662951?fr=aladdin    栈帧
 			
 		
 	Percona曾经在MySQL官方5.5.23之前的版本中遇到过这个问题，并且提供了一种叫Percona Lazy Drop的补丁。简单来说，他们认为这个问题的瓶颈在CPU。
+	
 	在删除一个有独立表空间的大表时，需要对buffer pool中所有和这个表空间有关的数据页做清理工作，包括从AHI，flush list和LRU list上移除，而在这个清理过程中，会一直持有buffer pool的mutex。
 	如果buffer pool配置特别大，比如500 GB大小，持有这个mutex的事件会较长，导致其他连接被阻塞住，从而导致系统性能的下降。
 	Percona Lazy Drop就是在清理buffer pool这里做了优化，尽量短时间和小粒度的持有mutex。
-		
+	
+	尽量短时间和小粒度的持有mutex/锁。
+	
+	
+	
 		
 1. drop table懒加载模式
 
