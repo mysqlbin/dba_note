@@ -11,3 +11,15 @@ InnoDB B+树主键索引的叶子节点存的是什么
 	
 	
 二级索引：根据字段的顺序以索引的形式进行存放。
+
+
+
+create table T(
+  id int primary key, 
+  k int not null default 0, 
+  name varchar(16),
+  index (`k)
+engine=InnoDB;
+	
+	
+
