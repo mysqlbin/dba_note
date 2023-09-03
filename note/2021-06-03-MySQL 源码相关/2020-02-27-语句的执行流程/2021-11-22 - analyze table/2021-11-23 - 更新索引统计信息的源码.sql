@@ -355,55 +355,6 @@ dict_stats_process_entry_from_recalc_pool
 
 
 
-dict_stats_update 
-
-	/* Persistent recalculation requested, called from
-	1) ANALYZE TABLE, or
-	2) the auto recalculation background thread, or
-	3) open table if stats do not exist on disk and auto recalc
-	   is enabled 
-	请求重新计算统计值的方式：
-		1. 当手动执行ANALYZE TABLE
-		2. 进入到自动重新计算后台线程，
-		3. 打开的表的stats不存在
-	 */
-	/* InnoDB internal tables (e.g. SYS_TABLES) cannot have
-	persistent stats enabled */
-	ut_a(strchr(table->name.m_name, '/') != NULL);
-
-	/* check if the persistent statistics storage exists
-	before calling the potentially slow function
-	dict_stats_update_persistent(); that is a
-	prerequisite for dict_stats_save() succeeding */
-	
-	-- 1. 检查dict_stats_persistent_storage_check() 检查相关系统表是否存在，不存在报错
-	if (dict_stats_persistent_storage_check(false)) {
-
-		dberr_t	err;
-		
-		-- 2. dict_stats_update_persistent(table) 更新表的统计信息
-		/*
-			先更新聚集索引，再更新二级索引，均调用函数 dict_stats_analyze_index.
-			/* analyze the clustered index first */
-			/* analyze other indexes from the table, if any */
-		*/
-		
-		err = dict_stats_update_persistent(table);
-
-		if (err != DB_SUCCESS) {
-			return(err);
-		}
-		
-		-- 3. dict_stats_save(table) 将统计信息更新到持久化存储系统表中
-		err = dict_stats_save(table, NULL);
-
-		return(err);
-	}
-	
-	
-	-> dict_stats_update_persistent
-
-	-> dict_stats_save
 
 	
 

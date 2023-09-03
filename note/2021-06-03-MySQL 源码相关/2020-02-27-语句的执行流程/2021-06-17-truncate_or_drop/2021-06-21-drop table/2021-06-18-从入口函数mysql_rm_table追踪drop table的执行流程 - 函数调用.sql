@@ -1090,3 +1090,35 @@ row_add_table_to_background_drop_list(
 
 	return(TRUE);
 }
+
+
+
+
+
+/* 锁住数据字典（独占锁）*/
+row_mysql_lock_data_dictionary(trx);
+					
+					
+					
+					
+/*********************************************************************//**
+Unlocks the data dictionary exclusive lock. */
+void
+row_mysql_unlock_data_dictionary(
+/*=============================*/
+	trx_t*	trx)	/*!< in/out: transaction */
+{
+	ut_ad(lock_trx_has_sys_table_locks(trx) == NULL);
+
+	ut_a(trx->dict_operation_lock_mode == RW_X_LATCH);
+
+	/* Serialize data dictionary operations with dictionary mutex:
+	no deadlocks can occur then in these operations */
+
+	mutex_exit(&dict_sys->mutex);
+	rw_lock_x_unlock(dict_operation_lock);
+
+	trx->dict_operation_lock_mode = 0;
+}
+
+
