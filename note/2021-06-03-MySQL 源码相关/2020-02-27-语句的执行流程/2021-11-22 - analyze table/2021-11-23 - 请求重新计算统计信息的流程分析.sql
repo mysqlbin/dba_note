@@ -94,14 +94,7 @@
 
 
 4. 参考源码级相关文章
-	
-	https://developer.aliyun.com/article/41045
-	https://tusundong.top/post/empty_cardinality_bug.html	
-	http://mysql.taobao.org/monthly/2020/03/08/
-	http://mysql.taobao.org/monthly/2020/12/05/
-	https://www.modb.pro/db/655372   MySQL 深潜 - 统计信息采集
-	
-	https://www.cnblogs.com/igoodful/p/13570312.html  analyze table
+
 	
 	
 5. 其它待解决
