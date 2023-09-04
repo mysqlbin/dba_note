@@ -221,7 +221,9 @@
 		
 	
 	13. Opening tables
-
+	
+		-- 打开表，被阻塞了；
+			
 		The thread is trying to open a table. This is should be very fast procedure, unless something prevents opening. 
 		For example, an ALTER TABLE or a LOCK TABLE statement can prevent opening a table until the statement is finished. 
 		怎么知道SQL语句使用到了磁盘临时表估辅助排序？
@@ -231,6 +233,16 @@
 		The thread is checking whether the server has the required privileges to execute the statement.
 
 		线程正在检查服务器是否具有执行语句所需的权限。
+	
+	16. converting HEAP to MyISAM  
+	
+		converting HEAP to MyISAM 线程从转换内部临时表MEMORY内存表到磁盘MyISAM表
+		
+		案列：
+			state = "converting HEAP to MyISAM"; 
+			kill 这个状态的会话，command 持续等于 "Killed", 原因：需要从磁盘上清理MyISAM表的数据；
+			所以耗时会比较长；
+		
 		
 3. Show proceslist时发现大量的sleep，有什么风险吗，该如何处理？
 
