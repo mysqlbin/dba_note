@@ -94,13 +94,9 @@
 
 
 4. 参考源码级相关文章
-	
-	https://developer.aliyun.com/article/41045
-	https://tusundong.top/post/empty_cardinality_bug.html	
-	http://mysql.taobao.org/monthly/2020/03/08/
-	http://mysql.taobao.org/monthly/2020/12/05/
-	
 
+	
+	
 5. 其它待解决
 
 	1. dict_stats_thread 后台线程多久运行一次？
@@ -108,6 +104,7 @@
 	2. 添加/删除字段、添加索引 需要把表ID 加入到 recalc_pool 吗？
 	
 	3. 获取表的总行数，应该是从information_schmea.tables获取吗
+	    是的。
 		n_rows = dict_table_get_n_rows(table);
 
 
@@ -173,8 +170,9 @@
 	MySQL 优化器选择索引的依据：
 		根据索引统计信息(索引基数)来估算扫描的记录数 、是否有使用临时表做group by 分组操作、是否需要排序等做综合考量。
 		
-		其中，索引基数是采样统计的。
-		
+		注意：
+			索引基数是采样统计的。
+			各个表的索引统计信息(索引基数)，在主库、从库并不保持一致；
 		
 	索引统计信息的更新时机：
 		1. 持久化场景：
@@ -208,7 +206,7 @@
 		
 		select concat("analyze table ", table_name, ";") from mysql.innodb_table_stats  where database_name='niuniuh5_db' and last_update < DATE_SUB(NOW(), INTERVAL 3 DAY);
 		
-	2. 停服更新，在主库对指定的业务表，执行一遍 analyze table 操作。
+	2. 停服更新期间，在主库对指定的业务表，执行一遍 analyze table 操作。
 	
 	3. 添加定时器，每天的1号、15号，对在从库对指定的业务表，执行一遍 analyze table 操作。
 		这个操作要避开备份的时间。
