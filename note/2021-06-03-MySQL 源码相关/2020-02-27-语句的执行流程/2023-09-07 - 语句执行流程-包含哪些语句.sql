@@ -1,10 +1,9 @@
 
-
-1、Online DDL
-2、drop表
-3、analyze table
+1、update语句
+2、Online DDL
+3、drop表
 4、在线调整BP缓冲池大小
-5、update语句
+5、analyze table
 
 
 1-4的执行流程， 更偏向于日常运维，需要执行的SQL语句；熟悉对应的执行流程及可能会导致的业务影响，对数据库/业务的风险，有一定的把控能力；
