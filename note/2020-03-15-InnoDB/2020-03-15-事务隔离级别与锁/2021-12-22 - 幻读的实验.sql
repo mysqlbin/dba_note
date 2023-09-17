@@ -2,6 +2,11 @@
 
 1. 初始化表结构和数据
 2. READ-COMMITTED 下的二级索引
+	2.1 for update + insert
+	2.2 for update + delete
+	2.3 select + insert 
+	2.4 select + delete 
+	
 3. REPEATABLE-READ下的二级索引
 4. REPEATABLE-READ下的主键索引
 5. 小结
@@ -34,6 +39,7 @@
 
 2. READ-COMMITTED 下的二级索引
 
+2.1 for update + insert
 	mysql> select version();
 	+------------+
 	| version()  |
@@ -75,8 +81,73 @@
 	|  6 |    3 |    6 |
 	+----+------+------+
 	2 rows in set (0.00 sec)
-								
-								
+									
+	行锁只能锁住行记录，无法锁住记录之间的空隙，如果别的事务有数据写入，那么就会读取到多余的数据。
+	
+	
+2.2 for update + delete:
+	session A                      session B
+	begin;
+	select * from t where c=3 for update;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  3 |    3 |    3 |
+	+----+------+------+
+	1 row in set (0.00 sec)
+									delete * from t where c=3;
+									(Blocked)
+
+
+2.3 select + insert 
+
+	session A                      session B
+	begin;
+	select * from t where c=3;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  3 |    3 |    3 |
+	+----+------+------+
+	1 row in set (0.00 sec)
+		
+									
+									INSERT INTO `t` (`c`, `d`) VALUES ('3', '6');
+									Query OK, 1 row affected (0.05 sec)
+									
+	select * from t where c=3;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  3 |    3 |    3 |
+	|  6 |    3 |    6 |  
+	+----+------+------+
+	2 rows in set (0.00 sec)
+	
+
+2.4 select + delete 
+
+	session A                      session B
+	begin;
+	select * from t where c=3;
+	+----+------+------+
+	| id | c    | d    |
+	+----+------+------+
+	|  3 |    3 |    3 |
+	+----+------+------+
+	1 row in set (0.00 sec)
+		
+									
+									delete * from t where c=3;
+									Query OK, 1 row affected (0.05 sec)
+									
+	select * from t where c=3;
+	0 rows in set (0.00 sec)
+	
+	
+	
+	
+	
 3. REPEATABLE-READ下的二级索引
 	
 	mysql> select @@global.transaction_isolation;
