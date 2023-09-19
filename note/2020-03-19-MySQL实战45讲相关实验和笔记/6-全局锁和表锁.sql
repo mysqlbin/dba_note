@@ -120,3 +120,35 @@ select * from t where id=1;
 为了解决该bug,MySQL 在5.5.3引入了MDL锁（metadata lock），来保护表的元数据信息，用于解决或者保证DDL操作与DML操作之间的一致性。
 
 
+------------------------------
+
+在MySQL5.5.3之前，有一个著名的bug#989，大致如下:
+ 
+ session1:                  session2:               
+ BEGIN;
+ delete from t where id=1;
+							DROP TABLE t;
+ COMMIT; 	
+
+
+然而上面的操作流程在binlog记录的顺序是 
+
+ DROP TABLE t; 
+ 
+ BEGIN;  
+ delete from t where id=1;
+ COMMIT;
+
+
+
+很显然备库执行binlog时会先删除表t，然后执行delete 会报1032 error，导致复制中断。
+
+为了解决该bug,MySQL 在5.5.3引入了MDL锁（metadata lock），来保护表的元数据信息，用于解决或者保证DDL操作与DML操作之间的一致性。
+
+
+-- 
+
+MySQL  主从复制  要删除数据的表在从库被删除了 会导致主从复制中断 吗
+
+MySQL  主从复制  要插入数据的表在从库被删除了 会导致主从复制中断 吗
+
