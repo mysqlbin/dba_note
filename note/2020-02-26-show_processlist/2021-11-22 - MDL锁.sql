@@ -47,7 +47,10 @@
 	| 34124 | root            | localhost           | test_db | Query   |     0 | starting                        | show processlist                             |
 	+-------+-----------------+---------------------+---------+---------+-------+---------------------------------+----------------------------------------------+
 	8 rows in set (0.00 sec)
+	
+	-- where Command="Query" order by Time desc
 
+	
 
 	session A先启动, 对表加一个MDL读锁;
 	session B被blocked, 因为session A的MDL读锁还没有释放,
