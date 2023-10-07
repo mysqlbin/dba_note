@@ -1,4 +1,18 @@
 
+
+0. 前言
+	还是无法构建MySQL知识网络，
+	https://baijiahao.baidu.com/s?id=1700060219559369227&wfr=spider&for=pc 在碎片化阅读时代，我们更需要系统性学习
+	https://www.zhihu.com/question/67033491        为什么学习任何知识都需要系统化！系统的学习为什么那么重要？本质是什么？系统化学习的原理是什么？
+	
+	
+	我们的人脑就像是一个“关系型数据库”。意思是，我们能记住的新知识，都依赖于大脑中已有的旧知识。只有当新知识和旧知识产生了联结，我们才能真正记住新知识。
+	
+	
+	阅读了非常多的MySQL书籍以及文章，但是相关的知识点没有形成体系，过一段时间没有学习，又很容易忘记； 所以需要系统性学习。
+	系统性学习的好处在于，它能将知识连成线，织成网。这样，既能让所学的知识更全面、深入，也能掌握得更牢固。
+	通过梳理一条update语句的执行流程，建立知识体系
+
 1. Online DDL为什么要MDL元数据写锁？
 	对表加MDL写锁，阻塞读写请求
 	内部需要创建2个文件：
@@ -55,13 +69,43 @@
 6. InnoDB buffer pool 
 	free list 的大小
 	
-	flush list脏页链表的大小，最多可占用缓冲池的75%；由参数 innodb_max_dirty_pages_pct 控制。
+	flush list脏页链表的大小：
+		最多可占用缓冲池的75%；由参数 innodb_max_dirty_pages_pct 控制。
 	
 	
 7. 双1参数的理解，可以画个图理解下
 
+8. InnoDB的逻辑存储结构
 
+9. 两阶段加锁协议
+	如果没有两阶段加锁协议，会有什么问题？
+	无法保证数据的一致性； 事务之间相同的锁资源，无法实现串行执行。
 	
+		session A           session B
+		begin;
+		select * from t where id=1 for update;
+		(Query OK)
+		
+		select counts from t2 where id=3;
+		
+							begin;
+							select * from t where id=1 for update;
+							(Query OK)
+							
+		update t set counts = counts where id=1;	
+			
+							select counts from t2 where id=3;
+							
+							update t set counts = counts where id=1; 
+							(Query OK)
+							
+
+10. lru 热区的数据会被淘汰掉吗
+	
+	一直往热区加载数据，lru 的大小可是有限的。
+	
+	
+
 
 雄哥的总结、理解、表达能力 还是 非常好的。
 
