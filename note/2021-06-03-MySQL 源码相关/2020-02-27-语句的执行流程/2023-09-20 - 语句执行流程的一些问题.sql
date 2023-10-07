@@ -51,3 +51,17 @@
 
 5. ibdata1系统表空间的逻辑结构，也是 表空间 -》 段 -》 区 -》 页 -》 行吗
 
+
+6. InnoDB buffer pool 
+	free list 的大小
+	
+	flush list脏页链表的大小，最多可占用缓冲池的75%；由参数 innodb_max_dirty_pages_pct 控制。
+	
+	
+7. 双1参数的理解，可以画个图理解下
+
+
+	
+
+雄哥的总结、理解、表达能力 还是 非常好的。
+

@@ -54,7 +54,7 @@
         进入InnoDB后引擎层，首先会判断该SQL涉及到的页是否存在于缓存中，如果不存在则从磁盘读取该行记录所在的数据页并加载到BP缓冲池。
 		
         假设不存在，然后通过 B+Tree 读取到磁盘的索引页加载到BP缓冲池中 ，如何加载到BP缓冲池中：
-            首先 通过 space id 和 page no 哈希计算之后把 索引页加载到指定的 buffer pool instance 中
+            首先 通过 space id 和 page no 哈希计算之后把 索引页加载到指定的 buffer pool instance 中  -- 出处是哪里？
             判断 free list 是否有空闲页可用(Innodb_buffer_pool_pages_free、 Innodb_buffer_pool_wait_free)，没有则淘汰脏页或者lru list尾部的Old页
             把数据页 copy到 free list中，然后加载到 lru list的 old区的 midpoint（头部）；
 
