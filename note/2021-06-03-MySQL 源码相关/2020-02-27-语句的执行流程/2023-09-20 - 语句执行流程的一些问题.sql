@@ -105,8 +105,19 @@
 	一直往热区加载数据，lru 的大小可是有限的。
 	
 	
-11. 并发复制，是在主库开启还是从库开启
+11. 并发复制
+	a. 是在主库开启还是从库开启
+	b. slave-parallel-type 跟  binlog-transaction-dependency-tracking 的关系
+		https://zhuanlan.zhihu.com/p/526683439
+	
+	并行复制，理解得不好。
+	
+12. 什么时候重启、HA切换
+
+13. 应急措施之一：持续Kill
 
 
+
+	
 雄哥的总结、理解、表达能力 还是 非常好的。
 
