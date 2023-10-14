@@ -1,4 +1,34 @@
 
+mysql> CREATE TABLE `t` (
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+  `c` int(11) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB;
+
+insert into t(c) values(1),(2),(3);
+
+这个表定义了一个自增主键 id，初始化数据后，主库和备库上都是 3 行数据。接下来，业务人员要继续在表 t 上执行两条插入语句的命令，依次是：
+
+
+insert into t(c) values(4);
+--	发起主备切换。
+insert into t(c) values(5);
+
+
+假设，现在主库上其他的数据表有大量的更新，导致主备延迟达到 5 秒。在插入一条 c=4 的语句后，发起了主备切换。
+
+因为 row 格式在记录 binlog 的时候，会记录新插入的行的所有字段值，所以最后只会有一行不一致。
+
+而且，两边的主备同步的应用线程会报错 duplicate key error 并停止。
+
+
+也就是说，这种情况下，备库 B 的 (5,4) 和主库 A 的 (5,5) 这两行数据，都不会被对方执行。
+
+
+
+
+
+
 
   
 use test_20191101;
